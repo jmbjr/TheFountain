@@ -1,0 +1,231 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+2 0 obj
+<< /Length 2675 >>
+stream
+BT
+/F1 9 Tf
+1 0 0 1 45 750 Tm (WRETCHED DEMESNE: PLATEAU OF LENG) Tj
+1 0 0 1 45 735 Tm (Scenario 01 - The Cave) Tj
+1 0 0 1 45 720 Tm (PRINT-AND-PLAY REVIEW BUILD) Tj
+1 0 0 1 45 705 Tm () Tj
+1 0 0 1 45 690 Tm (SOURCE) Tj
+1 0 0 1 45 675 Tm (scenario-01-the-cave-mvp / schema 0.1.0) Tj
+1 0 0 1 45 660 Tm (A complete, tunable Scenario 01 dataset shared unchanged by GitHub Pages, PnP PDF, and Tabletop Simulator) Tj
+1 0 0 1 45 645 Tm () Tj
+1 0 0 1 45 630 Tm (PROTOTYPE ASSUMPTIONS) Tj
+1 0 0 1 45 615 Tm (Values marked prototype_assumption are implementation choices required to make the GDD's unresolved mecha) Tj
+1 0 0 1 45 600 Tm () Tj
+1 0 0 1 45 585 Tm (SCENARIO) Tj
+1 0 0 1 45 570 Tm (Explore the cave system, recover the Ancient Power Cell, activate the Ancient Relay, and return at least ) Tj
+1 0 0 1 45 555 Tm (Setup:) Tj
+1 0 0 1 45 540 Tm (- Place Cave Mouth.) Tj
+1 0 0 1 45 525 Tm (- Shuffle remaining room cards; place Ancient Relay in bottom 3 cards.) Tj
+1 0 0 1 45 510 Tm (- Each player chooses one crew role and its 10-card starter deck.) Tj
+1 0 0 1 45 495 Tm (- Shuffle each deck and draw 5.) Tj
+1 0 0 1 45 480 Tm (- Set shared Ammo to 8, Scrap to 0, Threat to 0.) Tj
+1 0 0 1 45 465 Tm (- Shuffle encounter and salvage decks.) Tj
+1 0 0 1 45 450 Tm (Win: Ancient Relay activated and at least one crew extracts.) Tj
+1 0 0 1 45 435 Tm (Loss: All active crew are incapacitated.) Tj
+1 0 0 1 45 420 Tm (Loss: Threat reaches 12 and no crew extracts before the end of that round.) Tj
+1 0 0 1 45 405 Tm () Tj
+1 0 0 1 45 390 Tm (CREW) Tj
+1 0 0 1 45 375 Tm (Captain | HP 8 ACC 1 DEF 0) Tj
+1 0 0 1 45 360 Tm (Command: once per turn, another crew in your room may draw 1 then discard 1.) Tj
+1 0 0 1 45 345 Tm (Provenance: prototype_assumption) Tj
+1 0 0 1 45 330 Tm () Tj
+1 0 0 1 45 315 Tm (Security | HP 10 ACC 2 DEF 1) Tj
+1 0 0 1 45 300 Tm (Combat Training: first firearm attack each turn gets +1 attack.) Tj
+1 0 0 1 45 285 Tm (Provenance: prototype_assumption) Tj
+1 0 0 1 45 270 Tm () Tj
+1 0 0 1 45 255 Tm (Engineer | HP 8 ACC 0 DEF 0) Tj
+1 0 0 1 45 240 Tm (Field Repair: Interact with machinery without spending Scrap once per turn.) Tj
+1 0 0 1 45 225 Tm (Provenance: prototype_assumption) Tj
+1 0 0 1 45 210 Tm () Tj
+1 0 0 1 45 195 Tm (Medic | HP 8 ACC 0 DEF 0) Tj
+1 0 0 1 45 180 Tm (Stabilize: Assist restores 2 Health to an injured crew in your room.) Tj
+1 0 0 1 45 165 Tm (Provenance: prototype_assumption) Tj
+1 0 0 1 45 150 Tm () Tj
+1 0 0 1 45 135 Tm (Scout | HP 7 ACC 1 DEF 0) Tj
+1 0 0 1 45 120 Tm (Pathfinder: first Move each turn costs 0 actions.) Tj
+1 0 0 1 45 105 Tm (Provenance: prototype_assumption) Tj
+1 0 0 1 45 90 Tm () Tj
+1 0 0 1 45 75 Tm (STARTER CARDS) Tj
+ET
+endstream
+endobj
+3 0 obj
+<< /Length 2758 >>
+stream
+BT
+/F1 9 Tf
+1 0 0 1 45 750 Tm (Move [action] captain:2 security:2 engineer:2 medic:2 scout:3) Tj
+1 0 0 1 45 735 Tm (Move to a connected revealed room. You may instead reveal and enter an unexplored connection.) Tj
+1 0 0 1 45 720 Tm () Tj
+1 0 0 1 45 705 Tm (Take Cover [tactic] captain:1 security:2 engineer:1 medic:1 scout:1) Tj
+1 0 0 1 45 690 Tm (Gain +2 Defense until your next turn.) Tj
+1 0 0 1 45 675 Tm () Tj
+1 0 0 1 45 660 Tm (Sidearm [weapon] captain:1 security:2 engineer:1 medic:1 scout:1) Tj
+1 0 0 1 45 645 Tm (Attack an enemy within 2 rooms.) Tj
+1 0 0 1 45 630 Tm (ATK 3 RNG 2 AMMO 1 NOISE 1) Tj
+1 0 0 1 45 615 Tm () Tj
+1 0 0 1 45 600 Tm (Reload [action] captain:1 security:2 engineer:1 medic:1 scout:1) Tj
+1 0 0 1 45 585 Tm (Restore 2 shared Ammo, up to the maximum.) Tj
+1 0 0 1 45 570 Tm () Tj
+1 0 0 1 45 555 Tm (Assist [action] captain:2 medic:2) Tj
+1 0 0 1 45 540 Tm (Assist a crew member in your room; role abilities may modify this.) Tj
+1 0 0 1 45 525 Tm () Tj
+1 0 0 1 45 510 Tm (Search [action] engineer:1 medic:1 scout:2) Tj
+1 0 0 1 45 495 Tm (Search your room if it has not been searched; draw 1 salvage.) Tj
+1 0 0 1 45 480 Tm () Tj
+1 0 0 1 45 465 Tm (Interact [action] captain:1 engineer:2 medic:1 scout:1) Tj
+1 0 0 1 45 450 Tm (Interact with an objective, device, corpse, door, or machinery in your room.) Tj
+1 0 0 1 45 435 Tm () Tj
+1 0 0 1 45 420 Tm (Suppressive Fire [tactic] security:1) Tj
+1 0 0 1 45 405 Tm (Spend 1 Ammo. One enemy within 2 rooms does not move this Enemy phase. Noise 2.) Tj
+1 0 0 1 45 390 Tm () Tj
+1 0 0 1 45 375 Tm (Security Training [skill] security:1) Tj
+1 0 0 1 45 360 Tm (Your next attack this turn gets +2 attack.) Tj
+1 0 0 1 45 345 Tm () Tj
+1 0 0 1 45 330 Tm (Jury Rig [skill] engineer:2) Tj
+1 0 0 1 45 315 Tm (Gain 1 Scrap or ignore one machinery requirement this action.) Tj
+1 0 0 1 45 300 Tm () Tj
+1 0 0 1 45 285 Tm (Triage [skill] medic:2) Tj
+1 0 0 1 45 270 Tm (Restore 2 Health to a crew in your room.) Tj
+1 0 0 1 45 255 Tm () Tj
+1 0 0 1 45 240 Tm (Scout Ahead [skill] scout:1) Tj
+1 0 0 1 45 225 Tm (Reveal an adjacent room without entering it; do not resolve its encounter until entered.) Tj
+1 0 0 1 45 210 Tm () Tj
+1 0 0 1 45 195 Tm (Command [skill] captain:2) Tj
+1 0 0 1 45 180 Tm (Another crew in your room gains 1 action this turn.) Tj
+1 0 0 1 45 165 Tm () Tj
+1 0 0 1 45 150 Tm (ENEMIES) Tj
+1 0 0 1 45 135 Tm (Small Spider | HP 2 ATK 1 DEF 0 MOVE 2) Tj
+1 0 0 1 45 120 Tm (Move toward nearest corpse; if threatened/adjacent to crew, attack. Flee at 1 Health if no corpse is pres) Tj
+1 0 0 1 45 105 Tm () Tj
+1 0 0 1 45 90 Tm (Large Spider | HP 5 ATK 2 DEF 1 MOVE 2) Tj
+1 0 0 1 45 75 Tm (Pursue nearest injured crew; feed on corpse in room before moving; retreat one room after feeding if poss) Tj
+ET
+endstream
+endobj
+4 0 obj
+<< /Length 2394 >>
+stream
+BT
+/F1 9 Tf
+1 0 0 1 45 750 Tm () Tj
+1 0 0 1 45 735 Tm (Alpha Spider | HP 9 ATK 3 DEF 1 MOVE 2) Tj
+1 0 0 1 45 720 Tm (Pursue nearest target and attack. Never retreats. May attack other creatures if closer than crew.) Tj
+1 0 0 1 45 705 Tm () Tj
+1 0 0 1 45 690 Tm (Brood Mother | HP 12 ATK 2 DEF 2 MOVE 1) Tj
+1 0 0 1 45 675 Tm (If not adjacent to crew, spawn a Small Spider every other Enemy phase; otherwise attack.) Tj
+1 0 0 1 45 660 Tm () Tj
+1 0 0 1 45 645 Tm (Men of Leng Servant | HP 6 ATK 2 DEF 1 MOVE 1) Tj
+1 0 0 1 45 630 Tm (Keep range 2 when possible; attack, retreat from adjacent crew, and prioritize crew carrying artifacts.) Tj
+1 0 0 1 45 615 Tm () Tj
+1 0 0 1 45 600 Tm (ROOMS) Tj
+1 0 0 1 45 585 Tm (Cave Mouth | connections 2 | not searchable) Tj
+1 0 0 1 45 570 Tm () Tj
+1 0 0 1 45 555 Tm () Tj
+1 0 0 1 45 540 Tm (Collapsed Gallery | connections 2 | searchable) Tj
+1 0 0 1 45 525 Tm (rubble) Tj
+1 0 0 1 45 510 Tm () Tj
+1 0 0 1 45 495 Tm (Flooded Passage | connections 2 | searchable) Tj
+1 0 0 1 45 480 Tm (water) Tj
+1 0 0 1 45 465 Tm () Tj
+1 0 0 1 45 450 Tm (Bone Pit | connections 3 | searchable) Tj
+1 0 0 1 45 435 Tm (Place 1 Spider Corpse.) Tj
+1 0 0 1 45 420 Tm () Tj
+1 0 0 1 45 405 Tm (Fungal Vault | connections 2 | searchable) Tj
+1 0 0 1 45 390 Tm (On entry, lose 1 Health unless a crew discards an Equipment card.) Tj
+1 0 0 1 45 375 Tm () Tj
+1 0 0 1 45 360 Tm (Spider Nest | connections 3 | searchable) Tj
+1 0 0 1 45 345 Tm (Spawn 2 Small Spiders.) Tj
+1 0 0 1 45 330 Tm () Tj
+1 0 0 1 45 315 Tm (Ruined Workshop | connections 2 | searchable) Tj
+1 0 0 1 45 300 Tm () Tj
+1 0 0 1 45 285 Tm () Tj
+1 0 0 1 45 270 Tm (Sealed Threshold | connections 2 | not searchable) Tj
+1 0 0 1 45 255 Tm (Requires Ancient Power Cell or Engineer interaction.) Tj
+1 0 0 1 45 240 Tm () Tj
+1 0 0 1 45 225 Tm (Ancient Relay | connections 1 | not searchable) Tj
+1 0 0 1 45 210 Tm (Interact while carrying Ancient Power Cell; add 2 Threat and activate extraction.) Tj
+1 0 0 1 45 195 Tm () Tj
+1 0 0 1 45 180 Tm (Whispering Dead End | connections 1 | searchable) Tj
+1 0 0 1 45 165 Tm () Tj
+1 0 0 1 45 150 Tm () Tj
+1 0 0 1 45 135 Tm (SALVAGE) Tj
+1 0 0 1 45 120 Tm (Ammo Cache [consumable] - +3 Ammo.) Tj
+1 0 0 1 45 105 Tm (Medical Gel [consumable] - Restore 3 Health.) Tj
+1 0 0 1 45 90 Tm (Useful Scrap [resource] - +2 Scrap.) Tj
+1 0 0 1 45 75 Tm (Armor Plate [equipment] - +1 Defense while equipped.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Length 1573 >>
+stream
+BT
+/F1 9 Tf
+1 0 0 1 45 750 Tm (Shotgun [weapon] - Attack 5, Range 1, Ammo 2, Noise 3.) Tj
+1 0 0 1 45 735 Tm (Translation Fragment [knowledge] - Gain 1 Knowledge; keep after extraction.) Tj
+1 0 0 1 45 720 Tm (Phase Cutter [key_item] - Opens sealed passages.) Tj
+1 0 0 1 45 705 Tm (Ancient Power Cell [key_item] - Activates ancient machinery; required by Scenario 01 relay.) Tj
+1 0 0 1 45 690 Tm () Tj
+1 0 0 1 45 675 Tm (ENCOUNTERS) Tj
+1 0 0 1 45 660 Tm (Skittering in the Dark - Spawn 1 Small Spider.) Tj
+1 0 0 1 45 645 Tm (Fresh Remains - Place 1 Spider Corpse.) Tj
+1 0 0 1 45 630 Tm (Ceiling Ambush - Spawn 1 Small Spider; active crew loses 1 Health.) Tj
+1 0 0 1 45 615 Tm (Unstable Rock - Add 1 Threat. This room costs +1 action to leave this turn.) Tj
+1 0 0 1 45 600 Tm (Dormant Machine - Engineer may Interact to gain 1 Scrap; otherwise add 1 Threat.) Tj
+1 0 0 1 45 585 Tm (Distant Howls - Add 2 Threat.) Tj
+1 0 0 1 45 570 Tm () Tj
+1 0 0 1 45 555 Tm (CORE RULES) Tj
+1 0 0 1 45 540 Tm (Hand 5; Actions 3; Ammo 8/12; Threat 0/12) Tj
+1 0 0 1 45 525 Tm (Damage = max\(0, attack - defense\).) Tj
+1 0 0 1 45 510 Tm (After a noisy attack, add its Noise to Threat. If an unrevealed adjacent room exists, reveal its encounte) Tj
+1 0 0 1 45 495 Tm (Each searchable room can be searched once; draw one salvage card.) Tj
+1 0 0 1 45 480 Tm (At Enemy phase, a spider sharing a room with a Spider Corpse may consume one. Small becomes Fed \(+1 max/) Tj
+1 0 0 1 45 465 Tm (From Entrance, spend 1 action to extract. Extracted crew keep salvage. Scenario succeeds only after the A) Tj
+ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 2 0 R >>
+endobj
+7 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 3 0 R >>
+endobj
+8 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 4 0 R >>
+endobj
+9 0 obj
+<< /Type /Page /Parent 10 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 1 0 R >> >> /Contents 5 0 R >>
+endobj
+10 0 obj
+<< /Type /Pages /Kids [6 0 R 7 0 R 8 0 R 9 0 R] /Count 4 >>
+endobj
+11 0 obj
+<< /Type /Catalog /Pages 10 0 R >>
+endobj
+xref
+0 12
+0000000000 65535 f 
+0000000009 00000 n 
+0000000079 00000 n 
+0000002806 00000 n 
+0000005616 00000 n 
+0000008062 00000 n 
+0000009687 00000 n 
+0000009814 00000 n 
+0000009941 00000 n 
+0000010068 00000 n 
+0000010195 00000 n 
+0000010271 00000 n 
+trailer
+<< /Size 12 /Root 11 0 R >>
+startxref
+10322
+%%EOF
