@@ -1,0 +1,187 @@
+{
+  "dodge_version": "0.1.0",
+  "document_id": "wretched-demesne.prototype-v0.1",
+  "game_id": "wretched-demesne-plateau-of-leng",
+  "title": "Wretched Demesne: Plateau of Leng — Prototype v0.1",
+  "description": "Target-neutral DODGE scene for the Wretched Demesne prototype. Game semantics beyond DODGE v0.1 are preserved losslessly in the adjacent GDD sidecar.",
+  "sources": {
+    "gdd": {
+      "kind": "rules",
+      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+      "version": "prototype-v0.1"
+    },
+    "cards": {
+      "kind": "entity_catalog",
+      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
+      "version": "prototype-v0.1"
+    },
+    "enemies": {
+      "kind": "entity_catalog",
+      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
+      "version": "prototype-v0.1"
+    }
+  },
+  "archetypes": {
+    "standard-card": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        },
+        {
+          "id": "back",
+          "role": "back"
+        }
+      ],
+      "description": "A two-sided game card."
+    },
+    "deck": {
+      "kind": "collection",
+      "description": "A deck of cards that can be shuffled and drawn without replacement."
+    },
+    "reference-token": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "reference",
+          "role": "reference"
+        }
+      ],
+      "description": "Readable rules/reference material."
+    },
+    "board-token": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        }
+      ],
+      "description": "Neutral physical token/marker used by the prototype."
+    }
+  },
+  "objects": {
+    "security-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "name": "Security Starter Deck",
+      "source_ref": "cards",
+      "members": [
+        {
+          "entity_ref": "cards:sidearm",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:take-cover",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:reload",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:suppressive-fire",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "cards:security-training",
+          "archetype_ref": "standard-card"
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
+    },
+    "gdd-reference": {
+      "kind": "token",
+      "archetype_ref": "reference-token",
+      "name": "Prototype Rules / GDD",
+      "source_ref": "gdd",
+      "faces": [
+        {
+          "slot": "reference",
+          "content_ref": "gdd"
+        }
+      ]
+    },
+    "spider-corpse-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Spider Corpse",
+      "source_ref": "gdd",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "SPIDER CORPSE"
+        }
+      ]
+    },
+    "chrysalis-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Chrysalis",
+      "source_ref": "gdd",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "CHRYSALIS"
+        }
+      ]
+    }
+  },
+  "scenes": {
+    "scenario-01-the-cave": {
+      "name": "Scenario 01: \"The Cave\"",
+      "instances": [
+        {
+          "id": "security-deck-1",
+          "object_ref": "security-starter-deck"
+        },
+        {
+          "id": "rules-1",
+          "object_ref": "gdd-reference"
+        },
+        {
+          "id": "corpse-marker-1",
+          "object_ref": "spider-corpse-token",
+          "state": {
+            "supply": true
+          }
+        },
+        {
+          "id": "chrysalis-marker-1",
+          "object_ref": "chrysalis-token",
+          "state": {
+            "supply": true
+          }
+        }
+      ]
+    }
+  },
+  "metadata": {
+    "status": "prototype",
+    "sidecar": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+    "lossless_import": true,
+    "limitations": [
+      "DODGE v0.1 does not normalize game rules, turn phases, resources, AI, progression, map topology, campaign state, scenario logic, or GDD design intent.",
+      "Those semantics remain authoritative in the adjacent sidecar until promoted into a future DODGE specification.",
+      "Unresolved v0.1 design questions remain unresolved."
+    ]
+  }
+}
