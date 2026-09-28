@@ -4,15 +4,15 @@ Lovecraftian survival-horror prototype built around **survival through transform
 
 ## DODGE architecture — firm requirement
 
-**One neutral game definition:** `game/game.json`
+This repository must remain compliant with the **official DODGE specification**. Wretched Demesne currently targets **DODGE 0.2.0** via `game/wretched-demesne.dodge.v0.2.json`; older DODGE documents are retained for history/traceability.
 
-That definition is the source of truth. Targets are adapters/renderers, never independent game definitions:
+Canonical game facts may remain in referenced sources as DODGE permits. DODGE governs scene composition and resolved component inventory. Targets are adapters/renderers, never independent game definitions:
 
 - GitHub Pages: `src/renderers/web.js`
 - PnP: `tools/export_pnp.py`
 - Tabletop Simulator: `tools/export_tts.py`
 
-Do not encode gameplay content directly in a renderer. If a rule/card/encounter changes, change the neutral definition and regenerate/render every target from it.
+Do not encode gameplay content directly in a renderer or introduce target-specific workarounds that violate DODGE. If a rule/card/encounter changes, change the neutral definition and regenerate/render every target from it.
 
 ## Prototype
 
