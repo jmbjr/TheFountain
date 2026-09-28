@@ -6,7 +6,7 @@ For the narrative project history and the reasoning behind major milestones, see
 
 ## Architectural rule
 
-The project follows the **official DODGE specification**. Wretched Demesne currently targets **DODGE 0.2.0**:
+The project follows the **official DODGE specification**. Wretched Demesne currently adopts **DODGE 0.2.1** as its working target. The specification is presently in `jmbjr/DODGE/draft/v0.2.1`; official conformance must be revalidated when that draft is promoted:
 
 > Game semantics have a neutral source of truth. Web, Print-and-Play (PnP), and Tabletop Simulator (TTS) are adapters/renderers of that source, not independent implementations of the game definition.
 
@@ -33,7 +33,7 @@ A change to game content should therefore be made once and flow to all three tar
 
 The repository MUST track the official DODGE specification and MUST NOT create a private Wretched-specific dialect. A DODGE version change requires explicit conformance review/migration of the Wretched document, resolver, exporters, validation and docs. Schema validity alone is insufficient; official semantic validation rules also apply.
 
-Under DODGE 0.2.0, exporters for a build must consume the same deterministic resolved component inventory. PnP and TTS must not independently choose component membership or quantities. Unsupported normalized semantics belong in a declared sidecar or namespaced extension as permitted by DODGE, not target-specific renderer data.
+Under DODGE 0.2.1, exporters for a build must consume the same deterministic resolved component inventory and normalized rule/runtime semantics they support. PnP and TTS must not independently choose component membership or quantities. The 0.2.1 model also provides neutral rules/resources, timing and effect lifetime, ownership/binding, transformations, topology materialization, scenarios and campaign structure. Unsupported or prose-only semantics remain explicitly adjacent/provisional rather than being hidden in target-specific renderer data.
 
 ## Repository layout
 
@@ -64,7 +64,7 @@ This is the most important directory.
 
 Wretched Demesne adds a more formal DODGE workflow:
 
-- `wretched-demesne.dodge.v0.2.json` — active Wretched scene targeting official DODGE 0.2.0.
+- `wretched-demesne.dodge.v0.2.1.json` — active Wretched working document adopting DODGE 0.2.1 rules/state/topology/scenario semantics.\n- `wretched-demesne.dodge.v0.2.json` — historical DODGE 0.2.0 document retained for traceability.
 - `wretched-demesne.dodge.v0.1.json` — historical pre-migration document retained for traceability.
 - `wretched-demesne.gdd.sidecar.v0.1.json` — lossless DODGE-adjacent storage for semantics the current specification cannot represent.
 - `wretched-demesne.scenario-01.mvp.v0.1.json` — executable prototype dataset for Scenario 01.
@@ -84,7 +84,7 @@ The root `index.html` is the **Forbidden Places** game hub. It links to:
 
 The Fountain is currently playable. Its page loads `src/renderers/web.js`, which loads neutral `game/game.json` and drives `src/engine.js`.
 
-Wretched Demesne has a playable Pages route plus review PnP/TTS artifacts. The next architecture work is to make all three outputs consume the DODGE 0.2.0 resolved component inventory.
+Wretched Demesne has a playable Pages route plus review PnP/TTS artifacts. The next architecture work is to make all three outputs consume the DODGE 0.2.1 resolved component inventory and shared normalized rule/runtime model.
 
 ## Cache-busting policy
 
@@ -185,8 +185,8 @@ For the Wretched Demesne MVP the exporter must generate the required TTS save/ob
 The MVP target is a single build entry point that conceptually does:
 
 ```text
-validate official DODGE schema + semantic conformance
-resolve DODGE 0.2.0 + declared sidecar + MVP data
+validate the adopted DODGE 0.2.1 schema + semantic conformance
+resolve DODGE 0.2.1 + declared sidecar + MVP data
 produce one deterministic component inventory
 build web
 build PnP PDF
@@ -257,7 +257,7 @@ This keeps technical plumbing available without turning the README into an opera
 
 ## Immediate technical roadmap
 
-The next major implementation step is to realign the existing Wretched Web/PnP/TTS review build around the official DODGE 0.2.0 resolver/inventory contract, then improve PnP/TTS presentation from that common inventory.
+The next major implementation step is to realign the existing Wretched Web/PnP/TTS review build around the DODGE 0.2.1 resolver/rules/runtime/inventory contract, then improve PnP/TTS presentation from that common inventory.
 
 After the three targets work locally, add the unified GitHub Actions workflow so a merge to `main` validates and publishes all three together.
 
