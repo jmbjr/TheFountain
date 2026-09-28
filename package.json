@@ -1,0 +1,1 @@
+{"name":"forbidden-places","private":true,"type":"module","scripts":{"test":"node tests/wretched-runtime.test.mjs"}}

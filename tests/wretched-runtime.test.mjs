@@ -1,0 +1,11 @@
+import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";
+const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario-01.mvp.v0.1.json",import.meta.url)));
+assert.equal(validateWretchedMvp(data).ok,true);
+const g=new WretchedEngine(data,{rng:()=>0});
+assert.equal(g.state.actions,3);assert.equal(g.state.hand.length,5);assert.equal(g.state.ammo,8);assert.equal(g.state.crew.name,"Security");
+g.explore();assert.equal(g.state.actions,2);assert.equal(g.state.rooms.length,2);
+g.state.crew.room="ruined-workshop";if(!g.state.rooms.includes("ruined-workshop"))g.state.rooms.push("ruined-workshop");g.search();assert.ok(g.state.inventory.includes("power-cell"));
+g.state.crew.room="relay";if(!g.state.rooms.includes("relay"))g.state.rooms.push("relay");g.interact();assert.equal(g.state.relayActive,true);
+g.state.crew.room="entrance";g.state.actions=3;g.extract();assert.equal(g.state.status,"won");
+const h=new WretchedEngine(data,{rng:()=>0});h.spawn("small-spider","entrance");h.state.corpses.entrance=2;h.enemyPhase();assert.equal(h.state.enemies[0].fed,1);h.enemyPhase();assert.equal(h.state.enemies.length,0);assert.equal(h.state.chrysalises.length,1);h.endTurn();assert.ok(h.state.enemies.some(e=>e.id==="large-spider"));
+console.log("Wretched shared runtime smoke tests passed.");
