@@ -176,3 +176,14 @@ The first playable interface exposes crew selection, expedition resources, disco
 The Pages asset version was bumped as part of the change so the new game does not depend on a hard refresh to replace the old placeholder.
 
 **Milestone:** Scenario 01 can now be exercised end-to-end through GitHub Pages using the same shared runtime intended to support the other targets.
+
+
+### PR #11 - Unified three-format review build
+
+**September 28, 2026.**
+
+The first Game Director review needs to evaluate the game rather than just the browser implementation, so we brought the other two DODGE targets forward. The Wretched Demesne page now exposes a Print-and-Play PDF and a Tabletop Simulator ZIP alongside the playable web version.
+
+Both review artifacts come from the same canonical Scenario 01 MVP dataset used by the web runtime. The PDF is intentionally text-first and printable; the TTS package uses native notecards and includes the canonical source and prototype-assumption note. These are review artifacts, not final visual production.
+
+**Milestone:** Scenario 01 is now available for review in all three intended forms - Web, PnP, and TTS - without creating independent gameplay definitions.
