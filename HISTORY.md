@@ -150,3 +150,16 @@ That is the point of the current MVP—not merely to prove Wretched Demesne is f
 Update this file when a PR represents a meaningful design, architecture, tooling, or playable-product milestone. It does not need an entry for every small fix.
 
 Keep entries conversational: explain what problem we were solving, the decision we made, and what became possible afterward. Link the corresponding PR so the implementation details remain easy to find.
+
+
+### PR #7 — Technical architecture and cache policy
+
+**September 28, 2026.**
+
+Before implementing the Wretched Demesne runtime, we paused to make the repository's technical operating model explicit. We had also seen GitHub Pages occasionally appear stale after updates, so this milestone establishes a cache-busting convention using versioned asset URLs rather than relying on users to hard-refresh.
+
+A root `TECHNICAL.md` now separates implementation/build/CI details from the intentionally approachable README. It documents the DODGE source-of-truth rule, repository layout, current Web/PnP/TTS state, local serving/build commands, Pages caching policy, and the intended unified GitHub Actions pipeline.
+
+The documentation also records an important current-state fact: there is not yet a checked-in Actions workflow. The unified build/deploy workflow remains an upcoming milestone rather than an undocumented assumption.
+
+**Milestone:** the project now has an explicit technical handbook and a consistent strategy for avoiding stale Pages assets.
