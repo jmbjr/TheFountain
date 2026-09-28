@@ -187,3 +187,16 @@ The first Game Director review needs to evaluate the game rather than just the b
 Both review artifacts come from the same canonical Scenario 01 MVP dataset used by the web runtime. The PDF is intentionally text-first and printable; the TTS package uses native notecards and includes the canonical source and prototype-assumption note. These are review artifacts, not final visual production.
 
 **Milestone:** Scenario 01 is now available for review in all three intended forms - Web, PnP, and TTS - without creating independent gameplay definitions.
+
+
+### PR #12 — Align Wretched Demesne with official DODGE 0.2.0
+
+**Merged September 28, 2026.**
+
+Once official DODGE 0.2.0 was available, we migrated Wretched rather than allowing the implementation to become a historical fork. The new `game/wretched-demesne.dodge.v0.2.json` declares DODGE 0.2.0, formally identifies the lossless GDD sidecar and source authority, and adds neutral component profiles. The v0.1 document remains for traceability.
+
+This establishes an ongoing project rule: **Wretched Demesne and its Web/PnP/TTS pipeline must remain compliant with the official DODGE specification.** DODGE changes require deliberate conformance review/migration rather than target-specific workarounds.
+
+**Milestone:** DODGE conformance is now a maintained project constraint.
+
+PR: https://github.com/jmbjr/TheFountain/pull/12
