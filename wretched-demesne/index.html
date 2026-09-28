@@ -1,1 +1,25 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Wretched Demesne</title><link rel="stylesheet" href="../style.css?v=20260928-1"></head><body><nav class="back"><a href="../">← Return to the Archive</a></nav><main class="placeholder"><p class="eyebrow">THE SECOND ACCOUNT</p><h1>WRETCHED<br>DEMESNE</h1><p class="tag">Something is taking shape here.</p><div class="sigil">⌾</div><p class="whisper">The door is not yet open.</p></main></body></html>
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Wretched Demesne — The Cave</title><link rel="stylesheet" href="../style.css?v=20260928-3"></head>
+<body class="wd-body"><nav class="back"><a href="../">← Return to the Archive</a></nav>
+<main class="wd-game">
+<header><p class="eyebrow">SCENARIO 01 · THE CAVE</p><h1>WRETCHED DEMESNE</h1><p class="tag">Explore. Salvage. Survive. Know when to leave.</p></header>
+<section id="setup" class="wd-panel"><h2>Choose expedition crew</h2><p>This first browser slice controls one crew member while exercising the shared Scenario 01 rules.</p><div id="crewChoices" class="choices"></div></section>
+<section id="play" hidden>
+<div id="statusBanner" class="wd-banner"></div>
+<section class="wd-hud" id="hud"></section>
+<section class="wd-grid">
+<div>
+<section class="wd-panel"><div class="wd-title-row"><div><p class="eyebrow">CURRENT LOCATION</p><h2 id="roomName"></h2></div><span id="roomMeta"></span></div><p id="roomDetail"></p><div id="roomActions" class="choices"></div></section>
+<section class="wd-panel"><p class="eyebrow">YOUR HAND</p><div id="hand" class="wd-hand"></div></section>
+<section class="wd-panel"><div class="wd-title-row"><div><p class="eyebrow">HOSTILES</p><h2>Enemy activity</h2></div></div><div id="enemies"></div></section>
+</div>
+<aside>
+<section class="wd-panel"><p class="eyebrow">EXPEDITION OBJECTIVE</p><p id="objective"></p><div id="inventory"></div></section>
+<section class="wd-panel"><p class="eyebrow">DISCOVERED PATH</p><div id="rooms" class="wd-path"></div></section>
+<section class="wd-panel"><p class="eyebrow">EXPEDITION LOG</p><div id="log" class="wd-log"></div></section>
+</aside></section>
+<div class="wd-turnbar"><button id="endTurn">End Turn → Enemy Phase</button><button id="restart" class="ghost">Restart Expedition</button></div>
+</section>
+<div id="fatal" class="wd-panel" hidden></div>
+</main><script type="module" src="../src/renderers/wretched-web.js?v=20260928-3"></script></body></html>
