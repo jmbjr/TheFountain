@@ -163,3 +163,16 @@ A root `TECHNICAL.md` now separates implementation/build/CI details from the int
 The documentation also records an important current-state fact: there is not yet a checked-in Actions workflow. The unified build/deploy workflow remains an upcoming milestone rather than an undocumented assumption.
 
 **Milestone:** the project now has an explicit technical handbook and a consistent strategy for avoiding stale Pages assets.
+
+
+### PR #10 — Wretched Demesne becomes playable on the web
+
+**September 28, 2026.**
+
+With the shared Scenario 01 runtime in place, the next milestone was to replace Wretched Demesne's placeholder page with an actual play surface. The browser UI deliberately remains a renderer: it loads the canonical MVP dataset and drives the shared runtime rather than maintaining a web-specific copy of the rules.
+
+The first playable interface exposes crew selection, expedition resources, discovered rooms, hand/cards, searching, exploration, enemies, combat, the objective/inventory, enemy/end-turn processing, retreat/extraction and the expedition log. It is intentionally utilitarian enough to reveal gameplay and data problems before we spend time polishing presentation.
+
+The Pages asset version was bumped as part of the change so the new game does not depend on a hard refresh to replace the old placeholder.
+
+**Milestone:** Scenario 01 can now be exercised end-to-end through GitHub Pages using the same shared runtime intended to support the other targets.
