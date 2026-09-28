@@ -6,7 +6,7 @@ For the narrative project history and the reasoning behind major milestones, see
 
 ## Architectural rule
 
-The project follows the **DODGE** pattern:
+The project follows the **official DODGE specification**. Wretched Demesne currently targets **DODGE 0.2.0**:
 
 > Game semantics have a neutral source of truth. Web, Print-and-Play (PnP), and Tabletop Simulator (TTS) are adapters/renderers of that source, not independent implementations of the game definition.
 
@@ -28,6 +28,12 @@ The long-term target is:
 ```
 
 A change to game content should therefore be made once and flow to all three targets.
+
+### DODGE conformance is a maintained constraint
+
+The repository MUST track the official DODGE specification and MUST NOT create a private Wretched-specific dialect. A DODGE version change requires explicit conformance review/migration of the Wretched document, resolver, exporters, validation and docs. Schema validity alone is insufficient; official semantic validation rules also apply.
+
+Under DODGE 0.2.0, exporters for a build must consume the same deterministic resolved component inventory. PnP and TTS must not independently choose component membership or quantities. Unsupported normalized semantics belong in a declared sidecar or namespaced extension as permitted by DODGE, not target-specific renderer data.
 
 ## Repository layout
 
@@ -58,7 +64,8 @@ This is the most important directory.
 
 Wretched Demesne adds a more formal DODGE workflow:
 
-- `wretched-demesne.dodge.v0.1.json` — concepts representable by official DODGE v0.1.
+- `wretched-demesne.dodge.v0.2.json` — active Wretched scene targeting official DODGE 0.2.0.
+- `wretched-demesne.dodge.v0.1.json` — historical pre-migration document retained for traceability.
 - `wretched-demesne.gdd.sidecar.v0.1.json` — lossless DODGE-adjacent storage for semantics the current specification cannot represent.
 - `wretched-demesne.scenario-01.mvp.v0.1.json` — executable prototype dataset for Scenario 01.
 - `WRETCHED_DODGE_IMPORT.md` — import/losslessness contract.
@@ -77,7 +84,7 @@ The root `index.html` is the **Forbidden Places** game hub. It links to:
 
 The Fountain is currently playable. Its page loads `src/renderers/web.js`, which loads neutral `game/game.json` and drives `src/engine.js`.
 
-Wretched Demesne currently has its landing/placeholder route plus its canonical MVP data. Its shared playable runtime is the next major implementation milestone.
+Wretched Demesne has a playable Pages route plus review PnP/TTS artifacts. The next architecture work is to make all three outputs consume the DODGE 0.2.0 resolved component inventory.
 
 ## Cache-busting policy
 
@@ -178,8 +185,9 @@ For the Wretched Demesne MVP the exporter must generate the required TTS save/ob
 The MVP target is a single build entry point that conceptually does:
 
 ```text
-validate source
-resolve DODGE + sidecar + MVP data
+validate official DODGE schema + semantic conformance
+resolve DODGE 0.2.0 + declared sidecar + MVP data
+produce one deterministic component inventory
 build web
 build PnP PDF
 build TTS ZIP
@@ -213,7 +221,7 @@ Therefore, do not assume that merging to `main` currently generates the PnP PDF 
 The intended workflow is:
 
 1. Trigger on pushes/merges to `main`, with optional manual dispatch.
-2. Validate canonical/DODGE data.
+2. Validate canonical data plus official DODGE schema and semantic conformance.
 3. Build the Web, PnP and TTS targets in one workflow from the same checkout.
 4. Create a build manifest containing the commit SHA and artifact hashes.
 5. Deploy the web artifact to GitHub Pages.
@@ -230,9 +238,11 @@ When adding or changing gameplay:
 2. Preserve source information losslessly.
 3. Mark prototype assumptions as prototype assumptions.
 4. Do not solve an unsupported DODGE concept by hiding the rule inside a renderer.
-5. Web, PnP and TTS should consume the same resolved values.
+5. Web, PnP and TTS MUST consume the same DODGE-resolved component inventory and resolved values.
 6. Prefer data-driven tuning over target-specific code changes.
-7. If a new concept exposes a DODGE specification gap, keep moving using the sidecar and record the gap for future DODGE work.
+7. If a concept exposes a DODGE gap, use a declared sidecar or namespaced extension as allowed by the official spec and record the gap.
+8. Review and deliberately migrate when adopting a new official DODGE version; update validation/tests/docs together.
+9. Never fix a target by adding gameplay/component membership or quantities only to that target.
 
 ## Documentation roles
 
@@ -247,7 +257,7 @@ This keeps technical plumbing available without turning the README into an opera
 
 ## Immediate technical roadmap
 
-The next major implementation step is to consume the merged Wretched Demesne Scenario 01 dataset through a shared runtime/model, then have the Web, PnP and TTS adapters consume that same model.
+The next major implementation step is to realign the existing Wretched Web/PnP/TTS review build around the official DODGE 0.2.0 resolver/inventory contract, then improve PnP/TTS presentation from that common inventory.
 
 After the three targets work locally, add the unified GitHub Actions workflow so a merge to `main` validates and publishes all three together.
 
