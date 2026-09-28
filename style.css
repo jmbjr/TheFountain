@@ -4,3 +4,6 @@
 @media(max-width:800px){.wd-grid{grid-template-columns:1fr}.wd-hud{grid-template-columns:repeat(3,1fr);gap:8px}.wd-hud div{border:0}.wd-hand{grid-template-columns:repeat(2,1fr)}.wd-card{min-height:145px}}
 
 .wd-build-links{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:18px 0}.wd-build-links a{font:700 .7rem system-ui;letter-spacing:.1em;color:#ddd3ba;text-decoration:none;border:1px solid #665d48;background:#171811;padding:10px 14px}.wd-build-links a:hover{background:#2a271d}
+
+/* Review-channel link: stable remains the primary Wretched portal. */
+.beta-link{grid-column:1/-1;justify-self:center;font:700 .65rem system-ui;letter-spacing:.16em;color:#b7a77f;text-decoration:none;border:1px dashed #665d48;padding:9px 13px;background:#11120e}.beta-link:hover{background:#242218;color:#e0d5b8}

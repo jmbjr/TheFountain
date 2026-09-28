@@ -1,0 +1,1175 @@
+{
+  "dodge_version": "0.2.1",
+  "document_id": "wretched-demesne.scenario-01-v0.2.1",
+  "game_id": "wretched-demesne-plateau-of-leng",
+  "title": "Wretched Demesne: Plateau of Leng — Scenario 01",
+  "description": "Active Wretched Demesne DODGE 0.2.1 working document, migrated against the accepted draft/v0.2.1 semantics. Authoritative GDD facts remain referenced; Scenario 01 executable assumptions remain provisional.",
+  "sources": {
+    "gdd": {
+      "kind": "sidecar",
+      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+      "version": "prototype-v0.1",
+      "authority": "authoritative"
+    },
+    "cards": {
+      "kind": "entity_catalog",
+      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
+      "version": "prototype-v0.1",
+      "authority": "authoritative"
+    },
+    "scenario-mvp": {
+      "kind": "scenario",
+      "uri": "game/wretched-demesne.scenario-01.mvp.v0.1.json",
+      "version": "prototype-v0.1",
+      "authority": "provisional"
+    },
+    "enemies": {
+      "kind": "entity_catalog",
+      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
+      "version": "prototype-v0.1",
+      "authority": "authoritative"
+    }
+  },
+  "sidecars": [
+    {
+      "source_ref": "gdd",
+      "purpose": "Preserve complete GDD semantics and design intent not promoted into this draft.",
+      "lossless": true,
+      "promotion_status": "partially-promoted"
+    }
+  ],
+  "game_profile": {
+    "players": {
+      "min": 1,
+      "max": 4
+    },
+    "modes": [
+      "solo",
+      "cooperative"
+    ],
+    "genre": "cooperative science-fiction cosmic-horror deck-building dungeon crawler",
+    "setting": "science-fiction cosmic horror and survival horror",
+    "tags": [
+      "exploration",
+      "scarcity",
+      "deck-building",
+      "campaign"
+    ]
+  },
+  "archetypes": {
+    "standard-card": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        },
+        {
+          "id": "back",
+          "role": "back"
+        }
+      ],
+      "component": {
+        "form": "card",
+        "size_class": "standard-card",
+        "shape": "rectangle",
+        "two_sided": true
+      }
+    },
+    "deck": {
+      "kind": "collection"
+    },
+    "board-token": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        }
+      ],
+      "component": {
+        "form": "token",
+        "size_class": "small-token",
+        "shape": "circle",
+        "dimensions": {
+          "unit": "mm",
+          "diameter": 25
+        }
+      }
+    },
+    "room-tile": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        }
+      ],
+      "component": {
+        "form": "tile",
+        "size_class": "room-tile",
+        "shape": "rectangle"
+      }
+    },
+    "reference-token": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "reference",
+          "role": "reference"
+        }
+      ],
+      "description": "Readable rules/reference material.",
+      "component": {
+        "form": "reference_sheet",
+        "size_class": "reference-sheet",
+        "shape": "rectangle",
+        "two_sided": false
+      }
+    }
+  },
+  "objects": {
+    "security-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "source_ref": "cards",
+      "members": [
+        {
+          "entity_ref": "cards:sidearm",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:take-cover",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:reload",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "cards:suppressive-fire",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "cards:security-training",
+          "archetype_ref": "standard-card"
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
+    },
+    "spider-corpse": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Spider Corpse",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "SPIDER CORPSE"
+        }
+      ],
+      "tags": [
+        "corpse",
+        "spider-food"
+      ]
+    },
+    "chrysalis": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Chrysalis",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "CHRYSALIS"
+        }
+      ],
+      "tags": [
+        "chrysalis"
+      ]
+    },
+    "security-crew": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Security Crew",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "SECURITY"
+        }
+      ],
+      "tags": [
+        "crew",
+        "security"
+      ]
+    },
+    "cave-room": {
+      "kind": "token",
+      "archetype_ref": "room-tile",
+      "name": "Cave Room",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "CAVE"
+        }
+      ],
+      "tags": [
+        "room",
+        "cave"
+      ]
+    },
+    "gdd-reference": {
+      "kind": "token",
+      "archetype_ref": "reference-token",
+      "name": "Prototype Rules / GDD",
+      "source_ref": "gdd",
+      "faces": [
+        {
+          "slot": "reference",
+          "content_ref": "gdd"
+        }
+      ]
+    }
+  },
+  "scenes": {
+    "scenario-01-the-cave": {
+      "name": "Scenario 01: The Cave",
+      "source_ref": "scenario-mvp",
+      "instances": [
+        {
+          "id": "security-deck-1",
+          "object_ref": "security-starter-deck"
+        },
+        {
+          "id": "rules-1",
+          "object_ref": "gdd-reference"
+        },
+        {
+          "id": "corpse-supply",
+          "object_ref": "spider-corpse",
+          "state": {
+            "supply": true
+          }
+        },
+        {
+          "id": "chrysalis-supply",
+          "object_ref": "chrysalis",
+          "state": {
+            "supply": true
+          }
+        }
+      ]
+    }
+  },
+  "rules": {
+    "values": {
+      "health": {
+        "name": "Health",
+        "type": "integer",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "minimum": 0,
+        "authority": "provisional",
+        "source_ref": "scenario-mvp",
+        "assumptions": [
+          "Scenario 01 crew Health values are provisional executable assumptions."
+        ]
+      }
+    },
+    "resources": {
+      "actions": {
+        "name": "Actions remaining",
+        "kind": "capacity",
+        "owner_scope": "actor",
+        "persistence_scope": "turn",
+        "reset_at": {
+          "scope": "turn",
+          "boundary": "start",
+          "occurrence": "current",
+          "subject": {
+            "relative": "current-actor"
+          }
+        },
+        "value_type": "integer",
+        "default": 3,
+        "minimum": 0,
+        "maximum": 3,
+        "authority": "authoritative",
+        "source_ref": "gdd"
+      },
+      "hand-size": {
+        "name": "Hand size",
+        "kind": "capacity",
+        "owner_scope": "player",
+        "persistence_scope": "scenario",
+        "value_type": "integer",
+        "default": 5,
+        "minimum": 0,
+        "authority": "authoritative",
+        "source_ref": "gdd"
+      },
+      "ammunition": {
+        "name": "Ammunition",
+        "kind": "currency",
+        "owner_scope": "expedition",
+        "persistence_scope": "expedition",
+        "value_type": "integer",
+        "default": 8,
+        "minimum": 0,
+        "authority": "provisional",
+        "source_ref": "scenario-mvp",
+        "maximum": 12
+      },
+      "scrap": {
+        "name": "Scrap",
+        "kind": "currency",
+        "owner_scope": "campaign",
+        "persistence_scope": "campaign",
+        "value_type": "integer",
+        "default": 0,
+        "minimum": 0,
+        "authority": "authoritative",
+        "source_ref": "gdd"
+      },
+      "threat": {
+        "name": "Threat",
+        "kind": "track",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "value_type": "integer",
+        "default": 0,
+        "minimum": 0,
+        "authority": "provisional",
+        "source_ref": "scenario-mvp",
+        "assumptions": [
+          "Scenario-wide Threat and its Scenario 01 thresholds are provisional executable assumptions."
+        ],
+        "maximum": 12
+      },
+      "fed": {
+        "name": "Fed",
+        "kind": "status",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "value_type": "boolean",
+        "default": false,
+        "authority": "authoritative",
+        "source_ref": "gdd"
+      },
+      "incapacitated": {
+        "name": "Incapacitated",
+        "kind": "status",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "value_type": "boolean",
+        "default": false,
+        "authority": "authoritative",
+        "source_ref": "gdd"
+      },
+      "cover": {
+        "name": "Cover",
+        "kind": "status",
+        "owner_scope": "actor",
+        "persistence_scope": "turn",
+        "value_type": "boolean",
+        "default": false,
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
+      }
+    },
+    "conditions": {
+      "target-at-zero-health": {
+        "op": "lte",
+        "left": {
+          "ref": "health",
+          "subject": {
+            "relative": "target"
+          }
+        },
+        "right": 0,
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "objective-complete": {
+        "prose": "The Ancient Relay has been activated and at least one crew member has extracted.",
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
+      },
+      "all-crew-incapacitated": {
+        "prose": "All crew are incapacitated.",
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
+      },
+      "voluntary-retreat": {
+        "op": "event",
+        "event": "crew-retreats",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "spider-can-feed": {
+        "prose": "A spider is eligible to consume a Spider Corpse at its location.",
+        "source_ref": "gdd",
+        "authority": "provisional"
+      },
+      "spider-can-pupate": {
+        "prose": "A qualifying fed spider has consumed enough corpses and escaped danger.",
+        "source_ref": "gdd",
+        "authority": "provisional"
+      },
+      "overrun-deadline-expired": {
+        "prose": "Threat has reached 12 and no crew extracted before the end of the current round.",
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
+      }
+    },
+    "effects": {
+      "spend-action": {
+        "op": "subtract",
+        "target_ref": "actions",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "value": 1
+      },
+      "become-fed": {
+        "op": "add_status",
+        "target_ref": "fed",
+        "subject": {
+          "relative": "current-actor"
+        }
+      },
+      "become-incapacitated": {
+        "op": "add_status",
+        "target_ref": "incapacitated",
+        "subject": {
+          "relative": "target"
+        }
+      },
+      "create-corpse": {
+        "op": "create",
+        "target_ref": "spider-corpse",
+        "subject": {
+          "relative": "location"
+        }
+      },
+      "take-cover-until-next-turn": {
+        "op": "add_status",
+        "target_ref": "cover",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "timing": {
+          "apply": "immediate",
+          "expires_at": {
+            "scope": "turn",
+            "boundary": "start",
+            "occurrence": "next",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        },
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
+      },
+      "security-training-next-attack": {
+        "prose": "Apply the Security Training modifier to this actor's next Attack this turn.",
+        "timing": {
+          "apply": "immediate",
+          "expires_at": {
+            "scope": "turn",
+            "boundary": "end",
+            "occurrence": "current",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          "usage": {
+            "count": 1,
+            "mode": "next",
+            "period": {
+              "scope": "turn",
+              "subject": {
+                "relative": "current-actor"
+              }
+            },
+            "consume_on": "resolve",
+            "match": {
+              "action_ref": "attack"
+            }
+          }
+        },
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
+      },
+      "pupate": {
+        "op": "transform",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "transformation": {
+          "subject": {
+            "relative": "current-actor"
+          },
+          "replacement_object_ref": "chrysalis",
+          "consume": [
+            {
+              "subject": {
+                "relative": "location"
+              },
+              "object_ref": "spider-corpse",
+              "quantity": 1
+            }
+          ],
+          "placement": {
+            "mode": "same-location"
+          },
+          "identity_policy": "new-instance-id",
+          "state_transfer": {
+            "mode": "none"
+          },
+          "relationship_transfer": "none",
+          "cause_ref": "spider-can-pupate",
+          "event": "spider-pupated"
+        },
+        "authority": "provisional",
+        "source_ref": "gdd"
+      },
+      "hatch-next-end-phase": {
+        "op": "transform",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "timing": {
+          "apply": "scheduled",
+          "at": {
+            "scope": "phase",
+            "boundary": "end",
+            "ref": "end-of-turn",
+            "occurrence": "next"
+          }
+        },
+        "transformation": {
+          "subject": {
+            "relative": "current-actor"
+          },
+          "replacement_entity_ref": "gdd:next-spider-stage",
+          "placement": {
+            "mode": "same-location"
+          },
+          "identity_policy": "new-instance-id",
+          "state_transfer": {
+            "mode": "none"
+          },
+          "relationship_transfer": "none",
+          "event": "chrysalis-hatched"
+        },
+        "authority": "provisional",
+        "source_ref": "gdd"
+      },
+      "emit-retreat": {
+        "op": "emit",
+        "event": "crew-retreats"
+      },
+      "apply-weapon-noise": {
+        "prose": "After a noisy attack, add the weapon's Noise value to scenario Threat. If an unrevealed adjacent room exists, reveal its encounter.",
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
+      }
+    },
+    "actions": {
+      "move": {
+        "name": "Move",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Move horizontally or vertically between connected spaces; terrain may modify movement.",
+            "source_ref": "gdd",
+            "authority": "authoritative"
+          }
+        ]
+      },
+      "attack": {
+        "name": "Attack",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "procedure_ref": "attack-resolution",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "search": {
+        "name": "Search",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Reveal and resolve the searchable contents of the current location.",
+            "source_ref": "gdd",
+            "authority": "authoritative"
+          }
+        ]
+      },
+      "interact": {
+        "name": "Interact",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Interact with a valid object, device, terminal, clue, corpse, door, or machinery.",
+            "source_ref": "gdd",
+            "authority": "authoritative"
+          }
+        ]
+      },
+      "assist": {
+        "name": "Assist",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Help another crew member according to the selected assist effect.",
+            "source_ref": "gdd",
+            "authority": "authoritative"
+          }
+        ]
+      },
+      "recover": {
+        "name": "Recover",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Resolve one allowed temporary recovery effect; full healing generally requires a Medic or Ship Phase.",
+            "source_ref": "gdd",
+            "authority": "authoritative"
+          }
+        ]
+      }
+    },
+    "procedures": {
+      "attack-resolution": {
+        "name": "Attack resolution",
+        "scope": "turn",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Choose target."
+          },
+          {
+            "kind": "prose",
+            "prose": "Determine range."
+          },
+          {
+            "kind": "prose",
+            "prose": "Calculate attack value."
+          },
+          {
+            "kind": "prose",
+            "prose": "Apply enemy defenses and resistances."
+          },
+          {
+            "kind": "prose",
+            "prose": "Deal damage."
+          },
+          {
+            "kind": "prose",
+            "prose": "Resolve special effects."
+          },
+          {
+            "kind": "condition",
+            "ref": "target-at-zero-health"
+          }
+        ]
+      },
+      "enemy-activation": {
+        "name": "Enemy activation",
+        "scope": "turn",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Detect."
+          },
+          {
+            "kind": "prose",
+            "prose": "Move."
+          },
+          {
+            "kind": "prose",
+            "prose": "Act."
+          }
+        ]
+      },
+      "end-turn-checks": {
+        "name": "End-of-turn checks",
+        "scope": "turn",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Resolve temporary effects and status conditions."
+          },
+          {
+            "kind": "prose",
+            "prose": "Resolve enemy corpses, spider feeding, and environmental effects."
+          },
+          {
+            "kind": "prose",
+            "prose": "Resolve noise, threat, and scenario objectives."
+          },
+          {
+            "kind": "prose",
+            "prose": "Advance the turn counter."
+          }
+        ]
+      },
+      "expedition-turn": {
+        "name": "Expedition turn",
+        "scope": "turn",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "phase",
+            "ref": "ready"
+          },
+          {
+            "kind": "phase",
+            "ref": "crew-action"
+          },
+          {
+            "kind": "phase",
+            "ref": "encounter-environment"
+          },
+          {
+            "kind": "phase",
+            "ref": "enemy"
+          },
+          {
+            "kind": "phase",
+            "ref": "end-of-turn"
+          }
+        ]
+      },
+      "campaign-loop": {
+        "name": "Campaign progression loop",
+        "scope": "campaign",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Select a destination."
+          },
+          {
+            "kind": "prose",
+            "prose": "Explore the region."
+          },
+          {
+            "kind": "prose",
+            "prose": "Gain resources and information."
+          },
+          {
+            "kind": "choice",
+            "options": [
+              {
+                "kind": "prose",
+                "prose": "Return after completing the objective."
+              },
+              {
+                "kind": "prose",
+                "prose": "Retreat."
+              }
+            ]
+          },
+          {
+            "kind": "prose",
+            "prose": "Upgrade and reorganize at the ship."
+          },
+          {
+            "kind": "prose",
+            "prose": "Unlock new regions and threats."
+          }
+        ]
+      },
+      "generate-cave-topology": {
+        "name": "Generate Scenario 01 cave topology",
+        "scope": "scenario",
+        "source_ref": "scenario-mvp",
+        "authority": "provisional",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Place Cave Mouth as the first materialized node."
+          },
+          {
+            "kind": "prose",
+            "prose": "Shuffle the remaining room components."
+          },
+          {
+            "kind": "prose",
+            "prose": "Constrain Ancient Relay to the bottom three rooms."
+          },
+          {
+            "kind": "prose",
+            "prose": "During exploration, reveal a room, assign its stable node ID, and materialize its connecting edge."
+          }
+        ]
+      }
+    },
+    "phases": {
+      "ready": {
+        "name": "Ready",
+        "scope": "turn",
+        "next_phase_ref": "crew-action",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "crew-action": {
+        "name": "Crew Action",
+        "scope": "turn",
+        "action_refs": [
+          "move",
+          "attack",
+          "search",
+          "interact",
+          "assist",
+          "recover"
+        ],
+        "next_phase_ref": "encounter-environment",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "encounter-environment": {
+        "name": "Encounter / Environment",
+        "scope": "turn",
+        "next_phase_ref": "enemy",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "enemy": {
+        "name": "Enemy",
+        "scope": "turn",
+        "procedure_ref": "enemy-activation",
+        "next_phase_ref": "end-of-turn",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "end-of-turn": {
+        "name": "End of Turn",
+        "scope": "turn",
+        "procedure_ref": "end-turn-checks",
+        "next_phase_ref": "ready",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "ship": {
+        "name": "Ship Phase",
+        "scope": "campaign",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      },
+      "expedition": {
+        "name": "Expedition Phase",
+        "scope": "campaign",
+        "procedure_ref": "expedition-turn",
+        "source_ref": "gdd",
+        "authority": "authoritative"
+      }
+    },
+    "ai_profiles": {
+      "small-spider": {
+        "name": "Small Spider",
+        "activation_procedure_ref": "enemy-activation",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "priorities": [
+          {
+            "condition": {
+              "prose": "A corpse is reachable."
+            },
+            "fallback_prose": "Move toward the corpse and feed if possible."
+          },
+          {
+            "condition": {
+              "prose": "The spider is threatened."
+            },
+            "fallback_prose": "Attack."
+          },
+          {
+            "condition": {
+              "prose": "The spider is injured."
+            },
+            "fallback_prose": "Attempt to flee."
+          }
+        ]
+      },
+      "large-spider": {
+        "name": "Large Spider",
+        "activation_procedure_ref": "enemy-activation",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "priorities": [
+          {
+            "condition": {
+              "prose": "An injured crew target is reachable."
+            },
+            "fallback_prose": "Pursue the injured target."
+          },
+          {
+            "condition": "spider-can-feed",
+            "effect_ref": "become-fed"
+          },
+          {
+            "condition": {
+              "prose": "A crew target is detectable."
+            },
+            "fallback_prose": "Hunt the crew target."
+          }
+        ]
+      },
+      "alpha-spider": {
+        "name": "Alpha Spider",
+        "activation_procedure_ref": "enemy-activation",
+        "source_ref": "gdd",
+        "authority": "authoritative",
+        "priorities": [
+          {
+            "condition": {
+              "prose": "Anything attackable is nearby."
+            },
+            "fallback_prose": "Pursue and attack; do not retreat."
+          }
+        ]
+      }
+    }
+  },
+  "topologies": {
+    "the-cave-unresolved": {
+      "name": "The Cave unresolved topology",
+      "resolution": "unresolved",
+      "generation_procedure_ref": "generate-cave-topology",
+      "component_pool": [
+        {
+          "object_ref": "cave-room",
+          "quantity": 10,
+          "tags": [
+            "room"
+          ],
+          "constraints": [
+            "Cave Mouth is first.",
+            "Ancient Relay is among the final three room cards."
+          ]
+        }
+      ],
+      "constraints": [
+        "Rooms materialize only when placed or revealed."
+      ],
+      "hidden_state_policy": "Unrevealed pool order is neutral runtime state.",
+      "id_policy": "stable-recorded",
+      "source_ref": "scenario-mvp",
+      "authority": "provisional"
+    }
+  },
+  "scenarios": {
+    "scenario-01": {
+      "name": "Scenario 01: The Cave",
+      "scene_ref": "scenario-01-the-cave",
+      "topology_ref": "the-cave-unresolved",
+      "players": {
+        "min": 1,
+        "max": 4
+      },
+      "action_refs": [
+        "move",
+        "attack",
+        "search",
+        "interact",
+        "assist",
+        "recover"
+      ],
+      "turn_procedure_ref": "expedition-turn",
+      "initial_state": [
+        {
+          "ref": "actions",
+          "subject": {
+            "relative": "current-actor"
+          },
+          "value": 3,
+          "authority": "authoritative"
+        },
+        {
+          "ref": "ammunition",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 8,
+          "authority": "provisional"
+        },
+        {
+          "ref": "threat",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": 0,
+          "authority": "provisional"
+        }
+      ],
+      "objectives": [
+        {
+          "id": "complete-objective",
+          "name": "Reach the objective and extract",
+          "completion": "objective-complete"
+        }
+      ],
+      "end_conditions": [
+        {
+          "id": "victory",
+          "outcome": "win",
+          "condition": "objective-complete",
+          "priority": 10
+        },
+        {
+          "id": "retreat",
+          "outcome": "retreat",
+          "condition": "voluntary-retreat",
+          "priority": 20
+        },
+        {
+          "id": "crew-defeat",
+          "outcome": "loss",
+          "condition": "all-crew-incapacitated",
+          "priority": 30
+        },
+        {
+          "id": "overrun",
+          "outcome": "loss",
+          "condition": "overrun-deadline-expired",
+          "priority": 40
+        }
+      ],
+      "target_duration_minutes": {
+        "min": 30,
+        "max": 60
+      },
+      "source_ref": "scenario-mvp",
+      "authority": "provisional",
+      "assumptions": [
+        "The sidecar identifies Scenario 01 goals but the executable MVP remains provisional."
+      ]
+    }
+  },
+  "campaigns": {
+    "plateau-of-leng": {
+      "name": "Plateau of Leng campaign",
+      "persistent_refs": [
+        "scrap"
+      ],
+      "phase_refs": [
+        "ship",
+        "expedition"
+      ],
+      "progression_procedure_ref": "campaign-loop",
+      "locations": [
+        {
+          "id": "crashed-ship",
+          "name": "Crashed Ship"
+        },
+        {
+          "id": "caves",
+          "name": "Caves",
+          "scenario_refs": [
+            "scenario-01"
+          ]
+        },
+        {
+          "id": "black-pyramid",
+          "name": "Black Pyramid"
+        }
+      ],
+      "source_ref": "gdd",
+      "authority": "provisional",
+      "assumptions": [
+        "Only representative regions are included; exact unlock rules and campaign-loss conditions remain unresolved."
+      ]
+    }
+  },
+  "metadata": {
+    "status": "working-draft-adoption",
+    "dodge_spec_source": "jmbjr/DODGE/draft/v0.2.1",
+    "review_status": "Issue #21 acceptance criteria satisfied; revalidate against official/v0.2.1 before declaring official conformance.",
+    "limitations": [
+      "Prose-only conditions/effects/procedures are preserved where Scenario 01 semantics are not yet formally executable.",
+      "Physical supply quantities for corpse/chrysalis tokens remain unresolved and are not invented here.",
+      "Medic starter deck quantity inconsistency remains unresolved in Scenario 01 canonical data."
+    ],
+    "not_promoted": [
+      "design pillars",
+      "inspirations",
+      "candidate mechanics",
+      "open design questions"
+    ]
+  }
+}

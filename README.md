@@ -4,7 +4,7 @@ Lovecraftian survival-horror prototype built around **survival through transform
 
 ## DODGE architecture — firm requirement
 
-This repository must remain compliant with the **official DODGE specification**. Wretched Demesne currently targets **DODGE 0.2.0** via `game/wretched-demesne.dodge.v0.2.json`; older DODGE documents are retained for history/traceability.
+This repository must remain compliant with the **official DODGE specification**. Wretched Demesne currently adopts **DODGE 0.2.1** via `game/wretched-demesne.dodge.v0.2.1.json`. The governing 0.2.1 specification is still under `jmbjr/DODGE/draft/v0.2.1`, so this is a working adoption and must be revalidated when 0.2.1 is promoted to `official/`. Older DODGE documents are retained for history/traceability.
 
 Canonical game facts may remain in referenced sources as DODGE permits. DODGE governs scene composition and resolved component inventory. Targets are adapters/renderers, never independent game definitions:
 

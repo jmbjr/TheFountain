@@ -200,3 +200,24 @@ This establishes an ongoing project rule: **Wretched Demesne and its Web/PnP/TTS
 **Milestone:** DODGE conformance is now a maintained project constraint.
 
 PR: https://github.com/jmbjr/TheFountain/pull/12
+
+
+---
+
+## Wretched adopts DODGE 0.2.1 as the working rules model
+
+### PR #14 — Adopt DODGE 0.2.1 for Wretched Demesne
+
+**Opened September 28, 2026.**
+
+After using Scenario 01 to pressure-test the DODGE 0.2.1 draft, we identified four requirements for Wretched adoption: deterministic timing/effect lifetime, explicit subject/resource ownership, atomic transformation semantics, and a clear boundary between unresolved topology generation and materialized runtime topology. Those requirements were captured in DODGE issue #21 and incorporated into the 0.2.1 draft.
+
+PR #14 moves Wretched onto that model. The active working document is now `game/wretched-demesne.dodge.v0.2.1.json`, with representative rules/resources, timing, ownership, spider transformation, topology, Scenario 01 and campaign semantics promoted out of the generic sidecar boundary. Scenario 01 now points to the 0.2.1 document as its DODGE authority, while older DODGE documents remain for traceability.
+
+The governing DODGE specification is still under `draft/v0.2.1`, so this milestone is deliberately a **working adoption**, not a claim of official 0.2.1 conformance. When DODGE publishes `official/v0.2.1/`, Wretched must revalidate the document, semantic rules, resolver and exporters against that exact revision.
+
+No unresolved design question was silently answered during the migration: prose-only semantics remain non-executable, physical corpse/chrysalis supply quantities remain unresolved, and the provisional Medic deck-size inconsistency remains a Wretched data issue.
+
+**Milestone:** DODGE becomes the intended neutral rules/state/topology model for Scenario 01, not only its component-inventory contract.
+
+PR: https://github.com/jmbjr/TheFountain/pull/14

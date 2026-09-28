@@ -5,7 +5,7 @@
   "status": "prototype",
   "authority": {
     "gdd": "game/wretched-demesne.gdd.sidecar.v0.1.json",
-    "dodge": "game/wretched-demesne.dodge.v0.1.json"
+    "dodge": "game/wretched-demesne.dodge.v0.2.1.json"
   },
   "artifact_note": {
     "target": "A complete, tunable Scenario 01 dataset shared unchanged by GitHub Pages, PnP PDF, and Tabletop Simulator exporters.",

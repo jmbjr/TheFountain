@@ -4,13 +4,13 @@ This is a lightweight view of where the project is going. It is **not a commitme
 
 ## Next MVP — playable Wretched Demesne vertical slice
 
-**MVP target:** Scenario 01: *The Cave* is playable from the same canonical data on GitHub Pages, as a Print-and-Play PDF, and in Tabletop Simulator, while remaining compliant with the current official DODGE specification (currently 0.2.0).
+**MVP target:** Scenario 01: *The Cave* is playable from the same canonical data on GitHub Pages, as a Print-and-Play PDF, and in Tabletop Simulator, while remaining compliant with the current DODGE working target (0.2.1; draft pending official promotion).
 
-1. **Shared runtime/model** — resolve the DODGE 0.2.0 Wretched scene + declared sidecar + Scenario 01 data into one playable model and deterministic component inventory. Implement the core turn/action, exploration, combat, search, Noise/Threat, enemy AI, spider ecosystem, retreat and extraction loop.
+1. **Shared runtime/model** — resolve the DODGE 0.2.1 Wretched scene + declared sidecar + Scenario 01 data into one playable model and deterministic component inventory. Implement the core turn/action, exploration, combat, search, Noise/Threat, enemy AI, spider ecosystem, retreat and extraction loop.
 2. **Playable GitHub Pages version** — build the browser UI around that shared model and make Scenario 01 playable end-to-end.
 3. **PnP PDF exporter** — generate the cards, crew sheets, enemies, rooms, tokens and reference material needed to play the same scenario physically.
 4. **TTS exporter/package** — generate the corresponding TTS objects/assets/save and package them as a usable ZIP.
-5. **Unified build + GitHub Actions** — validate official DODGE schema + semantic conformance once, build all three targets from the same revision, deploy Pages, publish PnP/TTS artifacts, record source/build hashes, and automate cache-busting.
+5. **Unified build + GitHub Actions** — validate the adopted DODGE 0.2.1 schema + semantic conformance once, then revalidate against the official copy on promotion, build all three targets from the same revision, deploy Pages, publish PnP/TTS artifacts, record source/build hashes, and automate cache-busting.
 6. **MVP playtest and tuning** — test all three forms, fix usability/rules gaps, and tune provisional values in canonical data rather than in individual renderers.
 
 ## After the MVP
