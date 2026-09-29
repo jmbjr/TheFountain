@@ -1,0 +1,34 @@
+{
+  "contract_version": "0.2.1",
+  "dodge_version": "0.2.1",
+  "target": "pnp",
+  "accepts": {
+    "object_kinds": [
+      "token",
+      "collection"
+    ],
+    "component_forms": [
+      "card",
+      "token",
+      "tile",
+      "reference_sheet",
+      "tracker"
+    ],
+    "representation_kinds": [
+      "unit_tokens",
+      "numbered_track",
+      "marker_track"
+    ],
+    "rule_features": [
+      "values",
+      "resources",
+      "ownership_bindings"
+    ]
+  },
+  "representation_selections": [
+    {
+      "state_ref": "health",
+      "representation_ref": "health-crew-card-marker"
+    }
+  ]
+}
