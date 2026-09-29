@@ -21,7 +21,7 @@ parser=argparse.ArgumentParser()
 parser.add_argument("--git-sha",default="local")
 args=parser.parse_args()
 CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
-OUT=ROOT/"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf"
+SHORT_SHA=args.git_sha[:12] if args.git_sha!="local" else "local"\nOUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"
 
 dodge=json.loads(DODGE_PATH.read_text())
 if dodge.get("dodge_version")!="0.2.1":
