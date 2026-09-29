@@ -2,6 +2,7 @@ import {WretchedEngine} from "../wretched/engine.js?v=20260929-replay-1";
 import {loadWretchedMvp} from "../wretched/model.js?v=20260929-replay-1";
 import {createSeededRng} from "../wretched/random.js?v=20260929-replay-1";
 import {ReplayRecorder,runReplay} from "../wretched/replay.js?v=20260929-replay-1";
+import {buildTopologyView} from "../wretched/topology-view.js?v=20260929-topology-1";
 const $=s=>document.querySelector(s); let data,game,recorder,currentSeed;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 try{data=await loadWretchedMvp("../../game/wretched-demesne.scenario-01.mvp.v0.1.json?build=20260929-replay-1");boot()}catch(e){$("#setup").hidden=true;$("#fatal").hidden=false;$("#fatal").innerHTML=`<h2>Unable to open the expedition</h2><p>${esc(e.message)}</p>`}
@@ -22,7 +23,11 @@ function render(){
  $("#hand").innerHTML="";s.hand.forEach((id,i)=>{const card=game.card(id),b=document.createElement("button");b.className="wd-card";b.innerHTML=`<small>${esc(card.type)}</small><strong>${esc(card.name)}</strong><span>${esc(card.text)}</span>${card.attack?`<i>ATK ${card.attack} · RNG ${card.range} · AMMO ${card.ammo} · NOISE ${card.noise}</i>`:""}`;b.disabled=s.actions<1||s.status!=="playing";b.onclick=()=>act({type:"play-card",handIndex:i,enemyIndex:0});$("#hand").append(b)});
  const es=$("#enemies");es.innerHTML=s.enemies.length?s.enemies.map((e,i)=>`<div class="wd-enemy"><div><strong>${esc(e.name)}</strong><span>${esc(game.room(e.room)?.name||e.room)} · HP ${e.health} · ATK ${e.attack} · DEF ${e.defense}${e.fed?" · FED":""}</span></div><button data-enemy="${i}" ${s.actions<1||s.ammo<1?"disabled":""}>Fire Sidearm</button></div>`).join(""):"<p class='quiet'>No hostiles visible.</p>";
  es.querySelectorAll("[data-enemy]").forEach(b=>b.onclick=()=>act({type:"attack",enemyIndex:+b.dataset.enemy,cardId:"sidearm"}));
- $("#rooms").innerHTML=s.rooms.map(id=>`<span class="wd-room ${id===s.crew.room?"here":""}">${esc(game.room(id).name)}${s.corpses[id]?` <b>☠×${s.corpses[id]}</b>`:""}${s.chrysalises.some(c=>c.room===id)?" ◉":""}</span>`).join("<span class='arrow'>↔</span>");
+ const topology=buildTopologyView(s),nodeById=new Map(topology.nodes.map(n=>[n.id,n]));
+ $("#rooms").innerHTML=topology.edges.map(({from,to})=>{
+   const roomLabel=id=>{const n=nodeById.get(id);return `<span class="wd-room ${n.current?"here":""}">${esc(game.room(id).name)}${n.enemies?` 👾×${n.enemies}`:""}${n.corpses?` <b>☠×${n.corpses}</b>`:""}${n.chrysalis?" ◉":""}</span>`};
+   return `<div class="wd-edge">${roomLabel(from)}<span class="arrow">↔</span>${roomLabel(to)}</div>`;
+ }).join("")||topology.nodes.map(n=>`<span class="wd-room ${n.current?"here":""}">${esc(game.room(n.id).name)}</span>`).join("");
  $("#log").innerHTML=s.log.slice(0,10).map(x=>`<p>${esc(x)}</p>`).join("");
  $("#statusBanner").className="wd-banner "+s.status;$("#statusBanner").textContent=s.status==="playing"?`${s.crew.name} · ${s.relayActive?"RELAY ACTIVE — RETURN TO CAVE MOUTH":"EXPEDITION ACTIVE"}`:s.status==="won"?"SCENARIO COMPLETE":s.status==="retreated"?"EXPEDITION RETREATED":"EXPEDITION LOST";
  $("#endTurn").disabled=s.status!=="playing";document.querySelectorAll("#play button:not(#restart):not(#exportReplay)").forEach(b=>{if(s.status!=="playing")b.disabled=true});
