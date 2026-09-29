@@ -71,9 +71,14 @@
       ],
       "component": {
         "form": "card",
-        "size_class": "standard-card",
+        "size_class": "poker",
         "shape": "rectangle",
-        "two_sided": true
+        "two_sided": true,
+        "dimensions": {
+          "unit": "in",
+          "width": 2.5,
+          "height": 3.5
+        }
       }
     },
     "deck": {
