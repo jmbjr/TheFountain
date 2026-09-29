@@ -310,3 +310,66 @@ The unified Beta release made the TTS ZIP the reviewer-facing artifact, which ma
 A copy of that metadata now travels inside every TTS ZIP as `manifest.json`, including the manifest format version, DODGE version, full source Git SHA, ZIP artifact name and TTS save name. This keeps a downloaded package traceable even after it has been separated from GitHub Pages.
 
 **Milestone:** TTS review packages are self-identifying without exposing build plumbing in the player-facing UI.
+
+
+---
+
+## Wretched Beta becomes a deterministic playtest laboratory
+
+### PRs #34–#35 — Connected-room navigation and topology-aware enemy movement
+
+**Merged September 29, 2026.**
+
+The first Design Lead Beta feedback exposed a fundamental navigation gap: the crew could explore forward, but the browser did not provide a trustworthy way to traverse the cave back through already discovered rooms and ultimately return to the Cave Mouth after activating the Relay.
+
+PR #34 made discovered-room connectivity explicit shared runtime state. Exploration now creates bidirectional edges, movement is restricted to connected discovered rooms, and the objective loop can legitimately return through the cave to extraction. PR #35 then moved enemy navigation onto the same graph: enemy movement uses shortest paths over materialized cave connections rather than target-specific or implicit room order.
+
+A successful Beta playthrough subsequently reached the Relay, returned to Cave Mouth, extracted, and completed Scenario 01. That playtest demonstrated that the repaired navigation/extraction loop is achievable; it was not treated as proof that every Scenario 01 rule was already correct.
+
+**Milestone:** crew movement, enemy pathfinding and extraction now share one explicit runtime topology.
+
+PRs: https://github.com/jmbjr/TheFountain/pull/34 and https://github.com/jmbjr/TheFountain/pull/35
+
+### PR #37 — Seeded deterministic replay
+
+**Merged September 29, 2026.**
+
+Manual playtests were becoming valuable enough that reproducing a strange run by memory was no longer acceptable. Wretched therefore gained an explicit seeded random stream and a semantic action-dispatch boundary.
+
+The `wretched-replay.v1` format records a seed, crew and ordered actions, with optional exact state after each action. A fresh runtime can execute the file from the beginning and stop at the first rejected/nonsensical action or exact-state mismatch. This turns a playthrough into a repeatable regression case rather than a one-off anecdote.
+
+**Milestone:** Wretched playtests can be deterministic, replayable and state-verifiable.
+
+PR: https://github.com/jmbjr/TheFountain/pull/37
+
+### PR #38 — Beta records and replays its own tests
+
+**Merged September 29, 2026.**
+
+The deterministic harness became part of the normal Beta play surface. A player can choose a visible test seed, play normally through semantic recorded actions, export the session as JSON, and later load that file into a fresh game for exact replay/state verification.
+
+This closes the loop between human exploratory testing and automated regression evidence: interesting manual sessions can be preserved immediately without hand-authoring a test script.
+
+**Milestone:** the Beta browser is now both a playable implementation and a deterministic test-case recorder.
+
+PR: https://github.com/jmbjr/TheFountain/pull/38
+
+### Replay discovery — the entrance-branch topology hack
+
+A recorded `quick-test-001` playthrough appeared at first to reveal a serious navigation bug: after deep exploration and backtracking, Whispering Dead End seemed to jump directly back to Cave Mouth.
+
+The replay showed something more interesting. The player had walked all the way back to Cave Mouth and then selected **Explore**. Under the current topology rules, exploration attaches the newly revealed room to the crew's current room. The runtime therefore legitimately created a second branch directly from Cave Mouth. The apparent teleport was legal graph movement.
+
+The confusing part was the UI: **Discovered Path** rendered rooms in discovery order with arrows between them, falsely presenting that ordering as connectivity. The incident was preserved under `bugs/001-entrance-branch-topology-hack.md` because it is simultaneously a useful regression case, a visualization defect, and an example of emergent topology strategy that may deserve design review.
+
+### PR #42 — Render the cave graph rather than discovery order
+
+**Merged September 29, 2026.**
+
+Issue #39 corrected the misleading map exposed by the replay. Beta now derives its topology display from the runtime `state.connections` graph. Every displayed edge is a real connection; branches are explicit; the current room remains identifiable; and enemy, corpse and chrysalis annotations remain available.
+
+Regression coverage preserves the exact branched shape that exposed the problem: Cave Mouth may connect independently to Bone Pit and Whispering Dead End without inventing an edge between those branch rooms.
+
+**Milestone:** the Beta map now reports the same topology that movement and enemy pathfinding actually use.
+
+PR: https://github.com/jmbjr/TheFountain/pull/42
