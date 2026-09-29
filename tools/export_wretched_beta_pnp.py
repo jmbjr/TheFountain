@@ -18,10 +18,10 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 ROOT=pathlib.Path(__file__).parents[1]
 DODGE_PATH=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
 parser=argparse.ArgumentParser()
-parser.add_argument("--health-representation",choices=["tokens","track","crew-card"],default="crew-card")
+parser.add_argument("--git-sha",default="local")
 args=parser.parse_args()
-CONTRACT_PATH=ROOT/f"game/export-contracts/wretched-beta-pnp-health-{args.health_representation}.dodge-export.json"
-OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-health-{args.health_representation}.pdf"
+CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
+OUT=ROOT/"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf"
 
 dodge=json.loads(DODGE_PATH.read_text())
 if dodge.get("dodge_version")!="0.2.1":
@@ -29,10 +29,12 @@ if dodge.get("dodge_version")!="0.2.1":
 src=dodge["sources"]["scenario-mvp"]["uri"].split("#",1)[0]
 data=json.loads((ROOT/src).read_text())
 contract=json.loads(CONTRACT_PATH.read_text())
-selection=next((x for x in contract["representation_selections"] if x["state_ref"]=="health"),None)
-if not selection: raise SystemExit("PnP contract must select a Health representation")
-health_rep=dodge["representations"][selection["representation_ref"]]
-if health_rep["state_ref"]!="health": raise SystemExit("Selected Health representation does not bind Health")
+inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
+if not inclusion or inclusion["mode"]!="alternatives":
+    raise SystemExit("Beta PnP contract must bundle Health alternatives")
+health_reps=[dodge["representations"][ref] for ref in inclusion["representation_refs"]]
+if any(rep["state_ref"]!="health" for rep in health_reps):
+    raise SystemExit("All bundled Health representations must bind Health")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
 UNIT_TO_IN={"in":1.0,"mm":1/25.4,"cm":1/2.54,"pt":1/72}
