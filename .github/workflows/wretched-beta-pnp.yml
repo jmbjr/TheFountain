@@ -1,16 +1,14 @@
-name: Build Wretched Beta PnP
+name: Build Wretched Beta Release
 
 on:
   push:
     branches:
       - main
-    paths:
-      - "game/wretched-demesne.dodge.v0.2.1.json"
-      - "game/wretched-demesne.scenario-01.mvp.v0.1.json"
-      - "game/export-contracts/**"
-      - "tools/export_wretched_beta_pnp.py"
-      - ".github/workflows/wretched-beta-pnp.yml"
-      - "wretched-demesne/beta/index.html"
+    paths-ignore:
+      - "wretched-demesne/beta/downloads/**"
+      - "wretched-demesne/beta/tts/assets/**"
+      - "wretched-demesne/beta/build.json"
+      - "wretched-demesne/beta/tts-build.json"
   workflow_dispatch:
 
 permissions:
@@ -22,46 +20,48 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - run: pip install reportlab pillow
 
-      - run: pip install reportlab
-
-      - name: Compile PnP exporter
-        run: python -m py_compile tools/export_wretched_beta_pnp.py
-
-      - name: Verify exporter uses explicit frame
+      - name: Validate exporters and PnP geometry
         run: |
+          python -m py_compile tools/export_wretched_beta_pnp.py tools/export_wretched_beta_tts.py
           grep -q 'doc=BaseDocTemplate' tools/export_wretched_beta_pnp.py
           grep -q 'topPadding=0,bottomPadding=0' tools/export_wretched_beta_pnp.py
           if grep -q 'doc=SimpleDocTemplate' tools/export_wretched_beta_pnp.py; then exit 1; fi
+          python -c "from reportlab.lib.pagesizes import letter; from reportlab.lib.units import mm,inch; s=3*88*mm; f=letter[1]-2*.20*inch; assert s <= f"
 
-      - name: Verify exact 3x3 card geometry
-        run: python -c "from reportlab.lib.pagesizes import letter; from reportlab.lib.units import mm,inch; s=3*88*mm; f=letter[1]-2*.20*inch; assert s <= f; print(f'3x3 sheet {s:.2f} pt fits explicit frame {f:.2f} pt')"
-
-      - name: Stamp Beta page and build PDF
+      - name: Build matching PnP and TTS artifacts
         shell: bash
         run: |
           SHORT_SHA="${GITHUB_SHA::12}"
+          python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+          python tools/export_wretched_beta_tts.py --git-sha "$GITHUB_SHA"
+          TTS_JSON="wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.json"
+          TTS_ZIP="wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip"
+          STAGE="$(mktemp -d)"
+          mkdir -p "$STAGE/assets"
+          cp "wretched-demesne/beta/downloads/$TTS_JSON" "$STAGE/"
+          cp -R "wretched-demesne/beta/tts/assets/${SHORT_SHA}/." "$STAGE/assets/"
+          (cd "$STAGE" && zip -qr "$GITHUB_WORKSPACE/wretched-demesne/beta/downloads/$TTS_ZIP" .)
+          printf '{"git_sha":"%s","artifact":"%s","save":"%s"}\n' "$GITHUB_SHA" "$TTS_ZIP" "$TTS_JSON" > wretched-demesne/beta/tts-build.json
+          printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
           sed -i -E "s|(<code id=\"git-build\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
-          python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+          sed -i -E "s|wretched-demesne-scenario-01-beta-tts-[^\"]*\.zip|wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip|" wretched-demesne/beta/index.html
 
-      - name: Stamp deployed source revision
-        shell: bash
-        run: |
-          printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
-
-      - name: Commit generated Beta artifacts
+      - name: Commit generated Beta release
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wretched-demesne/beta/index.html
-          git add wretched-demesne/beta/build.json
+          git add wretched-demesne/beta/index.html wretched-demesne/beta/build.json wretched-demesne/beta/tts-build.json
+          git add wretched-demesne/beta/tts/
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-*.pdf
+          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-tts-*.json
+          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-tts-*.zip
           git diff --cached --quiet && exit 0
-          git commit -m "Build Wretched beta PnP PDF"
+          git commit -m "Build Wretched beta release"
           git push
