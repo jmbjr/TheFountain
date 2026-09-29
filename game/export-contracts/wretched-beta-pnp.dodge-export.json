@@ -1,0 +1,64 @@
+{
+  "contract_version": "0.2.1",
+  "contract_id": "wd-beta-pnp",
+  "target": "pnp",
+  "accepts": {
+    "dodge_versions": [
+      "0.2.1"
+    ],
+    "object_kinds": [
+      "token",
+      "collection"
+    ],
+    "component_forms": [
+      "card",
+      "token",
+      "tile",
+      "reference_sheet",
+      "tracker"
+    ],
+    "representation_kinds": [
+      "unit_tokens",
+      "numbered_track",
+      "marker_track"
+    ],
+    "representation_modes": [
+      "alternatives"
+    ],
+    "rule_features": [
+      "values",
+      "resources",
+      "ownership_bindings"
+    ],
+    "allows_prose_rules": true,
+    "limitations": [
+      "Beta prototype artifact; representation alternatives are included for evaluation and are not simultaneous gameplay views."
+    ]
+  },
+  "maps": [],
+  "adds": [],
+  "outputs": [
+    "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf"
+  ],
+  "forbidden_in_dodge": [
+    "PDF page coordinates",
+    "PDF typography",
+    "cut-guide placement"
+  ],
+  "representation_inclusions": [
+    {
+      "state_ref": "health",
+      "mode": "alternatives",
+      "representation_refs": [
+        "health-unit-tokens",
+        "health-numbered-track",
+        "health-crew-card-marker"
+      ],
+      "notes": "Include all configured Health alternatives once in the same Beta PnP packet for comparison."
+    }
+  ],
+  "manifest_identity_fields": [
+    "git_sha",
+    "dodge_document_id"
+  ]
+}
