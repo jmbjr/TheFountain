@@ -131,6 +131,64 @@
         "shape": "rectangle",
         "two_sided": false
       }
+    },
+    "health-track": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        }
+      ],
+      "component": {
+        "form": "tracker",
+        "size_class": "health-track",
+        "shape": "rectangle",
+        "dimensions": {
+          "unit": "mm",
+          "width": 50,
+          "height": 100
+        }
+      }
+    },
+    "crew-reference-card": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "reference"
+        }
+      ],
+      "component": {
+        "form": "reference_sheet",
+        "size_class": "poker",
+        "shape": "rectangle",
+        "dimensions": {
+          "unit": "in",
+          "width": 2.5,
+          "height": 3.5
+        }
+      }
+    },
+    "cube-marker": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        }
+      ],
+      "component": {
+        "form": "token",
+        "size_class": "marker-cube",
+        "shape": "rectangle",
+        "dimensions": {
+          "unit": "mm",
+          "width": 8,
+          "height": 8,
+          "thickness": 8
+        }
+      }
     }
   },
   "objects": {
@@ -248,6 +306,75 @@
           "slot": "reference",
           "content_ref": "gdd"
         }
+      ]
+    },
+    "health-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Health Token",
+      "component": {
+        "form": "token",
+        "size_class": "health-token",
+        "shape": "circle",
+        "dimensions": {
+          "unit": "mm",
+          "diameter": 18
+        }
+      },
+      "faces": [
+        {
+          "slot": "front",
+          "text": "HEALTH"
+        }
+      ],
+      "tags": [
+        "representation",
+        "health"
+      ]
+    },
+    "health-numbered-track": {
+      "kind": "token",
+      "archetype_ref": "health-track",
+      "name": "Numbered Health Track",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "HEALTH"
+        }
+      ],
+      "tags": [
+        "representation",
+        "health"
+      ]
+    },
+    "health-marker": {
+      "kind": "token",
+      "archetype_ref": "cube-marker",
+      "name": "Health Marker",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "HP"
+        }
+      ],
+      "tags": [
+        "representation",
+        "health"
+      ]
+    },
+    "crew-health-card": {
+      "kind": "token",
+      "archetype_ref": "crew-reference-card",
+      "name": "Crew Health Reference",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "CREW HEALTH"
+        }
+      ],
+      "tags": [
+        "representation",
+        "health"
       ]
     }
   },
@@ -1176,5 +1303,85 @@
       "candidate mechanics",
       "open design questions"
     ]
+  },
+  "representations": {
+    "health-unit-tokens": {
+      "name": "Individual Health tokens",
+      "state_ref": "health",
+      "kind": "unit_tokens",
+      "encoding": "quantity",
+      "interaction": "read-write",
+      "components": [
+        {
+          "object_ref": "health-token",
+          "role": "unit",
+          "quantity": {
+            "basis": "maximum",
+            "per_binding": true
+          }
+        }
+      ]
+    },
+    "health-numbered-track": {
+      "name": "Numbered Health track and marker",
+      "state_ref": "health",
+      "kind": "numbered_track",
+      "encoding": "position",
+      "interaction": "read-write",
+      "components": [
+        {
+          "object_ref": "health-numbered-track",
+          "role": "track",
+          "quantity": {
+            "basis": "fixed",
+            "value": 1,
+            "per_binding": true
+          }
+        },
+        {
+          "object_ref": "health-marker",
+          "role": "marker",
+          "quantity": {
+            "basis": "fixed",
+            "value": 1,
+            "per_binding": true
+          }
+        }
+      ]
+    },
+    "health-crew-card-marker": {
+      "name": "Crew reference card with marker",
+      "state_ref": "health",
+      "kind": "marker_track",
+      "encoding": "position",
+      "interaction": "read-write",
+      "components": [
+        {
+          "object_ref": "crew-health-card",
+          "role": "reference-track",
+          "quantity": {
+            "basis": "fixed",
+            "value": 1,
+            "per_binding": true
+          }
+        },
+        {
+          "object_ref": "health-marker",
+          "role": "marker",
+          "quantity": {
+            "basis": "fixed",
+            "value": 1,
+            "per_binding": true
+          }
+        }
+      ]
+    },
+    "health-web-hud": {
+      "name": "Web numeric HUD",
+      "state_ref": "health",
+      "kind": "numeric_display",
+      "encoding": "numeric",
+      "interaction": "read-write"
+    }
   }
 }
