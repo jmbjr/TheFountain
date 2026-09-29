@@ -1,4 +1,4 @@
-import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";
+import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,runReplay} from "../src/wretched/replay.js";
 const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario-01.mvp.v0.1.json",import.meta.url)));
 assert.equal(validateWretchedMvp(data).ok,true);
 const g=new WretchedEngine(data,{rng:()=>0});
@@ -8,4 +8,18 @@ g.state.crew.room="ruined-workshop";if(!g.state.rooms.includes("ruined-workshop"
 g.state.crew.room="relay";if(!g.state.rooms.includes("relay"))g.state.rooms.push("relay");g.connect(branchRoom,"relay");g.state.actions=3;g.interact();assert.equal(g.state.relayActive,true);g.state.actions=3;assert.equal(g.move("entrance"),false);g.move(branchRoom);g.state.actions=3;g.move(firstRoom);g.state.actions=3;g.move("entrance");assert.equal(g.state.crew.room,"entrance");g.state.actions=3;g.extract();assert.equal(g.state.status,"won");
 const nav=new WretchedEngine(data,{rng:()=>0});nav.state.rooms=["entrance","collapsed-gallery","flooded-passage","bone-pit"];nav.state.connections={entrance:["collapsed-gallery"],"collapsed-gallery":["entrance","flooded-passage"],"flooded-passage":["collapsed-gallery","bone-pit"],"bone-pit":["flooded-passage"]};nav.state.crew.room="bone-pit";nav.spawn("small-spider","entrance");const hunter=nav.state.enemies[0];assert.deepEqual(nav.shortestPath("entrance","bone-pit"),["entrance","collapsed-gallery","flooded-passage","bone-pit"]);nav.enemyPhase();assert.equal(hunter.room,"flooded-passage");assert.equal(nav.state.crew.currentHealth,nav.state.crew.health);nav.enemyPhase();assert.equal(hunter.room,"bone-pit");assert.ok(nav.state.crew.currentHealth<nav.state.crew.health);const stranded=new WretchedEngine(data,{rng:()=>0});stranded.state.rooms=["entrance","bone-pit"];stranded.state.crew.room="bone-pit";stranded.spawn("small-spider","entrance");stranded.enemyPhase();assert.equal(stranded.state.enemies[0].room,"entrance");
 const h=new WretchedEngine(data,{rng:()=>0});h.spawn("small-spider","entrance");h.state.corpses.entrance=2;h.enemyPhase();assert.equal(h.state.enemies[0].fed,1);h.enemyPhase();assert.equal(h.state.enemies.length,0);assert.equal(h.state.chrysalises.length,1);h.endTurn();assert.ok(h.state.enemies.some(e=>e.id==="large-spider"));
-console.log("Wretched shared runtime smoke tests passed.");
+const seed="quick-test-001";
+const a=new WretchedEngine(data,{rng:createSeededRng(seed)}),b=new WretchedEngine(data,{rng:createSeededRng(seed)});
+assert.deepEqual(a.snapshot(),b.snapshot());
+const recGame=new WretchedEngine(data,{rng:createSeededRng(seed)});
+const recorder=new ReplayRecorder(recGame,{seed});
+assert.equal(recorder.dispatch({type:"explore"}),true);
+assert.equal(recorder.dispatch({type:"end-turn"}),true);
+const replay=recorder.toJSON();
+const replayed=runReplay(data,replay);
+assert.deepEqual(replayed.state,recGame.snapshot());
+const corrupt=structuredClone(replay);corrupt.steps[0].state.actions=999;
+assert.throws(()=>runReplay(data,corrupt),/state mismatch/);
+const nonsense=structuredClone(replay);nonsense.steps[0].action={type:"move",target:"not-a-room"};
+assert.throws(()=>runReplay(data,nonsense),/nonsensical\/rejected action/);
+console.log("Wretched shared runtime and deterministic replay tests passed.");
