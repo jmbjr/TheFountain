@@ -5,6 +5,7 @@ on:
     paths:
       - "game/wretched-demesne.dodge.v0.2.1.json"
       - "game/wretched-demesne.scenario-01.mvp.v0.1.json"
+      - "game/export-contracts/**"
       - "tools/export_wretched_beta_pnp.py"
       - ".github/workflows/wretched-beta-pnp.yml"
   workflow_dispatch:
@@ -19,12 +20,15 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install reportlab
-      - run: python tools/export_wretched_beta_pnp.py
+      - run: |
+          python tools/export_wretched_beta_pnp.py --health-representation tokens
+          python tools/export_wretched_beta_pnp.py --health-representation track
+          python tools/export_wretched_beta_pnp.py --health-representation crew-card
       - name: Commit generated beta PDF
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf
+          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-health-*.pdf
           git diff --cached --quiet && exit 0
           git commit -m "Build Wretched beta PnP PDF"
           git push
