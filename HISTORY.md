@@ -299,3 +299,14 @@ The TTS review deliverable is now a hash-stamped ZIP containing the generated sa
 **Milestone:** the intended DODGE release relationship is explicit in automation: one neutral source revision generates matching PnP and TTS review artifacts together.
 
 PR: https://github.com/jmbjr/TheFountain/pull/31
+
+
+### PR #32 — Make the TTS ZIP self-describing
+
+**Opened September 28, 2026.**
+
+The unified Beta release made the TTS ZIP the reviewer-facing artifact, which made the separate manifest link on the Beta page unnecessary. The build manifest remains available to automation, but the page now presents only the useful review downloads and Stable navigation.
+
+A copy of that metadata now travels inside every TTS ZIP as `manifest.json`, including the manifest format version, DODGE version, full source Git SHA, ZIP artifact name and TTS save name. This keeps a downloaded package traceable even after it has been separated from GitHub Pages.
+
+**Milestone:** TTS review packages are self-identifying without exposing build plumbing in the player-facing UI.
