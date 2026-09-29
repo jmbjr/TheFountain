@@ -1,4 +1,4 @@
-import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,runReplay} from "../src/wretched/replay.js";
+import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,runReplay} from "../src/wretched/replay.js";import {buildTopologyView} from "../src/wretched/topology-view.js";
 const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario-01.mvp.v0.1.json",import.meta.url)));
 assert.equal(validateWretchedMvp(data).ok,true);
 const g=new WretchedEngine(data,{rng:()=>0});
@@ -22,4 +22,9 @@ const corrupt=structuredClone(replay);corrupt.steps[0].state.actions=999;
 assert.throws(()=>runReplay(data,corrupt),/state mismatch/);
 const nonsense=structuredClone(replay);nonsense.steps[0].action={type:"move",target:"not-a-room"};
 assert.throws(()=>runReplay(data,nonsense),/nonsensical\/rejected action/);
-console.log("Wretched shared runtime and deterministic replay tests passed.");
+const topologyState={rooms:["entrance","bone-pit","dead-end"],crew:{room:"dead-end"},connections:{entrance:["bone-pit","dead-end"],"bone-pit":["entrance"],"dead-end":["entrance"]},corpses:{},chrysalises:[],enemies:[]};
+const topologyView=buildTopologyView(topologyState);
+assert.deepEqual(topologyView.edges,[{from:"entrance",to:"bone-pit"},{from:"entrance",to:"dead-end"}]);
+assert.equal(topologyView.edges.some(e=>e.from==="bone-pit"&&e.to==="dead-end"),false);
+assert.equal(topologyView.nodes.find(n=>n.id==="dead-end").current,true);
+console.log("Wretched shared runtime, topology view, and deterministic replay tests passed.");
