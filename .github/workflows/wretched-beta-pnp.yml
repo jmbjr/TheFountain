@@ -1,33 +1,53 @@
 name: Build Wretched Beta PnP
+
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "game/wretched-demesne.dodge.v0.2.1.json"
       - "game/wretched-demesne.scenario-01.mvp.v0.1.json"
       - "game/export-contracts/**"
       - "tools/export_wretched_beta_pnp.py"
-      - ".github/workflows/wretched-beta-pnp.yml"\n      - "wretched-demesne/beta/index.html"
+      - ".github/workflows/wretched-beta-pnp.yml"
+      - "wretched-demesne/beta/index.html"
   workflow_dispatch:
+
 permissions:
   contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
       - run: pip install reportlab
-      - name: Stamp Beta page and build PDF\n        run: |\n          SHORT_SHA="${GITHUB_SHA::12}"\n          sed -i "s/>PAGE</>${SHORT_SHA}</" wretched-demesne/beta/index.html\n          python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+
+      - name: Stamp Beta page and build PDF
+        shell: bash
+        run: |
+          SHORT_SHA="${GITHUB_SHA::12}"
+          sed -i "s/>PAGE</>${SHORT_SHA}</" wretched-demesne/beta/index.html
+          python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+
       - name: Stamp deployed source revision
-        run: printf '{"git_sha":"%s"}\\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
-      - name: Commit generated beta PDF
+        shell: bash
+        run: |
+          printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
+
+      - name: Commit generated Beta artifacts
+        shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wretched-demesne/beta/index.html wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf wretched-demesne/beta/build.json
+          git add wretched-demesne/beta/index.html
+          git add wretched-demesne/beta/build.json
+          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf
           git diff --cached --quiet && exit 0
           git commit -m "Build Wretched beta PnP PDF"
           git push
