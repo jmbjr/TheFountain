@@ -7,7 +7,7 @@ on:
       - "game/wretched-demesne.scenario-01.mvp.v0.1.json"
       - "game/export-contracts/**"
       - "tools/export_wretched_beta_pnp.py"
-      - ".github/workflows/wretched-beta-pnp.yml"
+      - ".github/workflows/wretched-beta-pnp.yml"\n      - "wretched-demesne/beta/index.html"
   workflow_dispatch:
 permissions:
   contents: write
