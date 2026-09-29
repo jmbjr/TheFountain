@@ -261,4 +261,41 @@ The Beta page and generated PDF now expose the Git source hash so stale Pages de
 The first bundled PnP pass still allowed ReportLab Platypus to paginate card rows, which could yield six cards instead of the intended nine. The card-sheet renderer now follows Digitropolis more directly: each portrait Letter sheet is one fixed 3×3 canvas-level imposition with adjacent DODGE-sized cards, shared cut guides, and rounded-corner guides. This is a PnP target correction; DODGE semantics are unchanged.
 
 **Milestone:** PnP card capacity is now deterministic from physical card and paper dimensions rather than document-flow pagination.
-\n### Beta TTS Scenario 01 target\n\nThe first Wretched DODGE 0.2.1 Tabletop Simulator export deliberately organizes the table by gameplay role rather than flattening every component into one deck. Each crew has its own starter deck; Encounter, Salvage, unexplored Rooms, Cave Mouth and Crew References are separate card groups. Enemy types, corpses and chrysalises use separate supply bags. The three Health representation experiments are also separate labeled supplies so Implementor review can compare them without treating them as simultaneous game state. Generated TTS saves and texture assets carry the source Git revision.\n
+
+
+### PR #25 — Beta TTS Scenario 01 target
+
+**Merged September 28, 2026.**
+
+The first Wretched DODGE 0.2.1 Tabletop Simulator export deliberately organizes the table by gameplay role rather than flattening every component into one deck. Each crew has its own starter deck; Encounter, Salvage, unexplored Rooms, Cave Mouth and Crew References are separate card groups. Enemy types, corpses and chrysalises use separate supply bags. The three Health representation experiments are also separate labeled supplies so Implementor review can compare them without treating them as simultaneous game state. Generated TTS saves and texture assets carry the source Git revision.
+
+**Milestone:** Wretched gains a DODGE-driven Beta TTS target with rational gameplay groupings and all three Health representation alternatives.
+
+PR: https://github.com/jmbjr/TheFountain/pull/25
+
+
+### PRs #20–#23 and #26–#30 — Make Beta releases identifiable and PnP builds stable
+
+**Merged September 28, 2026.**
+
+The Beta review channel exposed two operational problems that mattered enough to preserve in the project history: a reviewer needed to know exactly which Git revision was on screen, and exact 63 × 88 mm 3×3 card sheets were sensitive to implicit ReportLab frame behavior. Several small corrective PRs converged on durable rules rather than changing game data.
+
+The Beta page, build manifest and PnP filename now identify the human/source merge SHA rather than the later bot-generated artifact commit. Generated commits are prevented from recursively becoming new release identities. The PnP exporter uses an explicit zero-padding ReportLab frame, preserving the DODGE card dimensions and 0.20 in target margins, and CI now compile-checks the exporter and guards the exact 3×3 geometry/frame implementation before generation.
+
+The intermediate failures in this sequence—malformed workflow text, a literal escaped newline in Python, and a half-applied SimpleDocTemplate-to-BaseDocTemplate change—were useful evidence that release mechanics themselves need executable invariants. Those checks are now part of the pipeline rather than institutional memory.
+
+**Milestone:** a Beta artifact can be cross-referenced to its source merge, and the user-verified 3×3 PnP layout is protected by CI invariants.
+
+PRs: #20, #21, #22, #23, #26, #28, #29, #30
+
+### PR #31 — One source revision, one Beta release bundle
+
+**Opened September 28, 2026.**
+
+PnP and TTS initially had separate workflows, which allowed their source hashes to drift. This milestone replaces them with one non-bot Beta release build. A single source merge SHA drives the visible BUILD stamp, PnP PDF, TTS save, generated TTS assets and manifests.
+
+The TTS review deliverable is now a hash-stamped ZIP containing the generated save JSON and its generated assets, with a direct Beta-page download link. The manifest remains available for traceability. The ZIP is packaging only: it does not introduce another game definition, and both targets still originate from the same DODGE/Scenario sources.
+
+**Milestone:** the intended DODGE release relationship is explicit in automation: one neutral source revision generates matching PnP and TTS review artifacts together.
+
+PR: https://github.com/jmbjr/TheFountain/pull/31
