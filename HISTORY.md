@@ -226,3 +226,16 @@ PR: https://github.com/jmbjr/TheFountain/pull/14
 ## Beta PnP becomes dimensionally DODGE-driven
 
 Following the first successful Scenario 01 PnP smoke test and DODGE issue #23, Wretched now declares its standard gameplay cards as poker-size components (2.5 × 3.5 in) in the DODGE 0.2.1 document. The Beta PnP exporter resolves those normative dimensions from DODGE instead of owning card size itself. This is the first physical-output gate toward the next Wretched stable release; room/tile sizing and unresolved physical supply quantities remain explicit follow-up decisions rather than exporter inventions.
+
+
+### PR #17 — DODGE Health representation laboratory
+
+**Opened September 28, 2026.**
+
+DODGE issue #25 formalized a missing separation between semantic game state and the physical or digital mechanism used to display and manipulate it. Wretched now exercises that model directly in the Beta PnP pipeline: one neutral Health definition can be exported as individual Health tokens, a numbered track with marker, or a crew-reference-card marker track. Separate DODGE export contracts select the alternatives without copying or overriding crew Health values.
+
+The Beta build produces all three PnP variants through the same exporter so they can be compared as implementation choices. Stable remains unchanged. This is an explicit DODGE 0.2.1 release-gating experiment, not a final physical-design decision; the selected representation can change after Implementor and Design Lead review without changing the underlying Health rules.
+
+**Milestone:** Wretched demonstrates selectable physical representations of one semantic state while retaining a single DODGE source of truth.
+
+PR: https://github.com/jmbjr/TheFountain/pull/17
