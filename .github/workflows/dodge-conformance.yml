@@ -1,0 +1,37 @@
+name: Validate DODGE 0.2.1 Conformance
+
+on:
+  pull_request:
+    paths:
+      - "game/**"
+      - "tools/validate_wretched_dodge.py"
+      - ".github/workflows/dodge-conformance.yml"
+  push:
+    branches: [main]
+    paths:
+      - "game/**"
+      - "tools/validate_wretched_dodge.py"
+      - ".github/workflows/dodge-conformance.yml"
+  workflow_dispatch:
+
+jobs:
+  schema:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout The Fountain
+        uses: actions/checkout@v4
+        with:
+          path: the-fountain
+      - name: Checkout pinned DODGE 0.2.1 candidate
+        uses: actions/checkout@v4
+        with:
+          repository: jmbjr/DODGE
+          ref: 389a0939688c077b9bb9937103197749c89d758c
+          path: dodge
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install "jsonschema>=4.23,<5"
+      - name: Validate active Wretched documents
+        working-directory: the-fountain
+        run: python tools/validate_wretched_dodge.py --schema-root ../dodge/draft/v0.2.1
