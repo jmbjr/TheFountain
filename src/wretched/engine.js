@@ -8,7 +8,7 @@ export class WretchedEngine {
       actions:this.data.rules.actions_per_turn.value,ammo:this.data.rules.ammo.starting,scrap:0,knowledge:0,threat:this.data.rules.threat.start,
       relayActive:false,inventory:[],searched:[],rooms:["entrance"],roomDeck:this.shuffle(this.data.rooms.filter(r=>r.id!=="entrance"&&r.id!=="relay").map(r=>r.id)),
       encounters:this.shuffle(this.data.encounters.map(e=>e.id)),salvage:this.shuffle(this.data.salvage.map(s=>s.id)),
-      enemies:[],corpses:{},chrysalises:[],log:["Expedition begins at the Cave Mouth."],status:"playing"};
+      connections:{entrance:[]},enemies:[],corpses:{},chrysalises:[],log:["Expedition begins at the Cave Mouth."],status:"playing"};
     const relay=this.state.roomDeck.length<3?this.state.roomDeck.length:Math.max(0,this.state.roomDeck.length-3+Math.floor(this.rng()*3));
     this.state.roomDeck.splice(relay,0,"relay"); this.buildDeck(crewId); return this.state;
   }
@@ -19,9 +19,11 @@ export class WretchedEngine {
   log(s){this.state.log.unshift(s)}
   room(id=this.state.crew.room){return this.data.rooms.find(r=>r.id===id)}
   card(id){return this.data.cards.find(c=>c.id===id)}
-  revealRoom(){if(!this.state.roomDeck.length)return null;const id=this.state.roomDeck.shift();this.state.rooms.push(id);const r=this.room(id);this.log(`Revealed ${r.name}.`);this.resolveRoomSetup(r);this.resolveEncounter();return r}
-  move(target=null){if(!this.spend())return false; if(!target)target=this.state.rooms[this.state.rooms.indexOf(this.state.crew.room)+1]||this.revealRoom()?.id;if(!target)return false;this.state.crew.room=target;this.log(`Moved to ${this.room().name}.`);return true}
-  explore(){if(!this.spend())return false;const r=this.revealRoom();if(r){this.state.crew.room=r.id;this.log(`Entered ${r.name}.`)}return !!r}
+  connect(a,b){this.state.connections[a]??=[];this.state.connections[b]??=[];if(!this.state.connections[a].includes(b))this.state.connections[a].push(b);if(!this.state.connections[b].includes(a))this.state.connections[b].push(a)}
+  legalMoves(room=this.state.crew.room){return (this.state.connections[room]||[]).filter(id=>this.state.rooms.includes(id))}
+  revealRoom(from=this.state.crew.room){if(!this.state.roomDeck.length)return null;const id=this.state.roomDeck.shift();this.state.rooms.push(id);this.connect(from,id);const r=this.room(id);this.log(`Revealed ${r.name}.`);this.resolveRoomSetup(r);this.resolveEncounter();return r}
+  move(target=null){if(!target)target=this.legalMoves()[0];if(!target||!this.legalMoves().includes(target)||!this.spend())return false;this.state.crew.room=target;this.log(`Moved to ${this.room().name}.`);return true}
+  explore(){if(!this.state.roomDeck.length||!this.spend())return false;const r=this.revealRoom();if(r){this.state.crew.room=r.id;this.log(`Entered ${r.name}.`)}return !!r}
   search(){const r=this.room();if(!r.searchable||this.state.searched.includes(r.id)||!this.spend())return false;this.state.searched.push(r.id);let item;
     if(r.objective_item==="Ancient Power Cell") item=this.data.salvage.find(s=>s.id==="power-cell"); else item=this.data.salvage.find(s=>s.id===this.state.salvage.shift());
     if(item){this.state.inventory.push(item.id);this.applySalvage(item);this.log(`Found ${item.name}.`)}return true}
