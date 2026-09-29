@@ -1,0 +1,65 @@
+{
+  "contract_version": "0.2.1",
+  "contract_id": "wd-beta-tts",
+  "target": "tts",
+  "accepts": {
+    "dodge_versions": [
+      "0.2.1"
+    ],
+    "object_kinds": [
+      "token",
+      "collection"
+    ],
+    "component_forms": [
+      "card",
+      "token",
+      "tile",
+      "reference_sheet",
+      "tracker"
+    ],
+    "representation_kinds": [
+      "unit_tokens",
+      "numbered_track",
+      "marker_track"
+    ],
+    "representation_modes": [
+      "alternatives"
+    ],
+    "rule_features": [
+      "values",
+      "resources",
+      "ownership_bindings"
+    ],
+    "allows_prose_rules": true,
+    "limitations": [
+      "Beta functional tabletop export. All Health alternatives are present as separately labeled supplies for Implementor comparison."
+    ]
+  },
+  "maps": [],
+  "adds": [],
+  "outputs": [
+    "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-tts-<git-sha>.json"
+  ],
+  "forbidden_in_dodge": [
+    "TTS GUIDs",
+    "TTS transforms",
+    "TTS bag/deck placement",
+    "TTS texture atlas coordinates"
+  ],
+  "representation_inclusions": [
+    {
+      "state_ref": "health",
+      "mode": "alternatives",
+      "representation_refs": [
+        "health-unit-tokens",
+        "health-numbered-track",
+        "health-crew-card-marker"
+      ],
+      "notes": "Include all configured Health alternatives as separate, labeled TTS supplies; players choose one implementation for evaluation."
+    }
+  ],
+  "manifest_identity_fields": [
+    "git_sha",
+    "dodge_document_id"
+  ]
+}
