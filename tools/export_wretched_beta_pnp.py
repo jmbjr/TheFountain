@@ -7,7 +7,7 @@ canonical source. It contains layout policy only; it must not invent game
 balance, rules, membership, or quantities.
 """
 from __future__ import annotations
-import json, pathlib
+import argparse, json, pathlib
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
@@ -17,13 +17,22 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 
 ROOT=pathlib.Path(__file__).parents[1]
 DODGE_PATH=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
-OUT=ROOT/"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf"
+parser=argparse.ArgumentParser()
+parser.add_argument("--health-representation",choices=["tokens","track","crew-card"],default="crew-card")
+args=parser.parse_args()
+CONTRACT_PATH=ROOT/f"game/export-contracts/wretched-beta-pnp-health-{args.health_representation}.dodge-export.json"
+OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-health-{args.health_representation}.pdf"
 
 dodge=json.loads(DODGE_PATH.read_text())
 if dodge.get("dodge_version")!="0.2.1":
     raise SystemExit("Beta PnP requires DODGE 0.2.1")
 src=dodge["sources"]["scenario-mvp"]["uri"].split("#",1)[0]
 data=json.loads((ROOT/src).read_text())
+contract=json.loads(CONTRACT_PATH.read_text())
+selection=next((x for x in contract["representation_selections"] if x["state_ref"]=="health"),None)
+if not selection: raise SystemExit("PnP contract must select a Health representation")
+health_rep=dodge["representations"][selection["representation_ref"]]
+if health_rep["state_ref"]!="health": raise SystemExit("Selected Health representation does not bind Health")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
 UNIT_TO_IN={"in":1.0,"mm":1/25.4,"cm":1/2.54,"pt":1/72}
@@ -78,6 +87,40 @@ for k,v in data["rules"].items():
         if val is None and k=="threat": val="Threat starts at %s and maxes at %s. %s"%(v["start"],v["max"]," ".join("At %s: %s"%(q["at"],q["effect"]) for q in v["thresholds"]))
         if val is None and k=="ammo": val=v["value"]+" Start %s / max %s."%(v["starting"],v["max"])
         if val is not None: story.append(Paragraph("<b>%s:</b> %s"%(esc(k.replace("_"," ").title()),esc(val)),body))
+story.append(PageBreak())
+
+def health_lab():
+    kind=health_rep["kind"]
+    blocks=[Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
+        f'Selected by {esc(CONTRACT_PATH.name)}: <b>{esc(health_rep["name"])}</b>. '
+        'All variants bind the same DODGE Health state; this page changes representation only.',body),Spacer(1,8)]
+    if kind=="unit_tokens":
+        # Resolve per-actor quantity from the authoritative Scenario crew maximum.
+        cells=[]
+        for crew in data["crew"]:
+            for n in range(crew["health"]):
+                cells.append(Paragraph(f'{esc(crew["name"])}<br/>HP',ParagraphStyle("hptok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
+        rows=[cells[i:i+8] for i in range(0,len(cells),8)]
+        while len(rows[-1])<8: rows[-1].append("")
+        t=Table(rows,colWidths=[18/25.4*inch]*8,rowHeights=[18/25.4*inch]*len(rows),hAlign="CENTER")
+        t.setStyle(TableStyle([("GRID",(0,0),(-1,-1),.5,colors.black),("VALIGN",(0,0),(-1,-1),"MIDDLE")]))
+        blocks.append(t)
+    elif kind=="numbered_track":
+        for crew in data["crew"]:
+            maximum=crew["health"]
+            nums="  ".join(str(x) for x in range(maximum+1))
+            t=Table([[Paragraph(f'<b>{esc(crew["name"])} HEALTH</b><br/>{nums}',body)]],colWidths=[50/25.4*inch],rowHeights=[100/25.4*inch])
+            t.setStyle(TableStyle([("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),8),("TOPPADDING",(0,0),(-1,-1),8)]))
+            blocks += [t,Spacer(1,6)]
+    elif kind=="marker_track":
+        cards=[]
+        for crew in data["crew"]:
+            maximum=crew["health"]
+            cards.append(card(crew["name"],"Crew health reference","Health\n"+" · ".join(str(x) for x in range(maximum+1)),"Use one marker/cube to show current Health."))
+        blocks.append(sheet(cards))
+    return blocks
+
+story += health_lab()
 story.append(PageBreak())
 
 crew_cards=[]
