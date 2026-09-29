@@ -18,6 +18,7 @@ permissions:
 
 jobs:
   build:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +33,8 @@ jobs:
         shell: bash
         run: |
           SHORT_SHA="${GITHUB_SHA::12}"
-          sed -i "s/>PAGE</>${SHORT_SHA}</" wretched-demesne/beta/index.html
+          sed -i -E "s|(<code id=\"git-build\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" wretched-demesne/beta/index.html
+          sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
           python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
 
       - name: Stamp deployed source revision
@@ -47,7 +49,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add wretched-demesne/beta/index.html
           git add wretched-demesne/beta/build.json
-          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf
+          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-*.pdf
           git diff --cached --quiet && exit 0
           git commit -m "Build Wretched beta PnP PDF"
           git push
