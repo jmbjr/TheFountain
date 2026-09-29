@@ -200,6 +200,6 @@ tt=Table(rows,colWidths=[1.35*inch]*5,rowHeights=[.72*inch]*len(rows),hAlign="CE
 tt.setStyle(TableStyle([("GRID",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"MIDDLE")]))
 story += [Paragraph("BETA PLAYTEST TOKEN SHEET",h),Paragraph("Token counts on this sheet are explicitly non-canonical physical playtest inventory because DODGE/Scenario 01 does not yet specify supply quantities. Do not treat these counts as game rules.",body),Spacer(1,8),tt]
 
-doc=SimpleDocTemplate(str(OUT),pagesize=letter,rightMargin=.25*inch,leftMargin=.25*inch,topMargin=.25*inch,bottomMargin=.25*inch,title="Wretched Demesne Scenario 01 Beta PnP")
+doc=SimpleDocTemplate(str(OUT),pagesize=letter,rightMargin=.25*inch,leftMargin=.25*inch,topMargin=.20*inch,bottomMargin=.20*inch,title="Wretched Demesne Scenario 01 Beta PnP")
 doc.build(story)
 print(OUT)
