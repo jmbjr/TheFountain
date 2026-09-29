@@ -32,6 +32,8 @@ jobs:
           grep -q 'topPadding=0,bottomPadding=0' tools/export_wretched_beta_pnp.py
           if grep -q 'doc=SimpleDocTemplate' tools/export_wretched_beta_pnp.py; then exit 1; fi
           python -c "from reportlab.lib.pagesizes import letter; from reportlab.lib.units import mm,inch; s=3*88*mm; f=letter[1]-2*.20*inch; assert s <= f"
+          grep -q 'wretched-beta-web.js?build=SOURCE_BUILD' wretched-demesne/beta/index.html
+          if grep -Eq 'wretched-beta-web\.js\?(v|build)=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
 
       - name: Build matching PnP and TTS artifacts
         shell: bash
@@ -49,6 +51,7 @@ jobs:
           printf '{"git_sha":"%s","artifact":"%s","save":"%s"}\n' "$GITHUB_SHA" "$TTS_ZIP" "$TTS_JSON" > wretched-demesne/beta/tts-build.json
           printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
           sed -i -E "s|(<code id=\"git-build\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" wretched-demesne/beta/index.html
+          sed -i -E "s|wretched-beta-web\.js\?build=[^\"<]+|wretched-beta-web.js?build=${SHORT_SHA}|" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-tts-[^\"]*\.zip|wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip|" wretched-demesne/beta/index.html
 
