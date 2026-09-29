@@ -2,43 +2,43 @@ import {WretchedEngine} from "./engine.js";
 import {createSeededRng} from "./random.js";
 
 export const REPLAY_FORMAT="wretched-replay.v1";
-
 function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
-
+function edges(state){
+  const out=new Set();
+  for(const [a,bs] of Object.entries(state.connections||{}))for(const b of bs||[])out.add([a,b].sort().join("\u0000"));
+  return out;
+}
+function edgeObj(key){const [a,b]=key.split("\u0000");return {from:a,to:b}}
+export function replayDiagnostics(before,after){
+  const b=edges(before),a=edges(after);
+  const added=[...a].filter(x=>!b.has(x)).map(edgeObj),removed=[...b].filter(x=>!a.has(x)).map(edgeObj);
+  const revealed=(after.rooms||[]).filter(id=>!(before.rooms||[]).includes(id));
+  const movement=before.crew?.room!==after.crew?.room?{from:before.crew?.room,to:after.crew?.room}:null;
+  const revealOrigins=revealed.map(room=>({room,connectedTo:(after.connections?.[room]||[]).filter(id=>(before.rooms||[]).includes(id))}));
+  return {movement,revealed:revealOrigins,topology:{added,removed}};
+}
+function diffSummary(expected,actual){
+  const keys=new Set([...Object.keys(expected||{}),...Object.keys(actual||{})]),changed=[];
+  for(const k of keys)if(!same(expected?.[k],actual?.[k]))changed.push(k);
+  return {changedTopLevel:changed,diagnostics:replayDiagnostics(expected||{},actual||{})};
+}
 export function runReplay(data,replay,{verifyState=true}={}){
   if(replay?.format!==REPLAY_FORMAT)throw new Error(`Unsupported replay format: ${replay?.format??"<missing>"}`);
   if(replay.seed===undefined||replay.seed===null)throw new Error("Replay seed is required");
   if(!Array.isArray(replay.steps))throw new Error("Replay steps must be an array");
-  const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});
-  game.reset(replay.crew||"security");
+  const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});game.reset(replay.crew||"security");
   const results=[];
   for(let i=0;i<replay.steps.length;i++){
-    const step=replay.steps[i], action=step?.action;
-    if(!action||typeof action.type!=="string")throw new Error(`Step ${i}: missing action.type`);
-    const before=game.snapshot();
-    const accepted=game.dispatch(action);
-    if(!accepted)throw new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);
-    const state=game.snapshot();
-    if(verifyState&&step.state!==undefined&&!same(state,step.state)){
-      const err=new Error(`Step ${i}: state mismatch after ${action.type}`);
-      err.step=i;err.expected=step.state;err.actual=state;throw err;
-    }
-    results.push({index:i,action,before,state});
+    const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string")throw new Error(`Step ${i}: missing action.type`);
+    const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted)throw new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);
+    const state=game.snapshot(),diagnostics=replayDiagnostics(before,state);
+    if(verifyState&&step.state!==undefined&&!same(state,step.state)){const summary=diffSummary(step.state,state);const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;throw err}
+    results.push({index:i,action,before,state,diagnostics});
   }
   return {game,results,state:game.snapshot()};
 }
-
 export class ReplayRecorder{
-  constructor(game,{seed,crew="security",captureState=true}={}){
-    this.game=game;this.captureState=captureState;
-    this.replay={format:REPLAY_FORMAT,seed:String(seed),crew,steps:[]};
-  }
-  dispatch(action){
-    const accepted=this.game.dispatch(action);
-    if(!accepted)return false;
-    const step={action:structuredClone(action)};
-    if(this.captureState)step.state=this.game.snapshot();
-    this.replay.steps.push(step);return true;
-  }
+  constructor(game,{seed,crew="security",captureState=true}={}){this.game=game;this.captureState=captureState;this.replay={format:REPLAY_FORMAT,seed:String(seed),crew,steps:[]}}
+  dispatch(action){const before=this.game.snapshot(),accepted=this.game.dispatch(action);if(!accepted)return false;const state=this.game.snapshot(),step={action:structuredClone(action),diagnostics:replayDiagnostics(before,state)};if(this.captureState)step.state=state;this.replay.steps.push(step);return true}
   toJSON(){return structuredClone(this.replay)}
 }
