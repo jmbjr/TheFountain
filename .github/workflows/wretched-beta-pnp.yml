@@ -29,6 +29,9 @@ jobs:
 
       - run: pip install reportlab
 
+      - name: Compile PnP exporter
+        run: python -m py_compile tools/export_wretched_beta_pnp.py
+
       - name: Verify exact 3x3 card geometry
         run: python -c "from reportlab.lib.pagesizes import letter; from reportlab.lib.units import mm,inch; s=3*88*mm; f=letter[1]-2*.20*inch; assert s <= f; print(f'3x3 sheet {s:.2f} pt fits explicit frame {f:.2f} pt')"
 
