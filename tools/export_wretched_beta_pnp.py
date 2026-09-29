@@ -79,16 +79,26 @@ class CardFace(Flowable):
 def card(name,kind,text,footer=""):
     return CardFace(name,kind,text,footer)
 
-def sheet(cards):
-    # Exact finished dimensions come from DODGE; page gutters are exporter-owned.
-    rows=[]
-    for i in range(0,len(cards),3):
-        row=cards[i:i+3]
-        while len(row)<3: row.append("")
-        rows.append(row)
-    t=Table(rows,colWidths=[CARD_W_IN*inch]*3,rowHeights=[CARD_H_IN*inch]*len(rows),hAlign="CENTER")
-    t.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),0),("RIGHTPADDING",(0,0),(-1,-1),0),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0)]))
-    return t
+class CardSheet(Flowable):
+    """Deterministic portrait Letter 3x3 imposition, matching Digitropolis."""
+    def __init__(self,cards):
+        Flowable.__init__(self); self.cards=cards
+        self.card_w=CARD_W_IN*inch; self.card_h=CARD_H_IN*inch
+        self.width=self.card_w*3; self.height=self.card_h*3
+    def wrap(self,availWidth,availHeight): return self.width,self.height
+    def draw(self):
+        p=self.canv
+        for slot,item in enumerate(self.cards[:9]):
+            col=slot%3; row=2-slot//3
+            item.drawOn(p,col*self.card_w,row*self.card_h)
+        p.setStrokeColor(colors.HexColor("#666666")); p.setLineWidth(.25); mark=6
+        for col in range(4):
+            x=col*self.card_w; p.line(x,-mark,x,0); p.line(x,self.height,x,self.height+mark)
+        for row in range(4):
+            y=row*self.card_h; p.line(-mark,y,0,y); p.line(self.width,y,self.width+mark,y)
+
+def card_sheets(cards):
+    return [CardSheet(cards[i:i+9]) for i in range(0,len(cards),9)]
 
 story=[Paragraph("WRETCHED DEMESNE",title),Paragraph("Scenario 01: The Cave — Beta Print-and-Play · DODGE 0.2.1",h),
  Paragraph(f"This is the Implementor review build · Git {esc(args.git_sha[:12])}. Game content comes from the Scenario 01 source declared by the active DODGE 0.2.1 document. Cut on card borders. No artwork is required for this functional prototype.",body),Spacer(1,8),
@@ -173,7 +183,12 @@ if marker_count:
 
 # All poker/MTG-size components are packed continuously. At 63 x 88 mm, three
 # columns by three rows fit portrait US Letter when adjacent with no gutters.
-story += [PageBreak(),sheet(all_cards),PageBreak()]
+story.append(PageBreak())
+pages=card_sheets(all_cards)
+for index,page in enumerate(pages):
+    story.append(page)
+    if index != len(pages)-1: story.append(PageBreak())
+story.append(PageBreak())
 
 tokens=[]
 for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),("Spider Corpse",8),("Chrysalis",4)]:
