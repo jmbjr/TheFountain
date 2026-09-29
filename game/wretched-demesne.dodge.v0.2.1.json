@@ -75,9 +75,9 @@
         "shape": "rectangle",
         "two_sided": true,
         "dimensions": {
-          "unit": "in",
-          "width": 2.5,
-          "height": 3.5
+          "unit": "mm",
+          "width": 63,
+          "height": 88
         }
       }
     },
@@ -164,9 +164,9 @@
         "size_class": "poker",
         "shape": "rectangle",
         "dimensions": {
-          "unit": "in",
-          "width": 2.5,
-          "height": 3.5
+          "unit": "mm",
+          "width": 63,
+          "height": 88
         }
       }
     },

@@ -239,3 +239,16 @@ The Beta build produces all three PnP variants through the same exporter so they
 **Milestone:** Wretched demonstrates selectable physical representations of one semantic state while retaining a single DODGE source of truth.
 
 PR: https://github.com/jmbjr/TheFountain/pull/17
+
+
+### PR #18 — One bundled Beta PnP packet and efficient card imposition
+
+**Opened September 28, 2026.**
+
+DODGE issue #27 clarified that export profiles may include representation candidates as `alternatives`: multiple implementations can be bundled into one prototype/review artifact without duplicating the base game or implying simultaneous gameplay. Wretched's Beta PnP profile now uses that model to include all three Health experiments in one PDF.
+
+The card imposition was also rebuilt from the proven Digitropolis approach. Standard WD cards now declare 63 × 88 mm MTG-size physical dimensions, are imposed adjacently in a portrait US Letter 3×3 grid with no inter-card gutters, and include subtle rounded-corner cutting guides. Compatible card categories are packed continuously instead of forcing category page breaks.
+
+The Beta page and generated PDF now expose the Git source hash so stale Pages deployments can be identified directly. Stable remains unchanged.
+
+**Milestone:** one DODGE-driven Beta PnP artifact can carry multiple representation experiments while using efficient, verifiable physical output.

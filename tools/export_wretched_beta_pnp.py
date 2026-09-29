@@ -13,15 +13,15 @@ from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Flowable
 
 ROOT=pathlib.Path(__file__).parents[1]
 DODGE_PATH=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
 parser=argparse.ArgumentParser()
-parser.add_argument("--health-representation",choices=["tokens","track","crew-card"],default="crew-card")
+parser.add_argument("--git-sha",default="local")
 args=parser.parse_args()
-CONTRACT_PATH=ROOT/f"game/export-contracts/wretched-beta-pnp-health-{args.health_representation}.dodge-export.json"
-OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-health-{args.health_representation}.pdf"
+CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
+OUT=ROOT/"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf"
 
 dodge=json.loads(DODGE_PATH.read_text())
 if dodge.get("dodge_version")!="0.2.1":
@@ -29,10 +29,12 @@ if dodge.get("dodge_version")!="0.2.1":
 src=dodge["sources"]["scenario-mvp"]["uri"].split("#",1)[0]
 data=json.loads((ROOT/src).read_text())
 contract=json.loads(CONTRACT_PATH.read_text())
-selection=next((x for x in contract["representation_selections"] if x["state_ref"]=="health"),None)
-if not selection: raise SystemExit("PnP contract must select a Health representation")
-health_rep=dodge["representations"][selection["representation_ref"]]
-if health_rep["state_ref"]!="health": raise SystemExit("Selected Health representation does not bind Health")
+inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
+if not inclusion or inclusion["mode"]!="alternatives":
+    raise SystemExit("Beta PnP contract must bundle Health alternatives")
+health_reps=[dodge["representations"][ref] for ref in inclusion["representation_refs"]]
+if any(rep["state_ref"]!="health" for rep in health_reps):
+    raise SystemExit("All bundled Health representations must bind Health")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
 UNIT_TO_IN={"in":1.0,"mm":1/25.4,"cm":1/2.54,"pt":1/72}
@@ -57,11 +59,25 @@ card_type=ParagraphStyle("ctype",parent=small,fontName="Helvetica-Bold",alignmen
 def esc(x):
     return str(x).replace("&","&amp;").replace("<","&lt;").replace(">","&gt;")
 
+class CardFace(Flowable):
+    def __init__(self,name,kind,text,footer=""):
+        Flowable.__init__(self); self.width=CARD_W_IN*inch; self.height=CARD_H_IN*inch
+        self.name,self.kind,self.text,self.footer=name,kind,text,footer
+    def wrap(self,availWidth,availHeight): return self.width,self.height
+    def draw(self):
+        p=self.canv; w,h=self.width,self.height
+        p.setStrokeColor(colors.black); p.setLineWidth(.6); p.rect(0,0,w,h,fill=0,stroke=1)
+        r=.125*inch; d=2*r
+        p.setStrokeColor(colors.HexColor("#AAAAAA")); p.setLineWidth(.25)
+        p.arc(0,0,d,d,180,90); p.arc(w-d,0,w,d,270,90); p.arc(w-d,h-d,w,h,0,90); p.arc(0,h-d,d,h,90,90)
+        y=h-10
+        for txt,sty in [(esc(self.kind).upper(),card_type),(esc(self.name),card_title),(esc(self.text).replace("\\n","<br/>"),body)]:
+            para=Paragraph(txt,sty); _,ph=para.wrap(w-18,max(1,y)); y-=ph; para.drawOn(p,9,y); y-=4
+        if self.footer:
+            para=Paragraph(esc(self.footer),small); para.wrap(w-18,max(1,y)); para.drawOn(p,9,10)
+
 def card(name,kind,text,footer=""):
-    parts=[Paragraph(esc(kind).upper(),card_type),Paragraph(esc(name),card_title),Paragraph(esc(text),body)]
-    if footer: parts += [Spacer(1,5),Paragraph(esc(footer),small)]
-    return Table([[parts]],colWidths=[CARD_W_IN*inch],rowHeights=[CARD_H_IN*inch],style=[
-        ("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),9),("RIGHTPADDING",(0,0),(-1,-1),9),("TOPPADDING",(0,0),(-1,-1),9)])
+    return CardFace(name,kind,text,footer)
 
 def sheet(cards):
     # Exact finished dimensions come from DODGE; page gutters are exporter-owned.
@@ -75,7 +91,7 @@ def sheet(cards):
     return t
 
 story=[Paragraph("WRETCHED DEMESNE",title),Paragraph("Scenario 01: The Cave — Beta Print-and-Play · DODGE 0.2.1",h),
- Paragraph("This is the Implementor review build. Game content comes from the Scenario 01 source declared by the active DODGE 0.2.1 document. Cut on card borders. No artwork is required for this functional prototype.",body),Spacer(1,8),
+ Paragraph(f"This is the Implementor review build · Git {esc(args.git_sha[:12])}. Game content comes from the Scenario 01 source declared by the active DODGE 0.2.1 document. Cut on card borders. No artwork is required for this functional prototype.",body),Spacer(1,8),
  Paragraph("SETUP",h)]
 for x in data["scenario"]["setup"]: story.append(Paragraph("• "+esc(x),body))
 story += [Spacer(1,6),Paragraph("OBJECTIVE",h),Paragraph(esc(data["scenario"]["objective"]),body),Spacer(1,6),Paragraph("WIN",h),Paragraph(esc(data["scenario"]["win"]),body),Spacer(1,6),Paragraph("LOSS",h)]
@@ -89,72 +105,75 @@ for k,v in data["rules"].items():
         if val is not None: story.append(Paragraph("<b>%s:</b> %s"%(esc(k.replace("_"," ").title()),esc(val)),body))
 story.append(PageBreak())
 
-def health_lab():
-    kind=health_rep["kind"]
-    blocks=[Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
-        f'Selected by {esc(CONTRACT_PATH.name)}: <b>{esc(health_rep["name"])}</b>. '
-        'All variants bind the same DODGE Health state; this page changes representation only.',body),Spacer(1,8)]
-    if kind=="unit_tokens":
-        # Resolve per-actor quantity from the authoritative Scenario crew maximum.
+story += [Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
+    "The Beta PnP export profile bundles all configured Health alternatives into this one packet. "
+    "They bind the same DODGE Health state and are alternatives for evaluation, not simultaneous gameplay requirements.",body),Spacer(1,8)]
+
+all_cards=[]
+for crew in data["crew"]:
+    all_cards.append(card(crew["name"],"Crew reference",f'Health {crew["health"]} · Accuracy +{crew["accuracy"]} · Defense {crew["defense"]}\\n\\n{crew["ability"]}'))
+
+# Starter decks are rendered exactly from qty_by_deck. This intentionally exposes
+# the known Medic 11-card inconsistency instead of silently correcting it.
+for crew in data["crew"]:
+    for action in data["cards"]:
+        qty=action.get("qty_by_deck",{}).get(crew["id"],0)
+        stats=[]
+        for key,label in (("attack","ATK"),("range","RNG"),("ammo","AMMO"),("noise","NOISE")):
+            if key in action: stats.append(f'{label} {action[key]}')
+        footer=f'{crew["name"]} starter · '+" · ".join(stats)
+        for _ in range(qty): all_cards.append(card(action["name"],action["type"],action["text"],footer))
+
+for room in data["rooms"]:
+    details=[f'Connections: {room["connections"]}',"Searchable" if room["searchable"] else "Not searchable"]
+    for key in ("terrain","setup","hazard","lock","objective_item","objective","tag"):
+        if room.get(key): details.append(f'{key.replace("_"," ").title()}: {room[key]}')
+    all_cards.append(card(room["name"],"Room","\\n".join(details)))
+for x in data["encounters"]: all_cards.append(card(x["name"],"Encounter",x["effect"]))
+for x in data["salvage"]: all_cards.append(card(x["name"],"Salvage · "+x["type"],x["effect"]))
+for x in data["enemies"]:
+    all_cards.append(card(x["name"],"Enemy reference",f'Health {x["health"]} · Attack {x["attack"]} · Defense {x["defense"]} · Move {x["move"]}\\n\\nAI: {x["ai"]}\\n\\n{"Leaves Spider Corpse" if x["corpse"] else "No Spider Corpse"}'))
+
+# Resolve every representation candidate included by the DODGE alternatives bundle.
+marker_count=0
+for rep in health_reps:
+    story += [Paragraph(esc(rep["name"]).upper(),h)]
+    if rep["kind"]=="unit_tokens":
         cells=[]
         for crew in data["crew"]:
-            for n in range(crew["health"]):
+            for _ in range(crew["health"]):
                 cells.append(Paragraph(f'{esc(crew["name"])}<br/>HP',ParagraphStyle("hptok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
         rows=[cells[i:i+8] for i in range(0,len(cells),8)]
         while len(rows[-1])<8: rows[-1].append("")
         t=Table(rows,colWidths=[18/25.4*inch]*8,rowHeights=[18/25.4*inch]*len(rows),hAlign="CENTER")
         t.setStyle(TableStyle([("GRID",(0,0),(-1,-1),.5,colors.black),("VALIGN",(0,0),(-1,-1),"MIDDLE")]))
-        blocks.append(t)
-    elif kind=="numbered_track":
+        story += [t,Spacer(1,10)]
+    elif rep["kind"]=="numbered_track":
+        tracks=[]
         for crew in data["crew"]:
-            maximum=crew["health"]
-            nums="  ".join(str(x) for x in range(maximum+1))
-            t=Table([[Paragraph(f'<b>{esc(crew["name"])} HEALTH</b><br/>{nums}',body)]],colWidths=[50/25.4*inch],rowHeights=[100/25.4*inch])
-            t.setStyle(TableStyle([("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),8),("TOPPADDING",(0,0),(-1,-1),8)]))
-            blocks += [t,Spacer(1,6)]
-    elif kind=="marker_track":
-        cards=[]
+            nums="  ".join(str(x) for x in range(crew["health"]+1))
+            tracks.append(Table([[Paragraph(f'<b>{esc(crew["name"])} HEALTH</b><br/>{nums}',body)]],colWidths=[50/25.4*inch],rowHeights=[100/25.4*inch],style=[("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),8),("TOPPADDING",(0,0),(-1,-1),8)]))
+        for i in range(0,len(tracks),3):
+            row=tracks[i:i+3]
+            while len(row)<3: row.append("")
+            story += [Table([row],colWidths=[50/25.4*inch]*3,hAlign="CENTER",style=[("VALIGN",(0,0),(-1,-1),"TOP")]),Spacer(1,8)]
+        marker_count += len(data["crew"])
+    elif rep["kind"]=="marker_track":
         for crew in data["crew"]:
-            maximum=crew["health"]
-            cards.append(card(crew["name"],"Crew health reference","Health\n"+" · ".join(str(x) for x in range(maximum+1)),"Use one marker/cube to show current Health."))
-        blocks.append(sheet(cards))
-    return blocks
+            all_cards.append(card(crew["name"],"Health alternative · crew card","Health\\n"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
+        marker_count += len(data["crew"])
 
-story += health_lab()
-story.append(PageBreak())
+if marker_count:
+    markers=[Paragraph("HP",ParagraphStyle("hpmark",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")) for _ in range(marker_count)]
+    rows=[markers[i:i+10] for i in range(0,len(markers),10)]
+    while len(rows[-1])<10: rows[-1].append("")
+    mt=Table(rows,colWidths=[8/25.4*inch]*10,rowHeights=[8/25.4*inch]*len(rows),hAlign="CENTER")
+    mt.setStyle(TableStyle([("GRID",(0,0),(-1,-1),.4,colors.black),("VALIGN",(0,0),(-1,-1),"MIDDLE")]))
+    story += [Paragraph("HEALTH MARKERS FOR TRACK ALTERNATIVES",h),mt,Spacer(1,8)]
 
-crew_cards=[]
-for c in data["crew"]:
-    crew_cards.append(card(c["name"],"Crew reference",f'Health {c["health"]} · Accuracy +{c["accuracy"]} · Defense {c["defense"]}\n\n{c["ability"]}'))
-story += [Paragraph("CREW REFERENCES",h),sheet(crew_cards),PageBreak()]
-
-# Starter decks are rendered exactly from qty_by_deck. This intentionally exposes
-# the known Medic 11-card inconsistency instead of silently correcting it.
-for crew in data["crew"]:
-    cards=[]
-    for c in data["cards"]:
-        qty=c.get("qty_by_deck",{}).get(crew["id"],0)
-        stats=[]
-        for key,label in (("attack","ATK"),("range","RNG"),("ammo","AMMO"),("noise","NOISE")):
-            if key in c: stats.append(f'{label} {c[key]}')
-        footer=" · ".join(stats)
-        for _ in range(qty): cards.append(card(c["name"],c["type"],c["text"],footer))
-    story += [Paragraph(f'{crew["name"].upper()} STARTER DECK — {len(cards)} CARDS',h),sheet(cards),PageBreak()]
-
-room_cards=[]
-for r in data["rooms"]:
-    details=[f'Connections: {r["connections"]}',"Searchable" if r["searchable"] else "Not searchable"]
-    for k in ("terrain","setup","hazard","lock","objective_item","objective","tag"):
-        if r.get(k): details.append(f'{k.replace("_"," ").title()}: {r[k]}')
-    room_cards.append(card(r["name"],"Room","\n".join(details)))
-story += [Paragraph("ROOM CARDS / TILES",h),sheet(room_cards),PageBreak()]
-
-enc=[card(x["name"],"Encounter",x["effect"]) for x in data["encounters"]]
-sal=[card(x["name"],"Salvage · "+x["type"],x["effect"]) for x in data["salvage"]]
-story += [Paragraph("ENCOUNTER DECK",h),sheet(enc),PageBreak(),Paragraph("SALVAGE DECK",h),sheet(sal),PageBreak()]
-
-enemy=[card(x["name"],"Enemy reference",f'Health {x["health"]} · Attack {x["attack"]} · Defense {x["defense"]} · Move {x["move"]}\n\nAI: {x["ai"]}\n\n{"Leaves Spider Corpse" if x["corpse"] else "No Spider Corpse"}') for x in data["enemies"]]
-story += [Paragraph("ENEMY REFERENCES",h),sheet(enemy),PageBreak()]
+# All poker/MTG-size components are packed continuously. At 63 x 88 mm, three
+# columns by three rows fit portrait US Letter when adjacent with no gutters.
+story += [PageBreak(),sheet(all_cards),PageBreak()]
 
 tokens=[]
 for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),("Spider Corpse",8),("Chrysalis",4)]:
@@ -166,6 +185,6 @@ tt=Table(rows,colWidths=[1.35*inch]*5,rowHeights=[.72*inch]*len(rows),hAlign="CE
 tt.setStyle(TableStyle([("GRID",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"MIDDLE")]))
 story += [Paragraph("BETA PLAYTEST TOKEN SHEET",h),Paragraph("Token counts on this sheet are explicitly non-canonical physical playtest inventory because DODGE/Scenario 01 does not yet specify supply quantities. Do not treat these counts as game rules.",body),Spacer(1,8),tt]
 
-doc=SimpleDocTemplate(str(OUT),pagesize=letter,rightMargin=.35*inch,leftMargin=.35*inch,topMargin=.35*inch,bottomMargin=.35*inch,title="Wretched Demesne Scenario 01 Beta PnP")
+doc=SimpleDocTemplate(str(OUT),pagesize=letter,rightMargin=.25*inch,leftMargin=.25*inch,topMargin=.25*inch,bottomMargin=.25*inch,title="Wretched Demesne Scenario 01 Beta PnP")
 doc.build(story)
 print(OUT)
