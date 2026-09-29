@@ -252,3 +252,12 @@ The card imposition was also rebuilt from the proven Digitropolis approach. Stan
 The Beta page and generated PDF now expose the Git source hash so stale Pages deployments can be identified directly. Stable remains unchanged.
 
 **Milestone:** one DODGE-driven Beta PnP artifact can carry multiple representation experiments while using efficient, verifiable physical output.
+
+
+### PR #19 — Deterministic 3×3 PnP card imposition
+
+**Opened September 28, 2026.**
+
+The first bundled PnP pass still allowed ReportLab Platypus to paginate card rows, which could yield six cards instead of the intended nine. The card-sheet renderer now follows Digitropolis more directly: each portrait Letter sheet is one fixed 3×3 canvas-level imposition with adjacent DODGE-sized cards, shared cut guides, and rounded-corner guides. This is a PnP target correction; DODGE semantics are unchanged.
+
+**Milestone:** PnP card capacity is now deterministic from physical card and paper dimensions rather than document-flow pagination.
