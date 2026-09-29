@@ -262,3 +262,10 @@ The next major implementation step is to realign the existing Wretched Web/PnP/T
 After the three targets work locally, add the unified GitHub Actions workflow so a merge to `main` validates and publishes all three together.
 
 At that point, update this document from “target architecture” to the exact production build procedure.
+
+
+### Wretched Beta PnP
+
+DODGE **0.2.1 is the current project baseline**. `tools/export_wretched_beta_pnp.py` reads the active `game/wretched-demesne.dodge.v0.2.1.json`, follows its declared Scenario 01 source, and renders a cuttable Beta PDF. The exporter owns page/card/token layout only; game rules and balance stay in neutral sources. The Beta artifact is isolated at `wretched-demesne/beta/downloads/` and must not replace the Stable Design Lead review artifact under `wretched-demesne/downloads/`.
+
+The first physical build intentionally labels its token-sheet counts non-canonical because Scenario 01 does not yet declare physical supply quantities. The known Medic starter deck discrepancy is likewise rendered from source rather than silently corrected. GitHub Actions generates the Beta PDF after the 0.2.1 adoption reaches `main`.
