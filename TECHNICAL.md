@@ -86,38 +86,49 @@ The Fountain is currently playable. Its page loads `src/renderers/web.js`, which
 
 Wretched Demesne has a playable Pages route plus review PnP/TTS artifacts. The next architecture work is to make all three outputs consume the DODGE 0.2.1 resolved component inventory and shared normalized rule/runtime model.
 
-## Cache-busting policy
+## Release identity and cache-busting policy
 
-GitHub Pages/CDN and browser caches can make a deployment appear stale even when the repository has changed. We use **versioned asset URLs** for mutable static assets.
-
-Example:
-
-```html
-<link rel="stylesheet" href="../style.css?v=20260928-1">
-<script type="module" src="../src/renderers/web.js?v=20260928-1"></script>
-```
-
-Game-data fetches that are under active development should also avoid silently reusing stale responses:
-
-```js
-fetch("../game/game.json?build=20260928-1", { cache: "no-store" })
-```
-
-### Convention
-
-When a PR changes a Pages-served CSS, JavaScript, JSON, image, or other mutable asset and stale caching could matter, bump the build/version query string in the HTML entry point that references it.
-
-The version does not have semantic meaning; it only needs to change. A date plus increment is readable and sufficient, for example:
+A Wretched Beta release has **one source identity**: the human/source Git merge SHA that triggered the release build. The same identity is used for the visible Web BUILD, the PnP/TTS artifact names and manifests, and the browser cache key for the Beta Web entry module.
 
 ```text
-20260928-1
-20260928-2
-20260929-1
+        DODGE + canonical Scenario sources + sidecars
+                         |
+                  resolve / validate
+                         |
+               shared model + runtime
+                         |
+                  Git source SHA
+                 /      |       \
+                /       |        \
+          Beta Web    PnP PDF    TTS ZIP
+              |
+       index.html BUILD
+              |
+              +--> wretched-beta-web.js?build=<source SHA>
+                         |
+                    ES module graph
+                         |
+                 shared engine / data
 ```
 
-Do **not** depend on users performing a hard refresh as the normal deployment mechanism.
+The SHA shown to the reviewer is the **source merge**, not the later GitHub Actions commit that checks generated artifacts into the repository. This lets every review artifact be cross-referenced to the source that produced it.
 
-A future build system should automate this by injecting the Git commit SHA or build identifier into asset URLs/manifests. Until then, explicit version query strings are the repository convention.
+### Why the Web entry module is cache-keyed
+
+GitHub Pages/CDN and browser caches can legitimately reuse a mutable URL. PR #42 exposed the failure mode: new HTML displayed the new BUILD while its unchanged, manually versioned renderer URL allowed a browser to execute an older cached renderer. The page therefore looked like one revision while behaving like another.
+
+The release workflow now replaces the Beta renderer placeholder with the same 12-character source SHA used by the visible BUILD:
+
+```html
+<script type="module"
+        src="../../src/renderers/wretched-beta-web.js?build=<source-sha>"></script>
+```
+
+A source merge therefore creates a new entry-module URL automatically. Manual date/increment cache tags are not release identity and MUST NOT be added to the Wretched Beta renderer dependency chain.
+
+Static ES-module imports inside the renderer use their canonical paths. The entry module is the release boundary; shared modules remain source-controlled dependencies rather than independently hand-versioned mini-releases. If the Web build later gains bundling or hashed output files, that build may replace this mechanism while preserving the invariant: **one source revision must not silently execute assets from another release.**
+
+The Beta release workflow contains guards against reintroducing manual date-style cache tags in the Beta entry/dependency chain. Do **not** depend on reviewers performing a hard refresh as a deployment mechanism.
 
 ## Local development
 
@@ -210,7 +221,7 @@ dist/
 
 ## GitHub Pages and Actions — current state
 
-As of this document's creation, **there is no checked-in `.github/workflows/` directory in the repository**.
+Wretched Beta now has a checked-in unified release workflow at `.github/workflows/wretched-beta-pnp.yml`. It validates the exporters/PnP geometry and Web cache-identity invariants, generates matching PnP/TTS artifacts from the triggering source SHA, stamps the Beta Web release identity, and commits generated release artifacts with the bot.
 
 GitHub Pages is available for the repository and has been publishing the static site, but there is not yet a repository-owned workflow that performs the desired unified DODGE build.
 
