@@ -12,6 +12,7 @@ function render(){
  $("#roomDetail").textContent=r.hazard||r.objective||r.lock||r.setup|| (r.searchable?"The room may contain something useful.":"Nothing obvious remains here.");
  $("#objective").textContent=data.scenario.objective;$("#inventory").innerHTML=`<h3>Inventory</h3>${s.inventory.length?s.inventory.map(id=>`<span class="wd-chip">${esc(data.salvage.find(x=>x.id===id)?.name||id)}</span>`).join(""):"<em>Empty</em>"}`;
  const ra=$("#roomActions");ra.innerHTML="";
+ game.legalMoves().forEach(id=>button(ra,`Move to ${game.room(id).name}`,()=>act(()=>game.move(id)),s.actions<1));
  button(ra,"Explore new room",()=>act(()=>game.explore()),s.actions<1||!s.roomDeck.length);
  button(ra,"Search room",()=>act(()=>game.search()),s.actions<1||!r.searchable||s.searched.includes(r.id));
  button(ra,"Interact",()=>act(()=>game.interact()),s.actions<1||!(r.id==="relay"&&s.inventory.includes("power-cell")));
@@ -19,7 +20,7 @@ function render(){
  $("#hand").innerHTML="";s.hand.forEach((id,i)=>{const c=game.card(id),b=document.createElement("button");b.className="wd-card";b.innerHTML=`<small>${esc(c.type)}</small><strong>${esc(c.name)}</strong><span>${esc(c.text)}</span>${c.attack?`<i>ATK ${c.attack} · RNG ${c.range} · AMMO ${c.ammo} · NOISE ${c.noise}</i>`:""}`;b.disabled=s.actions<1||s.status!=="playing";b.onclick=()=>act(()=>game.playCard(i,0));$("#hand").append(b)});
  const es=$("#enemies");es.innerHTML=s.enemies.length?s.enemies.map((e,i)=>`<div class="wd-enemy"><div><strong>${esc(e.name)}</strong><span>${esc(game.room(e.room)?.name||e.room)} · HP ${e.health} · ATK ${e.attack} · DEF ${e.defense}${e.fed?" · FED":""}</span></div><button data-enemy="${i}" ${s.actions<1||s.ammo<1?"disabled":""}>Fire Sidearm</button></div>`).join(""):"<p class='quiet'>No hostiles visible.</p>";
  es.querySelectorAll("[data-enemy]").forEach(b=>b.onclick=()=>act(()=>game.attack(+b.dataset.enemy)));
- $("#rooms").innerHTML=s.rooms.map(id=>`<span class="wd-room ${id===s.crew.room?"here":""}">${esc(game.room(id).name)}${s.corpses[id]?` <b>☠×${s.corpses[id]}</b>`:""}${s.chrysalises.some(c=>c.room===id)?" ◉":""}</span>`).join("<span class='arrow'>→</span>");
+ $("#rooms").innerHTML=s.rooms.map(id=>`<span class="wd-room ${id===s.crew.room?"here":""}">${esc(game.room(id).name)}${s.corpses[id]?` <b>☠×${s.corpses[id]}</b>`:""}${s.chrysalises.some(c=>c.room===id)?" ◉":""}</span>`).join("<span class='arrow'>↔</span>");
  $("#log").innerHTML=s.log.slice(0,10).map(x=>`<p>${esc(x)}</p>`).join("");
  $("#statusBanner").className="wd-banner "+s.status;$("#statusBanner").textContent=s.status==="playing"?`${s.crew.name} · ${s.relayActive?"RELAY ACTIVE — RETURN TO CAVE MOUTH":"EXPEDITION ACTIVE"}`:s.status==="won"?"SCENARIO COMPLETE":s.status==="retreated"?"EXPEDITION RETREATED":"EXPEDITION LOST";
  $("#endTurn").disabled=s.status!=="playing";document.querySelectorAll("#play button:not(#restart)").forEach(b=>{if(s.status!=="playing")b.disabled=true});
