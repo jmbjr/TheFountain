@@ -26,6 +26,17 @@ src=dodge["sources"]["scenario-mvp"]["uri"].split("#",1)[0]
 data=json.loads((ROOT/src).read_text())
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
+UNIT_TO_IN={"in":1.0,"mm":1/25.4,"cm":1/2.54,"pt":1/72}
+def component_inches(archetype_id):
+    comp=dodge["archetypes"][archetype_id]["component"]
+    dims=comp.get("dimensions")
+    if not dims or "width" not in dims or "height" not in dims:
+        raise SystemExit(f"{archetype_id} requires explicit rectangular dimensions for dimensionally accurate PnP")
+    scale=UNIT_TO_IN[dims["unit"]]
+    return dims["width"]*scale,dims["height"]*scale
+
+CARD_W_IN,CARD_H_IN=component_inches("standard-card")
+
 styles=getSampleStyleSheet()
 title=ParagraphStyle("title",parent=styles["Title"],fontName="Helvetica-Bold",fontSize=22,leading=25,spaceAfter=10)
 h=ParagraphStyle("h",parent=styles["Heading2"],fontName="Helvetica-Bold",fontSize=12,leading=14,spaceAfter=5)
@@ -40,17 +51,18 @@ def esc(x):
 def card(name,kind,text,footer=""):
     parts=[Paragraph(esc(kind).upper(),card_type),Paragraph(esc(name),card_title),Paragraph(esc(text),body)]
     if footer: parts += [Spacer(1,5),Paragraph(esc(footer),small)]
-    return Table([[parts]],colWidths=[2.45*inch],rowHeights=[3.45*inch],style=[
+    return Table([[parts]],colWidths=[CARD_W_IN*inch],rowHeights=[CARD_H_IN*inch],style=[
         ("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),9),("RIGHTPADDING",(0,0),(-1,-1),9),("TOPPADDING",(0,0),(-1,-1),9)])
 
 def sheet(cards):
+    # Exact finished dimensions come from DODGE; page gutters are exporter-owned.
     rows=[]
     for i in range(0,len(cards),3):
         row=cards[i:i+3]
         while len(row)<3: row.append("")
         rows.append(row)
-    t=Table(rows,colWidths=[2.5*inch]*3,rowHeights=[3.5*inch]*len(rows),hAlign="CENTER")
-    t.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),2),("RIGHTPADDING",(0,0),(-1,-1),2),("TOPPADDING",(0,0),(-1,-1),2),("BOTTOMPADDING",(0,0),(-1,-1),2)]))
+    t=Table(rows,colWidths=[CARD_W_IN*inch]*3,rowHeights=[CARD_H_IN*inch]*len(rows),hAlign="CENTER")
+    t.setStyle(TableStyle([("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),0),("RIGHTPADDING",(0,0),(-1,-1),0),("TOPPADDING",(0,0),(-1,-1),0),("BOTTOMPADDING",(0,0),(-1,-1),0)]))
     return t
 
 story=[Paragraph("WRETCHED DEMESNE",title),Paragraph("Scenario 01: The Cave — Beta Print-and-Play · DODGE 0.2.1",h),

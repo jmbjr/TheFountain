@@ -221,3 +221,8 @@ No unresolved design question was silently answered during the migration: prose-
 **Milestone:** DODGE becomes the intended neutral rules/state/topology model for Scenario 01, not only its component-inventory contract.
 
 PR: https://github.com/jmbjr/TheFountain/pull/14
+
+
+## Beta PnP becomes dimensionally DODGE-driven
+
+Following the first successful Scenario 01 PnP smoke test and DODGE issue #23, Wretched now declares its standard gameplay cards as poker-size components (2.5 × 3.5 in) in the DODGE 0.2.1 document. The Beta PnP exporter resolves those normative dimensions from DODGE instead of owning card size itself. This is the first physical-output gate toward the next Wretched stable release; room/tile sizing and unresolved physical supply quantities remain explicit follow-up decisions rather than exporter inventions.
