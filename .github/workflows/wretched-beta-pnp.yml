@@ -32,8 +32,8 @@ jobs:
           grep -q 'topPadding=0,bottomPadding=0' tools/export_wretched_beta_pnp.py
           if grep -q 'doc=SimpleDocTemplate' tools/export_wretched_beta_pnp.py; then exit 1; fi
           python -c "from reportlab.lib.pagesizes import letter; from reportlab.lib.units import mm,inch; s=3*88*mm; f=letter[1]-2*.20*inch; assert s <= f"
-          grep -q 'wretched-beta-web.js?build=SOURCE_BUILD' wretched-demesne/beta/index.html
-          if grep -Eq 'wretched-beta-web\.js\?(v|build)=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
+          grep -Eq 'wretched-beta-web\.js\?build=(SOURCE_BUILD|[0-9a-f]{12})' wretched-demesne/beta/index.html
+          if grep -Eq 'wretched-beta-web\.js\?v=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
 
       - name: Build matching PnP and TTS artifacts
         shell: bash
