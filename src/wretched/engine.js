@@ -44,5 +44,20 @@ export class WretchedEngine {
   endTurn(){if(this.state.status!=="playing")return;this.enemyPhase();for(const e of this.state.enemies)if(e.regeneration)e.health=Math.min(e.maxHealth||e.health+1,e.health+1);for(const c of this.state.chrysalises)c.age++;for(const c of [...this.state.chrysalises])if(c.age>=1){this.spawn(c.hatch,c.room);this.state.chrysalises.splice(this.state.chrysalises.indexOf(c),1)}if(this.state.threat>=this.data.rules.threat.max&&!this.state.crew.extracted){this.state.status="lost";this.log("Threat overwhelms the expedition.")}this.state.round++;this.state.actions=this.data.rules.actions_per_turn.value;while(this.state.hand.length<this.data.rules.hand_size.value)this.draw();this.log(`Round ${this.state.round} begins.`)}
   extract(){if(this.state.crew.room!=="entrance"||!this.spend())return false;this.state.crew.extracted=true;this.state.status=this.state.relayActive?"won":"retreated";this.log(this.state.relayActive?"Extraction complete. Scenario won.":"The crew retreats with what they found.");return true}
   playCard(handIndex,enemyIndex=0){const id=this.state.hand[handIndex],c=this.card(id);if(!c)return false;let ok=false;if(id==="move")ok=this.move();else if(id==="sidearm")ok=this.attack(enemyIndex,id);else if(id==="reload")ok=this.reload();else if(id==="search")ok=this.search();else if(id==="interact")ok=this.interact();else if(id==="triage"){if(this.spend()){this.state.crew.currentHealth=Math.min(this.state.crew.health,this.state.crew.currentHealth+2);ok=true}}else if(id==="jury-rig"){if(this.spend()){this.state.scrap++;ok=true}}else if(id==="scout-ahead"){if(this.spend()){this.revealRoom();ok=true}}else if(id==="take-cover"){if(this.spend()){this.state.crew.defense+=2;ok=true}}else if(id==="security-training"){if(this.spend()){this.state.crew.accuracy+=2;ok=true}}else if(id==="suppressive-fire"){if(this.spend()&&this.state.ammo){this.state.ammo--;this.addThreat(2);if(this.state.enemies[enemyIndex])this.state.enemies[enemyIndex].suppressed=true;ok=true}}else if(this.spend())ok=true;if(ok){this.state.hand.splice(handIndex,1);this.state.discard.push(id)}return ok}
+  dispatch(action){
+    if(!action||typeof action.type!=="string")return false;
+    switch(action.type){
+      case "move": return this.move(action.target);
+      case "explore": return this.explore();
+      case "search": return this.search();
+      case "interact": return this.interact();
+      case "reload": return this.reload();
+      case "attack": return this.attack(action.enemyIndex??0,action.cardId??"sidearm");
+      case "play-card": return this.playCard(action.handIndex,action.enemyIndex??0);
+      case "extract": return this.extract();
+      case "end-turn": if(this.state.status!=="playing")return false; this.endTurn(); return true;
+      default: return false;
+    }
+  }
   snapshot(){return JSON.parse(JSON.stringify(this.state))}
 }

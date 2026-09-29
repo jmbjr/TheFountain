@@ -1,0 +1,9 @@
+{
+  "format": "wretched-replay.v1",
+  "seed": "quick-test-001",
+  "crew": "security",
+  "steps": [
+    {"action": {"type": "explore"}},
+    {"action": {"type": "end-turn"}}
+  ]
+}
