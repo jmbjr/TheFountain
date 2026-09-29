@@ -20,14 +20,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install reportlab
-      - run: python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+      - name: Stamp Beta page and build PDF\n        run: |\n          SHORT_SHA="${GITHUB_SHA::12}"\n          sed -i "s/>PAGE</>${SHORT_SHA}</" wretched-demesne/beta/index.html\n          python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
       - name: Stamp deployed source revision
         run: printf '{"git_sha":"%s"}\\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
       - name: Commit generated beta PDF
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf wretched-demesne/beta/build.json
+          git add wretched-demesne/beta/index.html wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf wretched-demesne/beta/build.json
           git diff --cached --quiet && exit 0
           git commit -m "Build Wretched beta PnP PDF"
           git push
