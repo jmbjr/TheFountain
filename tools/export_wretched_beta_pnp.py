@@ -126,9 +126,7 @@ story += [Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
 
 all_cards=[]
 for crew in data["crew"]:
-    all_cards.append(card(crew["name"],"Crew reference",f'Health {crew["health"]} · Accuracy +{crew["accuracy"]} · Defense {crew["defense"]}
-
-{crew["ability"]}'))
+    all_cards.append(card(crew["name"],"Crew reference",f'Health {crew["health"]} · Accuracy +{crew["accuracy"]} · Defense {crew["defense"]}\\n\\n{crew["ability"]}'))
 
 # Starter decks are rendered exactly from qty_by_deck. This intentionally exposes
 # the known Medic 11-card inconsistency instead of silently correcting it.
@@ -149,11 +147,7 @@ for room in data["rooms"]:
 for x in data["encounters"]: all_cards.append(card(x["name"],"Encounter",x["effect"]))
 for x in data["salvage"]: all_cards.append(card(x["name"],"Salvage · "+x["type"],x["effect"]))
 for x in data["enemies"]:
-    all_cards.append(card(x["name"],"Enemy reference",f'Health {x["health"]} · Attack {x["attack"]} · Defense {x["defense"]} · Move {x["move"]}
-
-AI: {x["ai"]}
-
-{"Leaves Spider Corpse" if x["corpse"] else "No Spider Corpse"}'))
+    all_cards.append(card(x["name"],"Enemy reference",f'Health {x["health"]} · Attack {x["attack"]} · Defense {x["defense"]} · Move {x["move"]}\\n\\nAI: {x["ai"]}\\n\\n{"Leaves Spider Corpse" if x["corpse"] else "No Spider Corpse"}'))
 
 # Render the representation inventory already resolved by DODGE. PnP owns only
 # presentation; binding and quantities must not be recomputed from crew Health here.
