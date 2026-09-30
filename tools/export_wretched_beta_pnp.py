@@ -28,7 +28,7 @@ OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp
 
 resolved=resolve(DODGE_PATH,CONTRACT_PATH)
 data=resolved["canonical"]
-contract=resolved["export_contract"]
+contract=resolved["export_contract"]\nmanifest=resolved["target_manifest"]\nmanifest_by_id={x["content_id"]:x for x in manifest["contents"]}
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
