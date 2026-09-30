@@ -144,14 +144,19 @@ for x in data["salvage"]: all_cards.append(card(x["name"],"Salvage · "+x["type"
 for x in data["enemies"]:
     all_cards.append(card(x["name"],"Enemy reference",f'Health {x["health"]} · Attack {x["attack"]} · Defense {x["defense"]} · Move {x["move"]}\\n\\nAI: {x["ai"]}\\n\\n{"Leaves Spider Corpse" if x["corpse"] else "No Spider Corpse"}'))
 
-# Resolve every representation candidate included by the DODGE alternatives bundle.
-marker_count=0
+# Render the representation inventory already resolved by DODGE. PnP owns only
+# presentation; binding and quantities must not be recomputed from crew Health here.
+rep_inventory=resolved["inventory"]["representations"]
+crew_by_id={crew["id"]:crew for crew in data["crew"]}
+marker_items=[]
 for rep in health_reps:
     story += [Paragraph(esc(rep["name"]).upper(),h)]
+    items=[x for x in rep_inventory if x["representation_ref"] in inclusion["representation_refs"] and x["representation_ref"]==next(ref for ref in inclusion["representation_refs"] if resolved["representations"][ref] is rep)]
     if rep["kind"]=="unit_tokens":
         cells=[]
-        for crew in data["crew"]:
-            for _ in range(crew["health"]):
+        for item in items:
+            crew=crew_by_id[item["binding_ref"]]
+            for _ in range(item["quantity"]):
                 cells.append(Paragraph(f'{esc(crew["name"])}<br/>HP',ParagraphStyle("hptok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
         rows=[cells[i:i+8] for i in range(0,len(cells),8)]
         while len(rows[-1])<8: rows[-1].append("")
@@ -160,21 +165,24 @@ for rep in health_reps:
         story += [t,Spacer(1,10)]
     elif rep["kind"]=="numbered_track":
         tracks=[]
-        for crew in data["crew"]:
+        for item in items:
+            crew=crew_by_id[item["binding_ref"]]
             nums="  ".join(str(x) for x in range(crew["health"]+1))
-            tracks.append(Table([[Paragraph(f'<b>{esc(crew["name"])} HEALTH</b><br/>{nums}',body)]],colWidths=[50/25.4*inch],rowHeights=[100/25.4*inch],style=[("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),8),("TOPPADDING",(0,0),(-1,-1),8)]))
+            for _ in range(item["quantity"]):
+                tracks.append(Table([[Paragraph(f'<b>{esc(crew["name"])} HEALTH</b><br/>{nums}',body)]],colWidths=[50/25.4*inch],rowHeights=[100/25.4*inch],style=[("BOX",(0,0),(-1,-1),.6,colors.black),("VALIGN",(0,0),(-1,-1),"TOP"),("LEFTPADDING",(0,0),(-1,-1),8),("TOPPADDING",(0,0),(-1,-1),8)]))
         for i in range(0,len(tracks),3):
             row=tracks[i:i+3]
             while len(row)<3: row.append("")
             story += [Table([row],colWidths=[50/25.4*inch]*3,hAlign="CENTER",style=[("VALIGN",(0,0),(-1,-1),"TOP")]),Spacer(1,8)]
-        marker_count += len(data["crew"])
     elif rep["kind"]=="marker_track":
-        for crew in data["crew"]:
-            all_cards.append(card(crew["name"],"Health alternative · crew card","Health\\n"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
-        marker_count += len(data["crew"])
+        for item in items:
+            crew=crew_by_id[item["binding_ref"]]
+            for _ in range(item["quantity"]):
+                all_cards.append(card(crew["name"],"Health alternative · crew card","Health\n"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
+                marker_items.append(item)
 
-if marker_count:
-    markers=[Paragraph("HP",ParagraphStyle("hpmark",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")) for _ in range(marker_count)]
+if marker_items:
+    markers=[Paragraph("HP",ParagraphStyle("hpmark",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")) for item in marker_items for _ in range(item["quantity"])]
     rows=[markers[i:i+10] for i in range(0,len(markers),10)]
     while len(rows[-1])<10: rows[-1].append("")
     mt=Table(rows,colWidths=[8/25.4*inch]*10,rowHeights=[8/25.4*inch]*len(rows),hAlign="CENTER")
