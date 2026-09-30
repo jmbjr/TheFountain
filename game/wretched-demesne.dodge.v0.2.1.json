@@ -616,38 +616,6 @@
           "archetype_ref": "standard-card"
         }
       ]
-    },
-    "enemy-token-fixtures": {
-      "kind": "collection",
-      "archetype_ref": "deck",
-      "source_ref": "scenario-mvp",
-      "members": [
-        {
-          "entity_ref": "scenario-mvp:enemies/small-spider",
-          "archetype_ref": "board-token",
-          "quantity": 6
-        },
-        {
-          "entity_ref": "scenario-mvp:enemies/large-spider",
-          "archetype_ref": "board-token",
-          "quantity": 4
-        },
-        {
-          "entity_ref": "scenario-mvp:enemies/alpha-spider",
-          "archetype_ref": "board-token",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "scenario-mvp:enemies/brood-mother",
-          "archetype_ref": "board-token",
-          "quantity": 1
-        },
-        {
-          "entity_ref": "scenario-mvp:enemies/leng-servant",
-          "archetype_ref": "board-token",
-          "quantity": 2
-        }
-      ]
     }
   },
   "scenes": {
@@ -700,10 +668,6 @@
         {
           "id": "enemy-reference-cards-1",
           "object_ref": "enemy-reference-cards"
-        },
-        {
-          "id": "enemy-token-fixtures-1",
-          "object_ref": "enemy-token-fixtures"
         }
       ]
     }
