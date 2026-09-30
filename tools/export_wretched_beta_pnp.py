@@ -219,7 +219,7 @@ playtest_supply_counts={
     "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"],
     "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"],
 }
-enemy_prefix="scene/scenario-01-the-cave/instance/enemy-token-fixtures-1/member/"\nenemy_token_entries=[x for x in manifest["contents"] if x["content_id"].startswith(enemy_prefix) and x["inclusion"]!="excluded-override"]\nfor label,count in [*[(x["entity"]["name"],x["resolved_quantity"]) for x in enemy_token_entries],*playtest_supply_counts.items()]:\n    # All token quantities are resolved through the target manifest.\n    for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
+for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),*playtest_supply_counts.items()]:\n    # Enemy token counts remain explicitly noncanonical Beta fixtures.\n    for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
 rows=[tokens[i:i+5] for i in range(0,len(tokens),5)]
 while len(rows[-1])<5: rows[-1].append("")
 tt=Table(rows,colWidths=[1.35*inch]*5,rowHeights=[.72*inch]*len(rows),hAlign="CENTER")
