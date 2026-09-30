@@ -616,6 +616,85 @@
           "archetype_ref": "standard-card"
         }
       ]
+    },
+    "small-spider-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Small Spider",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "SMALL SPIDER"
+        }
+      ],
+      "tags": [
+        "enemy",
+        "spider",
+        "small"
+      ]
+    },
+    "large-spider-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Large Spider",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "LARGE SPIDER"
+        }
+      ],
+      "tags": [
+        "enemy",
+        "spider",
+        "large"
+      ]
+    },
+    "alpha-spider-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Alpha Spider",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "ALPHA SPIDER"
+        }
+      ],
+      "tags": [
+        "enemy",
+        "spider",
+        "alpha"
+      ]
+    },
+    "brood-mother-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Brood Mother",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "BROOD MOTHER"
+        }
+      ],
+      "tags": [
+        "enemy",
+        "spider",
+        "brood-mother"
+      ]
+    },
+    "leng-servant-token": {
+      "kind": "token",
+      "archetype_ref": "board-token",
+      "name": "Men of Leng Servant",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "MEN OF LENG SERVANT"
+        }
+      ],
+      "tags": [
+        "enemy",
+        "leng-servant"
+      ]
     }
   },
   "scenes": {
@@ -668,6 +747,41 @@
         {
           "id": "enemy-reference-cards-1",
           "object_ref": "enemy-reference-cards"
+        },
+        {
+          "id": "small-spider-supply",
+          "object_ref": "small-spider-token",
+          "state": {
+            "supply": true
+          }
+        },
+        {
+          "id": "large-spider-supply",
+          "object_ref": "large-spider-token",
+          "state": {
+            "supply": true
+          }
+        },
+        {
+          "id": "alpha-spider-supply",
+          "object_ref": "alpha-spider-token",
+          "state": {
+            "supply": true
+          }
+        },
+        {
+          "id": "brood-mother-supply",
+          "object_ref": "brood-mother-token",
+          "state": {
+            "supply": true
+          }
+        },
+        {
+          "id": "leng-servant-supply",
+          "object_ref": "leng-servant-token",
+          "state": {
+            "supply": true
+          }
         }
       ]
     }
