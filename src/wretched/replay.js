@@ -3,6 +3,7 @@ import {createSeededRng} from "./random.js";
 
 export const REPLAY_FORMAT="wretched-replay.v1";
 function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+function comparableState(expected,actual){const e=structuredClone(expected),a=structuredClone(actual);if(Array.isArray(e?.log)&&e.log.every(x=>typeof x==="string")&&Array.isArray(a?.log))a.log=a.log.map(x=>typeof x==="string"?x:x.message);if(e?.actionNumber===undefined)delete a.actionNumber;return {expected:e,actual:a}}
 function edges(state){
   const out=new Set();
   for(const [a,bs] of Object.entries(state.connections||{}))for(const b of bs||[])out.add([a,b].sort().join("\u0000"));
@@ -32,7 +33,7 @@ export function runReplay(data,replay,{verifyState=true}={}){
     const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string")throw new Error(`Step ${i}: missing action.type`);
     const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted)throw new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);
     const state=game.snapshot(),diagnostics=replayDiagnostics(before,state);
-    if(verifyState&&step.state!==undefined&&!same(state,step.state)){const summary=diffSummary(step.state,state);const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;throw err}
+    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;throw err}}
     results.push({index:i,action,before,state,diagnostics});
   }
   return {game,results,state:game.snapshot()};

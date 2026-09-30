@@ -8,7 +8,8 @@ export class WretchedEngine {
       actions:this.data.rules.actions_per_turn.value,ammo:this.data.rules.ammo.starting,scrap:0,knowledge:0,threat:this.data.rules.threat.start,
       relayActive:false,inventory:[],searched:[],rooms:["entrance"],roomDeck:this.shuffle((this.data.semantic_decks?.rooms||this.data.rooms.map(r=>r.id)).filter(id=>id!=="entrance"&&id!=="relay")),
       encounters:this.shuffle(this.data.semantic_decks?.encounters||this.data.encounters.map(e=>e.id)),salvage:this.shuffle(this.data.semantic_decks?.salvage||this.data.salvage.map(s=>s.id)),
-      connections:{entrance:[]},enemies:[],corpses:{},chrysalises:[],log:["Expedition begins at the Cave Mouth."],status:"playing"};
+      connections:{entrance:[]},enemies:[],corpses:{},chrysalises:[],log:[],actionNumber:0,status:"playing"};
+    this.log("Expedition begins at the Cave Mouth.");
     const relay=this.state.roomDeck.length<3?this.state.roomDeck.length:Math.max(0,this.state.roomDeck.length-3+Math.floor(this.rng()*3));
     this.state.roomDeck.splice(relay,0,"relay"); this.buildDeck(crewId); return this.state;
   }
@@ -16,7 +17,7 @@ export class WretchedEngine {
   buildDeck(id){const resolved=this.data.starter_decks?.[id];let d=resolved?[...resolved]:[];if(!resolved){for(const c of this.data.cards){for(let i=0;i<(c.qty_by_deck?.[id]||0);i++)d.push(c.id)}}this.state.deck=this.shuffle(d);this.state.discard=[];this.state.hand=[];this.draw(this.data.rules.hand_size.value);}
   draw(n=1){while(n--){if(!this.state.deck.length){this.state.deck=this.shuffle(this.state.discard);this.state.discard=[]}if(this.state.deck.length)this.state.hand.push(this.state.deck.pop())}}
   spend(){if(this.state.status!=="playing"||this.state.actions<1)return false;this.state.actions--;return true}
-  log(s){this.state.log.unshift(s)}
+  log(message,level="INFO"){this.state.log.unshift({level,round:this.state.round,action:this.state.actionNumber||0,message})}
   room(id=this.state.crew.room){return this.data.rooms.find(r=>r.id===id)}
   card(id){return this.data.cards.find(c=>c.id===id)}
   connect(a,b){this.state.connections[a]??=[];this.state.connections[b]??=[];if(!this.state.connections[a].includes(b))this.state.connections[a].push(b);if(!this.state.connections[b].includes(a))this.state.connections[b].push(a)}
@@ -48,18 +49,25 @@ export class WretchedEngine {
   playCard(handIndex,enemyIndex=0,target=null){const id=this.state.hand[handIndex],c=this.card(id);if(!c)return false;let ok=false;if(id==="move")ok=this.move(target);else if(id==="sidearm")ok=this.attack(enemyIndex,id);else if(id==="reload")ok=this.reload();else if(id==="search")ok=this.search();else if(id==="interact")ok=this.interact();else if(id==="triage"){if(this.spend()){this.state.crew.currentHealth=Math.min(this.state.crew.health,this.state.crew.currentHealth+2);ok=true}}else if(id==="jury-rig"){if(this.spend()){this.state.scrap++;ok=true}}else if(id==="scout-ahead"){if(this.spend()){this.revealRoom();ok=true}}else if(id==="take-cover"){if(this.spend()){this.state.crew.defense+=2;ok=true}}else if(id==="security-training"){if(this.spend()){this.state.crew.accuracy+=2;ok=true}}else if(id==="suppressive-fire"){if(this.spend()&&this.state.ammo){this.state.ammo--;this.addThreat(2);if(this.state.enemies[enemyIndex])this.state.enemies[enemyIndex].suppressed=true;ok=true}}else if(this.spend())ok=true;if(ok){this.state.hand.splice(handIndex,1);this.state.discard.push(id)}return ok}
   dispatch(action){
     if(!action||typeof action.type!=="string")return false;
+    const beforeLog=this.state.log.length,beforeRound=this.state.round,beforeAction=this.state.actionNumber||0;
+    this.state.actionNumber=beforeAction+1;
+    let ok=false;
     switch(action.type){
-      case "move": return this.move(action.target);
-      case "explore": return this.explore();
-      case "search": return this.search();
-      case "interact": return this.interact();
-      case "reload": return this.reload();
-      case "attack": return this.attack(action.enemyIndex??0,action.cardId??"sidearm");
-      case "play-card": return this.playCard(action.handIndex,action.enemyIndex??0,action.target??null);
-      case "extract": return this.extract();
-      case "end-turn": if(this.state.status!=="playing")return false; this.endTurn(); return true;
-      default: return false;
+      case "move": ok=this.move(action.target); break;
+      case "explore": ok=this.explore(); break;
+      case "search": ok=this.search(); break;
+      case "interact": ok=this.interact(); break;
+      case "reload": ok=this.reload(); break;
+      case "attack": ok=this.attack(action.enemyIndex??0,action.cardId??"sidearm"); break;
+      case "play-card": ok=this.playCard(action.handIndex,action.enemyIndex??0,action.target??null); break;
+      case "extract": ok=this.extract(); break;
+      case "end-turn": if(this.state.status==="playing"){this.endTurn();ok=true} break;
+      default: break;
     }
+    if(!ok){this.state.actionNumber=beforeAction;return false}
+    if(this.state.log.length===beforeLog)this.log(`Action: ${action.type}.`,"DEBUG");
+    if(this.state.round!==beforeRound)this.state.actionNumber=0;
+    return true;
   }
   snapshot(){return JSON.parse(JSON.stringify(this.state))}
 }
