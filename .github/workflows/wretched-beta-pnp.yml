@@ -73,7 +73,7 @@ jobs:
           from pathlib import Path
           web_dir = Path(os.environ["WEB_DIR"])
           model = web_dir / "wretched/model.js"
-          data_ref = "../../game/wretched-demesne.scenario-01.mvp.v0.1.json"
+          data_ref = "../game/wretched-demesne.scenario-01.mvp.v0.1.json"
           resolved = (model.parent / data_ref).resolve()
           expected = (web_dir / "game/wretched-demesne.scenario-01.mvp.v0.1.json").resolve()
           assert resolved == expected, (resolved, expected)
