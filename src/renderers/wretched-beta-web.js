@@ -15,12 +15,14 @@ function render(){
  $("#roomDetail").textContent=r.hazard||r.objective||r.lock||r.setup|| (r.searchable?"The room may contain something useful.":"Nothing obvious remains here.");
  $("#objective").textContent=data.scenario.objective;$("#inventory").innerHTML=`<h3>Inventory</h3>${s.inventory.length?s.inventory.map(id=>`<span class="wd-chip">${esc(data.salvage.find(x=>x.id===id)?.name||id)}</span>`).join(""):"<em>Empty</em>"}`;
  const ra=$("#roomActions");ra.innerHTML="";
- game.legalMoves().forEach(id=>button(ra,`Move to ${game.room(id).name}`,()=>act({type:"move",target:id}),s.actions<1));
- button(ra,"Explore new room",()=>act({type:"explore"}),s.actions<1||!s.roomDeck.length);
+ const moves=game.legalMoves();if(moves.length){const label=document.createElement("p");label.className="quiet";label.textContent="MOVE — follow an existing connection";ra.append(label)}
+ moves.forEach(id=>button(ra,`Move → ${game.room(id).name}`,()=>act({type:"move",target:id}),s.actions<1));
+ const exploreLabel=document.createElement("p");exploreLabel.className="quiet";exploreLabel.textContent=`EXPLORE — reveal a new room connected from ${r.name}`;ra.append(exploreLabel);
+ button(ra,`Explore from ${r.name}`,()=>act({type:"explore"}),s.actions<1||!s.roomDeck.length);
  button(ra,"Search room",()=>act({type:"search"}),s.actions<1||!r.searchable||s.searched.includes(r.id));
  button(ra,"Interact",()=>act({type:"interact"}),s.actions<1||!(r.id==="relay"&&s.inventory.includes("power-cell")));
  if(r.id==="entrance")button(ra,s.relayActive?"Extract — complete mission":"Retreat to ship",()=>act({type:"extract"}),s.actions<1);
- $("#hand").innerHTML="";s.hand.forEach((id,i)=>{const card=game.card(id),b=document.createElement("button");b.className="wd-card";b.innerHTML=`<small>${esc(card.type)}</small><strong>${esc(card.name)}</strong><span>${esc(card.text)}</span>${card.attack?`<i>ATK ${card.attack} · RNG ${card.range} · AMMO ${card.ammo} · NOISE ${card.noise}</i>`:""}`;b.disabled=s.actions<1||s.status!=="playing";b.onclick=()=>act({type:"play-card",handIndex:i,enemyIndex:0});$("#hand").append(b)});
+ $("#hand").innerHTML="";s.hand.forEach((id,i)=>{const card=game.card(id),b=document.createElement("button");b.className="wd-card";b.innerHTML=`<small>${esc(card.type)}</small><strong>${esc(card.name)}</strong><span>${esc(card.text)}</span>${card.attack?`<i>ATK ${card.attack} · RNG ${card.range} · AMMO ${card.ammo} · NOISE ${card.noise}</i>`:""}`;b.disabled=s.actions<1||s.status!=="playing";if(id==="move"){const moves=game.legalMoves();b.disabled=b.disabled||moves.length!==1;b.title=moves.length===1?`Move to ${game.room(moves[0]).name}`:"Use the explicit Move destination buttons above."}b.onclick=()=>{const action={type:"play-card",handIndex:i,enemyIndex:0};if(id==="move"){const moves=game.legalMoves();if(moves.length!==1)return;action.target=moves[0]}act(action)};$("#hand").append(b)});
  const es=$("#enemies");es.innerHTML=s.enemies.length?s.enemies.map((e,i)=>`<div class="wd-enemy"><div><strong>${esc(e.name)}</strong><span>${esc(game.room(e.room)?.name||e.room)} · HP ${e.health} · ATK ${e.attack} · DEF ${e.defense}${e.fed?" · FED":""}</span></div><button data-enemy="${i}" ${s.actions<1||s.ammo<1?"disabled":""}>Fire Sidearm</button></div>`).join(""):"<p class='quiet'>No hostiles visible.</p>";
  es.querySelectorAll("[data-enemy]").forEach(b=>b.onclick=()=>act({type:"attack",enemyIndex:+b.dataset.enemy,cardId:"sidearm"}));
  const topology=buildTopologyView(s),nodeById=new Map(topology.nodes.map(n=>[n.id,n]));
