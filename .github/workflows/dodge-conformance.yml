@@ -59,5 +59,11 @@ jobs:
           assert by["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"]==8
           assert by["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"]==4
           assert by["representation/health-unit-tokens/component/0"]["resolved_quantity"]==41
-          assert any(d["classification"]=="noncanonical-playtest" for d in by["scene/scenario-01-the-cave/instance/corpse-supply"]["diagnostics"])\n          printable_instances=["crew-reference-cards-1","prototype-action-cards-1","scenario-room-cards-1","scenario-encounter-cards-1","scenario-salvage-cards-1","enemy-reference-cards-1"]\n          for instance_id in printable_instances:\n              prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"\n              entries=[x for x in manifest["contents"] if x["content_id"].startswith(prefix)]\n              assert entries and all("entity" in x for x in entries)\n          assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith("scene/scenario-01-the-cave/instance/prototype-action-cards-1/member/"))==51
+          assert any(d["classification"]=="noncanonical-playtest" for d in by["scene/scenario-01-the-cave/instance/corpse-supply"]["diagnostics"])
+          printable_instances=["crew-reference-cards-1","prototype-action-cards-1","scenario-room-cards-1","scenario-encounter-cards-1","scenario-salvage-cards-1","enemy-reference-cards-1"]
+          for instance_id in printable_instances:
+              prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
+              entries=[x for x in manifest["contents"] if x["content_id"].startswith(prefix)]
+              assert entries and all("entity" in x for x in entries)
+          assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith("scene/scenario-01-the-cave/instance/prototype-action-cards-1/member/"))==51
           PY
