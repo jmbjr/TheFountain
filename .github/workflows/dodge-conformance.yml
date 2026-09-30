@@ -50,6 +50,11 @@ jobs:
           Draft202012Validator(schema).validate(manifest)
           resolved=json.load(open("/tmp/wretched-resolved.json"))
           assert resolved["format"]=="wretched-resolved-game.v1"
+          expected_decks={"captain":10,"security":10,"engineer":10,"medic":11,"scout":10}
+          for crew,total in expected_decks.items():
+              collection=resolved["semantic_collections"][f"{crew}-starter-deck-1"]
+              assert collection["object_ref"]==f"scenario-{crew}-starter-deck"
+              assert sum(m.get("quantity",1) for m in collection["members"])==total
           assert resolved["scenario_id"]=="scenario-01"
           assert {x["object_ref"] for x in resolved["inventory"]["unresolved"]}=={"spider-corpse","chrysalis"}
           inv=resolved["inventory"]["representations"]
