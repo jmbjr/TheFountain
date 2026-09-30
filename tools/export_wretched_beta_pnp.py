@@ -76,8 +76,7 @@ class CardFace(Flowable):
         p.setStrokeColor(colors.HexColor("#AAAAAA")); p.setLineWidth(.25)
         p.arc(0,0,d,d,180,90); p.arc(w-d,0,w,d,270,90); p.arc(w-d,h-d,w,h,0,90); p.arc(0,h-d,d,h,90,90)
         y=h-10
-        for txt,sty in [(esc(self.kind).upper(),card_type),(esc(self.name),card_title),(esc(self.text).replace("
-","<br/>"),body)]:
+        for txt,sty in [(esc(self.kind).upper(),card_type),(esc(self.name),card_title),(esc(self.text).replace("\\n","<br/>"),body)]:
             para=Paragraph(txt,sty); _,ph=para.wrap(w-18,max(1,y)); y-=ph; para.drawOn(p,9,y); y-=4
         if self.footer:
             para=Paragraph(esc(self.footer),small); para.wrap(w-18,max(1,y)); para.drawOn(p,9,10)
@@ -146,8 +145,7 @@ for room in data["rooms"]:
     details=[f'Connections: {room["connections"]}',"Searchable" if room["searchable"] else "Not searchable"]
     for key in ("terrain","setup","hazard","lock","objective_item","objective","tag"):
         if room.get(key): details.append(f'{key.replace("_"," ").title()}: {room[key]}')
-    all_cards.append(card(room["name"],"Room","
-".join(details)))
+    all_cards.append(card(room["name"],"Room","\\n".join(details)))
 for x in data["encounters"]: all_cards.append(card(x["name"],"Encounter",x["effect"]))
 for x in data["salvage"]: all_cards.append(card(x["name"],"Salvage · "+x["type"],x["effect"]))
 for x in data["enemies"]:
@@ -192,8 +190,7 @@ for rep_ref,rep in health_reps:
         for item in [x for x in items if x["role"]=="reference-track"]:
             crew=crew_by_id[item["binding_ref"]]
             for _ in range(item["quantity"]):
-                all_cards.append(card(crew["name"],"Health alternative · crew card","Health
-"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
+                all_cards.append(card(crew["name"],"Health alternative · crew card","Health\\n"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
         marker_items.extend(x for x in items if x["role"]=="marker")
 
 if marker_items:
