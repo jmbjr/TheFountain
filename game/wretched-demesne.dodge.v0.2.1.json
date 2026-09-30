@@ -383,23 +383,23 @@
       "source_ref": "scenario-mvp",
       "members": [
         {
-          "entity_ref": "scenario-mvp:crew/captain",
+          "entity_ref": "scenario-mvp:crew:captain",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:crew/security",
+          "entity_ref": "scenario-mvp:crew:security",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:crew/engineer",
+          "entity_ref": "scenario-mvp:crew:engineer",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:crew/medic",
+          "entity_ref": "scenario-mvp:crew:medic",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:crew/scout",
+          "entity_ref": "scenario-mvp:crew:scout",
           "archetype_ref": "standard-card"
         }
       ]
@@ -410,64 +410,64 @@
       "source_ref": "scenario-mvp",
       "members": [
         {
-          "entity_ref": "scenario-mvp:cards/move",
+          "entity_ref": "scenario-mvp:cards:move",
           "archetype_ref": "standard-card",
           "quantity": 11
         },
         {
-          "entity_ref": "scenario-mvp:cards/take-cover",
+          "entity_ref": "scenario-mvp:cards:take-cover",
           "archetype_ref": "standard-card",
           "quantity": 6
         },
         {
-          "entity_ref": "scenario-mvp:cards/sidearm",
+          "entity_ref": "scenario-mvp:cards:sidearm",
           "archetype_ref": "standard-card",
           "quantity": 6
         },
         {
-          "entity_ref": "scenario-mvp:cards/reload",
+          "entity_ref": "scenario-mvp:cards:reload",
           "archetype_ref": "standard-card",
           "quantity": 6
         },
         {
-          "entity_ref": "scenario-mvp:cards/assist",
+          "entity_ref": "scenario-mvp:cards:assist",
           "archetype_ref": "standard-card",
           "quantity": 4
         },
         {
-          "entity_ref": "scenario-mvp:cards/search",
+          "entity_ref": "scenario-mvp:cards:search",
           "archetype_ref": "standard-card",
           "quantity": 4
         },
         {
-          "entity_ref": "scenario-mvp:cards/interact",
+          "entity_ref": "scenario-mvp:cards:interact",
           "archetype_ref": "standard-card",
           "quantity": 5
         },
         {
-          "entity_ref": "scenario-mvp:cards/suppressive-fire",
+          "entity_ref": "scenario-mvp:cards:suppressive-fire",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:cards/security-training",
+          "entity_ref": "scenario-mvp:cards:security-training",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:cards/jury-rig",
+          "entity_ref": "scenario-mvp:cards:jury-rig",
           "archetype_ref": "standard-card",
           "quantity": 2
         },
         {
-          "entity_ref": "scenario-mvp:cards/triage",
+          "entity_ref": "scenario-mvp:cards:triage",
           "archetype_ref": "standard-card",
           "quantity": 2
         },
         {
-          "entity_ref": "scenario-mvp:cards/scout-ahead",
+          "entity_ref": "scenario-mvp:cards:scout-ahead",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:cards/command",
+          "entity_ref": "scenario-mvp:cards:command",
           "archetype_ref": "standard-card",
           "quantity": 2
         }
@@ -479,43 +479,43 @@
       "source_ref": "scenario-mvp",
       "members": [
         {
-          "entity_ref": "scenario-mvp:rooms/entrance",
+          "entity_ref": "scenario-mvp:rooms:entrance",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/collapsed-gallery",
+          "entity_ref": "scenario-mvp:rooms:collapsed-gallery",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/flooded-passage",
+          "entity_ref": "scenario-mvp:rooms:flooded-passage",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/bone-pit",
+          "entity_ref": "scenario-mvp:rooms:bone-pit",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/fungal-vault",
+          "entity_ref": "scenario-mvp:rooms:fungal-vault",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/nest",
+          "entity_ref": "scenario-mvp:rooms:nest",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/ruined-workshop",
+          "entity_ref": "scenario-mvp:rooms:ruined-workshop",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/sealed-door",
+          "entity_ref": "scenario-mvp:rooms:sealed-door",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/relay",
+          "entity_ref": "scenario-mvp:rooms:relay",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:rooms/dead-end",
+          "entity_ref": "scenario-mvp:rooms:dead-end",
           "archetype_ref": "standard-card"
         }
       ]
@@ -526,27 +526,27 @@
       "source_ref": "scenario-mvp",
       "members": [
         {
-          "entity_ref": "scenario-mvp:encounters/skittering",
+          "entity_ref": "scenario-mvp:encounters:skittering",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:encounters/fresh-remains",
+          "entity_ref": "scenario-mvp:encounters:fresh-remains",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:encounters/ambush",
+          "entity_ref": "scenario-mvp:encounters:ambush",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:encounters/unstable-rock",
+          "entity_ref": "scenario-mvp:encounters:unstable-rock",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:encounters/old-machine",
+          "entity_ref": "scenario-mvp:encounters:old-machine",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:encounters/distant-howls",
+          "entity_ref": "scenario-mvp:encounters:distant-howls",
           "archetype_ref": "standard-card"
         }
       ]
@@ -557,35 +557,35 @@
       "source_ref": "scenario-mvp",
       "members": [
         {
-          "entity_ref": "scenario-mvp:salvage/ammo-cache",
+          "entity_ref": "scenario-mvp:salvage:ammo-cache",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/med-gel",
+          "entity_ref": "scenario-mvp:salvage:med-gel",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/scrap",
+          "entity_ref": "scenario-mvp:salvage:scrap",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/armor-plate",
+          "entity_ref": "scenario-mvp:salvage:armor-plate",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/shotgun",
+          "entity_ref": "scenario-mvp:salvage:shotgun",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/translation-fragment",
+          "entity_ref": "scenario-mvp:salvage:translation-fragment",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/phase-cutter",
+          "entity_ref": "scenario-mvp:salvage:phase-cutter",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:salvage/power-cell",
+          "entity_ref": "scenario-mvp:salvage:power-cell",
           "archetype_ref": "standard-card"
         }
       ]
@@ -596,23 +596,23 @@
       "source_ref": "scenario-mvp",
       "members": [
         {
-          "entity_ref": "scenario-mvp:enemies/small-spider",
+          "entity_ref": "scenario-mvp:enemies:small-spider",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:enemies/large-spider",
+          "entity_ref": "scenario-mvp:enemies:large-spider",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:enemies/alpha-spider",
+          "entity_ref": "scenario-mvp:enemies:alpha-spider",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:enemies/brood-mother",
+          "entity_ref": "scenario-mvp:enemies:brood-mother",
           "archetype_ref": "standard-card"
         },
         {
-          "entity_ref": "scenario-mvp:enemies/leng-servant",
+          "entity_ref": "scenario-mvp:enemies:leng-servant",
           "archetype_ref": "standard-card"
         }
       ]
