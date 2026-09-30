@@ -268,6 +268,8 @@ Avoid patch-by-patch guessing. Inspect the exact source revision, checked-in gen
 
 A test should be weakened only if the invariant itself was wrong. If the invariant is correct, fix the generator or architecture instead.
 
+Finally, test the **runtime mechanism itself**, not only a filesystem analogue of the mechanism. During the Wretched atomic-release work, CI correctly proved that `../game/...` would reach the generated JSON *if* the loader resolved it from `model.js`; however, the checked-in loader still used plain `fetch(url)`. The assertion validated our intended design rather than the code the browser actually executed. For module-addressed data, CI should therefore also verify that the generated loader contains/uses the module-relative resolution boundary (or, preferably, exercise the loader in an integration test).
+
 ## Local development
 
 The site uses ES modules and fetches JSON, so opening the HTML directly as a `file://` URL is not a reliable test. Serve the repository over HTTP.
