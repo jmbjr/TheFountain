@@ -58,7 +58,6 @@ def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,r
                     _,catalog,item_id=entity_ref.split(":",2)
                     matches=[x for x in canonical.get(catalog,[]) if x.get("id")==item_id]
                     if len(matches)!=1: raise ResolutionError(f"Expected one canonical entity for {entity_ref}")
-                    me["entity"]=copy.deepcopy(matches[0])
                     me["provenance"].append(provenance("collection-member",entity_ref,f"/{catalog}/{item_id}"))
                 if mcomp is not None: me["component_inherited"]=copy.deepcopy(mcomp);me["component_effective"]=copy.deepcopy(mcomp)
                 entries.append(me)
