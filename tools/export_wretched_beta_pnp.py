@@ -7,7 +7,7 @@ canonical source. It contains layout policy only; it must not invent game
 balance, rules, membership, or quantities.
 """
 from __future__ import annotations
-import argparse, json, pathlib
+import argparse, json, pathlib, sys
 from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import letter
@@ -16,6 +16,8 @@ from reportlab.lib.units import inch
 from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, Spacer, Table, TableStyle, PageBreak, Flowable
 
 ROOT=pathlib.Path(__file__).parents[1]
+sys.path.insert(0,str(ROOT/"tools"))
+from resolve_wretched_dodge import resolve
 DODGE_PATH=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
 parser=argparse.ArgumentParser()
 parser.add_argument("--git-sha",default="local")
@@ -24,12 +26,10 @@ CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
 SHORT_SHA=args.git_sha[:12] if args.git_sha!="local" else "local"
 OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"
 
+resolved=resolve(DODGE_PATH,CONTRACT_PATH)
 dodge=json.loads(DODGE_PATH.read_text())
-if dodge.get("dodge_version")!="0.2.1":
-    raise SystemExit("Beta PnP requires DODGE 0.2.1")
-src=dodge["sources"]["scenario-mvp"]["uri"].split("#",1)[0]
-data=json.loads((ROOT/src).read_text())
-contract=json.loads(CONTRACT_PATH.read_text())
+data=resolved["canonical"]
+contract=resolved["export_contract"]
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
