@@ -125,29 +125,39 @@ story += [Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
     "They bind the same DODGE Health state and are alternatives for evaluation, not simultaneous gameplay requirements.",body),Spacer(1,8)]
 
 all_cards=[]
-for crew in data["crew"]:
-    all_cards.append(card(crew["name"],"Crew reference",f'Health {crew["health"]} · Accuracy +{crew["accuracy"]} · Defense {crew["defense"]}\\n\\n{crew["ability"]}'))
-
-# Starter decks are rendered exactly from qty_by_deck. This intentionally exposes
-# the known Medic 11-card inconsistency instead of silently correcting it.
-for crew in data["crew"]:
-    for action in data["cards"]:
-        qty=action.get("qty_by_deck",{}).get(crew["id"],0)
-        stats=[]
-        for key,label in (("attack","ATK"),("range","RNG"),("ammo","AMMO"),("noise","NOISE")):
-            if key in action: stats.append(f'{label} {action[key]}')
-        footer=f'{crew["name"]} starter · '+" · ".join(stats)
-        for _ in range(qty): all_cards.append(card(action["name"],action["type"],action["text"],footer))
-
-for room in data["rooms"]:
-    details=[f'Connections: {room["connections"]}',"Searchable" if room["searchable"] else "Not searchable"]
-    for key in ("terrain","setup","hazard","lock","objective_item","objective","tag"):
-        if room.get(key): details.append(f'{key.replace("_"," ").title()}: {room[key]}')
-    all_cards.append(card(room["name"],"Room","\\n".join(details)))
-for x in data["encounters"]: all_cards.append(card(x["name"],"Encounter",x["effect"]))
-for x in data["salvage"]: all_cards.append(card(x["name"],"Salvage · "+x["type"],x["effect"]))
-for x in data["enemies"]:
-    all_cards.append(card(x["name"],"Enemy reference",f'Health {x["health"]} · Attack {x["attack"]} · Defense {x["defense"]} · Move {x["move"]}\\n\\nAI: {x["ai"]}\\n\\n{"Leaves Spider Corpse" if x["corpse"] else "No Spider Corpse"}'))
+manifest_card_groups=[
+    ("crew-reference-cards-1","Crew reference"),
+    ("prototype-action-cards-1","Action"),
+    ("scenario-room-cards-1","Room"),
+    ("scenario-encounter-cards-1","Encounter"),
+    ("scenario-salvage-cards-1","Salvage"),
+    ("enemy-reference-cards-1","Enemy reference"),
+]
+for instance_id,kind in manifest_card_groups:
+    prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
+    for item in [x for x in manifest["contents"] if x["content_id"].startswith(prefix) and x["inclusion"]!="excluded-override"]:
+        entity=item["entity"]
+        if kind=="Crew reference":
+            text=f'Health {entity["health"]} · Accuracy +{entity["accuracy"]} · Defense {entity["defense"]}\\n\\n{entity["ability"]}'
+            footer=""
+        elif kind=="Action":
+            text=entity["text"]; stats=[]
+            for key,label in (("attack","ATK"),("range","RNG"),("ammo","AMMO"),("noise","NOISE")):
+                if key in entity: stats.append(f'{label} {entity[key]}')
+            footer=" · ".join(stats)
+        elif kind=="Room":
+            details=[f'Connections: {entity["connections"]}',"Searchable" if entity["searchable"] else "Not searchable"]
+            for key in ("terrain","setup","hazard","lock","objective_item","objective","tag"):
+                if entity.get(key): details.append(f'{key.replace("_"," ").title()}: {entity[key]}')
+            text="\\n".join(details); footer=""
+        elif kind=="Encounter":
+            text=entity["effect"]; footer=""
+        elif kind=="Salvage":
+            text=entity["effect"]; footer=entity["type"]
+        else:
+            text=f'Health {entity["health"]} · Attack {entity["attack"]} · Defense {entity["defense"]} · Move {entity["move"]}\\n\\nAI: {entity["ai"]}\\n\\n{"Leaves Spider Corpse" if entity["corpse"] else "No Spider Corpse"}'; footer=""
+        for _ in range(item["resolved_quantity"]):
+            all_cards.append(card(entity["name"],kind,text,footer))
 
 # Render the representation inventory already resolved by DODGE. PnP owns only
 # presentation; binding and quantities must not be recomputed from crew Health here.
