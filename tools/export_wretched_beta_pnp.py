@@ -24,11 +24,11 @@ parser.add_argument("--git-sha",default="local")
 args=parser.parse_args()
 CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
 SHORT_SHA=args.git_sha[:12] if args.git_sha!="local" else "local"
-OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"
+OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"\nMANIFEST_OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest-{SHORT_SHA}.json"
 
 resolved=resolve(DODGE_PATH,CONTRACT_PATH)
 data=resolved["canonical"]
-contract=resolved["export_contract"]\nmanifest=resolved["target_manifest"]\nmanifest_by_id={x["content_id"]:x for x in manifest["contents"]}
+contract=resolved["export_contract"]\nmanifest=resolved["target_manifest"]\nmanifest_by_id={x["content_id"]:x for x in manifest["contents"]}\nMANIFEST_OUT.parent.mkdir(parents=True,exist_ok=True)\nMANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\\n")
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
@@ -215,4 +215,4 @@ margin_y=.20*inch
 frame=Frame(margin_x,margin_y,letter[0]-2*margin_x,letter[1]-2*margin_y,leftPadding=0,rightPadding=0,topPadding=0,bottomPadding=0,id="pnp")
 doc.addPageTemplates([PageTemplate(id="pnp",frames=[frame])])
 doc.build(story)
-print(OUT)
+print(OUT)\nprint(MANIFEST_OUT)
