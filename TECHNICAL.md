@@ -108,7 +108,7 @@ The root `index.html` is the **Forbidden Places** game hub. It links to:
 
 The Fountain is currently playable. Its page loads `src/renderers/web.js`, which loads neutral `game/game.json` and drives `src/engine.js`.
 
-Wretched Demesne has a playable Pages route plus review PnP/TTS artifacts. The next architecture work is to make all three outputs consume the DODGE 0.2.1 resolved component inventory and shared normalized rule/runtime model.
+Wretched Demesne has a playable Pages route plus generated Beta PnP/TTS review artifacts. A single Beta release workflow now builds all three deploy targets from the same triggering source revision. The remaining DODGE work is deeper semantic convergence: make the Web runtime and both exporters consume the same DODGE 0.2.1 resolved model/inventory rather than merely sharing the same checkout and canonical sources.
 
 ## Release identity and atomic Web policy
 
@@ -138,6 +138,137 @@ The release boundary is now the **entire executable Web tree**, not merely the e
 A refresh may cache an old immutable build or fetch a new immutable build, but it must not assemble one runtime from files belonging to multiple source revisions. Manual date/increment query tags are forbidden; reviewers must not need a hard refresh for correctness.
 
 Canonical source files remain under `src/` and `game/`. The SHA-addressed Web tree is generated deployment material, not another source of truth. Future bundling/content-hashed assets may replace this mechanism only if they preserve the same invariant: **one visible source revision executes only assets derived from that revision.**
+
+
+## Reusable release architecture for future projects
+
+This section is deliberately written as a starter pattern. A future game project should be able to begin here rather than rediscovering the release plumbing.
+
+### 1. Separate canonical source, runtime code, and generated deployment output
+
+Use three visibly different layers:
+
+```text
+canonical source                 authored runtime/adapters             generated release
+---------------                  -------------------------             -----------------
+game/*.json + DODGE + sidecars   src/engine + renderers + tools   ->   site/beta/web/<SHA>/...
+                                                                        downloads/*-<SHA>.pdf
+                                                                        downloads/*-<SHA>.zip
+                                                                        build manifests
+```
+
+Generated files may be checked in for static hosting, but they are never edited as game source. A generated artifact commit is transport/deployment bookkeeping, not a new game revision.
+
+### 2. Give one human/source commit one release identity
+
+The triggering merge SHA is the release identity. Derive a short display SHA from it, but retain the full SHA in manifests. Use that same source identity for:
+
+- the visible Web BUILD stamp;
+- the Web release directory;
+- PnP/TTS filenames;
+- TTS/PnP metadata where supported; and
+- build manifests.
+
+Do **not** replace that identity with the SHA of the later bot commit that checks generated files into the repository. Otherwise a reviewer cannot map the thing being tested back to the source change that produced it.
+
+### 3. Make a static Web release atomic, not merely cache-busted
+
+Cache-busting only an entry module is insufficient when that module imports other mutable URLs. The browser can legally combine a fresh entry module with cached transitive modules or data. Instead, publish the complete executable dependency graph under one immutable source-addressed directory:
+
+```text
+beta/web/<SOURCE_SHA>/
+├── renderers/
+│   └── game-web.js
+├── runtime/
+│   ├── engine.js
+│   ├── model.js
+│   └── replay.js
+└── game/
+    └── scenario.json
+```
+
+The page should point to exactly one such tree. Relative imports and data loads must stay inside it. A visible BUILD then identifies the actual executable graph, not just the first file the browser loaded.
+
+### 4. Remember that JavaScript module-relative and document-relative URLs are different
+
+A subtle browser rule caused the Wretched Beta 404: `fetch("../game/data.json")` does **not** become relative to the JavaScript module containing that call. A relative fetch URL is resolved against the document/base URL unless code explicitly supplies another base.
+
+When data belongs to a module-addressed release, anchor it deliberately:
+
+```js
+const url = new URL(path, import.meta.url);
+const response = await fetch(url);
+```
+
+Then test the path from the module that actually performs this resolution. If a renderer passes `../game/...` to a loader in `runtime/model.js`, and the loader calls `new URL(path, import.meta.url)`, the effective base is **model.js**, not the renderer and not the HTML document.
+
+### 5. Make release generation idempotent
+
+A release workflow runs against a repository that may already contain the previous generated release. Every rewrite must therefore accept both the source/template form and the previous generated form.
+
+The Wretched failure mode was instructive: the first atomic release changed the HTML entry from a source URL to `./web/<OLD_SHA>/...`. The next build's `sed` only recognized the original source URL, silently changed nothing, and a later grep failed because the HTML still referenced the old SHA.
+
+Prefer a stable semantic anchor—here, the Beta `<script type="module" ...>` entry—and replace its current value regardless of which prior SHA it contains. Test the postcondition: the final HTML must reference the current `SOURCE_SHA`.
+
+### 6. Treat CI assertions as executable architecture documentation
+
+Assertions should prove invariants rather than mirror implementation trivia. Useful release assertions include:
+
+- every required generated file exists;
+- the HTML entry points to the current SHA-addressed tree;
+- renderer imports remain within that tree;
+- canonical data resolves to the copied data inside that same tree;
+- PnP/TTS filenames contain the same source SHA;
+- manually maintained date/version cache tags are absent; and
+- the workflow cannot recursively trigger itself from its generated commit.
+
+When a shell step exits with no traceback, identify the **first command after the last visible successful output** before editing anything. With `bash -e` / `pipefail`, commands such as `grep -q` intentionally fail silently with exit code 1. Do not assume the preceding Python assertion failed merely because it is visually nearby.
+
+### 7. Be deliberate about shell/Python boundaries
+
+A quoted heredoc such as `<<'PY'` intentionally disables shell interpolation. Therefore this:
+
+```bash
+python - <<'PY'
+from pathlib import Path
+Path("$WEB_DIR")   # literal "$WEB_DIR", not the shell value
+PY
+```
+
+is wrong if Python needs the shell variable. Pass it explicitly through the environment and read `os.environ` instead. This is safer and clearer than mixing shell interpolation into embedded Python.
+
+### 8. Recommended release sequence
+
+For a new static game project, establish this sequence early:
+
+1. Checkout exactly one human/source revision.
+2. Validate canonical data, schemas, exporters, and critical physical geometry.
+3. Resolve/prepare the neutral game model.
+4. Build every target from that same checkout/model.
+5. Stamp every target with the triggering source SHA.
+6. Build the entire Web dependency graph into an immutable SHA-addressed directory.
+7. Rewrite the Web entry idempotently to the current directory.
+8. Assert cross-target identity and Web dependency closure.
+9. Commit/publish generated artifacts with a bot while suppressing recursive builds.
+10. Preserve the human/source SHA as the visible release identity.
+
+For DODGE projects, add schema + semantic conformance before target generation and require every target to consume the same deterministic resolved inventory.
+
+### 9. Debugging order for release failures
+
+Avoid patch-by-patch guessing. Inspect the exact source revision, checked-in generated state, workflow, and failing command together. Classify the failure before changing code:
+
+1. **Source problem** — canonical data/runtime/exporter is wrong.
+2. **Generation problem** — build produced the wrong tree/artifact.
+3. **Reference problem** — HTML/module/data path points at the wrong generated file.
+4. **Identity problem** — displayed SHA and executable/artifact SHA differ.
+5. **Cache/atomicity problem** — dependencies can come from multiple revisions.
+6. **CI assertion problem** — test models the architecture incorrectly.
+7. **Deployment problem** — repository output is correct but hosting did not publish it.
+
+A test should be weakened only if the invariant itself was wrong. If the invariant is correct, fix the generator or architecture instead.
+
+Finally, test the **runtime mechanism itself**, not only a filesystem analogue of the mechanism. During the Wretched atomic-release work, CI correctly proved that `../game/...` would reach the generated JSON *if* the loader resolved it from `model.js`; however, the checked-in loader still used plain `fetch(url)`. The assertion validated our intended design rather than the code the browser actually executed. For module-addressed data, CI should therefore also verify that the generated loader contains/uses the module-relative resolution boundary (or, preferably, exercise the loader in an integration test).
 
 ## Local development
 

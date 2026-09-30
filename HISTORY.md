@@ -403,3 +403,41 @@ Inspection showed that PR #45 had correctly source-keyed the Beta entry module b
 Issue #52 tightens the invariant: a Beta Web release is now generated as a complete `beta/web/<source-sha>/` tree containing the renderer, shared Wretched runtime modules and canonical Scenario JSON. Relative dependencies remain inside that immutable tree. Canonical `src/` and `game/` files remain the source of truth; the build-addressed tree is deployment output only.
 
 **Milestone:** build identity moves from a stamped entry URL to an atomic executable release. This restores the premise needed for deterministic browser/replay testing: the SHA on screen identifies the code and data actually participating in the run.
+
+
+### PRs #53–#58 — Making the atomic release real, and learning to debug the pipeline
+
+**September 30, 2026.**
+
+Issue #52 identified the architectural requirement, but implementing it exposed several assumptions that had been hidden while the Beta used mutable source URLs. PR #53 created the first source-addressed Web tree: renderer, shared runtime modules and canonical Scenario data were copied together under `beta/web/<source-sha>/`. The visible BUILD and PnP/TTS artifacts used that same human/source SHA, while the later bot commit remained deployment bookkeeping.
+
+The first published atomic build then failed to open the expedition with `Unable to load canonical MVP data: 404`. The generated JSON existed; the path semantics were wrong. We had treated `fetch("../game/...")` as though it were relative to the importing renderer. In a browser, a plain relative fetch is document-relative. PR #54 moved that responsibility into the shared loader by resolving the supplied path with `new URL(path, import.meta.url)`. This made the loader's own module URL the explicit base and kept canonical data inside the SHA-addressed release.
+
+The next several CI failures were not independent mysteries; they exposed weak spots in how we were reasoning about the release. PR #55 updated a stale preflight guard that still required the old `?build=<SHA>` entry form. PR #56 fixed an embedded Python assertion that received the literal string `${WEB_DIR}` because it lived inside a quoted shell heredoc; the robust solution was to pass the value through the environment. PR #57 corrected the path assertion itself: because `model.js` performs `new URL(..., import.meta.url)`, the path must be reasoned from `web/<SHA>/wretched/model.js`, where `../game/...` reaches the sibling game directory.
+
+The final failure had no Python traceback at all. The assertion had actually passed; `bash -e` stopped on the following silent `grep -q`. Inspecting the exact checked-in HTML revealed the deeper generator bug. After the first atomic release, `index.html` already contained `./web/<OLD_SHA>/renderers/wretched-beta-web.js`. The workflow's rewrite only recognized the original `../../src/...?...build=...` source form, so later releases generated a new tree but silently left HTML pointing at the old one. PR #58 made the entry rewrite idempotent by targeting the semantic module-script entry regardless of its previous SHA. CI then passed.
+
+This back-and-forth changed our debugging rule. When release plumbing fails, do not immediately patch the closest-looking assertion. First identify the last command known to have succeeded and the exact command that returned nonzero; inspect the current checked-in generated state as well as the source template; then classify whether the problem is source, generation, reference resolution, release identity, cache atomicity, assertion logic or deployment. In particular, silent `grep -q` failures under `set -e` are expected to produce almost no diagnostic output.
+
+It also established a reusable release invariant for future games: **one human/source revision produces one source-addressed executable Web graph and matching non-Web artifacts; all references are explicit and module/data resolution is tested from the code that actually performs it; generation must be repeatable when the repository already contains the previous generated release.**
+
+**Milestone:** the Wretched Beta release pipeline became an atomic, source-identifiable, repeatable three-target build, and the troubleshooting lessons were promoted into reusable architecture rather than left buried in CI logs.
+
+PRs: #53, #54, #55, #56, #57, #58. Root cause thread: issue #52.
+
+### PR #60 — Verify the runtime, not just the intended path
+
+**September 30, 2026.**
+
+After #58 passed CI, the published Beta still produced the same canonical-data 404. This time the exact generated release was inspected file-by-file. The SHA-addressed Scenario JSON existed, the renderer passed the expected `../game/...` reference, but the generated `wretched/model.js` still called plain `fetch(url)`. The module-relative `new URL(path, import.meta.url)` behavior described during #54 had never actually landed in the source loader. Later CI checks had therefore validated the geometry of the intended module-relative path without validating that the runtime used that resolution mechanism.
+
+PR #60 made the runtime boundary real: the shared loader now constructs the data URL against `import.meta.url` before fetching and drops the obsolete manually versioned default query string. The resulting Beta release, BUILD `352ed31bdb6c`, was then tested successfully on both mobile and PC through the normal `/wretched-demesne/beta/` route.
+
+The previously captured multi-path/over-capacity replay was also loaded against this coherent build. It was rejected at step 8 on the attempted `Explore`, as expected under the default `declared` exploration-capacity policy. That provides an acceptance check for both the repaired release boundary and the topology regression that originally drove this investigation.
+
+**Lesson:** a CI assertion can accidentally prove an architectural assumption rather than executed behavior. For critical release boundaries, inspect or exercise the generated runtime mechanism itself in addition to checking that the destination path exists.
+
+**Milestone:** the atomic Web release is now browser-verified across mobile and PC, and the historical topology-abuse replay fails at the expected semantic boundary.
+
+PR: #60.
+
