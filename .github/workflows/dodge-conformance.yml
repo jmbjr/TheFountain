@@ -5,12 +5,16 @@ on:
     paths:
       - "game/**"
       - "tools/validate_wretched_dodge.py"
+      - "tools/resolve_wretched_dodge.py"
+      - "tools/export_wretched_beta_pnp.py"
       - ".github/workflows/dodge-conformance.yml"
   push:
     branches: [main]
     paths:
       - "game/**"
       - "tools/validate_wretched_dodge.py"
+      - "tools/resolve_wretched_dodge.py"
+      - "tools/export_wretched_beta_pnp.py"
       - ".github/workflows/dodge-conformance.yml"
   workflow_dispatch:
 
@@ -32,10 +36,28 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install "jsonschema>=4.23,<5"
-      - name: Validate active Wretched documents
+      - name: Validate active Wretched documents and resolved PnP manifest
         working-directory: the-fountain
         run: |
           python tools/validate_wretched_dodge.py --schema-root ../dodge/draft/v0.2.1
           python -m py_compile tools/resolve_wretched_dodge.py tools/export_wretched_beta_pnp.py
-          python tools/resolve_wretched_dodge.py --export-contract game/export-contracts/wretched-beta-pnp.dodge-export.json --out /tmp/wretched-resolved.json
-          python -c 'import json; r=json.load(open("/tmp/wretched-resolved.json")); assert r["format"]=="wretched-resolved-game.v1"; assert r["scenario_id"]=="scenario-01"; assert r["inventory"]["representations"]; assert {x["object_ref"] for x in r["inventory"]["unresolved"]}=={"spider-corpse","chrysalis"}; inv=r["inventory"]["representations"]; assert sum(x["quantity"] for x in inv if x["representation_ref"]=="health-unit-tokens")==41; assert sum(x["quantity"] for x in inv if x["role"]=="marker")==10'
+          python tools/resolve_wretched_dodge.py --export-contract game/export-contracts/wretched-beta-pnp.dodge-export.json --out /tmp/wretched-resolved.json --manifest-out /tmp/wretched-pnp-manifest.json
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          schema=json.load(open("../dodge/draft/v0.2.1/schemas/dodge-target-manifest.schema.v0.2.1.json"))
+          manifest=json.load(open("/tmp/wretched-pnp-manifest.json"))
+          Draft202012Validator(schema).validate(manifest)
+          resolved=json.load(open("/tmp/wretched-resolved.json"))
+          assert resolved["format"]=="wretched-resolved-game.v1"
+          assert resolved["scenario_id"]=="scenario-01"
+          assert {x["object_ref"] for x in resolved["inventory"]["unresolved"]}=={"spider-corpse","chrysalis"}
+          inv=resolved["inventory"]["representations"]
+          assert sum(x["quantity"] for x in inv if x["representation_ref"]=="health-unit-tokens")==41
+          assert sum(x["quantity"] for x in inv if x["role"]=="marker")==10
+          by={x["content_id"]:x for x in manifest["contents"]}
+          assert by["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"]==8
+          assert by["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"]==4
+          assert by["representation/health-unit-tokens/component/0"]["resolved_quantity"]==41
+          assert any(d["classification"]=="noncanonical-playtest" for d in by["scene/scenario-01-the-cave/instance/corpse-supply"]["diagnostics"])
+          PY
