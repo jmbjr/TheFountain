@@ -65,12 +65,17 @@ jobs:
               assert any(d["classification"]=="noncanonical-playtest" and d["field"]=="quantity" for d in entry["diagnostics"])
           assert by["representation/health-unit-tokens/component/0"]["resolved_quantity"]==41
           assert any(d["classification"]=="noncanonical-playtest" for d in by["scene/scenario-01-the-cave/instance/corpse-supply"]["diagnostics"])
-          printable_instances=["crew-reference-cards-1","prototype-action-cards-1","scenario-room-cards-1","scenario-encounter-cards-1","scenario-salvage-cards-1","enemy-reference-cards-1"]
+          starter_decks={"captain-starter-deck-1":10,"security-starter-deck-1":10,"engineer-starter-deck-1":10,"medic-starter-deck-1":11,"scout-starter-deck-1":10}
+          printable_instances=["crew-reference-cards-1",*starter_decks,"scenario-room-cards-1","scenario-encounter-cards-1","scenario-salvage-cards-1","enemy-reference-cards-1"]
           for instance_id in printable_instances:
               prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
               entries=[x for x in manifest["contents"] if x["content_id"].startswith(prefix)]
               assert entries and all(x["source"]["ref"].startswith("scenario-mvp:") for x in entries)
-          assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith("scene/scenario-01-the-cave/instance/prototype-action-cards-1/member/"))==51
+          for instance_id,total in starter_decks.items():
+              prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
+              assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith(prefix))==total
+          assert not any("prototype-action-cards" in x["content_id"] for x in manifest["contents"])
+          assert not any("/instance/security-deck-1" in x["content_id"] for x in manifest["contents"])
           included=[x for x in manifest["contents"] if x["inclusion"]!="excluded-override"]
           assert included
           assert all("source" in x and "provenance" in x and "resolved_quantity" in x for x in included)
