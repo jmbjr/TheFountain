@@ -53,6 +53,12 @@ def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,r
                 mp=prov+[provenance("collection-member",str(mi),f"/objects/{obj_ref}/members/{mi}")]
                 if ma: mp.append(provenance("archetype",ma,f"/archetypes/{ma}"))
                 me={"content_id":mid,"parent_content_id":cid,"source":{"kind":"collection-member","ref":member.get("entity_ref",member.get("object_ref",str(mi))),"path":f"/objects/{obj_ref}/members/{mi}"},"canonical_quantity":mqty,"resolved_quantity":mqty,"inclusion":"included-inherited","provenance":mp,"diagnostics":[_diag("inclusion","inherited","canonical",True,True),_diag("quantity","derived","canonical",mqty,mqty)]}
+                entity_ref=member.get("entity_ref")
+                if entity_ref and entity_ref.startswith("scenario-mvp:"):
+                    _,catalog,item_id=entity_ref.split(":",2)
+                    matches=[x for x in canonical.get(catalog,[]) if x.get("id")==item_id]
+                    if len(matches)!=1: raise ResolutionError(f"Expected one canonical entity for {entity_ref}")
+                    me["provenance"].append(provenance("collection-member",entity_ref,f"/{catalog}/{item_id}"))
                 if mcomp is not None: me["component_inherited"]=copy.deepcopy(mcomp);me["component_effective"]=copy.deepcopy(mcomp)
                 entries.append(me)
     for i,instance in enumerate(scene.get("instances",[])): add_scene(instance,i)
