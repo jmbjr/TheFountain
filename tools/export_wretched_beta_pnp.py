@@ -219,7 +219,9 @@ playtest_supply_counts={
     "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"],
     "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"],
 }
-for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),*playtest_supply_counts.items()]:\n    # Enemy token counts remain explicitly noncanonical Beta fixtures.\n    for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
+for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),*playtest_supply_counts.items()]:
+    # Enemy token counts remain explicitly noncanonical Beta fixtures.
+    for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
 rows=[tokens[i:i+5] for i in range(0,len(tokens),5)]
 while len(rows[-1])<5: rows[-1].append("")
 tt=Table(rows,colWidths=[1.35*inch]*5,rowHeights=[.72*inch]*len(rows),hAlign="CENTER")
