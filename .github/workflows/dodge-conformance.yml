@@ -58,6 +58,11 @@ jobs:
           expected_runtime_collections={"scenario-room-cards-1":10,"scenario-encounter-cards-1":6,"scenario-salvage-cards-1":8}
           for instance_id,total in expected_runtime_collections.items():
               assert sum(m.get("quantity",1) for m in resolved["semantic_collections"][instance_id]["members"])==total
+          resources=resolved["rules"]["resources"]
+          assert resources["actions"]["default"]==3
+          assert resources["hand-size"]["default"]==5
+          assert (resources["ammunition"]["default"],resources["ammunition"]["maximum"])==(8,12)
+          assert (resources["threat"]["default"],resources["threat"]["maximum"])==(0,12)
           assert resolved["scenario_id"]=="scenario-01"
           assert {x["object_ref"] for x in resolved["inventory"]["unresolved"]}=={"spider-corpse","chrysalis"}
           inv=resolved["inventory"]["representations"]
