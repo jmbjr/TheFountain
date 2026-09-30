@@ -107,7 +107,7 @@ def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,r
                     q=v["quantity_override"];oldq=ve["resolved_quantity"];ve["resolved_quantity"]=q["value"];ve["diagnostics"].append(_diag("quantity","overridden",q["classification"],oldq,q["value"],q["reason"]))
                 if "notes" in v:ve["notes"]=copy.deepcopy(v["notes"])
                 entries.append(ve)
-    return {"manifest_version":"0.2.1","manifest_id":f"{contract['contract_id']}-{scenario['scene_ref']}","target":contract["target"],"dodge_identity":{"dodge_version":dodge["dodge_version"],"document_id":dodge["document_id"],"sha256":_sha256(dodge_path)},"contract_identity":{"contract_version":contract["contract_version"],"contract_id":contract["contract_id"],"sha256":_sha256(contract_path)},"resolution_scope":{"scene_ref":scene_ref,"scenario_ref":"scenario-01"},"contents":entries}
+    return {"manifest_version":"0.2.1","manifest_id":f"{contract['contract_id']}:{scenario['scene_ref']}".replace("-","."),"target":contract["target"],"dodge_identity":{"dodge_version":dodge["dodge_version"],"document_id":dodge["document_id"],"sha256":_sha256(dodge_path)},"contract_identity":{"contract_version":contract["contract_version"],"contract_id":contract["contract_id"],"sha256":_sha256(contract_path)},"resolution_scope":{"scene_ref":scene_ref,"scenario_ref":"scenario-01"},"contents":entries}
 def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     dodge=_load(dodge_path)
     if dodge.get("dodge_version")!="0.2.1": raise ResolutionError("Requires DODGE 0.2.1")
