@@ -71,4 +71,8 @@ jobs:
               entries=[x for x in manifest["contents"] if x["content_id"].startswith(prefix)]
               assert entries and all(x["source"]["ref"].startswith("scenario-mvp:") for x in entries)
           assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith("scene/scenario-01-the-cave/instance/prototype-action-cards-1/member/"))==51
+          included=[x for x in manifest["contents"] if x["inclusion"]!="excluded-override"]
+          assert included
+          assert all("source" in x and "provenance" in x and "resolved_quantity" in x for x in included)
+          assert any(any(d.get("classification")=="noncanonical-playtest" for d in x["diagnostics"]) for x in included)
           PY
