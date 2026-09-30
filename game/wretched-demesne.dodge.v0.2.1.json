@@ -866,6 +866,39 @@
           "destination": "player-hand"
         }
       ]
+    },
+    "enemy-token-supply": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "members": [
+        {
+          "object_ref": "small-spider-token"
+        },
+        {
+          "object_ref": "large-spider-token"
+        },
+        {
+          "object_ref": "alpha-spider-token"
+        },
+        {
+          "object_ref": "brood-mother-token"
+        },
+        {
+          "object_ref": "leng-servant-token"
+        }
+      ]
+    },
+    "scenario-token-supply": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "members": [
+        {
+          "object_ref": "spider-corpse"
+        },
+        {
+          "object_ref": "chrysalis"
+        }
+      ]
     }
   },
   "scenes": {
@@ -878,18 +911,12 @@
           "object_ref": "gdd-reference"
         },
         {
-          "id": "corpse-supply",
-          "object_ref": "spider-corpse",
-          "state": {
-            "supply": true
-          }
+          "id": "scenario-token-supply-1",
+          "object_ref": "scenario-token-supply"
         },
         {
-          "id": "chrysalis-supply",
-          "object_ref": "chrysalis",
-          "state": {
-            "supply": true
-          }
+          "id": "enemy-token-supply-1",
+          "object_ref": "enemy-token-supply"
         },
         {
           "id": "crew-reference-cards-1",
@@ -930,41 +957,6 @@
         {
           "id": "enemy-reference-cards-1",
           "object_ref": "enemy-reference-cards"
-        },
-        {
-          "id": "small-spider-supply",
-          "object_ref": "small-spider-token",
-          "state": {
-            "supply": true
-          }
-        },
-        {
-          "id": "large-spider-supply",
-          "object_ref": "large-spider-token",
-          "state": {
-            "supply": true
-          }
-        },
-        {
-          "id": "alpha-spider-supply",
-          "object_ref": "alpha-spider-token",
-          "state": {
-            "supply": true
-          }
-        },
-        {
-          "id": "brood-mother-supply",
-          "object_ref": "brood-mother-token",
-          "state": {
-            "supply": true
-          }
-        },
-        {
-          "id": "leng-servant-supply",
-          "object_ref": "leng-servant-token",
-          "state": {
-            "supply": true
-          }
         }
       ]
     }

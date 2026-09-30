@@ -108,8 +108,8 @@
         ]
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/corpse-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/0",
+        "group": "Scenario tokens",
         "quantity_override": {
           "value": 8,
           "classification": "noncanonical-playtest",
@@ -117,8 +117,8 @@
         }
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/chrysalis-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/1",
+        "group": "Scenario tokens",
         "quantity_override": {
           "value": 4,
           "classification": "noncanonical-playtest",
@@ -146,8 +146,8 @@
         "group": "Health alternatives"
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/small-spider-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/0",
+        "group": "Enemy tokens",
         "quantity_override": {
           "value": 6,
           "classification": "noncanonical-playtest",
@@ -155,8 +155,8 @@
         }
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/large-spider-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/1",
+        "group": "Enemy tokens",
         "quantity_override": {
           "value": 4,
           "classification": "noncanonical-playtest",
@@ -164,8 +164,8 @@
         }
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/alpha-spider-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/2",
+        "group": "Enemy tokens",
         "quantity_override": {
           "value": 2,
           "classification": "noncanonical-playtest",
@@ -173,8 +173,8 @@
         }
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/brood-mother-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/3",
+        "group": "Enemy tokens",
         "quantity_override": {
           "value": 1,
           "classification": "noncanonical-playtest",
@@ -182,8 +182,8 @@
         }
       },
       {
-        "content_ref": "scene/scenario-01-the-cave/instance/leng-servant-supply",
-        "group": "Playtest supplies",
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/4",
+        "group": "Enemy tokens",
         "quantity_override": {
           "value": 2,
           "classification": "noncanonical-playtest",
