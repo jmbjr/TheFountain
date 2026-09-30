@@ -110,49 +110,34 @@ The Fountain is currently playable. Its page loads `src/renderers/web.js`, which
 
 Wretched Demesne has a playable Pages route plus review PnP/TTS artifacts. The next architecture work is to make all three outputs consume the DODGE 0.2.1 resolved component inventory and shared normalized rule/runtime model.
 
-## Release identity and cache-busting policy
+## Release identity and atomic Web policy
 
-A Wretched Beta release has **one source identity**: the human/source Git merge SHA that triggered the release build. The same identity is used for the visible Web BUILD, the PnP/TTS artifact names and manifests, and the browser cache key for the Beta Web entry module.
+A Wretched Beta release has **one source identity**: the human/source Git merge SHA that triggered the release. The visible Web BUILD, PnP/TTS artifact names and manifests, and the executable Beta Web tree all use that identity.
 
 ```text
-        DODGE + canonical Scenario sources + sidecars
-                         |
-                  resolve / validate
-                         |
-               shared model + runtime
-                         |
-                  Git source SHA
-                 /      |       \
-                /       |        \
-          Beta Web    PnP PDF    TTS ZIP
-              |
-       index.html BUILD
-              |
-              +--> wretched-beta-web.js?build=<source SHA>
-                         |
-                    ES module graph
-                         |
-                 shared engine / data
+source revision <SHA>
+       |
+ unified release workflow
+       |
+       +-- PnP/TTS artifacts stamped <SHA>
+       |
+       +-- beta/web/<SHA>/
+             +-- renderer
+             +-- shared engine/model/replay/topology modules
+             +-- canonical Scenario JSON
 ```
 
-The SHA shown to the reviewer is the **source merge**, not the later GitHub Actions commit that checks generated artifacts into the repository. This lets every review artifact be cross-referenced to the source that produced it.
+The SHA shown to the reviewer is the source merge, never the later bot commit that checks generated artifacts into the repository.
 
-### Why the Web entry module is cache-keyed
+### Why the whole Web dependency graph is build-addressed
 
-GitHub Pages/CDN and browser caches can legitimately reuse a mutable URL. PR #42 exposed the failure mode: new HTML displayed the new BUILD while its unchanged, manually versioned renderer URL allowed a browser to execute an older cached renderer. The page therefore looked like one revision while behaving like another.
+PR #45 cache-keyed the Beta entry module, but later testing exposed a remaining hole: that entry module statically imported mutable canonical module URLs. A page could therefore display the current BUILD while a browser reused an older transitive engine/model/replay module. In one observed run the exported runtime state contained a normal hand and log while the page rendered those collections empty.
 
-The release workflow now replaces the Beta renderer placeholder with the same 12-character source SHA used by the visible BUILD:
+The release boundary is now the **entire executable Web tree**, not merely the entry module. The workflow copies the renderer, its shared Wretched JavaScript dependencies, and canonical Scenario JSON into `wretched-demesne/beta/web/<source-sha>/`. The generated Beta HTML loads the renderer from that source-addressed directory, and all of its relative imports/data loads remain inside the same directory.
 
-```html
-<script type="module"
-        src="../../src/renderers/wretched-beta-web.js?build=<source-sha>"></script>
-```
+A refresh may cache an old immutable build or fetch a new immutable build, but it must not assemble one runtime from files belonging to multiple source revisions. Manual date/increment query tags are forbidden; reviewers must not need a hard refresh for correctness.
 
-A source merge therefore creates a new entry-module URL automatically. Manual date/increment cache tags are not release identity and MUST NOT be added to the Wretched Beta renderer dependency chain.
-
-Static ES-module imports inside the renderer use their canonical paths. The entry module is the release boundary; shared modules remain source-controlled dependencies rather than independently hand-versioned mini-releases. If the Web build later gains bundling or hashed output files, that build may replace this mechanism while preserving the invariant: **one source revision must not silently execute assets from another release.**
-
-The Beta release workflow contains guards against reintroducing manual date-style cache tags in the Beta entry/dependency chain. Do **not** depend on reviewers performing a hard refresh as a deployment mechanism.
+Canonical source files remain under `src/` and `game/`. The SHA-addressed Web tree is generated deployment material, not another source of truth. Future bundling/content-hashed assets may replace this mechanism only if they preserve the same invariant: **one visible source revision executes only assets derived from that revision.**
 
 ## Local development
 
