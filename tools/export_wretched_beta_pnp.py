@@ -214,8 +214,13 @@ for index,page in enumerate(pages):
 story.append(PageBreak())
 
 tokens=[]
-for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),("Spider Corpse",8),("Chrysalis",4)]:
-    # Token counts are explicitly layout/test inventory, not canonical quantities.
+playtest_supply_counts={
+    "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"],
+    "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"],
+}
+for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),*playtest_supply_counts.items()]:
+    # Corpse/chrysalis quantities come from the resolved target manifest. Enemy
+    # token fixtures remain legacy Beta inventory pending neutral object modeling.
     for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
 rows=[tokens[i:i+5] for i in range(0,len(tokens),5)]
 while len(rows[-1])<5: rows[-1].append("")
