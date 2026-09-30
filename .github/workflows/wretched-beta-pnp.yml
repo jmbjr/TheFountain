@@ -68,6 +68,15 @@ jobs:
           test -f "$WEB_DIR/game/wretched-demesne.scenario-01.mvp.v0.1.json"
           grep -q 'from "../wretched/engine.js"' "$WEB_DIR/renderers/wretched-beta-web.js"
           grep -q 'loadWretchedMvp("../game/wretched-demesne.scenario-01.mvp.v0.1.json")' "$WEB_DIR/renderers/wretched-beta-web.js"
+          python - <<'PY'
+          from pathlib import Path
+          renderer = Path("$WEB_DIR/renderers/wretched-beta-web.js")
+          data_ref = "../game/wretched-demesne.scenario-01.mvp.v0.1.json"
+          resolved = (renderer.parent / data_ref).resolve()
+          expected = Path("$WEB_DIR/game/wretched-demesne.scenario-01.mvp.v0.1.json").resolve()
+          assert resolved == expected, (resolved, expected)
+          assert expected.is_file(), expected
+          PY
           grep -q "./web/${SHORT_SHA}/renderers/wretched-beta-web.js" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-tts-[^\"]*\.zip|wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip|" wretched-demesne/beta/index.html
