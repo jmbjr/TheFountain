@@ -116,13 +116,6 @@
       {
         "content_ref": "representation/health-crew-card-marker/component/1",
         "group": "Health alternatives"
-      },
-      {
-        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-fixtures-1",
-        "group": "Enemy token fixtures",
-        "notes": [
-          "Beta physical playtest fixture inventory; not a gameplay spawn limit."
-        ]
       }
     ]
   }
