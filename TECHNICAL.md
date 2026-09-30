@@ -73,6 +73,30 @@ Wretched Demesne adds a more formal DODGE workflow:
 
 The sidecar is intentional. Teams should not block game development waiting for DODGE to learn every concept. Unsupported semantics can remain structured and lossless beside DODGE, then migrate into a future official specification.
 
+## Wretched topology semantics and authority boundary
+
+Topology is deliberately split into four layers rather than hidden in the Web renderer:
+
+```text
+Design Lead / GDD intent
+        |
+lossless GDD sidecar (provenance; unresolved intent stays unresolved)
+        |
+DODGE + canonical Scenario rules/data (normalized executable policy)
+        |
+shared runtime resolver (materializes and validates graph mutations)
+        |
+runtime state.connections (the actual discovered graph)
+        |
+Web / PnP / TTS views
+```
+
+For Scenario 01, each room's canonical `connections` number is currently interpreted by the prototype `rules.topology.exploration_capacity` policy. `declared` is the safe default: Explore may add an edge only while the current room's materialized degree is below that value. `unbounded` intentionally permits over-capacity branching so the emergent/non-Euclidean behavior can be tested without forking the engine. This policy is marked a prototype assumption pending Design Lead issue #50; the exact field/value vocabulary is **not yet asserted to be final DODGE semantics**.
+
+The runtime's `canExplore()` is the common rule boundary. `revealRoom()` guards it as well as `explore()`, preventing cards or future adapters from bypassing capacity. Move and Explore are distinct semantic actions: Move requires an explicit existing neighbor; Explore materializes a new room/edge from the current room. Deterministic replay records those semantic actions and topology diagnostics, making the origin of graph mutations inspectable.
+
+If the Design Lead chooses stranger cave geometry, implement it by extending the neutral topology policy/resolver (and DODGE when appropriate), not with Web-only behavior. Candidate future semantics include selective unbounded rooms, loops, one-way edges, disappearing edges and event-driven rewiring.
+
 ## Current web architecture
 
 GitHub Pages serves the repository as a static site.
