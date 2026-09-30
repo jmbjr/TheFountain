@@ -1,13 +1,13 @@
 // Neutral loader/validator boundary for the Wretched Demesne resolved Scenario 01 model.
 const REQUIRED=["rules","crew","cards","enemies","rooms","salvage","encounters","scenario"];
 export function validateWretchedMvp(data){const errors=[];for(const k of REQUIRED)if(!data?.[k])errors.push(`Missing ${k}`);if(data?.game_id!=="wretched-demesne-plateau-of-leng")errors.push("Unexpected game_id");if(data?.rules?.actions_per_turn?.value!==3)errors.push("MVP expects canonical actions_per_turn");if(data?.rules?.hand_size?.value!==5)errors.push("MVP expects canonical hand_size");return {ok:!errors.length,errors}}
-function expandCollection(resolved,instanceId){
+function expandEntityCollection(resolved,instanceId,catalog){
   const collection=resolved.semantic_collections?.[instanceId];
   if(!collection)throw new Error(`Resolved DODGE collection missing: ${instanceId}`);
-  const out=[];
+  const prefix=`scenario-mvp:${catalog}:`,out=[];
   for(const member of collection.members||[]){
-    if(!member.entity_ref?.startsWith("scenario-mvp:cards:"))throw new Error(`Unexpected starter-deck member: ${member.entity_ref||member.object_ref||"<missing>"}`);
-    const id=member.entity_ref.split(":").slice(2).join(":");
+    if(!member.entity_ref?.startsWith(prefix))throw new Error(`Unexpected ${catalog} collection member: ${member.entity_ref||member.object_ref||"<missing>"}`);
+    const id=member.entity_ref.slice(prefix.length);
     for(let i=0;i<(member.quantity||1);i++)out.push(id);
   }
   return out;
@@ -21,8 +21,13 @@ export function runtimeFromResolved(resolved){
   data.starter_decks={};
   for(const crew of data.crew||[]){
     const instanceId=`${crew.id}-starter-deck-1`;
-    data.starter_decks[crew.id]=expandCollection(resolved,instanceId);
+    data.starter_decks[crew.id]=expandEntityCollection(resolved,instanceId,"cards");
   }
+  data.semantic_decks={
+    rooms:expandEntityCollection(resolved,"scenario-room-cards-1","rooms"),
+    encounters:expandEntityCollection(resolved,"scenario-encounter-cards-1","encounters"),
+    salvage:expandEntityCollection(resolved,"scenario-salvage-cards-1","salvage")
+  };
   const v=validateWretchedMvp(data);if(!v.ok)throw new Error(v.errors.join("; "));
   return data;
 }

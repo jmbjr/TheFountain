@@ -87,6 +87,9 @@ jobs:
           for crew,total in expected_decks.items():
               collection=game["semantic_collections"][f"{crew}-starter-deck-1"]
               assert sum(m.get("quantity",1) for m in collection["members"]) == total
+          expected_runtime_collections={"scenario-room-cards-1":10,"scenario-encounter-cards-1":6,"scenario-salvage-cards-1":8}
+          for instance_id,total in expected_runtime_collections.items():
+              assert sum(m.get("quantity",1) for m in game["semantic_collections"][instance_id]["members"]) == total
           PY
           grep -q "./web/${SHORT_SHA}/renderers/wretched-beta-web.js" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
