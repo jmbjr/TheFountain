@@ -25,10 +25,15 @@ args=parser.parse_args()
 CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
 SHORT_SHA=args.git_sha[:12] if args.git_sha!="local" else "local"
 OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"
+MANIFEST_OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest-{SHORT_SHA}.json"
 
 resolved=resolve(DODGE_PATH,CONTRACT_PATH)
 data=resolved["canonical"]
 contract=resolved["export_contract"]
+manifest=resolved["target_manifest"]
+manifest_by_id={x["content_id"]:x for x in manifest["contents"]}
+MANIFEST_OUT.parent.mkdir(parents=True,exist_ok=True)
+MANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\\n")
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
@@ -200,8 +205,13 @@ for index,page in enumerate(pages):
 story.append(PageBreak())
 
 tokens=[]
-for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),("Spider Corpse",8),("Chrysalis",4)]:
-    # Token counts are explicitly layout/test inventory, not canonical quantities.
+playtest_supply_counts={
+    "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"],
+    "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"],
+}
+for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),*playtest_supply_counts.items()]:
+    # Corpse/chrysalis quantities come from the resolved target manifest. Enemy
+    # token fixtures remain legacy Beta inventory pending neutral object modeling.
     for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
 rows=[tokens[i:i+5] for i in range(0,len(tokens),5)]
 while len(rows[-1])<5: rows[-1].append("")
@@ -216,3 +226,4 @@ frame=Frame(margin_x,margin_y,letter[0]-2*margin_x,letter[1]-2*margin_y,leftPadd
 doc.addPageTemplates([PageTemplate(id="pnp",frames=[frame])])
 doc.build(story)
 print(OUT)
+print(MANIFEST_OUT)
