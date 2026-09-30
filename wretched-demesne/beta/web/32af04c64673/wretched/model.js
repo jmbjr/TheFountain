@@ -16,6 +16,11 @@ export function runtimeFromResolved(resolved){
   if(resolved?.format!=="wretched-resolved-game.v1")throw new Error("Unexpected resolved Wretched format");
   const data=structuredClone(resolved.canonical);
   data.rules=structuredClone(data.rules||{});
+  const resources=resolved.rules?.resources||{};
+  if(resources.actions)data.rules.actions_per_turn={value:resources.actions.default,provenance:"dodge-resolved"};
+  if(resources["hand-size"])data.rules.hand_size={value:resources["hand-size"].default,provenance:"dodge-resolved"};
+  if(resources.ammunition)data.rules.ammo={value:data.rules.ammo?.value,starting:resources.ammunition.default,max:resources.ammunition.maximum,provenance:"dodge-resolved"};
+  if(resources.threat)data.rules.threat={...data.rules.threat,start:resources.threat.default,max:resources.threat.maximum,provenance:"dodge-resolved"};
   if(resolved.rules?.topology)data.rules.topology=structuredClone(resolved.rules.topology);
   data.resolved_dodge={document_id:resolved.document_id,dodge_version:resolved.dodge_version,scenario_id:resolved.scenario_id};
   data.starter_decks={};
