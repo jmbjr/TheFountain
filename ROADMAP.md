@@ -32,6 +32,14 @@ Before DODGE 0.2.1 is promoted from draft to official, and before the current Wr
 
 **Gate definition of done:** DODGE 0.2.1 is official; WD validates against that exact official version; Web/PnP/TTS derive from one neutral resolved model and source revision; Scenario 01 passes the shared-runtime acceptance loop; all Design Lead Stable-release feedback is addressed or explicitly deferred; and no known DODGE conformance blocker remains.
 
+### Topology policy checkpoint — September 30, 2026
+
+Deterministic replay and topology diagnostics have now exercised both ordinary branching and deliberate over-capacity abuse. The shared runtime distinguishes Move (existing edge) from Explore (new edge), and the default Scenario 01 policy enforces each room's declared connection capacity. An explicit `unbounded` policy preserves the old behavior as an intentional experiment rather than an accidental loophole.
+
+Before Stable promotion, resolve Design Lead issue #50: decide whether connection counts are always hard limits, whether backtrack-and-branch is intended while capacity remains, and whether Wretched should author non-Euclidean topology modes such as unbounded hubs, loops, asymmetric or changing connections. Any accepted semantics should be normalized into the DODGE 0.2.1 topology model or recorded as a genuine DODGE gap; the lossless sidecar remains the source-intent/provenance boundary.
+
+Regression target: the recorded over-capacity replay should be rejected at its first Explore from an already-full Ruined Workshop under the default policy, while an intentionally permissive policy should reproduce the topology deterministically.
+
 ## After the MVP
 
 Directionally, we expect to:
