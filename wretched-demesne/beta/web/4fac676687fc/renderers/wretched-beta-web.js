@@ -3,7 +3,7 @@ import {loadWretchedResolved} from "../wretched/model.js";
 import {createSeededRng} from "../wretched/random.js";
 import {ReplayRecorder,runReplay} from "../wretched/replay.js";
 import {buildTopologyView} from "../wretched/topology-view.js";
-const $=s=>document.querySelector(s); let data,game,recorder,currentSeed,replayResults=null,replayIndex=-1,logChronological=false;
+const $=s=>document.querySelector(s); let data,game,recorder,currentSeed,replayResults=null,replayIndex=-1,logChronological=false,logDebug=false,logCoordinates=false;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 try{data=await loadWretchedResolved("../game/wretched-resolved-game.v1.json");boot()}catch(e){$("#setup").hidden=true;$("#fatal").hidden=false;$("#fatal").innerHTML=`<h2>Unable to open the expedition</h2><p>${esc(e.message)}</p>`}
 function boot(){for(const crew of data.crew){const b=document.createElement("button");b.innerHTML=`<strong>${esc(crew.name)}</strong><small>HP ${crew.health} · DEF ${crew.defense} · ACC +${crew.accuracy}</small><span>${esc(crew.ability)}</span>`;b.className="wd-crew";b.onclick=()=>start(crew.id);$("#crewChoices").append(b)}}
@@ -30,7 +30,7 @@ function render(){
    const roomLabel=id=>{const n=nodeById.get(id);return `<span class="wd-room ${n.current?"here":""}">${esc(game.room(id).name)}${n.enemies?` 👾×${n.enemies}`:""}${n.corpses?` <b>☠×${n.corpses}</b>`:""}${n.chrysalis?" ◉":""}</span>`};
    return `<div class="wd-edge">${roomLabel(from)}<span class="arrow">↔</span>${roomLabel(to)}</div>`;
  }).join("")||topology.nodes.map(n=>`<span class="wd-room ${n.current?"here":""}">${esc(game.room(n.id).name)}</span>`).join("");
- const logEntries=logChronological?[...s.log].reverse():s.log;$("#log").innerHTML=logEntries.map(x=>`<p>${esc(x)}</p>`).join("");
+ const normalizedLog=s.log.map((x,i)=>typeof x==="string"?{level:"INFO",round:null,action:null,message:x,legacy:true}:x),visibleLog=normalizedLog.filter(x=>logDebug||x.level!=="DEBUG"),logEntries=logChronological?[...visibleLog].reverse():visibleLog;$("#log").innerHTML=logEntries.map(x=>`<p>${logCoordinates&&x.round!=null?`<b class="wd-log-coordinate">${esc(`${x.round}:${x.action??0}`)}</b> `:""}${x.level==="DEBUG"?`<small class="wd-log-level">DEBUG</small> `:""}${esc(x.message)}</p>`).join("");
  if(replayResults){const item=replayResults[replayIndex];$("#replayInspector").hidden=false;$("#replayStep").textContent=`Step ${replayIndex+1} / ${replayResults.length}`;$("#replayAction").textContent=`Action: ${JSON.stringify(item.action)}`;$("#replayPrev").disabled=replayIndex<=0;$("#replayNext").disabled=replayIndex>=replayResults.length-1}else $("#replayInspector").hidden=true;
  $("#statusBanner").className="wd-banner "+s.status;$("#statusBanner").textContent=s.status==="playing"?`${s.crew.name} · ${s.relayActive?"RELAY ACTIVE — RETURN TO CAVE MOUTH":"EXPEDITION ACTIVE"}`:s.status==="won"?"SCENARIO COMPLETE":s.status==="retreated"?"EXPEDITION RETREATED":"EXPEDITION LOST";
  $("#endTurn").disabled=s.status!=="playing"||!!replayResults;document.querySelectorAll("#play button:not(#restart):not(#exportReplay):not(#replayPrev):not(#replayNext):not(#logOrder)").forEach(b=>{if(s.status!=="playing"||replayResults)b.disabled=true});
@@ -39,6 +39,8 @@ function stat(n,v){return `<div><small>${n}</small><strong>${esc(v)}</strong></d
 function button(parent,label,fn,disabled=false){const b=document.createElement("button");b.textContent=label;b.disabled=disabled;b.onclick=fn;parent.append(b)}
 $("#endTurn").onclick=()=>act({type:"end-turn"});
 $("#logOrder").onclick=()=>{logChronological=!logChronological;$("#logOrder").textContent=logChronological?"Show newest first":"Show chronological";render()};
+$("#logDebug").onclick=()=>{logDebug=!logDebug;$("#logDebug").textContent=logDebug?"Hide DEBUG":"Show DEBUG";render()};
+$("#logCoordinates").onclick=()=>{logCoordinates=!logCoordinates;$("#logCoordinates").textContent=logCoordinates?"Hide round:action":"Show round:action";render()};
 function showReplayStep(index){if(!replayResults?.length)return;replayIndex=Math.max(0,Math.min(index,replayResults.length-1));game.state=structuredClone(replayResults[replayIndex].state);render()}
 $("#replayPrev").onclick=()=>showReplayStep(replayIndex-1);$("#replayNext").onclick=()=>showReplayStep(replayIndex+1);
 $("#exportReplay").onclick=()=>{if(!recorder)return;const blob=new Blob([JSON.stringify(recorder.toJSON(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wretched-replay-${currentSeed}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),0)};
