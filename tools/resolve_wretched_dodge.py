@@ -26,7 +26,7 @@ def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     if dodge.get("dodge_version")!="0.2.1": raise ResolutionError("Requires DODGE 0.2.1")
     canonical,scenario_src=_source(dodge,"scenario-mvp"); sidecar,gdd_src=_source(dodge,"gdd")
     scenario=dodge["scenarios"]["scenario-01"]; scene=dodge["scenes"][scenario["scene_ref"]]
-    topology=dodge["rules"]["topologies"][scenario["topology_ref"]]
+    topology=dodge["topologies"][scenario["topology_ref"]]
     out={"format":"wretched-resolved-game.v1","dodge_version":dodge["dodge_version"],"document_id":dodge["document_id"],"game_id":dodge["game_id"],"scenario_id":"scenario-01",
       "authority":{"scenario-mvp":scenario_src["authority"],"gdd":gdd_src["authority"],"rule":"DODGE structure/policy is normalized semantics; declared sources supply referenced content. Provisional facts remain provisional and sidecar content is not silently promoted."},
       "sources":copy.deepcopy(dodge["sources"]),"scenario":copy.deepcopy(scenario),"scene":copy.deepcopy(scene),"topology":copy.deepcopy(topology),"rules":copy.deepcopy(dodge["rules"]),
