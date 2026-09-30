@@ -90,6 +90,11 @@ jobs:
           expected_runtime_collections={"scenario-room-cards-1":10,"scenario-encounter-cards-1":6,"scenario-salvage-cards-1":8}
           for instance_id,total in expected_runtime_collections.items():
               assert sum(m.get("quantity",1) for m in game["semantic_collections"][instance_id]["members"]) == total
+          resources=game["rules"]["resources"]
+          assert resources["actions"]["default"] == 3
+          assert resources["hand-size"]["default"] == 5
+          assert (resources["ammunition"]["default"],resources["ammunition"]["maximum"]) == (8,12)
+          assert (resources["threat"]["default"],resources["threat"]["maximum"]) == (0,12)
           PY
           grep -q "./web/${SHORT_SHA}/renderers/wretched-beta-web.js" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
