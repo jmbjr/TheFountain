@@ -29,7 +29,7 @@ def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     topology=dodge["topologies"][scenario["topology_ref"]]
     out={"format":"wretched-resolved-game.v1","dodge_version":dodge["dodge_version"],"document_id":dodge["document_id"],"game_id":dodge["game_id"],"scenario_id":"scenario-01",
       "authority":{"scenario-mvp":scenario_src["authority"],"gdd":gdd_src["authority"],"rule":"DODGE structure/policy is normalized semantics; declared sources supply referenced content. Provisional facts remain provisional and sidecar content is not silently promoted."},
-      "sources":copy.deepcopy(dodge["sources"]),"scenario":copy.deepcopy(scenario),"scene":copy.deepcopy(scene),"topology":copy.deepcopy(topology),"rules":copy.deepcopy(dodge["rules"]),
+      "sources":copy.deepcopy(dodge["sources"]),"archetypes":copy.deepcopy(dodge["archetypes"]),"representations":copy.deepcopy(dodge["representations"]),"scenario":copy.deepcopy(scenario),"scene":copy.deepcopy(scene),"topology":copy.deepcopy(topology),"rules":copy.deepcopy(dodge["rules"]),
       "canonical":canonical,"sidecars":{"gdd":sidecar},"inventory":{"scene_instances":copy.deepcopy(scene.get("instances",[])),"representations":[],"unresolved":[]}}
     for obj in ("spider-corpse","chrysalis"): out["inventory"]["unresolved"].append({"object_ref":obj,"reason":"Canonical physical supply quantity is unresolved."})
     if export_contract_path:
