@@ -1,11 +1,11 @@
 import {WretchedEngine} from "../wretched/engine.js";
-import {loadWretchedMvp} from "../wretched/model.js";
+import {loadWretchedResolved} from "../wretched/model.js";
 import {createSeededRng} from "../wretched/random.js";
 import {ReplayRecorder,runReplay} from "../wretched/replay.js";
 import {buildTopologyView} from "../wretched/topology-view.js";
 const $=s=>document.querySelector(s); let data,game,recorder,currentSeed;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-try{data=await loadWretchedMvp("../../game/wretched-demesne.scenario-01.mvp.v0.1.json");boot()}catch(e){$("#setup").hidden=true;$("#fatal").hidden=false;$("#fatal").innerHTML=`<h2>Unable to open the expedition</h2><p>${esc(e.message)}</p>`}
+try{data=await loadWretchedResolved("../../game/wretched-resolved-game.v1.json");boot()}catch(e){$("#setup").hidden=true;$("#fatal").hidden=false;$("#fatal").innerHTML=`<h2>Unable to open the expedition</h2><p>${esc(e.message)}</p>`}
 function boot(){for(const crew of data.crew){const b=document.createElement("button");b.innerHTML=`<strong>${esc(crew.name)}</strong><small>HP ${crew.health} · DEF ${crew.defense} · ACC +${crew.accuracy}</small><span>${esc(crew.ability)}</span>`;b.className="wd-crew";b.onclick=()=>start(crew.id);$("#crewChoices").append(b)}}
 function start(id,seed=$("#testSeed").value||"quick-test-001"){currentSeed=String(seed);game=new WretchedEngine(data,{rng:createSeededRng(currentSeed)});game.reset(id);recorder=new ReplayRecorder(game,{seed:currentSeed,crew:id,captureState:true});$("#setup").hidden=true;$("#play").hidden=false;render()}
 function act(action){const before=game.state.actions;if(!recorder.dispatch(action)&&game.state.status==="playing")game.log("That action is not available right now.");else if(before===game.state.actions&&action.type!=="end-turn"&&game.state.status==="playing"){}render()}
