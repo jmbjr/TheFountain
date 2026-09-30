@@ -32,8 +32,8 @@ contract=resolved["export_contract"]
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
-health_reps=[resolved["representations"][ref] for ref in inclusion["representation_refs"]]
-if any(rep["state_ref"]!="health" for rep in health_reps):
+health_reps=[(ref,resolved["representations"][ref]) for ref in inclusion["representation_refs"]]
+if any(rep["state_ref"]!="health" for _,rep in health_reps):
     raise SystemExit("All bundled Health representations must bind Health")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
