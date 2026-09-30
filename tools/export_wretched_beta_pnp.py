@@ -221,11 +221,16 @@ story.append(PageBreak())
 
 tokens=[]
 playtest_supply_counts={
+    "Small Spider":manifest_by_id["scene/scenario-01-the-cave/instance/small-spider-supply"]["resolved_quantity"],
+    "Large Spider":manifest_by_id["scene/scenario-01-the-cave/instance/large-spider-supply"]["resolved_quantity"],
+    "Alpha Spider":manifest_by_id["scene/scenario-01-the-cave/instance/alpha-spider-supply"]["resolved_quantity"],
+    "Brood Mother":manifest_by_id["scene/scenario-01-the-cave/instance/brood-mother-supply"]["resolved_quantity"],
+    "Men of Leng Servant":manifest_by_id["scene/scenario-01-the-cave/instance/leng-servant-supply"]["resolved_quantity"],
     "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"],
     "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"],
 }
-for label,count in [("Small Spider",6),("Large Spider",4),("Alpha Spider",2),("Brood Mother",1),("Men of Leng Servant",2),*playtest_supply_counts.items()]:
-    # Enemy token counts remain explicitly noncanonical Beta fixtures.
+for label,count in playtest_supply_counts.items():
+    # All token-sheet quantities come from the validated target manifest.
     for _ in range(count): tokens.append(Paragraph(esc(label),ParagraphStyle("tok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
 rows=[tokens[i:i+5] for i in range(0,len(tokens),5)]
 while len(rows[-1])<5: rows[-1].append("")
