@@ -287,13 +287,13 @@ story.append(PageBreak())
 
 tokens=[]
 playtest_supply_counts={
-    "Small Spider":manifest_by_id["scene/scenario-01-the-cave/instance/small-spider-supply"]["resolved_quantity"],
-    "Large Spider":manifest_by_id["scene/scenario-01-the-cave/instance/large-spider-supply"]["resolved_quantity"],
-    "Alpha Spider":manifest_by_id["scene/scenario-01-the-cave/instance/alpha-spider-supply"]["resolved_quantity"],
-    "Brood Mother":manifest_by_id["scene/scenario-01-the-cave/instance/brood-mother-supply"]["resolved_quantity"],
-    "Men of Leng Servant":manifest_by_id["scene/scenario-01-the-cave/instance/leng-servant-supply"]["resolved_quantity"],
-    "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"],
-    "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"],
+    "Small Spider":manifest_by_id["scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/0"]["resolved_quantity"],
+    "Large Spider":manifest_by_id["scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/1"]["resolved_quantity"],
+    "Alpha Spider":manifest_by_id["scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/2"]["resolved_quantity"],
+    "Brood Mother":manifest_by_id["scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/3"]["resolved_quantity"],
+    "Men of Leng Servant":manifest_by_id["scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/4"]["resolved_quantity"],
+    "Spider Corpse":manifest_by_id["scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/0"]["resolved_quantity"],
+    "Chrysalis":manifest_by_id["scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/1"]["resolved_quantity"],
 }
 for label,count in playtest_supply_counts.items():
     # All token-sheet quantities come from the validated target manifest.
