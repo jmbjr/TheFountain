@@ -3,11 +3,11 @@ import {loadWretchedResolved} from "../wretched/model.js";
 import {createSeededRng} from "../wretched/random.js";
 import {ReplayRecorder,runReplay} from "../wretched/replay.js";
 import {buildTopologyView} from "../wretched/topology-view.js";
-const $=s=>document.querySelector(s); let data,game,recorder,currentSeed;
+const $=s=>document.querySelector(s); let data,game,recorder,currentSeed,replayResults=null,replayIndex=-1,logChronological=false;
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 try{data=await loadWretchedResolved("../../game/wretched-resolved-game.v1.json");boot()}catch(e){$("#setup").hidden=true;$("#fatal").hidden=false;$("#fatal").innerHTML=`<h2>Unable to open the expedition</h2><p>${esc(e.message)}</p>`}
 function boot(){for(const crew of data.crew){const b=document.createElement("button");b.innerHTML=`<strong>${esc(crew.name)}</strong><small>HP ${crew.health} · DEF ${crew.defense} · ACC +${crew.accuracy}</small><span>${esc(crew.ability)}</span>`;b.className="wd-crew";b.onclick=()=>start(crew.id);$("#crewChoices").append(b)}}
-function start(id,seed=$("#testSeed").value||"quick-test-001"){currentSeed=String(seed);game=new WretchedEngine(data,{rng:createSeededRng(currentSeed)});game.reset(id);recorder=new ReplayRecorder(game,{seed:currentSeed,crew:id,captureState:true});$("#setup").hidden=true;$("#play").hidden=false;render()}
+function start(id,seed=$("#testSeed").value||"quick-test-001"){replayResults=null;replayIndex=-1;$("#replayInspector").hidden=true;currentSeed=String(seed);game=new WretchedEngine(data,{rng:createSeededRng(currentSeed)});game.reset(id);recorder=new ReplayRecorder(game,{seed:currentSeed,crew:id,captureState:true});$("#setup").hidden=true;$("#play").hidden=false;render()}
 function act(action){const before=game.state.actions;if(!recorder.dispatch(action)&&game.state.status==="playing")game.log("That action is not available right now.");else if(before===game.state.actions&&action.type!=="end-turn"&&game.state.status==="playing"){}render()}
 function render(){
  const s=game.state,r=game.room();$("#hud").innerHTML=stat("Round",s.round)+stat("Actions",s.actions)+stat("Health",`${s.crew.currentHealth}/${s.crew.health}`)+stat("Ammo",`${s.ammo}/${data.rules.ammo.max}`)+stat("Threat",`${s.threat}/${data.rules.threat.max}`)+stat("Scrap",s.scrap)+stat("Seed",currentSeed);
@@ -30,13 +30,17 @@ function render(){
    const roomLabel=id=>{const n=nodeById.get(id);return `<span class="wd-room ${n.current?"here":""}">${esc(game.room(id).name)}${n.enemies?` 👾×${n.enemies}`:""}${n.corpses?` <b>☠×${n.corpses}</b>`:""}${n.chrysalis?" ◉":""}</span>`};
    return `<div class="wd-edge">${roomLabel(from)}<span class="arrow">↔</span>${roomLabel(to)}</div>`;
  }).join("")||topology.nodes.map(n=>`<span class="wd-room ${n.current?"here":""}">${esc(game.room(n.id).name)}</span>`).join("");
- $("#log").innerHTML=s.log.slice(0,10).map(x=>`<p>${esc(x)}</p>`).join("");
+ const logEntries=logChronological?[...s.log].reverse():s.log;$("#log").innerHTML=logEntries.map(x=>`<p>${esc(x)}</p>`).join("");
+ if(replayResults){const item=replayResults[replayIndex];$("#replayInspector").hidden=false;$("#replayStep").textContent=`Step ${replayIndex+1} / ${replayResults.length}`;$("#replayAction").textContent=`Action: ${JSON.stringify(item.action)}`;$("#replayPrev").disabled=replayIndex<=0;$("#replayNext").disabled=replayIndex>=replayResults.length-1}else $("#replayInspector").hidden=true;
  $("#statusBanner").className="wd-banner "+s.status;$("#statusBanner").textContent=s.status==="playing"?`${s.crew.name} · ${s.relayActive?"RELAY ACTIVE — RETURN TO CAVE MOUTH":"EXPEDITION ACTIVE"}`:s.status==="won"?"SCENARIO COMPLETE":s.status==="retreated"?"EXPEDITION RETREATED":"EXPEDITION LOST";
- $("#endTurn").disabled=s.status!=="playing";document.querySelectorAll("#play button:not(#restart):not(#exportReplay)").forEach(b=>{if(s.status!=="playing")b.disabled=true});
+ $("#endTurn").disabled=s.status!=="playing"||!!replayResults;document.querySelectorAll("#play button:not(#restart):not(#exportReplay):not(#replayPrev):not(#replayNext):not(#logOrder)").forEach(b=>{if(s.status!=="playing"||replayResults)b.disabled=true});
 }
 function stat(n,v){return `<div><small>${n}</small><strong>${esc(v)}</strong></div>`}
 function button(parent,label,fn,disabled=false){const b=document.createElement("button");b.textContent=label;b.disabled=disabled;b.onclick=fn;parent.append(b)}
 $("#endTurn").onclick=()=>act({type:"end-turn"});
+$("#logOrder").onclick=()=>{logChronological=!logChronological;$("#logOrder").textContent=logChronological?"Show newest first":"Show chronological";render()};
+function showReplayStep(index){if(!replayResults?.length)return;replayIndex=Math.max(0,Math.min(index,replayResults.length-1));game.state=structuredClone(replayResults[replayIndex].state);render()}
+$("#replayPrev").onclick=()=>showReplayStep(replayIndex-1);$("#replayNext").onclick=()=>showReplayStep(replayIndex+1);
 $("#exportReplay").onclick=()=>{if(!recorder)return;const blob=new Blob([JSON.stringify(recorder.toJSON(),null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`wretched-replay-${currentSeed}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),0)};
-$("#loadReplay").onclick=async()=>{const file=$("#replayFile").files[0],out=$("#replayResult");if(!file){out.textContent="Choose a replay JSON file first.";return}try{const replay=JSON.parse(await file.text()),result=runReplay(data,replay);game=result.game;currentSeed=String(replay.seed);recorder=new ReplayRecorder(game,{seed:currentSeed,crew:replay.crew||"security",captureState:true});recorder.replay=structuredClone(replay);$("#setup").hidden=true;$("#play").hidden=false;render();out.textContent=""}catch(e){out.textContent=`Replay failed: ${e.message}`;if(e.step!==undefined)out.textContent+=` (step ${e.step})`}};
-$("#restart").onclick=()=>{game=null;recorder=null;$("#play").hidden=true;$("#setup").hidden=false};
+$("#loadReplay").onclick=async()=>{const file=$("#replayFile").files[0],out=$("#replayResult");if(!file){out.textContent="Choose a replay JSON file first.";return}try{const replay=JSON.parse(await file.text()),result=runReplay(data,replay);game=result.game;currentSeed=String(replay.seed);recorder=new ReplayRecorder(game,{seed:currentSeed,crew:replay.crew||"security",captureState:true});recorder.replay=structuredClone(replay);replayResults=result.results;replayIndex=Math.max(0,replayResults.length-1);$("#setup").hidden=true;$("#play").hidden=false;if(replayResults.length)showReplayStep(replayIndex);else render();out.textContent=""}catch(e){out.textContent=`Replay failed: ${e.message}`;if(e.step!==undefined)out.textContent+=` (step ${e.step})`}};
+$("#restart").onclick=()=>{game=null;recorder=null;replayResults=null;replayIndex=-1;$("#replayInspector").hidden=true;$("#play").hidden=true;$("#setup").hidden=false};
