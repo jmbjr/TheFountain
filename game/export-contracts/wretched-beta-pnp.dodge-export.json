@@ -60,5 +60,62 @@
   "manifest_identity_fields": [
     "git_sha",
     "dodge_document_id"
-  ]
+  ],
+  "content_configuration": {
+    "default_inclusion": "inherit-resolved",
+    "entries": [
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/security-deck-1",
+        "group": "Starter decks",
+        "notes": [
+          "Inherit the resolved DODGE collection and component metadata."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/rules-1",
+        "group": "Rules and references",
+        "notes": [
+          "Inherit the resolved DODGE reference component."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/corpse-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 8,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta physical playtest supply quantity; canonical DODGE supply quantity remains unresolved."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/chrysalis-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 4,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta physical playtest supply quantity; canonical DODGE supply quantity remains unresolved."
+        }
+      },
+      {
+        "content_ref": "representation/health-unit-tokens/component/0",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-numbered-track/component/0",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-numbered-track/component/1",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-crew-card-marker/component/0",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-crew-card-marker/component/1",
+        "group": "Health alternatives"
+      }
+    ]
+  }
 }
