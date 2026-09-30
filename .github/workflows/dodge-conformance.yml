@@ -38,4 +38,4 @@ jobs:
           python tools/validate_wretched_dodge.py --schema-root ../dodge/draft/v0.2.1
           python -m py_compile tools/resolve_wretched_dodge.py tools/export_wretched_beta_pnp.py
           python tools/resolve_wretched_dodge.py --export-contract game/export-contracts/wretched-beta-pnp.dodge-export.json --out /tmp/wretched-resolved.json
-          python -c 'import json; r=json.load(open("/tmp/wretched-resolved.json")); assert r["format"]=="wretched-resolved-game.v1"; assert r["scenario_id"]=="scenario-01"; assert r["inventory"]["representations"]; assert {x["object_ref"] for x in r["inventory"]["unresolved"]}=={"spider-corpse","chrysalis"}'
+          python -c 'import json; r=json.load(open("/tmp/wretched-resolved.json")); assert r["format"]=="wretched-resolved-game.v1"; assert r["scenario_id"]=="scenario-01"; assert r["inventory"]["representations"]; assert {x["object_ref"] for x in r["inventory"]["unresolved"]}=={"spider-corpse","chrysalis"}; inv=r["inventory"]["representations"]; assert sum(x["quantity"] for x in inv if x["representation_ref"]=="health-unit-tokens")==41; assert sum(x["quantity"] for x in inv if x["role"]=="marker")==10'
