@@ -27,20 +27,19 @@ SHORT_SHA=args.git_sha[:12] if args.git_sha!="local" else "local"
 OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"
 
 resolved=resolve(DODGE_PATH,CONTRACT_PATH)
-dodge=json.loads(DODGE_PATH.read_text())
 data=resolved["canonical"]
 contract=resolved["export_contract"]
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
-health_reps=[dodge["representations"][ref] for ref in inclusion["representation_refs"]]
+health_reps=[resolved["representations"][ref] for ref in inclusion["representation_refs"]]
 if any(rep["state_ref"]!="health" for rep in health_reps):
     raise SystemExit("All bundled Health representations must bind Health")
 OUT.parent.mkdir(parents=True,exist_ok=True)
 
 UNIT_TO_IN={"in":1.0,"mm":1/25.4,"cm":1/2.54,"pt":1/72}
 def component_inches(archetype_id):
-    comp=dodge["archetypes"][archetype_id]["component"]
+    comp=resolved["archetypes"][archetype_id]["component"]
     dims=comp.get("dimensions")
     if not dims or "width" not in dims or "height" not in dims:
         raise SystemExit(f"{archetype_id} requires explicit rectangular dimensions for dimensionally accurate PnP")
