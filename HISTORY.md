@@ -424,3 +424,20 @@ It also established a reusable release invariant for future games: **one human/s
 **Milestone:** the Wretched Beta release pipeline became an atomic, source-identifiable, repeatable three-target build, and the troubleshooting lessons were promoted into reusable architecture rather than left buried in CI logs.
 
 PRs: #53, #54, #55, #56, #57, #58. Root cause thread: issue #52.
+
+### PR #60 — Verify the runtime, not just the intended path
+
+**September 30, 2026.**
+
+After #58 passed CI, the published Beta still produced the same canonical-data 404. This time the exact generated release was inspected file-by-file. The SHA-addressed Scenario JSON existed, the renderer passed the expected `../game/...` reference, but the generated `wretched/model.js` still called plain `fetch(url)`. The module-relative `new URL(path, import.meta.url)` behavior described during #54 had never actually landed in the source loader. Later CI checks had therefore validated the geometry of the intended module-relative path without validating that the runtime used that resolution mechanism.
+
+PR #60 made the runtime boundary real: the shared loader now constructs the data URL against `import.meta.url` before fetching and drops the obsolete manually versioned default query string. The resulting Beta release, BUILD `352ed31bdb6c`, was then tested successfully on both mobile and PC through the normal `/wretched-demesne/beta/` route.
+
+The previously captured multi-path/over-capacity replay was also loaded against this coherent build. It was rejected at step 8 on the attempted `Explore`, as expected under the default `declared` exploration-capacity policy. That provides an acceptance check for both the repaired release boundary and the topology regression that originally drove this investigation.
+
+**Lesson:** a CI assertion can accidentally prove an architectural assumption rather than executed behavior. For critical release boundaries, inspect or exercise the generated runtime mechanism itself in addition to checking that the destination path exists.
+
+**Milestone:** the atomic Web release is now browser-verified across mobile and PC, and the historical topology-abuse replay fails at the expected semantic boundary.
+
+PR: #60.
+
