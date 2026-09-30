@@ -373,3 +373,20 @@ Regression coverage preserves the exact branched shape that exposed the problem:
 **Milestone:** the Beta map now reports the same topology that movement and enemy pathfinding actually use.
 
 PR: https://github.com/jmbjr/TheFountain/pull/42
+
+
+### PRs #42, #45, #49 and #51 — Topology becomes observable, deterministic, and policy-driven
+
+**September 29–30, 2026.**
+
+A deterministic Beta replay exposed what first looked like a navigation or map corruption bug. The old map renderer had been drawing room discovery order as though it were connectivity, hiding the fact that the runtime had legitimately materialized branches when the player backtracked and explored from an earlier room. PR #42 changed the Beta map to render the actual runtime graph; PR #45 then fixed release cache identity so a new BUILD could not silently execute a stale renderer.
+
+Once the real graph was visible, replay diagnostics made a second behavior obvious: repeated Explore actions could turn a room whose canonical data declared two connections into a five-way hub. PR #49 first separated the two player intents—**Move follows an existing edge; Explore creates a new edge from the current room**—and removed targetless movement that silently chose the first neighbor.
+
+PR #51 closes the implementation hole conservatively without throwing away the emergent design possibility. Scenario 01 now declares a prototype topology exploration-capacity policy. The default `declared` policy treats each room's `connections` value as its exploration capacity; the shared runtime rejects further exploration once that degree is reached. The alternative `unbounded` policy deliberately restores over-capacity branching, proving that non-Euclidean topology can be an authored rule rather than an engine bug. Design Lead issue #50 asks whether and how Wretched should intentionally exploit stranger topology.
+
+This sequence also sharpened the DODGE boundary. Source/GDD intent remains losslessly preserved in the sidecar; normalized executable topology policy belongs in neutral DODGE/canonical semantics; room connection capacity is canonical room data; and the concrete discovered graph is runtime materialized state. The current Scenario 01 policy is explicitly a prototype assumption pending Design Lead review rather than a premature DODGE vocabulary decision.
+
+**Milestone:** deterministic replay turned a confusing UI symptom into an inspectable topology model, then turned an accidental exploit into a configurable design capability while restoring safe default behavior.
+
+PRs: #42, #45, #49, #51. Design decision: issue #50.

@@ -18,7 +18,7 @@ function render(){
  const moves=game.legalMoves();if(moves.length){const label=document.createElement("p");label.className="quiet";label.textContent="MOVE — follow an existing connection";ra.append(label)}
  moves.forEach(id=>button(ra,`Move → ${game.room(id).name}`,()=>act({type:"move",target:id}),s.actions<1));
  const exploreLabel=document.createElement("p");exploreLabel.className="quiet";exploreLabel.textContent=`EXPLORE — reveal a new room connected from ${r.name}`;ra.append(exploreLabel);
- button(ra,`Explore from ${r.name}`,()=>act({type:"explore"}),s.actions<1||!s.roomDeck.length);
+ button(ra,`Explore from ${r.name}`,()=>act({type:"explore"}),s.actions<1||!game.canExplore());
  button(ra,"Search room",()=>act({type:"search"}),s.actions<1||!r.searchable||s.searched.includes(r.id));
  button(ra,"Interact",()=>act({type:"interact"}),s.actions<1||!(r.id==="relay"&&s.inventory.includes("power-cell")));
  if(r.id==="entrance")button(ra,s.relayActive?"Extract — complete mission":"Retreat to ship",()=>act({type:"extract"}),s.actions<1);

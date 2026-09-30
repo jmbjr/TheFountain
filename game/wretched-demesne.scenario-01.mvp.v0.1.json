@@ -78,6 +78,13 @@
     "retreat": {
       "value": "From Entrance, spend 1 action to extract. Extracted crew keep salvage. Scenario succeeds only after the Ancient Relay is activated and at least one crew extracts.",
       "provenance": "prototype_assumption"
+    },
+    "topology": {
+      "exploration_capacity": {
+        "value": "declared",
+        "description": "By default, Explore may create a new connection only while the current room has fewer materialized connections than its declared connections value. Set value to unbounded to intentionally permit over-capacity/non-Euclidean branching.",
+        "provenance": "prototype_assumption_pending_design_lead_issue_50"
+      }
     }
   },
   "crew": [
