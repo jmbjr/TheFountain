@@ -105,6 +105,49 @@ class CardSheet(Flowable):
 def card_sheets(cards):
     return [CardSheet(cards[i:i+9]) for i in range(0,len(cards),9)]
 
+def diagnostic_contents_rows():
+    rows=[[Paragraph("<b>Content / source</b>",small),Paragraph("<b>Qty</b>",small),Paragraph("<b>Component</b>",small),Paragraph("<b>Diagnostics</b>",small)]]
+    for item in manifest["contents"]:
+        if item["inclusion"]=="excluded-override":
+            continue
+        comp=item.get("component_effective") or item.get("component_inherited") or {}
+        dims=comp.get("dimensions",{})
+        size=""
+        if dims:
+            size=f'{dims.get("width","?")} × {dims.get("height","?")} {dims.get("unit","")}'
+        component=" · ".join(x for x in [comp.get("form"),comp.get("size_class"),size] if x)
+        identity=item["content_id"]
+        source=item["source"]
+        refs=[f'{source["kind"]}: {source["ref"]}']
+        if item.get("representation_ref"):
+            refs.append(f'representation: {item["representation_ref"]}')
+        if item.get("variant_of"):
+            refs.append(f'variant of: {item["variant_of"]}')
+        flags=[]
+        if item["inclusion"]=="included-override":
+            flags.append("TARGET OVERRIDE")
+        for diag in item.get("diagnostics",[]):
+            if diag.get("classification")=="noncanonical-playtest":
+                flags.append("NONCANONICAL PLAYTEST")
+            elif diag.get("status")=="overridden" and diag.get("field")!="inclusion":
+                flags.append(f'override: {diag.get("field")}')
+        provenance=" → ".join(f'{p["kind"]}:{p["ref"]}' for p in item.get("provenance",[]))
+        left=f'<b>{esc(identity)}</b><br/>{esc(" · ".join(refs))}<br/><font size="5.5">{esc(provenance)}</font>'
+        rows.append([Paragraph(left,small),Paragraph(str(item["resolved_quantity"]),small),Paragraph(esc(component or "—"),small),Paragraph(esc(" · ".join(dict.fromkeys(flags)) or "canonical/inherited"),small)])
+    return rows
+
+def diagnostic_contents_table():
+    rows=diagnostic_contents_rows()
+    table=Table(rows,colWidths=[3.15*inch,.42*inch,1.45*inch,1.55*inch],repeatRows=1,hAlign="LEFT")
+    table.setStyle(TableStyle([
+        ("GRID",(0,0),(-1,-1),.25,colors.HexColor("#999999")),
+        ("VALIGN",(0,0),(-1,-1),"TOP"),
+        ("BACKGROUND",(0,0),(-1,0),colors.HexColor("#EEEEEE")),
+        ("LEFTPADDING",(0,0),(-1,-1),3),("RIGHTPADDING",(0,0),(-1,-1),3),
+        ("TOPPADDING",(0,0),(-1,-1),3),("BOTTOMPADDING",(0,0),(-1,-1),3),
+    ]))
+    return table
+
 story=[Paragraph("WRETCHED DEMESNE",title),Paragraph("Scenario 01: The Cave — Beta Print-and-Play · DODGE 0.2.1",h),
  Paragraph(f"This is the Implementor review build · Git {esc(args.git_sha[:12])}. Game content comes from the Scenario 01 source declared by the active DODGE 0.2.1 document. Cut on card borders. No artwork is required for this functional prototype.",body),Spacer(1,8),
  Paragraph("SETUP",h)]
@@ -119,6 +162,11 @@ for k,v in data["rules"].items():
         if val is None and k=="ammo": val=v["value"]+" Start %s / max %s."%(v["starting"],v["max"])
         if val is not None: story.append(Paragraph("<b>%s:</b> %s"%(esc(k.replace("_"," ").title()),esc(val)),body))
 story.append(PageBreak())
+
+story += [Paragraph("CONTENTS — DODGE DIAGNOSTIC",h),Paragraph(
+    "Generated from the exact resolved DODGE target manifest consumed by this PDF. "
+    "Quantities and component metadata shown here are effective target values; target overrides and noncanonical playtest quantities are explicitly flagged.",body),Spacer(1,8),
+    diagnostic_contents_table(),PageBreak()]
 
 story += [Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
     "The Beta PnP export profile bundles all configured Health alternatives into this one packet. "
