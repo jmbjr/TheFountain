@@ -390,3 +390,16 @@ This sequence also sharpened the DODGE boundary. Source/GDD intent remains lossl
 **Milestone:** deterministic replay turned a confusing UI symptom into an inspectable topology model, then turned an accidental exploit into a configurable design capability while restoring safe default behavior.
 
 PRs: #42, #45, #49, #51. Design decision: issue #50.
+
+
+### Issue #52 — The BUILD stamp was not yet an atomic Web release
+
+**September 30, 2026.**
+
+The topology-capacity replay produced a second-order infrastructure discovery. A refreshed Beta page showed the new PR #51 BUILD identity, yet a newly started expedition rendered an empty hand, missing actions/path/log, while End Turn still advanced the game and the exported replay contained a populated hand, room deck and log. The runtime state and its presentation could not both have come coherently from the displayed revision.
+
+Inspection showed that PR #45 had correctly source-keyed the Beta entry module but its static imports still used mutable canonical URLs. The visible BUILD therefore proved the entry revision, not the revision of the complete ES-module/data graph. That undermined deterministic replay as an acceptance test because a current renderer could potentially execute an older cached engine.
+
+Issue #52 tightens the invariant: a Beta Web release is now generated as a complete `beta/web/<source-sha>/` tree containing the renderer, shared Wretched runtime modules and canonical Scenario JSON. Relative dependencies remain inside that immutable tree. Canonical `src/` and `game/` files remain the source of truth; the build-addressed tree is deployment output only.
+
+**Milestone:** build identity moves from a stamped entry URL to an atomic executable release. This restores the premise needed for deterministic browser/replay testing: the SHA on screen identifies the code and data actually participating in the run.

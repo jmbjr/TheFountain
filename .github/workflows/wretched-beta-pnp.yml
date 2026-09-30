@@ -33,6 +33,10 @@ jobs:
           if grep -q 'doc=SimpleDocTemplate' tools/export_wretched_beta_pnp.py; then exit 1; fi
           python -c "from reportlab.lib.pagesizes import letter; from reportlab.lib.units import mm,inch; s=3*88*mm; f=letter[1]-2*.20*inch; assert s <= f"
           grep -Eq 'wretched-beta-web\.js\?build=(SOURCE_BUILD|[0-9a-f]{12})' wretched-demesne/beta/index.html
+          grep -q 'src/renderers/wretched-beta-web.js' .github/workflows/wretched-beta-pnp.yml
+          grep -q 'src/wretched/engine.js' .github/workflows/wretched-beta-pnp.yml
+          grep -q 'src/wretched/replay.js' .github/workflows/wretched-beta-pnp.yml
+          grep -q 'game/wretched-demesne.scenario-01.mvp.v0.1.json' .github/workflows/wretched-beta-pnp.yml
           if grep -Eq 'wretched-beta-web\.js\?v=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
 
       - name: Build matching PnP and TTS artifacts
@@ -51,7 +55,20 @@ jobs:
           printf '{"git_sha":"%s","artifact":"%s","save":"%s"}\n' "$GITHUB_SHA" "$TTS_ZIP" "$TTS_JSON" > wretched-demesne/beta/tts-build.json
           printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
           sed -i -E "s|(<code id=\"git-build\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" wretched-demesne/beta/index.html
-          sed -i -E "s|wretched-beta-web\.js\?build=[^\"<]+|wretched-beta-web.js?build=${SHORT_SHA}|" wretched-demesne/beta/index.html
+          WEB_DIR="wretched-demesne/beta/web/${SHORT_SHA}"
+          rm -rf wretched-demesne/beta/web
+          mkdir -p "$WEB_DIR/renderers" "$WEB_DIR/wretched" "$WEB_DIR/game"
+          cp src/renderers/wretched-beta-web.js "$WEB_DIR/renderers/"
+          cp src/wretched/engine.js src/wretched/model.js src/wretched/random.js src/wretched/replay.js src/wretched/topology-view.js "$WEB_DIR/wretched/"
+          cp game/wretched-demesne.scenario-01.mvp.v0.1.json "$WEB_DIR/game/"
+          sed -i 's|../../game/wretched-demesne.scenario-01.mvp.v0.1.json|../game/wretched-demesne.scenario-01.mvp.v0.1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
+          sed -i -E "s|../../src/renderers/wretched-beta-web\.js\?build=[^\"<]+|./web/${SHORT_SHA}/renderers/wretched-beta-web.js|" wretched-demesne/beta/index.html
+          test -f "$WEB_DIR/renderers/wretched-beta-web.js"
+          test -f "$WEB_DIR/wretched/engine.js"
+          test -f "$WEB_DIR/game/wretched-demesne.scenario-01.mvp.v0.1.json"
+          grep -q 'from "../wretched/engine.js"' "$WEB_DIR/renderers/wretched-beta-web.js"
+          grep -q 'loadWretchedMvp("../game/wretched-demesne.scenario-01.mvp.v0.1.json")' "$WEB_DIR/renderers/wretched-beta-web.js"
+          grep -q "./web/${SHORT_SHA}/renderers/wretched-beta-web.js" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-tts-[^\"]*\.zip|wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip|" wretched-demesne/beta/index.html
 
@@ -61,6 +78,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add wretched-demesne/beta/index.html wretched-demesne/beta/build.json wretched-demesne/beta/tts-build.json
+          git add wretched-demesne/beta/web/
           git add wretched-demesne/beta/tts/
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-*.pdf
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-tts-*.json
