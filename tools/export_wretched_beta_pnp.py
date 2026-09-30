@@ -149,12 +149,12 @@ for x in data["enemies"]:
 rep_inventory=resolved["inventory"]["representations"]
 crew_by_id={crew["id"]:crew for crew in data["crew"]}
 marker_items=[]
-for rep in health_reps:
+for rep_ref,rep in health_reps:
     story += [Paragraph(esc(rep["name"]).upper(),h)]
-    items=[x for x in rep_inventory if x["representation_ref"] in inclusion["representation_refs"] and x["representation_ref"]==next(ref for ref in inclusion["representation_refs"] if resolved["representations"][ref] is rep)]
+    items=[x for x in rep_inventory if x["representation_ref"]==rep_ref]
     if rep["kind"]=="unit_tokens":
         cells=[]
-        for item in items:
+        for item in [x for x in items if x["role"]=="unit"]:
             crew=crew_by_id[item["binding_ref"]]
             for _ in range(item["quantity"]):
                 cells.append(Paragraph(f'{esc(crew["name"])}<br/>HP',ParagraphStyle("hptok",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")))
@@ -165,7 +165,7 @@ for rep in health_reps:
         story += [t,Spacer(1,10)]
     elif rep["kind"]=="numbered_track":
         tracks=[]
-        for item in items:
+        for item in [x for x in items if x["role"]=="track"]:
             crew=crew_by_id[item["binding_ref"]]
             nums="  ".join(str(x) for x in range(crew["health"]+1))
             for _ in range(item["quantity"]):
@@ -174,12 +174,13 @@ for rep in health_reps:
             row=tracks[i:i+3]
             while len(row)<3: row.append("")
             story += [Table([row],colWidths=[50/25.4*inch]*3,hAlign="CENTER",style=[("VALIGN",(0,0),(-1,-1),"TOP")]),Spacer(1,8)]
+        marker_items.extend(x for x in items if x["role"]=="marker")
     elif rep["kind"]=="marker_track":
-        for item in items:
+        for item in [x for x in items if x["role"]=="reference-track"]:
             crew=crew_by_id[item["binding_ref"]]
             for _ in range(item["quantity"]):
-                all_cards.append(card(crew["name"],"Health alternative · crew card","Health\n"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
-                marker_items.append(item)
+                all_cards.append(card(crew["name"],"Health alternative · crew card","Health\\n"+" · ".join(str(x) for x in range(crew["health"]+1)),"Use one marker/cube to show current Health."))
+        marker_items.extend(x for x in items if x["role"]=="marker")
 
 if marker_items:
     markers=[Paragraph("HP",ParagraphStyle("hpmark",parent=small,alignment=TA_CENTER,fontName="Helvetica-Bold")) for item in marker_items for _ in range(item["quantity"])]
