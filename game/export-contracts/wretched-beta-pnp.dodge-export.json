@@ -116,6 +116,51 @@
       {
         "content_ref": "representation/health-crew-card-marker/component/1",
         "group": "Health alternatives"
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/small-spider-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 6,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta PnP physical playtest supply for Small Spider; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/large-spider-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 4,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta PnP physical playtest supply for Large Spider; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/alpha-spider-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 2,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta PnP physical playtest supply for Alpha Spider; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/brood-mother-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 1,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta PnP physical playtest supply for Brood Mother; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/leng-servant-supply",
+        "group": "Playtest supplies",
+        "quantity_override": {
+          "value": 2,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta PnP physical playtest supply for Men of Leng Servant; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
       }
     ]
   }
