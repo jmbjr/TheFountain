@@ -3,7 +3,7 @@ import {createSeededRng} from "./random.js";
 
 export const REPLAY_FORMAT="wretched-replay.v1";
 function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
-function comparableState(expected,actual){const e=structuredClone(expected),a=structuredClone(actual);if(Array.isArray(e?.log)&&e.log.every(x=>typeof x==="string")&&Array.isArray(a?.log))a.log=a.log.map(x=>typeof x==="string"?x:x.message);if(e?.actionNumber===undefined)delete a.actionNumber;return {expected:e,actual:a}}
+function comparableState(expected,actual){const e=structuredClone(expected),a=structuredClone(actual);if(Array.isArray(e?.log)&&e.log.every(x=>typeof x==="string")&&Array.isArray(a?.log))a.log=a.log.filter(x=>typeof x==="string"||x.level!=="DEBUG").map(x=>typeof x==="string"?x:x.message);if(e?.actionNumber===undefined)delete a.actionNumber;return {expected:e,actual:a}}
 function edges(state){
   const out=new Set();
   for(const [a,bs] of Object.entries(state.connections||{}))for(const b of bs||[])out.add([a,b].sort().join("\u0000"));
