@@ -36,7 +36,8 @@ jobs:
           grep -q 'src/renderers/wretched-beta-web.js' .github/workflows/wretched-beta-pnp.yml
           grep -q 'src/wretched/engine.js' .github/workflows/wretched-beta-pnp.yml
           grep -q 'src/wretched/replay.js' .github/workflows/wretched-beta-pnp.yml
-          grep -q 'game/wretched-demesne.scenario-01.mvp.v0.1.json' .github/workflows/wretched-beta-pnp.yml
+          grep -q 'game/wretched-demesne.dodge.v0.2.1.json' .github/workflows/wretched-beta-pnp.yml
+          grep -q 'tools/resolve_wretched_dodge.py' .github/workflows/wretched-beta-pnp.yml
           if grep -Eq 'wretched-beta-web\.js\?v=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
 
       - name: Build matching PnP and TTS artifacts
@@ -60,24 +61,32 @@ jobs:
           mkdir -p "$WEB_DIR/renderers" "$WEB_DIR/wretched" "$WEB_DIR/game"
           cp src/renderers/wretched-beta-web.js "$WEB_DIR/renderers/"
           cp src/wretched/engine.js src/wretched/model.js src/wretched/random.js src/wretched/replay.js src/wretched/topology-view.js "$WEB_DIR/wretched/"
-          cp game/wretched-demesne.scenario-01.mvp.v0.1.json "$WEB_DIR/game/"
-          sed -i 's|../../game/wretched-demesne.scenario-01.mvp.v0.1.json|../game/wretched-demesne.scenario-01.mvp.v0.1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
+          python tools/resolve_wretched_dodge.py --out "$WEB_DIR/game/wretched-resolved-game.v1.json"
+          sed -i 's|../../game/wretched-resolved-game.v1.json|../game/wretched-resolved-game.v1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
           sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./web/${SHORT_SHA}/renderers/wretched-beta-web.js\\2|" wretched-demesne/beta/index.html
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
           test -f "$WEB_DIR/wretched/engine.js"
-          test -f "$WEB_DIR/game/wretched-demesne.scenario-01.mvp.v0.1.json"
+          test -f "$WEB_DIR/game/wretched-resolved-game.v1.json"
           grep -q 'from "../wretched/engine.js"' "$WEB_DIR/renderers/wretched-beta-web.js"
-          grep -q 'loadWretchedMvp("../game/wretched-demesne.scenario-01.mvp.v0.1.json")' "$WEB_DIR/renderers/wretched-beta-web.js"
+          grep -q 'loadWretchedResolved("../game/wretched-resolved-game.v1.json")' "$WEB_DIR/renderers/wretched-beta-web.js"
           WEB_DIR="$WEB_DIR" python - <<'PY'
           import os
           from pathlib import Path
           web_dir = Path(os.environ["WEB_DIR"])
           model = web_dir / "wretched/model.js"
-          data_ref = "../game/wretched-demesne.scenario-01.mvp.v0.1.json"
-          resolved = (model.parent / data_ref).resolve()
-          expected = (web_dir / "game/wretched-demesne.scenario-01.mvp.v0.1.json").resolve()
-          assert resolved == expected, (resolved, expected)
+          data_ref = "../game/wretched-resolved-game.v1.json"
+          resolved_path = (model.parent / data_ref).resolve()
+          expected = (web_dir / "game/wretched-resolved-game.v1.json").resolve()
+          assert resolved_path == expected, (resolved_path, expected)
           assert expected.is_file(), expected
+          import json
+          game = json.loads(expected.read_text())
+          assert game["format"] == "wretched-resolved-game.v1"
+          assert game["dodge_version"] == "0.2.1"
+          expected_decks={"captain":10,"security":10,"engineer":10,"medic":11,"scout":10}
+          for crew,total in expected_decks.items():
+              collection=game["semantic_collections"][f"{crew}-starter-deck-1"]
+              assert sum(m.get("quantity",1) for m in collection["members"]) == total
           PY
           grep -q "./web/${SHORT_SHA}/renderers/wretched-beta-web.js" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html

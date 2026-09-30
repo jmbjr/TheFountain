@@ -13,7 +13,7 @@ export class WretchedEngine {
     this.state.roomDeck.splice(relay,0,"relay"); this.buildDeck(crewId); return this.state;
   }
   shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(this.rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-  buildDeck(id){let d=[];for(const c of this.data.cards){for(let i=0;i<(c.qty_by_deck?.[id]||0);i++)d.push(c.id)}this.state.deck=this.shuffle(d);this.state.discard=[];this.state.hand=[];this.draw(this.data.rules.hand_size.value);}
+  buildDeck(id){const resolved=this.data.starter_decks?.[id];let d=resolved?[...resolved]:[];if(!resolved){for(const c of this.data.cards){for(let i=0;i<(c.qty_by_deck?.[id]||0);i++)d.push(c.id)}}this.state.deck=this.shuffle(d);this.state.discard=[];this.state.hand=[];this.draw(this.data.rules.hand_size.value);}
   draw(n=1){while(n--){if(!this.state.deck.length){this.state.deck=this.shuffle(this.state.discard);this.state.discard=[]}if(this.state.deck.length)this.state.hand.push(this.state.deck.pop())}}
   spend(){if(this.state.status!=="playing"||this.state.actions<1)return false;this.state.actions--;return true}
   log(s){this.state.log.unshift(s)}
