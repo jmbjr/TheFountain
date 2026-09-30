@@ -136,7 +136,12 @@ manifest_card_groups=[
 for instance_id,kind in manifest_card_groups:
     prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
     for item in [x for x in manifest["contents"] if x["content_id"].startswith(prefix) and x["inclusion"]!="excluded-override"]:
-        entity=item["entity"]
+        source_ref=item["source"]["ref"]
+        _,catalog,item_id=source_ref.split(":",2)
+        matches=[x for x in data.get(catalog,[]) if x.get("id")==item_id]
+        if len(matches)!=1:
+            raise SystemExit(f"Expected one canonical entity for {source_ref}")
+        entity=matches[0]
         if kind=="Crew reference":
             text=f'Health {entity["health"]} · Accuracy +{entity["accuracy"]} · Defense {entity["defense"]}\\n\\n{entity["ability"]}'
             footer=""
