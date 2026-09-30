@@ -56,15 +56,15 @@ jobs:
           assert sum(x["quantity"] for x in inv if x["representation_ref"]=="health-unit-tokens")==41
           assert sum(x["quantity"] for x in inv if x["role"]=="marker")==10
           by={x["content_id"]:x for x in manifest["contents"]}
-          assert by["scene/scenario-01-the-cave/instance/corpse-supply"]["resolved_quantity"]==8
-          assert by["scene/scenario-01-the-cave/instance/chrysalis-supply"]["resolved_quantity"]==4
-          expected_enemy_supplies={"small-spider-supply":6,"large-spider-supply":4,"alpha-spider-supply":2,"brood-mother-supply":1,"leng-servant-supply":2}
-          for supply_id,quantity in expected_enemy_supplies.items():
-              entry=by[f"scene/scenario-01-the-cave/instance/{supply_id}"]
+          assert by["scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/0"]["resolved_quantity"]==8
+          assert by["scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/1"]["resolved_quantity"]==4
+          expected_enemy_supplies={0:6,1:4,2:2,3:1,4:2}
+          for member_index,quantity in expected_enemy_supplies.items():
+              entry=by[f"scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/{member_index}"]
               assert entry["resolved_quantity"]==quantity
               assert any(d["classification"]=="noncanonical-playtest" and d["field"]=="quantity" for d in entry["diagnostics"])
           assert by["representation/health-unit-tokens/component/0"]["resolved_quantity"]==41
-          assert any(d["classification"]=="noncanonical-playtest" for d in by["scene/scenario-01-the-cave/instance/corpse-supply"]["diagnostics"])
+          assert any(d["classification"]=="noncanonical-playtest" for d in by["scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/0"]["diagnostics"])
           starter_decks={"captain-starter-deck-1":10,"security-starter-deck-1":10,"engineer-starter-deck-1":10,"medic-starter-deck-1":11,"scout-starter-deck-1":10}
           printable_instances=["crew-reference-cards-1",*starter_decks,"scenario-room-cards-1","scenario-encounter-cards-1","scenario-salvage-cards-1","enemy-reference-cards-1"]
           for instance_id in printable_instances:
