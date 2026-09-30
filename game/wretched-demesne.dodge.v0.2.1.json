@@ -404,75 +404,6 @@
         }
       ]
     },
-    "prototype-action-cards": {
-      "kind": "collection",
-      "archetype_ref": "deck",
-      "source_ref": "scenario-mvp",
-      "members": [
-        {
-          "entity_ref": "scenario-mvp:cards:move",
-          "archetype_ref": "standard-card",
-          "quantity": 11
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:take-cover",
-          "archetype_ref": "standard-card",
-          "quantity": 6
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:sidearm",
-          "archetype_ref": "standard-card",
-          "quantity": 6
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:reload",
-          "archetype_ref": "standard-card",
-          "quantity": 6
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:assist",
-          "archetype_ref": "standard-card",
-          "quantity": 4
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:search",
-          "archetype_ref": "standard-card",
-          "quantity": 4
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:interact",
-          "archetype_ref": "standard-card",
-          "quantity": 5
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:suppressive-fire",
-          "archetype_ref": "standard-card"
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:security-training",
-          "archetype_ref": "standard-card"
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:jury-rig",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:triage",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:scout-ahead",
-          "archetype_ref": "standard-card"
-        },
-        {
-          "entity_ref": "scenario-mvp:cards:command",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        }
-      ]
-    },
     "scenario-room-cards": {
       "kind": "collection",
       "archetype_ref": "deck",
@@ -695,6 +626,246 @@
         "enemy",
         "leng-servant"
       ]
+    },
+    "scenario-captain-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "source_ref": "scenario-mvp",
+      "members": [
+        {
+          "entity_ref": "scenario-mvp:cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:take-cover",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:sidearm",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:reload",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:assist",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:interact",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:command",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
+    },
+    "scenario-security-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "source_ref": "scenario-mvp",
+      "members": [
+        {
+          "entity_ref": "scenario-mvp:cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:take-cover",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:sidearm",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:reload",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:suppressive-fire",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:security-training",
+          "archetype_ref": "standard-card"
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
+    },
+    "scenario-engineer-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "source_ref": "scenario-mvp",
+      "members": [
+        {
+          "entity_ref": "scenario-mvp:cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:take-cover",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:sidearm",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:reload",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:search",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:interact",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:jury-rig",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
+    },
+    "scenario-medic-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "source_ref": "scenario-mvp",
+      "members": [
+        {
+          "entity_ref": "scenario-mvp:cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:take-cover",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:sidearm",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:reload",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:assist",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:search",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:interact",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:triage",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
+    },
+    "scenario-scout-starter-deck": {
+      "kind": "collection",
+      "archetype_ref": "deck",
+      "source_ref": "scenario-mvp",
+      "members": [
+        {
+          "entity_ref": "scenario-mvp:cards:move",
+          "archetype_ref": "standard-card",
+          "quantity": 3
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:take-cover",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:sidearm",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:reload",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:search",
+          "archetype_ref": "standard-card",
+          "quantity": 2
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:interact",
+          "archetype_ref": "standard-card"
+        },
+        {
+          "entity_ref": "scenario-mvp:cards:scout-ahead",
+          "archetype_ref": "standard-card"
+        }
+      ],
+      "behaviors": [
+        {
+          "type": "shuffle"
+        },
+        {
+          "type": "draw",
+          "replacement": false,
+          "destination": "player-hand"
+        }
+      ]
     }
   },
   "scenes": {
@@ -702,10 +873,6 @@
       "name": "Scenario 01: The Cave",
       "source_ref": "scenario-mvp",
       "instances": [
-        {
-          "id": "security-deck-1",
-          "object_ref": "security-starter-deck"
-        },
         {
           "id": "rules-1",
           "object_ref": "gdd-reference"
@@ -729,8 +896,24 @@
           "object_ref": "crew-reference-cards"
         },
         {
-          "id": "prototype-action-cards-1",
-          "object_ref": "prototype-action-cards"
+          "id": "captain-starter-deck-1",
+          "object_ref": "scenario-captain-starter-deck"
+        },
+        {
+          "id": "security-starter-deck-1",
+          "object_ref": "scenario-security-starter-deck"
+        },
+        {
+          "id": "engineer-starter-deck-1",
+          "object_ref": "scenario-engineer-starter-deck"
+        },
+        {
+          "id": "medic-starter-deck-1",
+          "object_ref": "scenario-medic-starter-deck"
+        },
+        {
+          "id": "scout-starter-deck-1",
+          "object_ref": "scenario-scout-starter-deck"
         },
         {
           "id": "scenario-room-cards-1",
@@ -1673,7 +1856,8 @@
     "limitations": [
       "Prose-only conditions/effects/procedures are preserved where Scenario 01 semantics are not yet formally executable.",
       "Physical supply quantities for corpse/chrysalis tokens remain unresolved and are not invented here.",
-      "Medic starter deck quantity inconsistency remains unresolved in Scenario 01 canonical data."
+      "Medic starter deck quantity inconsistency remains unresolved in Scenario 01 canonical data.",
+      "Security starter deck exists in both the authoritative GDD cards sidecar and provisional Scenario 01 source; Scenario 01 scene instantiates the provisional scenario deck while the sidecar collection remains preserved for authority comparison."
     ],
     "not_promoted": [
       "design pillars",
