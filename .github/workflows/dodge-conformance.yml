@@ -64,6 +64,6 @@ jobs:
           for instance_id in printable_instances:
               prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
               entries=[x for x in manifest["contents"] if x["content_id"].startswith(prefix)]
-              assert entries and all("entity" in x for x in entries)
+              assert entries and all(x["source"]["ref"].startswith("scenario-mvp:") for x in entries)
           assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith("scene/scenario-01-the-cave/instance/prototype-action-cards-1/member/"))==51
           PY
