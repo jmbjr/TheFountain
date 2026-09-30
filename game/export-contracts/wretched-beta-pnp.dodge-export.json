@@ -38,7 +38,8 @@
   "maps": [],
   "adds": [],
   "outputs": [
-    "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf"
+    "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp.pdf",
+    "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest.json"
   ],
   "forbidden_in_dodge": [
     "PDF page coordinates",
