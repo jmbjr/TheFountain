@@ -106,8 +106,15 @@ def card_sheets(cards):
     return [CardSheet(cards[i:i+9]) for i in range(0,len(cards),9)]
 
 def diagnostic_contents_rows():
-    rows=[[Paragraph("<b>Content / source</b>",small),Paragraph("<b>Qty</b>",small),Paragraph("<b>Component</b>",small),Paragraph("<b>Diagnostics</b>",small)]]
-    for item in manifest["contents"]:
+    rows=[[Paragraph("<b>Semantic component / source</b>",small),Paragraph("<b>Qty</b>",small),Paragraph("<b>Component</b>",small),Paragraph("<b>Diagnostics</b>",small)]]
+    children={}
+    for candidate in manifest["contents"]:
+        if candidate.get("parent_content_id"):
+            children.setdefault(candidate["parent_content_id"],[]).append(candidate)
+    # The designer-facing view is intentionally hierarchical: scene collections
+    # are one row; their deterministic leaf members remain in the manifest.
+    primary=[x for x in manifest["contents"] if not x.get("parent_content_id")]
+    for item in primary:
         if item["inclusion"]=="excluded-override":
             continue
         comp=item.get("component_effective") or item.get("component_inherited") or {}
@@ -132,8 +139,15 @@ def diagnostic_contents_rows():
             elif diag.get("status")=="overridden" and diag.get("field")!="inclusion":
                 flags.append(f'override: {diag.get("field")}')
         provenance=" → ".join(f'{p["kind"]}:{p["ref"]}' for p in item.get("provenance",[]))
-        left=f'<b>{esc(identity)}</b><br/>{esc(" · ".join(refs))}<br/><font size="5.5">{esc(provenance)}</font>'
-        rows.append([Paragraph(left,small),Paragraph(str(item["resolved_quantity"]),small),Paragraph(esc(component or "—"),small),Paragraph(esc(" · ".join(dict.fromkeys(flags)) or "canonical/inherited"),small)])
+        member_rows=[x for x in children.get(identity,[]) if x["inclusion"]!="excluded-override"]
+        member_note=""
+        quantity=str(item["resolved_quantity"])
+        if member_rows:
+            total=sum(x["resolved_quantity"] for x in member_rows)
+            member_note=f'<br/><b>{len(member_rows)} member definitions · {total} physical cards/items</b>'
+            quantity=str(total)
+        left=f'<b>{esc(identity)}</b><br/>{esc(" · ".join(refs))}{member_note}<br/><font size="5.5">{esc(provenance)}</font>'
+        rows.append([Paragraph(left,small),Paragraph(quantity,small),Paragraph(esc(component or "—"),small),Paragraph(esc(" · ".join(dict.fromkeys(flags)) or "canonical/inherited"),small)])
     return rows
 
 def diagnostic_contents_table():
@@ -174,14 +188,18 @@ story += [Paragraph("HEALTH REPRESENTATION LAB",h),Paragraph(
 
 all_cards=[]
 manifest_card_groups=[
-    ("crew-reference-cards-1","Crew reference"),
-    ("prototype-action-cards-1","Action"),
-    ("scenario-room-cards-1","Room"),
-    ("scenario-encounter-cards-1","Encounter"),
-    ("scenario-salvage-cards-1","Salvage"),
-    ("enemy-reference-cards-1","Enemy reference"),
+    ("crew-reference-cards-1","Crew reference",None),
+    ("captain-starter-deck-1","Action","Captain"),
+    ("security-starter-deck-1","Action","Security"),
+    ("engineer-starter-deck-1","Action","Engineer"),
+    ("medic-starter-deck-1","Action","Medic"),
+    ("scout-starter-deck-1","Action","Scout"),
+    ("scenario-room-cards-1","Room",None),
+    ("scenario-encounter-cards-1","Encounter",None),
+    ("scenario-salvage-cards-1","Salvage",None),
+    ("enemy-reference-cards-1","Enemy reference",None),
 ]
-for instance_id,kind in manifest_card_groups:
+for instance_id,kind,deck_name in manifest_card_groups:
     prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
     for item in [x for x in manifest["contents"] if x["content_id"].startswith(prefix) and x["inclusion"]!="excluded-override"]:
         source_ref=item["source"]["ref"]
@@ -197,7 +215,7 @@ for instance_id,kind in manifest_card_groups:
             text=entity["text"]; stats=[]
             for key,label in (("attack","ATK"),("range","RNG"),("ammo","AMMO"),("noise","NOISE")):
                 if key in entity: stats.append(f'{label} {entity[key]}')
-            footer=" · ".join(stats)
+            footer=" · ".join(([f"{deck_name} starter"] if deck_name else [])+stats)
         elif kind=="Room":
             details=[f'Connections: {entity["connections"]}',"Searchable" if entity["searchable"] else "Not searchable"]
             for key in ("terrain","setup","hazard","lock","objective_item","objective","tag"):
