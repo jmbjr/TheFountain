@@ -62,7 +62,7 @@ jobs:
           cp src/wretched/engine.js src/wretched/model.js src/wretched/random.js src/wretched/replay.js src/wretched/topology-view.js "$WEB_DIR/wretched/"
           cp game/wretched-demesne.scenario-01.mvp.v0.1.json "$WEB_DIR/game/"
           sed -i 's|../../game/wretched-demesne.scenario-01.mvp.v0.1.json|../game/wretched-demesne.scenario-01.mvp.v0.1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
-          sed -i -E "s|../../src/renderers/wretched-beta-web\.js\?build=[^\"<]+|./web/${SHORT_SHA}/renderers/wretched-beta-web.js|" wretched-demesne/beta/index.html
+          sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./web/${SHORT_SHA}/renderers/wretched-beta-web.js\\2|" wretched-demesne/beta/index.html
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
           test -f "$WEB_DIR/wretched/engine.js"
           test -f "$WEB_DIR/game/wretched-demesne.scenario-01.mvp.v0.1.json"
