@@ -36,6 +36,7 @@ jobs:
           grep -q 'src/renderers/wretched-beta-web.js' .github/workflows/wretched-beta-pnp.yml
           grep -q 'src/wretched/engine.js' .github/workflows/wretched-beta-pnp.yml
           grep -q 'src/wretched/replay.js' .github/workflows/wretched-beta-pnp.yml
+          grep -q '__SOURCE_GIT_SHA__' src/renderers/wretched-beta-web.js
           grep -q 'game/wretched-demesne.dodge.v0.2.1.json' .github/workflows/wretched-beta-pnp.yml
           grep -q 'tools/resolve_wretched_dodge.py' .github/workflows/wretched-beta-pnp.yml
           if grep -Eq 'wretched-beta-web\.js\?v=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
@@ -63,12 +64,15 @@ jobs:
           cp src/wretched/engine.js src/wretched/model.js src/wretched/random.js src/wretched/replay.js src/wretched/topology-view.js "$WEB_DIR/wretched/"
           python tools/resolve_wretched_dodge.py --out "$WEB_DIR/game/wretched-resolved-game.v1.json"
           sed -i 's|../../game/wretched-resolved-game.v1.json|../game/wretched-resolved-game.v1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
+          sed -i "s|__SOURCE_GIT_SHA__|$GITHUB_SHA|g" "$WEB_DIR/renderers/wretched-beta-web.js"
           sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./web/${SHORT_SHA}/renderers/wretched-beta-web.js\\2|" wretched-demesne/beta/index.html
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
           test -f "$WEB_DIR/wretched/engine.js"
           test -f "$WEB_DIR/game/wretched-resolved-game.v1.json"
           grep -q 'from "../wretched/engine.js"' "$WEB_DIR/renderers/wretched-beta-web.js"
           grep -q 'loadWretchedResolved("../game/wretched-resolved-game.v1.json")' "$WEB_DIR/renderers/wretched-beta-web.js"
+          grep -q "$GITHUB_SHA" "$WEB_DIR/renderers/wretched-beta-web.js"
+          if grep -q '__SOURCE_GIT_SHA__' "$WEB_DIR/renderers/wretched-beta-web.js"; then echo "Unresolved replay build placeholder"; exit 1; fi
           WEB_DIR="$WEB_DIR" python - <<'PY'
           import os
           from pathlib import Path
