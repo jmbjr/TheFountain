@@ -30,16 +30,16 @@ export function runReplay(data,replay,{verifyState=true}={}){
   const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});game.reset(replay.crew||"security");
   const results=[];
   for(let i=0;i<replay.steps.length;i++){
-    const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string")throw new Error(`Step ${i}: missing action.type`);
-    const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted)throw new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);
+    const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string"){const err=new Error(`Step ${i}: missing action.type`);err.step=i;err.results=results;err.game=game;throw err}
+    const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted){const err=new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);err.step=i;err.results=results;err.game=game;throw err}
     const state=game.snapshot(),diagnostics=replayDiagnostics(before,state);
-    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;throw err}}
+    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;err.results=results;err.game=game;throw err}}
     results.push({index:i,action,before,state,diagnostics});
   }
   return {game,results,state:game.snapshot()};
 }
 export class ReplayRecorder{
-  constructor(game,{seed,crew="security",captureState=true}={}){this.game=game;this.captureState=captureState;this.replay={format:REPLAY_FORMAT,seed:String(seed),crew,steps:[]}}
+  constructor(game,{seed,crew="security",captureState=true,build=null}={}){this.game=game;this.captureState=captureState;this.replay={format:REPLAY_FORMAT,seed:String(seed),crew,steps:[]};if(build)this.replay.source={git_sha:String(build),short_sha:String(build).slice(0,12)}}
   dispatch(action){const before=this.game.snapshot(),accepted=this.game.dispatch(action);if(!accepted)return false;const state=this.game.snapshot(),step={action:structuredClone(action),diagnostics:replayDiagnostics(before,state)};if(this.captureState)step.state=state;this.replay.steps.push(step);return true}
   toJSON(){return structuredClone(this.replay)}
 }
