@@ -58,14 +58,18 @@ jobs:
           printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
           sed -i -E "s|(<code id=\"git-build\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" wretched-demesne/beta/index.html
           WEB_DIR="wretched-demesne/beta/web/${SHORT_SHA}"
-          rm -rf wretched-demesne/beta/web
           mkdir -p "$WEB_DIR/renderers" "$WEB_DIR/wretched" "$WEB_DIR/game"
+          cp wretched-demesne/beta/index.html "$WEB_DIR/index.html"
           cp src/renderers/wretched-beta-web.js "$WEB_DIR/renderers/"
           cp src/wretched/engine.js src/wretched/model.js src/wretched/random.js src/wretched/replay.js src/wretched/topology-view.js "$WEB_DIR/wretched/"
           python tools/resolve_wretched_dodge.py --out "$WEB_DIR/game/wretched-resolved-game.v1.json"
           sed -i 's|../../game/wretched-resolved-game.v1.json|../game/wretched-resolved-game.v1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
           sed -i "s|__SOURCE_GIT_SHA__|$GITHUB_SHA|g" "$WEB_DIR/renderers/wretched-beta-web.js"
           sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./web/${SHORT_SHA}/renderers/wretched-beta-web.js\\2|" wretched-demesne/beta/index.html
+          sed -i -E "s|(<code id=\\\"git-build\\\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" "$WEB_DIR/index.html"
+          sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./renderers/wretched-beta-web.js\\2|" "$WEB_DIR/index.html"
+          sed -i 's|href="../../style.css|href="../../../../style.css|g' "$WEB_DIR/index.html"
+          sed -i 's|href="../../"|href="../../../../"|g; s|href="../"|href="../../../"|g' "$WEB_DIR/index.html"
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
           test -f "$WEB_DIR/wretched/engine.js"
           test -f "$WEB_DIR/game/wretched-resolved-game.v1.json"
@@ -101,6 +105,19 @@ jobs:
           assert (resources["threat"]["default"],resources["threat"]["maximum"]) == (0,12)
           PY
           grep -q "./web/${SHORT_SHA}/renderers/wretched-beta-web.js" wretched-demesne/beta/index.html
+          grep -q "./renderers/wretched-beta-web.js" "$WEB_DIR/index.html"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path("wretched-demesne/beta")
+          sha=os.environ["GITHUB_SHA"]; short=sha[:12]
+          path=root/"versions.json"
+          try: catalog=json.loads(path.read_text())
+          except FileNotFoundError: catalog={"format":"wretched-beta-versions.v1","versions":[]}
+          versions=[v for v in catalog.get("versions",[]) if v.get("git_sha")!=sha]
+          versions.insert(0,{"git_sha":sha,"short_sha":short,"label":"Build "+short,"path":"./web/"+short+"/index.html"})
+          path.write_text(json.dumps({"format":"wretched-beta-versions.v1","current":sha,"versions":versions},indent=2)+"\n")
+          PY
           sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
           sed -i -E "s|wretched-demesne-scenario-01-beta-tts-[^\"]*\.zip|wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip|" wretched-demesne/beta/index.html
 
@@ -109,7 +126,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add wretched-demesne/beta/index.html wretched-demesne/beta/build.json wretched-demesne/beta/tts-build.json
+          git add wretched-demesne/beta/index.html wretched-demesne/beta/build.json wretched-demesne/beta/tts-build.json wretched-demesne/beta/versions.json
           git add wretched-demesne/beta/web/
           git add wretched-demesne/beta/tts/
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-*.pdf
