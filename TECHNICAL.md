@@ -363,9 +363,7 @@ dist/
 
 Wretched Beta now has a checked-in unified release workflow at `.github/workflows/wretched-beta-pnp.yml`. It validates the exporters/PnP geometry and Web cache-identity invariants, generates matching PnP/TTS artifacts from the triggering source SHA, stamps the Beta Web release identity, and commits generated release artifacts with the bot.
 
-GitHub Pages is available for the repository and has been publishing the static site, but there is not yet a repository-owned workflow that performs the desired unified DODGE build.
-
-Therefore, do not assume that merging to `main` currently generates the PnP PDF or TTS ZIP. It does not.
+GitHub Pages publishes the static site, and the repository-owned Wretched Beta workflow generates matching Web/PnP/TTS review artifacts from the triggering source revision. The Web runtime is emitted as a SHA-addressed dependency-closed tree; future trees are retained for Version Lab compatibility testing. This workflow is the current release mechanism, although full DODGE 0.2.1 conformance and three-target parity remain release-gate work rather than completed claims.
 
 ### Target Actions architecture
 
@@ -405,6 +403,18 @@ To keep the repository approachable:
 - **game/*.md** — game/import-specific assumptions and contracts.
 
 This keeps technical plumbing available without turning the README into an operations manual.
+
+## Wretched replay provenance and Version Lab
+
+The normal Wretched Beta entry point always targets the newest source release. Advanced compatibility/debug work lives at `wretched-demesne/beta/lab.html`.
+
+New `wretched-replay.v1` exports include the source Git SHA. On verification failure the runtime reports the replay build and current build. Replays without provenance are identified as predating provenance support. If a failed replay contains saved states, those states may be walked in inspection-only mode; they are not treated as verified current-runtime state and takeover is disabled.
+
+Beta Web releases are SHA-addressed under `wretched-demesne/beta/web/<SOURCE_SHA>/`. Release CI now retains those directories and writes `wretched-demesne/beta/versions.json`, newest first. Each retained directory is an immutable executable snapshot containing its entry page, renderer/runtime modules and resolved game data. The Version Lab may select a retained build, step Older/Newer, choose a midpoint for manual bisecting, or route a replay to its recorded SHA. The Lab orchestrates runtimes; it does not implement gameplay.
+
+Historical retention begins with the Version Lab release. Pre-Lab generated web trees were deleted by the former workflow. They may be deliberately reconstructed from Git source history when needed, but must not be represented as already-retained artifacts.
+
+**Build identity rule:** the user-facing build/replay identity is the human/source Git SHA that triggered release generation. The bot commit containing generated artifacts is not a new gameplay version.
 
 ## Immediate technical roadmap
 
