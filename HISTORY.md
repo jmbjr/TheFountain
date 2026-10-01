@@ -460,3 +460,24 @@ PR #93 adds the Wretched Version Lab. The ordinary Beta URL remains current-only
 **Milestone:** replay failures can now be tied to a source revision, inspected without discarding useful evidence, and reproduced against retained historical runtimes without turning those runtimes into a second source of truth.
 
 PRs: https://github.com/jmbjr/TheFountain/pull/91, https://github.com/jmbjr/TheFountain/pull/92, https://github.com/jmbjr/TheFountain/pull/93
+
+
+---
+
+## Scenario 01 becomes source-aware and historically debuggable
+
+### PRs #91–#93 — Linear topology, replay provenance, and Version Lab
+
+**Merged September 30, 2026.**
+
+Replay testing exposed two different problems that initially looked like one. First, the prototype's earlier graph-capacity interpretation let Cave Mouth originate Explore more than once. The current Scenario 01 design intent is simpler: each room may originate Explore exactly once, producing one linear cave. PR #91 implemented that explicit **single-origin** policy and left the broader topology model unresolved for Design Lead issue #90 rather than inventing future branching semantics.
+
+Second, a newly generated replay could fail after a runtime change without identifying which source build had created it. PR #92 therefore stamped new replay exports with the source Git SHA and made replay failures report replay/current build identity. Saved states from an unverifiable replay remain useful for inspection, but are clearly unverified and cannot be taken over under the current runtime.
+
+PR #93 completed the debugging architecture with **Version Lab**. Beta releases are now retained as immutable SHA-addressed web runtimes, the normal Beta URL still means newest/current, and the Lab can route a replay to Current, its recorded build, a manually selected build, or a midpoint for compatibility/bisect investigation. Historical retention begins with this release; older generated trees had already been deleted and will only be reconstructed if a specific investigation needs them.
+
+These changes sharpened an important distinction: a replay may be valid under its originating build even when its actions no longer conform to the current build.
+
+**Milestone:** Scenario 01 now has an explicit interim linear topology policy, replay files carry source provenance, and future Beta builds form an immutable compatibility history without changing the normal newest-Beta workflow.
+
+The next convergence phase is the DODGE 0.2.1 runtime-semantic audit. The shared resolver already feeds Web and PnP; remaining procedural mechanics will be classified one coherent mechanic at a time as DODGE-expressible semantics, canonical Scenario data, genuine DODGE blockers, or legitimate engine implementation details. TTS remains paused until Web/PnP convergence is satisfactory.

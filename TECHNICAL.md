@@ -418,11 +418,18 @@ Historical retention begins with the Version Lab release. Pre-Lab generated web 
 
 ## Immediate technical roadmap
 
-The next major implementation step is to realign the existing Wretched Web/PnP/TTS review build around the DODGE 0.2.1 resolver/rules/runtime/inventory contract, then improve PnP/TTS presentation from that common inventory.
+The shared resolver (`tools/resolve_wretched_dodge.py`) is now the common semantic boundary for the Wretched Web and PnP paths. Semantic collections, starter decks, enemy/scenario supplies, diagnostic contents, runtime room/encounter/salvage decks, and core resource values have progressively moved onto that resolved model. The Beta release workflow and source-SHA provenance infrastructure are also operational.
 
-After the three targets work locally, add the unified GitHub Actions workflow so a merge to `main` validates and publishes all three together.
+The next implementation phase is a **runtime semantic audit**, performed one coherent mechanic at a time. For every remaining procedural/hardcoded mechanic:
 
-At that point, update this document from “target architecture” to the exact production build procedure.
+1. If DODGE 0.2.1 already expresses it, migrate it into shared resolved semantics.
+2. If it is a canonical Wretched/Scenario fact, place or reference it in canonical Scenario data.
+3. If the required semantics are not expressible in DODGE 0.2.1, open a DODGE blocker instead of inventing a Wretched-only DSL.
+4. If it is genuinely an engine implementation detail, keep it in runtime code and test the boundary.
+
+Known audit candidates include Ancient Relay insertion, the Search/Power Cell special case, salvage and relay effects, reload +2, Threat-threshold spawn IDs, encounter/room setup effects keyed by IDs, feeding/evolution/chrysalis behavior, and action-card effects. Before migrating any of them, inspect the exact DODGE 0.2.1 rules/timing contract.
+
+TTS gameplay work remains paused until Web/PnP and DODGE convergence are satisfactory. Stable remains untouched until the DODGE 0.2.1 release gate and Design Lead feedback are ready.
 
 
 ### Wretched Beta PnP
