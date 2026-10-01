@@ -1,0 +1,14 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Wretched Demesne — Version Lab</title><link rel="stylesheet" href="../../style.css?v=20260928-beta-1"></head>
+<body class="wd-body"><nav class="back"><a href="./">← Current Beta</a> · <a href="../">Stable version</a></nav>
+<main class="wd-game"><header><p class="eyebrow">ADVANCED DEBUG TOOL</p><h1>WRETCHED VERSION LAB</h1><p class="tag">Run or replay Scenario 01 against retained immutable Beta builds.</p></header>
+<section class="wd-panel"><h2>Runtime version</h2><p>The newest Beta is selected by default. Historical builds are immutable snapshots.</p>
+<label>Version <select id="version"></select></label>
+<div class="wd-replay-controls"><button id="older" type="button">← Older</button><button id="newer" type="button">Newer →</button></div>
+<p id="versionInfo" class="quiet"></p><button id="open" type="button">Open selected version</button></section>
+<section class="wd-panel"><h2>Replay JSON</h2><p>Select a replay once, then open it with the current, recorded, or selected runtime. The selected file is passed locally to the chosen immutable build; it is not uploaded.</p>
+<input id="replay" type="file" accept="application/json,.json"><p id="replayInfo" class="quiet">No replay selected.</p>
+<div class="choices"><button id="currentReplay" type="button">Replay with current</button><button id="recordedReplay" type="button">Replay with recorded version</button><button id="selectedReplay" type="button">Replay with selected version</button></div></section>
+<section class="wd-panel"><h2>Compatibility search</h2><p>Keep the same replay selected and move Older/Newer, or use Midpoint to narrow the first incompatible retained release.</p><button id="midpoint" type="button">Select midpoint version</button><p class="quiet">This is intentionally manual: the Lab changes runtimes; each immutable runtime remains responsible for verifying the replay.</p></section>
+<p id="status"></p></main><script type="module" src="./version-lab.js"></script></body></html>
