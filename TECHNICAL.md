@@ -418,12 +418,13 @@ Historical retention begins with the Version Lab release. Pre-Lab generated web 
 
 ## Immediate technical roadmap
 
-The next major implementation step is to realign the existing Wretched Web/PnP/TTS review build around the DODGE 0.2.1 resolver/rules/runtime/inventory contract, then improve PnP/TTS presentation from that common inventory.
+The release/provenance infrastructure is now in place: Beta uses a source-SHA-addressed executable Web tree, replay JSON carries source provenance, failed replays preserve inspection where possible, and Version Lab retains future immutable Beta builds for compatibility testing.
 
-After the three targets work locally, add the unified GitHub Actions workflow so a merge to `main` validates and publishes all three together.
+The next major implementation step is the **DODGE 0.2.1 runtime-semantics audit**. Review remaining procedural/hardcoded Wretched mechanics one coherent mechanic at a time and classify each as already expressible in DODGE 0.2.1, canonical Wretched game data, a genuine DODGE 0.2.1 expressiveness gap/blocker, or legitimate runtime implementation detail.
 
-At that point, update this document from “target architecture” to the exact production build procedure.
+Priority audit areas include Relay placement/interaction, Search and Power Cell behavior, salvage effects, reload behavior, Threat-triggered spawns, encounter and room setup effects, feeding/evolution/chrysalis behavior, and action-card effects. Preserve explicit Design Lead uncertainty rather than inventing semantics.
 
+After that audit, continue the promotion gate: runtime-state conformance, deterministic inventory/representation resolution, three-target parity, the complete Scenario 01 conformance playtest, blocker closure/freeze, DODGE 0.2.1 promotion, then Wretched Beta → Stable. TTS gameplay work remains paused until Web/PnP and DODGE convergence are satisfactory.
 
 ### Wretched Beta PnP
 
