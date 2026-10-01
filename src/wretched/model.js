@@ -21,6 +21,8 @@ export function runtimeFromResolved(resolved){
   if(resources["hand-size"])data.rules.hand_size={value:resources["hand-size"].default,provenance:"dodge-resolved"};
   if(resources.ammunition)data.rules.ammo={value:data.rules.ammo?.value,starting:resources.ammunition.default,max:resources.ammunition.maximum,provenance:"dodge-resolved"};
   if(resources.threat)data.rules.threat={...data.rules.threat,start:resources.threat.default,max:resources.threat.maximum,provenance:"dodge-resolved"};
+  const reloadEffect=resolved.rules?.actions?.reload?.effects?.find(effect=>effect.op==="add"&&effect.target_ref==="ammunition");
+  if(reloadEffect)data.rules.reload={ammo:reloadEffect.value,provenance:"dodge-resolved"};
   if(resolved.rules?.topology)data.rules.topology=structuredClone(resolved.rules.topology);
   data.resolved_dodge={document_id:resolved.document_id,dodge_version:resolved.dodge_version,scenario_id:resolved.scenario_id};
   data.starter_decks={};

@@ -185,6 +185,7 @@
       "id": "reload",
       "name": "Reload",
       "type": "action",
+      "restore_ammo": 2,
       "text": "Restore 2 shared Ammo, up to the maximum.",
       "qty_by_deck": {
         "captain": 1,
