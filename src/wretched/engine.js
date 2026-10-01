@@ -23,12 +23,12 @@ export class WretchedEngine {
   connect(a,b){this.state.connections[a]??=[];this.state.connections[b]??=[];if(!this.state.connections[a].includes(b))this.state.connections[a].push(b);if(!this.state.connections[b].includes(a))this.state.connections[b].push(a)}
   legalMoves(room=this.state.crew.room){return (this.state.connections[room]||[]).filter(id=>this.state.rooms.includes(id))}
   explorationCapacityPolicy(){return this.data.rules.topology?.exploration_capacity?.value||"declared"}
-  canExplore(room=this.state.crew.room){if(!this.state.roomDeck.length)return false;if(this.explorationCapacityPolicy()==="unbounded")return true;const limit=this.room(room)?.connections;return Number.isFinite(limit)&&(this.state.connections[room]?.length||0)<limit}
+  canExplore(room=this.state.crew.room){if(!this.state.roomDeck.length)return false;if(this.explorationCapacityPolicy()==="unbounded")return true;return !(this.state.exploredFrom||[]).includes(room)}
   shortestPath(from,to){if(from===to)return [from];const queue=[[from]],seen=new Set([from]);while(queue.length){const path=queue.shift(),at=path[path.length-1];for(const next of this.legalMoves(at)){if(seen.has(next))continue;const candidate=[...path,next];if(next===to)return candidate;seen.add(next);queue.push(candidate)}}return null}
   moveEnemyToward(e,target=this.state.crew.room){const path=this.shortestPath(e.room,target);if(!path||path.length<2)return false;const steps=Math.min(e.move||1,path.length-1);e.room=path[steps];this.log(`${e.name} moves to ${this.room(e.room)?.name||e.room}.`);return true}
   revealRoom(from=this.state.crew.room){if(!this.canExplore(from))return null;const id=this.state.roomDeck.shift();this.state.rooms.push(id);this.connect(from,id);const r=this.room(id);this.log(`Revealed ${r.name}.`);this.resolveRoomSetup(r);this.resolveEncounter();return r}
   move(target=null){if(!target||!this.legalMoves().includes(target)||!this.spend())return false;this.state.crew.room=target;this.log(`Moved to ${this.room().name}.`);return true}
-  explore(){if(!this.canExplore()||!this.spend())return false;const r=this.revealRoom();if(r){this.state.crew.room=r.id;this.log(`Entered ${r.name}.`)}return !!r}
+  explore(){const from=this.state.crew.room;if(!this.canExplore(from)||!this.spend())return false;const r=this.revealRoom(from);if(r){this.state.exploredFrom??=[];if(!this.state.exploredFrom.includes(from))this.state.exploredFrom.push(from);this.state.crew.room=r.id;this.log(`Entered ${r.name}.`)}return !!r}
   search(){const r=this.room();if(!r.searchable||this.state.searched.includes(r.id)||!this.spend())return false;this.state.searched.push(r.id);let item;
     if(r.objective_item==="Ancient Power Cell") item=this.data.salvage.find(s=>s.id==="power-cell"); else item=this.data.salvage.find(s=>s.id===this.state.salvage.shift());
     if(item){this.state.inventory.push(item.id);this.applySalvage(item);this.log(`Found ${item.name}.`)}return true}

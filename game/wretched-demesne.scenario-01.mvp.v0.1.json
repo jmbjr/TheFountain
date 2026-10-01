@@ -81,9 +81,9 @@
     },
     "topology": {
       "exploration_capacity": {
-        "value": "declared",
-        "description": "By default, Explore may create a new connection only while the current room has fewer materialized connections than its declared connections value. Set value to unbounded to intentionally permit over-capacity/non-Euclidean branching.",
-        "provenance": "prototype_assumption_pending_design_lead_issue_50"
+        "value": "single-origin",
+        "description": "Scenario 01 interim topology: each room may originate Explore at most once, producing a single linear cave path. Existing room connection counts do not grant additional Explore actions. Future branching/interconnection semantics are deferred to Design Lead issue #90.",
+        "provenance": "implementor_decision_pending_design_lead_issue_90"
       }
     }
   },
