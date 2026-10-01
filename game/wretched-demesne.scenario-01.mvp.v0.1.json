@@ -450,7 +450,28 @@
       "searchable": false,
       "tag": "objective",
       "objective": "Interact while carrying Ancient Power Cell; add 2 Threat and activate extraction.",
-      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary"
+      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary",
+      "interaction": {
+        "requires_inventory_ref": "power-cell",
+        "effects": [
+          {
+            "op": "set",
+            "target_ref": "relay-active",
+            "subject": {
+              "relative": "scenario"
+            },
+            "value": true
+          },
+          {
+            "op": "add",
+            "target_ref": "threat",
+            "subject": {
+              "relative": "expedition"
+            },
+            "value": 2
+          }
+        ]
+      }
     },
     {
       "id": "dead-end",
