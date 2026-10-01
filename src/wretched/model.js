@@ -20,7 +20,7 @@ export function runtimeFromResolved(resolved){
   if(resources.actions)data.rules.actions_per_turn={value:resources.actions.default,provenance:"dodge-resolved"};
   if(resources["hand-size"])data.rules.hand_size={value:resources["hand-size"].default,provenance:"dodge-resolved"};
   if(resources.ammunition)data.rules.ammo={value:data.rules.ammo?.value,starting:resources.ammunition.default,max:resources.ammunition.maximum,provenance:"dodge-resolved"};
-  if(resources.threat)data.rules.threat={...data.rules.threat,start:resources.threat.default,max:resources.threat.maximum,provenance:"dodge-resolved"};
+  if(resources.threat){data.rules.threat={...data.rules.threat,start:resources.threat.default,max:resources.threat.maximum,provenance:"dodge-resolved"};if(resources.threat.thresholds)data.rules.threat.thresholds=structuredClone(resources.threat.thresholds);}
   const reloadEffect=resolved.rules?.actions?.reload?.effects?.find(effect=>effect.op==="add"&&effect.target_ref==="ammunition");
   if(reloadEffect)data.rules.reload={ammo:reloadEffect.value,provenance:"dodge-resolved"};
   if(resolved.rules?.topology)data.rules.topology=structuredClone(resolved.rules.topology);
