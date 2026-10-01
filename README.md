@@ -14,6 +14,14 @@ Canonical game facts may remain in referenced sources as DODGE permits. DODGE go
 
 Do not encode gameplay content directly in a renderer or introduce target-specific workarounds that violate DODGE. If a rule/card/encounter changes, change the neutral definition and regenerate/render every target from it.
 
+## Current Wretched Beta
+
+Wretched Demesne Scenario 01 is playable in the Beta and is the release gate for DODGE 0.2.1. The normal Beta route always serves the newest source build. New replay exports carry their source Git SHA, and the separate **Version Lab** retains immutable SHA-addressed Beta web builds for replay compatibility/debugging. Historical retention begins with the Version Lab release; older builds can be reconstructed deliberately if needed.
+
+Scenario 01 currently uses an interim **single-origin exploration** rule: each room may originate Explore once, producing a linear cave. Future branching, loops, connection tiers and objective-placement semantics remain a Design Lead decision rather than an implementation assumption.
+
+Stable remains isolated for Design Lead review. TTS gameplay work is paused while Web/PnP and DODGE 0.2.1 convergence are completed.
+
 ## Prototype
 
 The first slice demonstrates health, humanity, mutation stages, knowledge, death/resurrection, and encounters.
