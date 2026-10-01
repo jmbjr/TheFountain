@@ -710,6 +710,15 @@
       "Deck-building",
       "Ship recovery"
     ],
-    "provenance": "GDD objective/teaching/target with prototype-specific Power Cell + Relay win implementation."
+    "provenance": "GDD objective/teaching/target with prototype-specific Power Cell + Relay win implementation.",
+    "setup_constraints": {
+      "deck_placements": [
+        {
+          "collection_ref": "rooms",
+          "entity_ref": "relay",
+          "within_last": 3
+        }
+      ]
+    }
   }
 }
