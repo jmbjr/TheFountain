@@ -383,7 +383,17 @@
       "connections": 3,
       "searchable": true,
       "setup": "Place 1 Spider Corpse.",
-      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary"
+      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary",
+      "setup_effects": [
+        {
+          "op": "add",
+          "target_ref": "spider-corpse",
+          "subject": {
+            "relative": "location"
+          },
+          "value": 1
+        }
+      ]
     },
     {
       "id": "fungal-vault",
@@ -399,7 +409,23 @@
       "connections": 3,
       "searchable": true,
       "setup": "Spawn 2 Small Spiders.",
-      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary"
+      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary",
+      "setup_effects": [
+        {
+          "op": "emit",
+          "event": "spawn-enemy",
+          "payload": {
+            "entity_ref": "small-spider"
+          }
+        },
+        {
+          "op": "emit",
+          "event": "spawn-enemy",
+          "payload": {
+            "entity_ref": "small-spider"
+          }
+        }
+      ]
     },
     {
       "id": "ruined-workshop",
