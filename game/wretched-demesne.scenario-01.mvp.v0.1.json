@@ -497,25 +497,71 @@
       "id": "skittering",
       "name": "Skittering in the Dark",
       "effect": "Spawn 1 Small Spider.",
-      "provenance": "prototype_assumption based on GDD encounter categories"
+      "provenance": "prototype_assumption based on GDD encounter categories",
+      "effects": [
+        {
+          "op": "emit",
+          "event": "spawn-enemy",
+          "payload": {
+            "entity_ref": "small-spider"
+          }
+        }
+      ]
     },
     {
       "id": "fresh-remains",
       "name": "Fresh Remains",
       "effect": "Place 1 Spider Corpse.",
-      "provenance": "prototype_assumption based on GDD encounter categories"
+      "provenance": "prototype_assumption based on GDD encounter categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "spider-corpse",
+          "subject": {
+            "relative": "location"
+          },
+          "value": 1
+        }
+      ]
     },
     {
       "id": "ambush",
       "name": "Ceiling Ambush",
       "effect": "Spawn 1 Small Spider; active crew loses 1 Health.",
-      "provenance": "prototype_assumption based on GDD encounter categories"
+      "provenance": "prototype_assumption based on GDD encounter categories",
+      "effects": [
+        {
+          "op": "emit",
+          "event": "spawn-enemy",
+          "payload": {
+            "entity_ref": "small-spider"
+          }
+        },
+        {
+          "op": "subtract",
+          "target_ref": "health",
+          "subject": {
+            "relative": "current-actor"
+          },
+          "value": 1
+        }
+      ]
     },
     {
       "id": "unstable-rock",
       "name": "Unstable Rock",
       "effect": "Add 1 Threat. This room costs +1 action to leave this turn.",
-      "provenance": "prototype_assumption based on GDD encounter categories"
+      "provenance": "prototype_assumption based on GDD encounter categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "threat",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 1
+        }
+      ]
     },
     {
       "id": "old-machine",
@@ -527,7 +573,17 @@
       "id": "distant-howls",
       "name": "Distant Howls",
       "effect": "Add 2 Threat.",
-      "provenance": "prototype_assumption based on GDD encounter categories"
+      "provenance": "prototype_assumption based on GDD encounter categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "threat",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 2
+        }
+      ]
     }
   ],
   "scenario": {
