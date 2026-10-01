@@ -22,6 +22,8 @@ Scenario 01 currently uses an interim **single-origin exploration** rule: each r
 
 Stable remains isolated for Design Lead review. TTS gameplay work is paused while Web/PnP and DODGE 0.2.1 convergence are completed.
 
+The shared resolver (`tools/resolve_wretched_dodge.py`) now drives both Web and PnP resolved game data. The next convergence phase is a mechanic-by-mechanic runtime semantic audit: migrate semantics already expressible in DODGE 0.2.1, keep canonical game facts in Scenario data, open DODGE blockers for genuine schema gaps, and leave legitimate engine implementation details in code.
+
 ## Prototype
 
 The first slice demonstrates health, humanity, mutation stages, knowledge, death/resurrection, and encounters.
