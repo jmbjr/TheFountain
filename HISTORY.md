@@ -441,3 +441,22 @@ The previously captured multi-path/over-capacity replay was also loaded against 
 
 PR: #60.
 
+
+
+---
+
+## Replay provenance, linear topology, and immutable Version Lab
+
+### PRs #91–#93 — Make rule changes reproducible across builds
+
+**Merged September 30, 2026.**
+
+A Design Lead replay exposed an ambiguity in the provisional cave topology model. Scenario 01 now deliberately uses one outgoing Explore origin per room, producing a single linear cave while the broader topology design is resolved separately with the Design Lead. This is an interim executable constraint, not a claim that future Wretched topology must be linear.
+
+That change also demonstrated why deterministic replay needs build provenance. PR #92 stamps new replay JSON with the full source Git SHA, reports replay/current versions on verification failure, and allows saved replay states to remain inspectable even when the current runtime rejects the historical action sequence. Inspection-only fallback does not silently bless incompatible state or permit takeover.
+
+PR #93 adds the Wretched Version Lab. The ordinary Beta URL remains current-only, while the Lab can launch retained immutable SHA-addressed Beta builds and run a selected replay with the current, selected, or recorded runtime. Older/Newer and midpoint selection provide a simple manual compatibility/bisect workflow. Release automation now retains future web builds instead of deleting the previous SHA directory; retention begins with the Version Lab release, so older builds are reconstructed only when there is a concrete need.
+
+**Milestone:** replay failures can now be tied to a source revision, inspected without discarding useful evidence, and reproduced against retained historical runtimes without turning those runtimes into a second source of truth.
+
+PRs: https://github.com/jmbjr/TheFountain/pull/91, https://github.com/jmbjr/TheFountain/pull/92, https://github.com/jmbjr/TheFountain/pull/93
