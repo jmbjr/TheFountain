@@ -432,8 +432,8 @@
       "name": "Ruined Workshop",
       "connections": 2,
       "searchable": true,
-      "objective_item": "Ancient Power Cell",
-      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary"
+      "provenance": "prototype_assumption implementing GDD cave/ruin/terrain vocabulary",
+      "objective_item_ref": "power-cell"
     },
     {
       "id": "sealed-door",
