@@ -466,21 +466,51 @@
       "name": "Ammo Cache",
       "type": "consumable",
       "effect": "+3 Ammo.",
-      "provenance": "prototype_assumption based on GDD loot categories"
+      "provenance": "prototype_assumption based on GDD loot categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "ammunition",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 3
+        }
+      ]
     },
     {
       "id": "med-gel",
       "name": "Medical Gel",
       "type": "consumable",
       "effect": "Restore 3 Health.",
-      "provenance": "prototype_assumption based on GDD loot categories"
+      "provenance": "prototype_assumption based on GDD loot categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "health",
+          "subject": {
+            "relative": "current-actor"
+          },
+          "value": 3
+        }
+      ]
     },
     {
       "id": "scrap",
       "name": "Useful Scrap",
       "type": "resource",
       "effect": "+2 Scrap.",
-      "provenance": "prototype_assumption based on GDD loot categories"
+      "provenance": "prototype_assumption based on GDD loot categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "scrap",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 2
+        }
+      ]
     },
     {
       "id": "armor-plate",
@@ -501,7 +531,17 @@
       "name": "Translation Fragment",
       "type": "knowledge",
       "effect": "Gain 1 Knowledge; keep after extraction.",
-      "provenance": "prototype_assumption based on GDD loot categories"
+      "provenance": "prototype_assumption based on GDD loot categories",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "knowledge",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 1
+        }
+      ]
     },
     {
       "id": "phase-cutter",
