@@ -75,7 +75,40 @@
     },
     "spider_feeding": {
       "value": "At Enemy phase, a spider sharing a room with a Spider Corpse may consume one. Small becomes Fed (+1 max/current Health); Large becomes Fed and heals 1 each End phase. A Fed spider consuming a second corpse becomes a Chrysalis. Chrysalis hatches next End phase: Small lineage → Large; Large lineage → Alpha.",
-      "provenance": "prototype_assumption"
+      "provenance": "prototype_assumption",
+      "mechanic": {
+        "eligible_tag": "spider",
+        "corpse_ref": "spider-corpse",
+        "chrysalis_after_feeds": 2,
+        "hatch_after_end_phases": 1,
+        "lineages": {
+          "small-spider": {
+            "first_feed_effects": [
+              {
+                "op": "add",
+                "target_ref": "enemy-health",
+                "value": 1
+              },
+              {
+                "op": "add",
+                "target_ref": "enemy-max-health",
+                "value": 1
+              }
+            ],
+            "hatch_enemy_ref": "large-spider"
+          },
+          "large-spider": {
+            "first_feed_effects": [
+              {
+                "op": "set",
+                "target_ref": "enemy-regeneration",
+                "value": true
+              }
+            ],
+            "hatch_enemy_ref": "alpha-spider"
+          }
+        }
+      }
     },
     "retreat": {
       "value": "From Entrance, spend 1 action to extract. Extracted crew keep salvage. Scenario succeeds only after the Ancient Relay is activated and at least one crew extracts.",
@@ -305,7 +338,10 @@
       "move": 2,
       "ai": "Move toward nearest corpse; if threatened/adjacent to crew, attack. Flee at 1 Health if no corpse is present.",
       "corpse": true,
-      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption"
+      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption",
+      "tags": [
+        "spider"
+      ]
     },
     {
       "id": "large-spider",
@@ -316,7 +352,10 @@
       "move": 2,
       "ai": "Pursue nearest injured crew; feed on corpse in room before moving; retreat one room after feeding if possible.",
       "corpse": true,
-      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption"
+      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption",
+      "tags": [
+        "spider"
+      ]
     },
     {
       "id": "alpha-spider",
@@ -327,7 +366,10 @@
       "move": 2,
       "ai": "Pursue nearest target and attack. Never retreats. May attack other creatures if closer than crew.",
       "corpse": true,
-      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption"
+      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption",
+      "tags": [
+        "spider"
+      ]
     },
     {
       "id": "brood-mother",
@@ -338,7 +380,10 @@
       "move": 1,
       "ai": "If not adjacent to crew, spawn a Small Spider every other Enemy phase; otherwise attack.",
       "corpse": true,
-      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption"
+      "provenance": "gdd archetype/behavior intent; numeric stats and precise priority are prototype_assumption",
+      "tags": [
+        "spider"
+      ]
     },
     {
       "id": "leng-servant",
