@@ -44,11 +44,13 @@
       "thresholds": [
         {
           "at": 4,
-          "effect": "Spawn one Small Spider in the nearest revealed empty room."
+          "effect": "Spawn one Small Spider in the nearest revealed empty room.",
+          "spawn_enemy": "small-spider"
         },
         {
           "at": 8,
-          "effect": "Spawn one Large Spider in the nearest revealed empty room."
+          "effect": "Spawn one Large Spider in the nearest revealed empty room.",
+          "spawn_enemy": "large-spider"
         },
         {
           "at": 12,

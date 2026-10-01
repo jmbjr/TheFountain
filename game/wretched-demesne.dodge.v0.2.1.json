@@ -1044,7 +1044,86 @@
         "assumptions": [
           "Scenario-wide Threat and its Scenario 01 thresholds are provisional executable assumptions."
         ],
-        "maximum": 12
+        "maximum": 12,
+        "thresholds": [
+          {
+            "condition": {
+              "op": "gte",
+              "left": {
+                "ref": "threat",
+                "subject": {
+                  "relative": "expedition"
+                }
+              },
+              "right": 4,
+              "source_ref": "scenario-mvp",
+              "authority": "provisional"
+            },
+            "effects": [
+              {
+                "op": "emit",
+                "event": "spawn-enemy",
+                "payload": {
+                  "entity_ref": "scenario-mvp:enemies:small-spider"
+                },
+                "source_ref": "scenario-mvp",
+                "authority": "provisional",
+                "assumptions": [
+                  "Scenario 01 prototype spawns the threshold enemy in the active crew room; nearest-empty-room placement remains unresolved prose."
+                ]
+              }
+            ]
+          },
+          {
+            "condition": {
+              "op": "gte",
+              "left": {
+                "ref": "threat",
+                "subject": {
+                  "relative": "expedition"
+                }
+              },
+              "right": 8,
+              "source_ref": "scenario-mvp",
+              "authority": "provisional"
+            },
+            "effects": [
+              {
+                "op": "emit",
+                "event": "spawn-enemy",
+                "payload": {
+                  "entity_ref": "scenario-mvp:enemies:large-spider"
+                },
+                "source_ref": "scenario-mvp",
+                "authority": "provisional",
+                "assumptions": [
+                  "Scenario 01 prototype spawns the threshold enemy in the active crew room; nearest-empty-room placement remains unresolved prose."
+                ]
+              }
+            ]
+          },
+          {
+            "condition": {
+              "op": "gte",
+              "left": {
+                "ref": "threat",
+                "subject": {
+                  "relative": "expedition"
+                }
+              },
+              "right": 12,
+              "source_ref": "scenario-mvp",
+              "authority": "provisional"
+            },
+            "effects": [
+              {
+                "prose": "The expedition is overrun; crew must extract this round or lose.",
+                "source_ref": "scenario-mvp",
+                "authority": "provisional"
+              }
+            ]
+          }
+        ]
       },
       "fed": {
         "name": "Fed",
