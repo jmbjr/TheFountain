@@ -457,6 +457,6 @@ That change also demonstrated why deterministic replay needs build provenance. P
 
 PR #93 adds the Wretched Version Lab. The ordinary Beta URL remains current-only, while the Lab can launch retained immutable SHA-addressed Beta builds and run a selected replay with the current, selected, or recorded runtime. Older/Newer and midpoint selection provide a simple manual compatibility/bisect workflow. Release automation now retains future web builds instead of deleting the previous SHA directory; retention begins with the Version Lab release, so older builds are reconstructed only when there is a concrete need.
 
-**Milestone:** replay failures can now be tied to a source revision, inspected without discarding useful evidence, and reproduced against retained historical runtimes without turning those runtimes into a second source of truth.
+**Milestone:** replay failures can now be tied to a source revision, inspected without discarding useful evidence, and reproduced against retained historical runtimes without turning those runtimes into a second source of truth. The first retained Version Lab build is the retention boundary; future Beta source releases should accumulate rather than replace it.
 
 PRs: https://github.com/jmbjr/TheFountain/pull/91, https://github.com/jmbjr/TheFountain/pull/92, https://github.com/jmbjr/TheFountain/pull/93
