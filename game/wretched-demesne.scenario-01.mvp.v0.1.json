@@ -518,7 +518,7 @@
           "op": "add",
           "target_ref": "spider-corpse",
           "subject": {
-            "relative": "current-location"
+            "relative": "location"
           },
           "value": 1
         }
