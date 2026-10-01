@@ -30,7 +30,7 @@ export class WretchedEngine {
   move(target=null){if(!target||!this.legalMoves().includes(target)||!this.spend())return false;this.state.crew.room=target;this.log(`Moved to ${this.room().name}.`);return true}
   explore(){const from=this.state.crew.room;if(!this.canExplore(from)||!this.spend())return false;const r=this.revealRoom(from);if(r){this.state.exploredFrom??=[];if(!this.state.exploredFrom.includes(from))this.state.exploredFrom.push(from);this.state.crew.room=r.id;this.log(`Entered ${r.name}.`)}return !!r}
   search(){const r=this.room();if(!r.searchable||this.state.searched.includes(r.id)||!this.spend())return false;this.state.searched.push(r.id);let item;
-    if(r.objective_item==="Ancient Power Cell") item=this.data.salvage.find(s=>s.id==="power-cell"); else item=this.data.salvage.find(s=>s.id===this.state.salvage.shift());
+    if(r.objective_item_ref) item=this.data.salvage.find(s=>s.id===r.objective_item_ref); else item=this.data.salvage.find(s=>s.id===this.state.salvage.shift());
     if(item){this.state.inventory.push(item.id);this.applySalvage(item);this.log(`Found ${item.name}.`)}return true}
   applySalvage(i){for(const effect of i.effects||[])this.resolveEffect(effect)}
   interact(){if(!this.spend())return false;const r=this.room();if(r.id==="relay"&&this.state.inventory.includes("power-cell")){this.state.relayActive=true;this.addThreat(2);this.log("The Ancient Relay awakens. Extraction is active.");return true}this.log(`Interacted with ${r.name}.`);return true}
