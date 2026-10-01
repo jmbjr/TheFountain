@@ -437,3 +437,12 @@ TTS gameplay work remains paused until Web/PnP and DODGE convergence are satisfa
 DODGE **0.2.1 is the current project baseline**. `tools/export_wretched_beta_pnp.py` reads the active `game/wretched-demesne.dodge.v0.2.1.json`, follows its declared Scenario 01 source, and renders a cuttable Beta PDF. The exporter owns page/card/token layout only; game rules and balance stay in neutral sources. The Beta artifact is isolated at `wretched-demesne/beta/downloads/` and must not replace the Stable Design Lead review artifact under `wretched-demesne/downloads/`.
 
 The first physical build intentionally labels its token-sheet counts non-canonical because Scenario 01 does not yet declare physical supply quantities. The known Medic starter deck discrepancy is likewise rendered from source rather than silently corrected. GitHub Actions generates the Beta PDF after the 0.2.1 adoption reaches `main`.
+
+
+## Current semantic-audit cadence
+
+The preserved Scenario 01 implementation is being audited one coherent mechanic at a time. Each slice classifies ownership before code changes: DODGE-expressible semantics, canonical Scenario facts, genuine DODGE gaps, or legitimate generic runtime behavior. Perturbation tests deliberately change identities and values to prove that runtime behavior follows data rather than historical literals. Reusable findings are copied to DODGE issue #31 before the next slice.
+
+Completed examples include Reload, Threat thresholds and encounter effects. Room setup follows the same pattern: room identity is not executable behavior; setup is canonical Scenario data expressed with the existing generic effect vocabulary and interpreted by the shared runtime effect boundary.
+
+The authoritative Design Lead source refresh is tracked in TheFountain issues #99–#103, with cross-document clarification in #104. Those sources describe a revised topology and Character Sheet/Backpack direction. They are intentionally not being mixed into the current reference variant mid-audit. After the current audit, the revised requirements receive a DODGE compatibility audit first; format gaps go to DODGE before implementation, and the revised game can be built as a separate DODGE-derived variant to test the intended clean requirements-to-target workflow.

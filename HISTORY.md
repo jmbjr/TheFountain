@@ -481,3 +481,16 @@ These changes sharpened an important distinction: a replay may be valid under it
 **Milestone:** Scenario 01 now has an explicit interim linear topology policy, replay files carry source provenance, and future Beta builds form an immutable compatibility history without changing the normal newest-Beta workflow.
 
 The next convergence phase is the DODGE 0.2.1 runtime-semantic audit. The shared resolver already feeds Web and PnP; remaining procedural mechanics will be classified one coherent mechanic at a time as DODGE-expressible semantics, canonical Scenario data, genuine DODGE blockers, or legitimate engine implementation details. TTS remains paused until Web/PnP convergence is satisfactory.
+
+
+## Authoritative Design Lead refresh and preserved reference variant
+
+### Issues #99–#104 — Capture the new design before changing the executable reference
+
+**October 1, 2026.**
+
+Five new Design Lead documents were preserved as authoritative source issues #99–#103. They introduce Backpack and Character Sheet/Inventory direction and replace the earlier generated-cave topology direction with predetermined hidden scenario topology. Issue #104 collects the apparent hand-model inconsistency and asks whether the paired short/full Backpack and Character Sheet documents are superseding versions or independently authoritative.
+
+The implementation does not choose between conflicting source statements. The existing playable Scenario 01 variant remains a useful DODGE 0.2.1 reference while its mechanic-by-mechanic semantic audit continues. After that audit, the clarified new requirements will receive a light DODGE compatibility/boundary audit before implementation. Genuine DODGE gaps are raised upstream rather than patched with Wretched-only semantics; the revised design can then become another DODGE-derived variant, providing a practical test of the requirements → DODGE → resolver → targets workflow.
+
+PR #105 continued that audit by removing encounter-ID gameplay branching in favor of canonical structured effects. The room-setup audit follows the same ownership rule for room-specific setup facts.

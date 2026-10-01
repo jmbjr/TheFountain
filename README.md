@@ -16,9 +16,9 @@ Do not encode gameplay content directly in a renderer or introduce target-specif
 
 ## Current Wretched Beta
 
-Wretched Demesne Scenario 01 is playable in the Beta and is the release gate for DODGE 0.2.1. The normal Beta route always serves the newest source build. New replay exports carry their source Git SHA, and the separate **Version Lab** retains immutable SHA-addressed Beta web builds for replay compatibility/debugging. Historical retention begins with the Version Lab release; older builds can be reconstructed deliberately if needed.
+Wretched Demesne Scenario 01 is playable in the Beta and is the release gate for DODGE 0.2.1. The normal Beta route always serves the newest source build. New replay exports carry their source Git SHA, and the separate **Version Lab** retains immutable SHA-addressed Beta web builds for replay compatibility/debugging. Historical retention begins with the Version Lab release; future Beta source releases accumulate immutably, while older pre-Lab builds can be reconstructed deliberately if needed.
 
-Scenario 01 currently uses an interim **single-origin exploration** rule: each room may originate Explore once, producing a linear cave. Future branching, loops, connection tiers and objective-placement semantics remain a Design Lead decision rather than an implementation assumption.
+The preserved current Scenario 01 variant uses the interim **single-origin exploration** rule: each room may originate Explore once, producing a linear cave. New authoritative Design Lead source #103 instead specifies predetermined hidden topology; #104 collects clarification across the new #99–#103 source set. The current variant remains intact while its DODGE semantic audit is completed, after which the clarified new design can be assessed as a separate DODGE-derived variant rather than silently rewriting this reference implementation.
 
 Stable remains isolated for Design Lead review. TTS gameplay work is paused while Web/PnP and DODGE 0.2.1 convergence are completed.
 
