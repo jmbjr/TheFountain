@@ -6,14 +6,14 @@ export class WretchedEngine {
     const crew=this.data.crew.find(c=>c.id===crewId) || this.data.crew[0];
     this.state={round:1,phase:"crew",crew:{...crew,currentHealth:crew.health,room:"entrance",extracted:false,incapacitated:false},
       actions:this.data.rules.actions_per_turn.value,ammo:this.data.rules.ammo.starting,scrap:0,knowledge:0,threat:this.data.rules.threat.start,
-      relayActive:false,inventory:[],searched:[],rooms:["entrance"],roomDeck:this.shuffle((this.data.semantic_decks?.rooms||this.data.rooms.map(r=>r.id)).filter(id=>id!=="entrance"&&id!=="relay")),
+      relayActive:false,inventory:[],searched:[],rooms:["entrance"],roomDeck:[],
       encounters:this.shuffle(this.data.semantic_decks?.encounters||this.data.encounters.map(e=>e.id)),salvage:this.shuffle(this.data.semantic_decks?.salvage||this.data.salvage.map(s=>s.id)),
       connections:{entrance:[]},enemies:[],corpses:{},chrysalises:[],log:[],actionNumber:0,status:"playing"};
     this.log("Expedition begins at the Cave Mouth.");
-    const relay=this.state.roomDeck.length<3?this.state.roomDeck.length:Math.max(0,this.state.roomDeck.length-3+Math.floor(this.rng()*3));
-    this.state.roomDeck.splice(relay,0,"relay"); this.buildDeck(crewId); return this.state;
+    this.state.roomDeck=this.buildScenarioDeck("rooms",id=>id!=="entrance"); this.buildDeck(crewId); return this.state;
   }
   shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(this.rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  buildScenarioDeck(collectionRef,include=()=>true){const source=this.data.semantic_decks?.[collectionRef]||[];const placements=(this.data.scenario?.setup_constraints?.deck_placements||[]).filter(p=>p.collection_ref===collectionRef);const placed=new Set(placements.map(p=>p.entity_ref));const deck=this.shuffle(source.filter(id=>include(id)&&!placed.has(id)));for(const p of placements){if(!include(p.entity_ref)||!source.includes(p.entity_ref))continue;const within=Math.max(1,Number(p.within_last)||1),start=Math.max(0,deck.length-within+1),index=start+Math.floor(this.rng()*(deck.length-start+1));deck.splice(index,0,p.entity_ref)}return deck;}
   buildDeck(id){const resolved=this.data.starter_decks?.[id];let d=resolved?[...resolved]:[];if(!resolved){for(const c of this.data.cards){for(let i=0;i<(c.qty_by_deck?.[id]||0);i++)d.push(c.id)}}this.state.deck=this.shuffle(d);this.state.discard=[];this.state.hand=[];this.draw(this.data.rules.hand_size.value);}
   draw(n=1){while(n--){if(!this.state.deck.length){this.state.deck=this.shuffle(this.state.discard);this.state.discard=[]}if(this.state.deck.length)this.state.hand.push(this.state.deck.pop())}}
   spend(){if(this.state.status!=="playing"||this.state.actions<1)return false;this.state.actions--;return true}
