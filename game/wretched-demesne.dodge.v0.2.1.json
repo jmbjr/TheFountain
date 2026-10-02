@@ -1516,6 +1516,23 @@
         ],
         "source_ref": "scenario-mvp",
         "authority": "provisional"
+      },
+      "play-card": {
+        "name": "Play card",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional",
+        "assumptions": [
+          "Scenario 01 prototype ordinary tactic/skill cards consume one action when played."
+        ]
       }
     },
     "procedures": {
@@ -2226,6 +2243,138 @@
             "subject": {
               "relative": "current-actor"
             }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:take-cover": [
+      {
+        "id": "play-take-cover",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:security-training": [
+      {
+        "id": "play-security-training",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:jury-rig": [
+      {
+        "id": "play-jury-rig",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:triage": [
+      {
+        "id": "play-triage",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:command": [
+      {
+        "id": "play-command",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:suppressive-fire": [
+      {
+        "id": "play-suppressive-fire",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          {
+            "slot": "target",
+            "source": "runtime-input",
+            "input": "enemy-target",
+            "required": true
           }
         ]
       }
