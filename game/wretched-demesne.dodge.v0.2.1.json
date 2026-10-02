@@ -1533,6 +1533,48 @@
         "assumptions": [
           "Scenario 01 prototype ordinary tactic/skill cards consume one action when played."
         ]
+      },
+      "explore": {
+        "name": "Explore",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Reveal and enter an unexplored connection according to scenario topology.",
+            "source_ref": "scenario-mvp",
+            "authority": "provisional"
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
+      },
+      "extract": {
+        "name": "Extract",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Resolve the scenario extraction outcome at a valid extraction location.",
+            "source_ref": "scenario-mvp",
+            "authority": "provisional"
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
       }
     },
     "procedures": {
