@@ -37,7 +37,7 @@ jobs:
           grep -q 'src/wretched/engine.js' .github/workflows/wretched-beta-pnp.yml
           grep -q 'src/wretched/replay.js' .github/workflows/wretched-beta-pnp.yml
           grep -q '__SOURCE_GIT_SHA__' src/renderers/wretched-beta-web.js
-          grep -Eq 'version-lab\\.js\\?build=(SOURCE_BUILD|[0-9a-f]{12})' wretched-demesne/beta/lab.html
+          grep -Eq 'version-lab\.js\?build=(SOURCE_BUILD|[0-9a-f]{12})' wretched-demesne/beta/lab.html
           grep -q 'game/wretched-demesne.dodge.v0.2.1.json' .github/workflows/wretched-beta-pnp.yml
           grep -q 'tools/resolve_wretched_dodge.py' .github/workflows/wretched-beta-pnp.yml
           if grep -Eq 'wretched-beta-web\.js\?v=[0-9]{8}|from "[^"]+\.js\?v=|\.json\?(v|build)=[0-9]{8}' wretched-demesne/beta/index.html src/renderers/wretched-beta-web.js; then echo "Manual Beta cache tag detected"; exit 1; fi
