@@ -5,7 +5,7 @@ const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario
 data.rules.reload={ammo:data.cards.find(c=>c.id==="reload").restore_ammo};
 data.starter_decks=Object.fromEntries(data.crew.map(crew=>[crew.id,data.cards.flatMap(card=>Array(card.qty_by_deck?.[crew.id]||0).fill(card.id))]));
 const oneAction=()=>({costs:[{resource_ref:"actions",amount:1,subject:{relative:"current-actor"}}]});
-data.action_definitions=Object.fromEntries(["move","attack","reload","search","interact","assist","scout-ahead","play-card"].map(id=>[id,oneAction()]));
+data.action_definitions=Object.fromEntries(["move","attack","reload","search","interact","assist","scout-ahead","play-card","explore","extract"].map(id=>[id,oneAction()]));
 const actionByCard={move:"move",sidearm:"attack",reload:"reload",search:"search",interact:"interact",assist:"assist","scout-ahead":"scout-ahead"};
 for(const card of data.cards){const actionRef=actionByCard[card.id]||"play-card";card.invocations=[{id:`play-${card.id}`,trigger:"play",steps:[{kind:"action",ref:actionRef}],subject_bindings:actionRef==="attack"||card.id==="suppressive-fire"?[{slot:"target",source:"runtime-input",input:"enemy-target",required:true}]:[]}]}
 assert.equal(validateWretchedMvp(data).ok,true);\nconst missingStarterDecks=structuredClone(data);delete missingStarterDecks.starter_decks;assert.throws(()=>new WretchedEngine(missingStarterDecks,{rng:()=>0}),/missing resolved starter deck/);
