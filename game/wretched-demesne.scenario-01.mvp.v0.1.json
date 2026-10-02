@@ -307,7 +307,7 @@
           "op": "set",
           "target_ref": "suppressed",
           "subject": {
-            "relative": "target-enemy"
+            "relative": "target"
           },
           "value": true
         }
