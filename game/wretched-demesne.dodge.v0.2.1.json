@@ -1495,6 +1495,86 @@
             "authority": "authoritative"
           }
         ]
+      },
+      "scout-ahead": {
+        "name": "Scout Ahead",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Reveal an adjacent room without entering it; do not resolve its encounter until entered.",
+            "source_ref": "scenario-mvp",
+            "authority": "provisional"
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
+      },
+      "play-card": {
+        "name": "Play card",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional",
+        "assumptions": [
+          "Scenario 01 prototype ordinary tactic/skill cards consume one action when played."
+        ]
+      },
+      "explore": {
+        "name": "Explore",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Reveal and enter an unexplored connection according to scenario topology.",
+            "source_ref": "scenario-mvp",
+            "authority": "provisional"
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
+      },
+      "extract": {
+        "name": "Extract",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Resolve the scenario extraction outcome at a valid extraction location.",
+            "source_ref": "scenario-mvp",
+            "authority": "provisional"
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
       }
     },
     "procedures": {
@@ -2045,5 +2125,296 @@
       "encoding": "numeric",
       "interaction": "read-write"
     }
+  },
+  "entity_invocations": {
+    "scenario-mvp:cards:move": [
+      {
+        "id": "play-move",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "move"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:sidearm": [
+      {
+        "id": "play-attack",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "attack"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          {
+            "slot": "target",
+            "source": "runtime-input",
+            "input": "enemy-target",
+            "required": true
+          },
+          {
+            "slot": "source",
+            "source": "using-object"
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:reload": [
+      {
+        "id": "play-reload",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "reload"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:search": [
+      {
+        "id": "play-search",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "search"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:interact": [
+      {
+        "id": "play-interact",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "interact"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:assist": [
+      {
+        "id": "play-assist",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "assist"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:scout-ahead": [
+      {
+        "id": "play-scout-ahead",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "scout-ahead"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:take-cover": [
+      {
+        "id": "play-take-cover",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:security-training": [
+      {
+        "id": "play-security-training",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:jury-rig": [
+      {
+        "id": "play-jury-rig",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:triage": [
+      {
+        "id": "play-triage",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:command": [
+      {
+        "id": "play-command",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:suppressive-fire": [
+      {
+        "id": "play-suppressive-fire",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "play-card"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          {
+            "slot": "target",
+            "source": "runtime-input",
+            "input": "enemy-target",
+            "required": true
+          }
+        ]
+      }
+    ]
   }
 }
