@@ -830,6 +830,20 @@
           "within_last": 3
         }
       ]
+    },
+    "runtime": {
+      "start_room_ref": "entrance",
+      "extraction": {
+        "room_ref": "entrance",
+        "success_requires": [
+          {
+            "state_ref": "relay-active",
+            "equals": true
+          }
+        ],
+        "success_status": "won",
+        "fallback_status": "retreated"
+      }
     }
   }
 }
