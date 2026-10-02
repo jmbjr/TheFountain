@@ -7,7 +7,6 @@ export class WretchedEngine {
     if(!startRoom)throw new Error("Scenario runtime missing start_room_ref");
     const extraction=this.data.scenario?.runtime?.extraction;if(!extraction?.room_ref||!extraction.success_status||!extraction.fallback_status)throw new Error("Scenario runtime extraction contract is incomplete");
     if(!Number.isFinite(this.data.rules?.reload?.ammo))throw new Error("Runtime rules missing normalized reload ammo");
-    if(!this.data.starter_decks?.[crewId])throw new Error(`Runtime starter deck missing for ${crewId}`);
     this.state={round:1,phase:"crew",crew:{...crew,currentHealth:crew.health,room:startRoom,extracted:false,incapacitated:false},
       actions:this.data.rules.actions_per_turn.value,ammo:this.data.rules.ammo.starting,scrap:0,knowledge:0,threat:this.data.rules.threat.start,
       "relay-active":false,inventory:[],searched:[],rooms:[startRoom],roomDeck:[],
@@ -18,7 +17,7 @@ export class WretchedEngine {
   }
   shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(this.rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
   buildScenarioDeck(collectionRef,include=()=>true){const source=this.data.semantic_decks?.[collectionRef]||[];const placements=(this.data.scenario?.setup_constraints?.deck_placements||[]).filter(p=>p.collection_ref===collectionRef);const placed=new Set(placements.map(p=>p.entity_ref));const deck=this.shuffle(source.filter(id=>include(id)&&!placed.has(id)));for(const p of placements){if(!include(p.entity_ref)||!source.includes(p.entity_ref))continue;const within=Math.max(1,Number(p.within_last)||1),start=Math.max(0,deck.length-within+1),index=start+Math.floor(this.rng()*(deck.length-start+1));deck.splice(index,0,p.entity_ref)}return deck;}
-  buildDeck(id){const resolved=this.data.starter_decks[id];const d=[...resolved];this.state.deck=this.shuffle(d);this.state.discard=[];this.state.hand=[];this.draw(this.data.rules.hand_size.value);}
+  buildDeck(id){const resolved=this.data.starter_decks?.[id];let d=resolved?[...resolved]:[];if(!resolved){for(const c of this.data.cards){for(let i=0;i<(c.qty_by_deck?.[id]||0);i++)d.push(c.id)}}this.state.deck=this.shuffle(d);this.state.discard=[];this.state.hand=[];this.draw(this.data.rules.hand_size.value);}
   draw(n=1){while(n--){if(!this.state.deck.length){this.state.deck=this.shuffle(this.state.discard);this.state.discard=[]}if(this.state.deck.length)this.state.hand.push(this.state.deck.pop())}}
   spend(){if(this.state.status!=="playing"||this.state.actions<1)return false;this.state.actions--;return true}
   log(message,level="INFO"){this.state.log.unshift({level,round:this.state.round,action:this.state.actionNumber||0,message})}
