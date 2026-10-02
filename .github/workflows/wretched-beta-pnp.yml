@@ -68,9 +68,23 @@ jobs:
           python tools/resolve_wretched_dodge.py --out "$WEB_DIR/game/wretched-resolved-game.v1.json"
           sed -i 's|../../game/wretched-resolved-game.v1.json|../game/wretched-resolved-game.v1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
           sed -i "s|__SOURCE_GIT_SHA__|$GITHUB_SHA|g" "$WEB_DIR/renderers/wretched-beta-web.js"
-          sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./web/${SHORT_SHA}/renderers/wretched-beta-web.js\\2|" wretched-demesne/beta/index.html
-          sed -i -E "s|(<code id=\\\"git-build\\\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" "$WEB_DIR/index.html"
-          sed -i -E "s|(<script type=\\\"module\\\" src=\\\")[^\\\"]*wretched-beta-web\\.js[^\\\"]*(\\\"></script>)|\\1./renderers/wretched-beta-web.js\\2|" "$WEB_DIR/index.html"
+          SHORT_SHA="$SHORT_SHA" python - <<'PY'
+          import os, re
+          from pathlib import Path
+          path=Path("wretched-demesne/beta/index.html")
+          html=path.read_text(); short=os.environ["SHORT_SHA"]
+          html=re.sub(r'(<script type="module" src=")[^"]*wretched-beta-web\.js[^"]*("></script>)', rf'\g<1>./web/{short}/renderers/wretched-beta-web.js\g<2>', html)
+          path.write_text(html)
+          PY
+          SHORT_SHA="$SHORT_SHA" WEB_DIR="$WEB_DIR" python - <<'PY'
+          import os, re
+          from pathlib import Path
+          path=Path(os.environ["WEB_DIR"])/"index.html"
+          html=path.read_text(); short=os.environ["SHORT_SHA"]
+          html=re.sub(r'(<code id="git-build">)[^<]*(</code>)', rf'\g<1>{short}\g<2>', html)
+          html=re.sub(r'(<script type="module" src=")[^"]*wretched-beta-web\.js[^"]*("></script>)', r'\g<1>./renderers/wretched-beta-web.js\g<2>', html)
+          path.write_text(html)
+          PY
           sed -i 's|href="../../style.css|href="../../../../style.css|g' "$WEB_DIR/index.html"
           sed -i 's|href="../../"|href="../../../../"|g; s|href="../"|href="../../../"|g' "$WEB_DIR/index.html"
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
