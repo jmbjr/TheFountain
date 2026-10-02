@@ -196,7 +196,17 @@
         "medic": 1,
         "scout": 1
       },
-      "provenance": "gdd_name_or_security_deck; prototype mechanics where unspecified"
+      "provenance": "gdd_name_or_security_deck; prototype mechanics where unspecified",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "defense",
+          "subject": {
+            "relative": "current-actor"
+          },
+          "value": 2
+        }
+      ]
     },
     {
       "id": "sidearm",
@@ -275,7 +285,33 @@
       "qty_by_deck": {
         "security": 1
       },
-      "provenance": "gdd_name_or_security_deck; prototype mechanics where unspecified"
+      "provenance": "gdd_name_or_security_deck; prototype mechanics where unspecified",
+      "effects": [
+        {
+          "op": "subtract",
+          "target_ref": "ammunition",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 1
+        },
+        {
+          "op": "add",
+          "target_ref": "threat",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 2
+        },
+        {
+          "op": "set",
+          "target_ref": "suppressed",
+          "subject": {
+            "relative": "target-enemy"
+          },
+          "value": true
+        }
+      ]
     },
     {
       "id": "security-training",
@@ -285,7 +321,17 @@
       "qty_by_deck": {
         "security": 1
       },
-      "provenance": "gdd_name_or_security_deck; prototype mechanics where unspecified"
+      "provenance": "gdd_name_or_security_deck; prototype mechanics where unspecified",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "accuracy",
+          "subject": {
+            "relative": "current-actor"
+          },
+          "value": 2
+        }
+      ]
     },
     {
       "id": "jury-rig",
@@ -295,7 +341,17 @@
       "qty_by_deck": {
         "engineer": 2
       },
-      "provenance": "prototype_assumption"
+      "provenance": "prototype_assumption",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "scrap",
+          "subject": {
+            "relative": "expedition"
+          },
+          "value": 1
+        }
+      ]
     },
     {
       "id": "triage",
@@ -305,7 +361,17 @@
       "qty_by_deck": {
         "medic": 2
       },
-      "provenance": "prototype_assumption"
+      "provenance": "prototype_assumption",
+      "effects": [
+        {
+          "op": "add",
+          "target_ref": "health",
+          "subject": {
+            "relative": "current-actor"
+          },
+          "value": 2
+        }
+      ]
     },
     {
       "id": "scout-ahead",
