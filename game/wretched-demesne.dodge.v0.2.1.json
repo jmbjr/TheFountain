@@ -2084,11 +2084,6 @@
       "interaction": "read-write"
     }
   },
-  "dodge_spec": {
-    "version": "0.2.1",
-    "revision": "0d15b3dece63517339b776eb1c1eea438fece065",
-    "source": "jmbjr/DODGE draft/v0.2.1"
-  },
   "entity_invocations": {
     "scenario-mvp:cards:move": [
       {
