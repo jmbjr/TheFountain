@@ -121,8 +121,16 @@ jobs:
           versions.insert(0,{"git_sha":sha,"short_sha":short,"label":"Build "+short,"path":"./web/"+short+"/index.html"})
           path.write_text(json.dumps({"format":"wretched-beta-versions.v1","current":sha,"versions":versions},indent=2)+"\n")
           PY
-          sed -i -E "s|wretched-demesne-scenario-01-beta-pnp-[^\"]*\.pdf|wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf|" wretched-demesne/beta/index.html
-          sed -i -E "s|wretched-demesne-scenario-01-beta-tts-[^\"]*\.zip|wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip|" wretched-demesne/beta/index.html
+          SHORT_SHA="$SHORT_SHA" python - <<'PY'
+          import os, re
+          from pathlib import Path
+          path=Path("wretched-demesne/beta/index.html")
+          html=path.read_text()
+          short=os.environ["SHORT_SHA"]
+          html=re.sub(r'wretched-demesne-scenario-01-beta-pnp-[^"]*\.pdf', f'wretched-demesne-scenario-01-beta-pnp-{short}.pdf', html)
+          html=re.sub(r'wretched-demesne-scenario-01-beta-tts-[^"]*\.zip', f'wretched-demesne-scenario-01-beta-tts-{short}.zip', html)
+          path.write_text(html)
+          PY
 
       - name: Commit generated Beta release
         shell: bash
