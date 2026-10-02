@@ -1495,6 +1495,27 @@
             "authority": "authoritative"
           }
         ]
+      },
+      "scout-ahead": {
+        "name": "Scout Ahead",
+        "costs": [
+          {
+            "resource_ref": "actions",
+            "amount": 1,
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ],
+        "effects": [
+          {
+            "prose": "Reveal an adjacent room without entering it; do not resolve its encounter until entered.",
+            "source_ref": "scenario-mvp",
+            "authority": "provisional"
+          }
+        ],
+        "source_ref": "scenario-mvp",
+        "authority": "provisional"
       }
     },
     "procedures": {
@@ -2045,5 +2066,169 @@
       "encoding": "numeric",
       "interaction": "read-write"
     }
+  },
+  "dodge_spec": {
+    "version": "0.2.1",
+    "revision": "0d15b3dece63517339b776eb1c1eea438fece065",
+    "source": "jmbjr/DODGE draft/v0.2.1"
+  },
+  "entity_invocations": {
+    "scenario-mvp:cards:move": [
+      {
+        "id": "play-move",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "move"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:sidearm": [
+      {
+        "id": "play-attack",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "attack"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          {
+            "slot": "target",
+            "source": "runtime-input",
+            "input": "enemy-target",
+            "required": true
+          },
+          {
+            "slot": "source",
+            "source": "using-object"
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:reload": [
+      {
+        "id": "play-reload",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "reload"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:search": [
+      {
+        "id": "play-search",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "search"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:interact": [
+      {
+        "id": "play-interact",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "interact"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:assist": [
+      {
+        "id": "play-assist",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "assist"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:cards:scout-ahead": [
+      {
+        "id": "play-scout-ahead",
+        "trigger": "play",
+        "steps": [
+          {
+            "kind": "action",
+            "ref": "scout-ahead"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ]
   }
 }
