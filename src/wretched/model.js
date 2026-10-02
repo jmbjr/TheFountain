@@ -25,7 +25,7 @@ export function runtimeFromResolved(resolved){
   if(reloadEffect)data.rules.reload={ammo:reloadEffect.value,provenance:"dodge-resolved"};
   if(resolved.rules?.topology)data.rules.topology=structuredClone(resolved.rules.topology);
   data.resolved_dodge={document_id:resolved.document_id,dodge_version:resolved.dodge_version,scenario_id:resolved.scenario_id};
-  data.starter_decks={};
+  data.action_definitions=structuredClone(resolved.rules?.actions||{});\n  for(const card of data.cards||[])card.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:cards:${card.id}`]||[]);\n  data.starter_decks={};
   for(const crew of data.crew||[]){
     const instanceId=`${crew.id}-starter-deck-1`;
     data.starter_decks[crew.id]=expandEntityCollection(resolved,instanceId,"cards");
