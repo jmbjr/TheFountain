@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: jmbjr/DODGE
-          ref: aa0813eb29d3015e5ff980e3cf13821c7539f903
+          ref: 0d15b3dece63517339b776eb1c1eea438fece065
           path: dodge
       - uses: actions/setup-python@v5
         with:
