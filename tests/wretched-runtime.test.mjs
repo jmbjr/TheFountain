@@ -4,7 +4,7 @@ const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario
 // runtimeFromResolved(); the direct-engine test fixture materializes the same boundary explicitly.
 data.rules.reload={ammo:data.cards.find(c=>c.id==="reload").restore_ammo};
 data.starter_decks=Object.fromEntries(data.crew.map(crew=>[crew.id,data.cards.flatMap(card=>Array(card.qty_by_deck?.[crew.id]||0).fill(card.id))]));
-assert.equal(validateWretchedMvp(data).ok,true);
+assert.equal(validateWretchedMvp(data).ok,true);\nconst missingStarterDecks=structuredClone(data);delete missingStarterDecks.starter_decks;assert.throws(()=>new WretchedEngine(missingStarterDecks,{rng:()=>0}),/missing resolved starter deck/);
 const placementData=structuredClone(data);placementData.scenario.setup_constraints={deck_placements:[{collection_ref:"rooms",entity_ref:"bone-pit",within_last:2}]};const placementGame=new WretchedEngine(placementData,{rng:()=>0});assert.ok(placementGame.state.roomDeck.slice(-2).includes("bone-pit"));assert.equal(placementGame.state.roomDeck.filter(id=>id==="bone-pit").length,1);const g=new WretchedEngine(data,{rng:()=>0});
 assert.equal(g.state.actions,3);assert.equal(g.state.hand.length,5);assert.equal(g.state.ammo,8);assert.equal(g.state.crew.name,"Security");
 const reloadData=structuredClone(data);reloadData.rules.reload.ammo=4;const reloadGame=new WretchedEngine(reloadData,{rng:()=>0});reloadGame.state.ammo=5;reloadGame.state.actions=3;assert.equal(reloadGame.reload(),true);assert.equal(reloadGame.state.ammo,9);assert.equal(reloadGame.state.actions,2);
