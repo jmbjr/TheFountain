@@ -57,17 +57,42 @@ jobs:
           (cd "$STAGE" && zip -qr "$GITHUB_WORKSPACE/wretched-demesne/beta/downloads/$TTS_ZIP" .)
           printf '{"git_sha":"%s","artifact":"%s","save":"%s"}\n' "$GITHUB_SHA" "$TTS_ZIP" "$TTS_JSON" > wretched-demesne/beta/tts-build.json
           printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
-          sed -i -E "s|(<code id=\"git-build\">)[^<]*(</code>)|\\1${SHORT_SHA}\\2|" wretched-demesne/beta/index.html
-          sed -i -E "s|version-lab\\.js\\?build=(SOURCE_BUILD|[0-9a-f]{12})|version-lab.js?build=${SHORT_SHA}|" wretched-demesne/beta/lab.html
+          SHORT_SHA="$SHORT_SHA" python - <<'PY'
+          import os, re
+          from pathlib import Path
+          p=Path("wretched-demesne/beta/index.html"); s=p.read_text(); short=os.environ["SHORT_SHA"]
+          p.write_text(re.sub(r'(<code id="git-build">)[^<]*(</code>)', rf'\g<1>{short}\g<2>', s))
+          PY
+          SHORT_SHA="$SHORT_SHA" python - <<'PY'
+          import os, re
+          from pathlib import Path
+          p=Path("wretched-demesne/beta/lab.html"); s=p.read_text(); short=os.environ["SHORT_SHA"]
+          p.write_text(re.sub(r'version-lab\.js\?build=(?:SOURCE_BUILD|[0-9a-f]{12})', f'version-lab.js?build={short}', s))
+          PY
           WEB_DIR="wretched-demesne/beta/web/${SHORT_SHA}"
           mkdir -p "$WEB_DIR/renderers" "$WEB_DIR/wretched" "$WEB_DIR/game"
           cp wretched-demesne/beta/index.html "$WEB_DIR/index.html"
-          sed -i 's|href="./lab.html"|href="../../lab.html"|g' "$WEB_DIR/index.html"
+          WEB_DIR="$WEB_DIR" python - <<'PY'
+          import os
+          from pathlib import Path
+          p=Path(os.environ["WEB_DIR"])/"index.html"
+          p.write_text(p.read_text().replace('href="./lab.html"', 'href="../../lab.html"'))
+          PY
           cp src/renderers/wretched-beta-web.js "$WEB_DIR/renderers/"
           cp src/wretched/engine.js src/wretched/model.js src/wretched/random.js src/wretched/replay.js src/wretched/topology-view.js "$WEB_DIR/wretched/"
           python tools/resolve_wretched_dodge.py --out "$WEB_DIR/game/wretched-resolved-game.v1.json"
-          sed -i 's|../../game/wretched-resolved-game.v1.json|../game/wretched-resolved-game.v1.json|g' "$WEB_DIR/renderers/wretched-beta-web.js"
-          sed -i "s|__SOURCE_GIT_SHA__|$GITHUB_SHA|g" "$WEB_DIR/renderers/wretched-beta-web.js"
+          WEB_DIR="$WEB_DIR" python - <<'PY'
+          import os
+          from pathlib import Path
+          p=Path(os.environ["WEB_DIR"])/"renderers/wretched-beta-web.js"
+          p.write_text(p.read_text().replace('../../game/wretched-resolved-game.v1.json','../game/wretched-resolved-game.v1.json'))
+          PY
+          WEB_DIR="$WEB_DIR" GITHUB_SHA="$GITHUB_SHA" python - <<'PY'
+          import os
+          from pathlib import Path
+          p=Path(os.environ["WEB_DIR"])/"renderers/wretched-beta-web.js"
+          p.write_text(p.read_text().replace('__SOURCE_GIT_SHA__', os.environ["GITHUB_SHA"]))
+          PY
           SHORT_SHA="$SHORT_SHA" python - <<'PY'
           import os, re
           from pathlib import Path
@@ -85,8 +110,15 @@ jobs:
           html=re.sub(r'(<script type="module" src=")[^"]*wretched-beta-web\.js[^"]*("></script>)', r'\g<1>./renderers/wretched-beta-web.js\g<2>', html)
           path.write_text(html)
           PY
-          sed -i 's|href="../../style.css|href="../../../../style.css|g' "$WEB_DIR/index.html"
-          sed -i 's|href="../../"|href="../../../../"|g; s|href="../"|href="../../../"|g' "$WEB_DIR/index.html"
+          WEB_DIR="$WEB_DIR" python - <<'PY'
+          import os
+          from pathlib import Path
+          p=Path(os.environ["WEB_DIR"])/"index.html"; s=p.read_text()
+          s=s.replace('href="../../style.css','href="../../../../style.css')
+          s=s.replace('href="../../"','href="../../../../"').replace('href="../"','href="../../../"')
+          p.write_text(s)
+          PY
+
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
           test -f "$WEB_DIR/wretched/engine.js"
           test -f "$WEB_DIR/game/wretched-resolved-game.v1.json"
