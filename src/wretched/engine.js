@@ -3,7 +3,11 @@
 export class WretchedEngine {
   constructor(data, {rng=Math.random}={}) { this.data=data; this.rng=rng; this.reset(); }
   reset(crewId="security") {
-    const crew=this.data.crew.find(c=>c.id===crewId) || this.data.crew[0],startRoom=this.data.scenario.runtime.start_room_ref;
+    const crew=this.data.crew.find(c=>c.id===crewId) || this.data.crew[0],startRoom=this.data.scenario?.runtime?.start_room_ref;
+    if(!startRoom)throw new Error("Scenario runtime missing start_room_ref");
+    const extraction=this.data.scenario?.runtime?.extraction;if(!extraction?.room_ref||!extraction.success_status||!extraction.fallback_status)throw new Error("Scenario runtime extraction contract is incomplete");
+    if(!Number.isFinite(this.data.rules?.reload?.ammo))throw new Error("Runtime rules missing normalized reload ammo");
+    if(!this.data.starter_decks?.[crewId])throw new Error(`Runtime starter deck missing for ${crewId}`);
     this.state={round:1,phase:"crew",crew:{...crew,currentHealth:crew.health,room:startRoom,extracted:false,incapacitated:false},
       actions:this.data.rules.actions_per_turn.value,ammo:this.data.rules.ammo.starting,scrap:0,knowledge:0,threat:this.data.rules.threat.start,
       "relay-active":false,inventory:[],searched:[],rooms:[startRoom],roomDeck:[],
