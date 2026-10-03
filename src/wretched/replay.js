@@ -5,7 +5,7 @@ export const REPLAY_FORMAT="wretched-replay.v1";
 export const REPLAY_STATE_SCHEMA="wretched-state.v2";
 const LEGACY_STATE_SCHEMA="wretched-state.v1";
 const STATE_MIGRATIONS=[
-  {from:LEGACY_STATE_SCHEMA,to:REPLAY_STATE_SCHEMA,id:"runtime-state-v2",description:"relayActive → relay-active; add replay bookkeeping defaults",apply(state){if(!state)return false;let changed=false;if(Object.prototype.hasOwnProperty.call(state,"relayActive")){if(!Object.prototype.hasOwnProperty.call(state,"relay-active"))state["relay-active"]=state.relayActive;delete state.relayActive;changed=true}if(!Object.prototype.hasOwnProperty.call(state,"encounteredRooms")){state.encounteredRooms=[...(state.rooms||[])];changed=true}if(!Object.prototype.hasOwnProperty.call(state,"modifiers")){state.modifiers=[];changed=true}return changed}}
+  {from:LEGACY_STATE_SCHEMA,to:REPLAY_STATE_SCHEMA,id:"runtime-state-v2",description:"relayActive → relay-active; add replay bookkeeping defaults",apply(state){if(!state)return false;let changed=false;if(Object.prototype.hasOwnProperty.call(state,"relayActive")){if(!Object.prototype.hasOwnProperty.call(state,"relay-active"))state["relay-active"]=state.relayActive;delete state.relayActive;changed=true}if(!Object.prototype.hasOwnProperty.call(state,"encounteredRooms")){state.encounteredRooms=[...(state.rooms||[])];changed=true}if(!Object.prototype.hasOwnProperty.call(state,"modifiers")){state.modifiers=[];changed=true}if(!Object.prototype.hasOwnProperty.call(state,"exploredFrom")){const origins=[];for(const [room,neighbors] of Object.entries(state.connections||{}))if((neighbors||[]).length&&room!==(state.crew?.room))origins.push(room);if(origins.length){state.exploredFrom=origins;changed=true}}return changed}}
 ];
 export function normalizeReplay(replay){
   const normalized=structuredClone(replay),migrations=[];
@@ -40,10 +40,11 @@ export function replayDiagnostics(before,after){
   const revealOrigins=revealed.map(room=>({room,connectedTo:(after.connections?.[room]||[]).filter(id=>(before.rooms||[]).includes(id))}));
   return {movement,revealed:revealOrigins,topology:{added,removed}};
 }
+function mismatchPaths(expected,actual,path="$",out=[]){if(same(expected,actual))return out;if(Array.isArray(expected)||Array.isArray(actual)){if(!Array.isArray(expected)||!Array.isArray(actual)){out.push({path,expected,actual});return out}const n=Math.max(expected.length,actual.length);for(let i=0;i<n;i++)mismatchPaths(expected[i],actual[i],`${path}[${i}]`,out);return out}if(expected&&actual&&typeof expected==="object"&&typeof actual==="object"){const keys=new Set([...Object.keys(expected),...Object.keys(actual)]);for(const k of keys)mismatchPaths(expected[k],actual[k],`${path}.${k}`,out);return out}out.push({path,expected,actual});return out}
 function diffSummary(expected,actual){
   const keys=new Set([...Object.keys(expected||{}),...Object.keys(actual||{})]),changed=[];
   for(const k of keys)if(!same(expected?.[k],actual?.[k]))changed.push(k);
-  return {changedTopLevel:changed,diagnostics:replayDiagnostics(expected||{},actual||{})};
+  return {changedTopLevel:changed,mismatches:mismatchPaths(expected,actual).slice(0,50),diagnostics:replayDiagnostics(expected||{},actual||{})};
 }
 export function runReplay(data,replay,{verifyState=true}={}){
   const normalization=normalizeReplay(replay);replay=normalization.replay;
@@ -56,7 +57,7 @@ export function runReplay(data,replay,{verifyState=true}={}){
     const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string"){const err=new Error(`Step ${i}: missing action.type`);err.step=i;err.results=results;err.game=game;throw err}
     const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted){const err=new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);err.step=i;err.results=results;err.game=game;throw err}
     const state=game.snapshot(),diagnostics=replayDiagnostics(before,state);
-    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;err.results=results;err.game=game;throw err}}
+    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const paths=summary.mismatches.map(x=>x.path).join(", ");const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}; paths: ${paths||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;err.results=results;err.game=game;throw err}}
     results.push({index:i,action,before,state,diagnostics});
   }
   return {game,results,state:game.snapshot(),normalization};
