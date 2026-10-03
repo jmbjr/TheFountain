@@ -50,6 +50,7 @@ assert.equal(normalizedLegacy.changed,true);
 assert.equal(normalizedLegacy.migrations[0].description,"relayActive → relay-active; add replay bookkeeping defaults");
 assert.deepEqual(normalizedLegacy.replay.steps[0].state.encounteredRooms,normalizedLegacy.replay.steps[0].state.rooms);
 assert.deepEqual(normalizedLegacy.replay.steps[0].state.modifiers,[]);
+assert.deepEqual(normalizedLegacy.replay.steps[0].state.exploredFrom,legacyReplay.steps[0].state.exploredFrom??normalizedLegacy.replay.steps[0].state.exploredFrom);
 // Object key insertion order is not replay semantics; migrated snapshots may add canonical keys later.
 const reorderedLegacy=structuredClone(legacyReplay);const reorderedState=reorderedLegacy.steps[0].state;for(const key of Object.keys(reorderedState).reverse()){const value=reorderedState[key];delete reorderedState[key];reorderedState[key]=value}
 const reorderedResult=runReplay(data,reorderedLegacy);assert.equal(reorderedResult.results.length,1);assert.equal(reorderedResult.normalization.changed,true);
