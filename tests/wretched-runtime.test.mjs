@@ -47,7 +47,9 @@ const legacyRename=structuredClone(replay);delete legacyRename.state_schema;for(
 const legacyOriginal=structuredClone(legacyRename),normalizedLegacy=normalizeReplay(legacyRename);
 assert.deepEqual(legacyRename,legacyOriginal);
 assert.equal(normalizedLegacy.changed,true);
-assert.equal(normalizedLegacy.migrations[0].description,"relayActive → relay-active");
+assert.equal(normalizedLegacy.migrations[0].description,"relayActive → relay-active; add replay bookkeeping defaults");
+assert.deepEqual(normalizedLegacy.replay.steps[0].state.encounteredRooms,normalizedLegacy.replay.steps[0].state.rooms);
+assert.deepEqual(normalizedLegacy.replay.steps[0].state.modifiers,[]);
 assert.equal(normalizedLegacy.replay.state_schema,REPLAY_STATE_SCHEMA);
 assert.equal(normalizedLegacy.replay.steps.some(step=>Object.prototype.hasOwnProperty.call(step.state||{},"relayActive")),false);
 const normalizedReplayResult=runReplay(data,legacyRename);
