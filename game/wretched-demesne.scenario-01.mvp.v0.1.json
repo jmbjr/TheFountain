@@ -204,7 +204,18 @@
           "subject": {
             "relative": "current-actor"
           },
-          "value": 2
+          "value": 2,
+          "timing": {
+            "apply": "immediate",
+            "expires_at": {
+              "scope": "turn",
+              "boundary": "start",
+              "occurrence": "next",
+              "subject": {
+                "relative": "current-actor"
+              }
+            }
+          }
         }
       ]
     },
@@ -325,11 +336,36 @@
       "effects": [
         {
           "op": "add",
-          "target_ref": "accuracy",
+          "target_ref": "attack",
           "subject": {
             "relative": "current-actor"
           },
-          "value": 2
+          "value": 2,
+          "timing": {
+            "apply": "immediate",
+            "expires_at": {
+              "scope": "turn",
+              "boundary": "end",
+              "occurrence": "current",
+              "subject": {
+                "relative": "current-actor"
+              }
+            },
+            "usage": {
+              "count": 1,
+              "mode": "next",
+              "period": {
+                "scope": "turn",
+                "subject": {
+                  "relative": "current-actor"
+                }
+              },
+              "consume_on": "resolve",
+              "match": {
+                "action_ref": "attack"
+              }
+            }
+          }
         }
       ]
     },
