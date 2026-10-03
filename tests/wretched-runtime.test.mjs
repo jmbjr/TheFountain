@@ -1,4 +1,4 @@
-import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,runReplay} from "../src/wretched/replay.js";import {buildTopologyView} from "../src/wretched/topology-view.js";
+import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,normalizeReplay,runReplay,REPLAY_STATE_SCHEMA} from "../src/wretched/replay.js";import {buildTopologyView} from "../src/wretched/topology-view.js";
 const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario-01.mvp.v0.1.json",import.meta.url)));
 // The engine consumes the normalized runtime contract. Production receives these fields from
 // runtimeFromResolved(); the direct-engine test fixture materializes the same boundary explicitly.
@@ -42,6 +42,17 @@ assert.equal(recorder.dispatch({type:"end-turn"}),true);
 const replay=recorder.toJSON();
 const replayed=runReplay(data,replay);
 assert.deepEqual(replayed.state,recGame.snapshot());
+assert.equal(replay.state_schema,REPLAY_STATE_SCHEMA);
+const legacyRename=structuredClone(replay);delete legacyRename.state_schema;for(const step of legacyRename.steps){if(step.state&&Object.prototype.hasOwnProperty.call(step.state,"relay-active")){step.state.relayActive=step.state["relay-active"];delete step.state["relay-active"]}}
+const legacyOriginal=structuredClone(legacyRename),normalizedLegacy=normalizeReplay(legacyRename);
+assert.deepEqual(legacyRename,legacyOriginal);
+assert.equal(normalizedLegacy.changed,true);
+assert.equal(normalizedLegacy.migrations[0].description,"relayActive → relay-active");
+assert.equal(normalizedLegacy.replay.state_schema,REPLAY_STATE_SCHEMA);
+assert.equal(normalizedLegacy.replay.steps.some(step=>Object.prototype.hasOwnProperty.call(step.state||{},"relayActive")),false);
+const normalizedReplayResult=runReplay(data,legacyRename);
+assert.deepEqual(normalizedReplayResult.state,recGame.snapshot());
+assert.equal(normalizedReplayResult.normalization.changed,true);
 assert.equal(replay.steps[0].diagnostics.movement.from,"entrance");assert.ok(replay.steps[0].diagnostics.topology.added.length>0);
 const branchDiag=replay.steps[0].diagnostics;assert.equal(branchDiag.revealed[0].connectedTo.includes("entrance"),true);
 const corrupt=structuredClone(replay);corrupt.steps[0].state.actions=999;
