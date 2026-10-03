@@ -24,7 +24,7 @@ export function normalizeReplay(replay){
   normalized.state_schema=REPLAY_STATE_SCHEMA;
   return {replay:normalized,changed:migrations.length>0,migrations,original_state_schema:replay?.state_schema||LEGACY_STATE_SCHEMA,state_schema:REPLAY_STATE_SCHEMA};
 }
-function same(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+function same(a,b){if(Object.is(a,b))return true;if(Array.isArray(a)||Array.isArray(b))return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((v,i)=>same(v,b[i]));if(a&&b&&typeof a==="object"&&typeof b==="object"){const ak=Object.keys(a),bk=Object.keys(b);return ak.length===bk.length&&ak.every(k=>Object.prototype.hasOwnProperty.call(b,k)&&same(a[k],b[k]))}return false}
 function comparableState(expected,actual){const e=structuredClone(expected),a=structuredClone(actual);if(Array.isArray(e?.log)&&e.log.every(x=>typeof x==="string")&&Array.isArray(a?.log))a.log=a.log.filter(x=>typeof x==="string"||x.level!=="DEBUG").map(x=>typeof x==="string"?x:x.message);if(e?.actionNumber===undefined)delete a.actionNumber;return {expected:e,actual:a}}
 function edges(state){
   const out=new Set();
