@@ -122,7 +122,7 @@ jobs:
           test -f "$WEB_DIR/renderers/wretched-beta-web.js"
           test -f "$WEB_DIR/wretched/engine.js"
           test -f "$WEB_DIR/game/wretched-resolved-game.v1.json"
-          grep -q 'from "../wretched/engine.js"' "$WEB_DIR/renderers/wretched-beta-web.js"
+          # Browser modules must at minimum parse before a Beta release can be published.\n          node --check "$WEB_DIR/renderers/wretched-beta-web.js"\n          for module in "$WEB_DIR"/wretched/*.js; do node --check "$module"; done\n          grep -q 'from "../wretched/engine.js"' "$WEB_DIR/renderers/wretched-beta-web.js"
           grep -q 'loadWretchedResolved("../game/wretched-resolved-game.v1.json")' "$WEB_DIR/renderers/wretched-beta-web.js"
           grep -q "$GITHUB_SHA" "$WEB_DIR/renderers/wretched-beta-web.js"
           if grep -q '__SOURCE_GIT_SHA__' "$WEB_DIR/renderers/wretched-beta-web.js"; then echo "Unresolved replay build placeholder"; exit 1; fi
