@@ -60,6 +60,11 @@ const compatFixture=structuredClone(normalizedLegacy.replay);const exploreStep=c
 const normalizedReplayResult=runReplay(data,legacyRename);
 assert.deepEqual(normalizedReplayResult.state,recGame.snapshot());
 assert.equal(normalizedReplayResult.normalization.changed,true);
+assert.equal(normalizedReplayResult.compatibility.changed,false);
+const forcedCompatibilityResult=runReplay(data,legacyRename,{forceCompatibility:true});
+assert.equal(forcedCompatibilityResult.normalization.changed,true);
+assert.ok(forcedCompatibilityResult.compatibility);
+assert.equal(forcedCompatibilityResult.compatibility.replay.state_schema,REPLAY_STATE_SCHEMA);
 assert.equal(replay.steps[0].diagnostics.movement.from,"entrance");assert.ok(replay.steps[0].diagnostics.topology.added.length>0);
 const branchDiag=replay.steps[0].diagnostics;assert.equal(branchDiag.revealed[0].connectedTo.includes("entrance"),true);
 const corrupt=structuredClone(replay);corrupt.steps[0].state.actions=999;
