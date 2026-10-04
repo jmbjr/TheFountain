@@ -1,4 +1,4 @@
-import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,normalizeReplay,runReplay,REPLAY_STATE_SCHEMA} from "../src/wretched/replay.js";import {buildTopologyView} from "../src/wretched/topology-view.js";
+import fs from "node:fs";import assert from "node:assert/strict";import {WretchedEngine} from "../src/wretched/engine.js";import {validateWretchedMvp} from "../src/wretched/model.js";import {createSeededRng} from "../src/wretched/random.js";import {ReplayRecorder,normalizeReplay,applyReplayCompatibility,runReplay,REPLAY_STATE_SCHEMA} from "../src/wretched/replay.js";import {buildTopologyView} from "../src/wretched/topology-view.js";
 const data=JSON.parse(fs.readFileSync(new URL("../game/wretched-demesne.scenario-01.mvp.v0.1.json",import.meta.url)));
 // The engine consumes the normalized runtime contract. Production receives these fields from
 // runtimeFromResolved(); the direct-engine test fixture materializes the same boundary explicitly.
@@ -56,6 +56,7 @@ const reorderedLegacy=structuredClone(legacyReplay);const reorderedState=reorder
 const reorderedResult=runReplay(data,reorderedLegacy);assert.equal(reorderedResult.results.length,1);assert.equal(reorderedResult.normalization.changed,true);
 assert.equal(normalizedLegacy.replay.state_schema,REPLAY_STATE_SCHEMA);
 assert.equal(normalizedLegacy.replay.steps.some(step=>Object.prototype.hasOwnProperty.call(step.state||{},"relayActive")),false);
+const compatFixture=structuredClone(normalizedLegacy.replay);const exploreStep=compatFixture.steps.find(step=>step.action?.type==="explore");if(exploreStep?.state?.enemies?.length){const entered=exploreStep.state.crew.room,origin=(exploreStep.state.connections?.[entered]||[])[0];exploreStep.state.enemies[0].room=origin;const compatibility=applyReplayCompatibility(compatFixture,{force:true});assert.equal(compatibility.changed,true);assert.equal(compatibility.compatibility[0].kind,"semantic-compatibility-override");assert.equal(compatibility.replay.steps.find(step=>step.action?.type==="explore").state.enemies[0].room,entered)}
 const normalizedReplayResult=runReplay(data,legacyRename);
 assert.deepEqual(normalizedReplayResult.state,recGame.snapshot());
 assert.equal(normalizedReplayResult.normalization.changed,true);
