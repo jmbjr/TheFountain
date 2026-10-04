@@ -24,6 +24,15 @@ export function normalizeReplay(replay){
   normalized.state_schema=REPLAY_STATE_SCHEMA;
   return {replay:normalized,changed:migrations.length>0,migrations,original_state_schema:replay?.state_schema||LEGACY_STATE_SCHEMA,state_schema:REPLAY_STATE_SCHEMA};
 }
+const COMPATIBILITY_MIGRATIONS=[
+  {id:"explore-encounter-location-v1",description:"Historical Explore encounter location → entered room",applies(replay){return replay?.state_schema===REPLAY_STATE_SCHEMA&&Array.isArray(replay.steps)},apply(replay){let changed=0;for(const step of replay.steps){if(step?.action?.type!=="explore"||!step.state)continue;const s=step.state,entered=s.crew?.room;if(!entered)continue;const oldRooms=new Set((s.connections?.[entered]||[]).filter(Boolean));for(const enemy of s.enemies||[]){if(!oldRooms.has(enemy.room)||enemy.room===entered)continue;const oldRoom=enemy.room;enemy.room=entered;for(const entry of s.log||[]){if(typeof entry==="string"){const oldName=oldRoom==="entrance"?"Cave Mouth":oldRoom,newName=entered==="bone-pit"?"Bone Pit":entered;if(entry.includes(`appears in ${oldName}.`))s.log[s.log.indexOf(entry)]=entry.replace(`appears in ${oldName}.`,`appears in ${newName}.`)}else if(entry?.message){const oldName=oldRoom==="entrance"?"Cave Mouth":oldRoom,newName=entered==="bone-pit"?"Bone Pit":entered;if(entry.message.includes(`appears in ${oldName}.`))entry.message=entry.message.replace(`appears in ${oldName}.`,`appears in ${newName}.`)}}changed++}}return changed}}
+];
+export function applyReplayCompatibility(replay,{force=false}={}){
+  const compatible=structuredClone(replay),compatibility=[];
+  if(!force)return {replay:compatible,changed:false,compatibility};
+  for(const migration of COMPATIBILITY_MIGRATIONS){if(!migration.applies(compatible))continue;const changedSteps=migration.apply(compatible);if(changedSteps)compatibility.push({id:migration.id,description:migration.description,changed_steps:changedSteps,kind:"semantic-compatibility-override"})}
+  return {replay:compatible,changed:compatibility.length>0,compatibility};
+}
 function same(a,b){if(Object.is(a,b))return true;if(Array.isArray(a)||Array.isArray(b))return Array.isArray(a)&&Array.isArray(b)&&a.length===b.length&&a.every((v,i)=>same(v,b[i]));if(a&&b&&typeof a==="object"&&typeof b==="object"){const ak=Object.keys(a),bk=Object.keys(b);return ak.length===bk.length&&ak.every(k=>Object.prototype.hasOwnProperty.call(b,k)&&same(a[k],b[k]))}return false}
 function comparableState(expected,actual){const e=structuredClone(expected),a=structuredClone(actual);if(Array.isArray(e?.log)&&e.log.every(x=>typeof x==="string")&&Array.isArray(a?.log))a.log=a.log.filter(x=>typeof x==="string"||x.level!=="DEBUG").map(x=>typeof x==="string"?x:x.message);if(e?.actionNumber===undefined)delete a.actionNumber;return {expected:e,actual:a}}
 function edges(state){
@@ -60,7 +69,7 @@ export function runReplay(data,replay,{verifyState=true}={}){
     if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const paths=summary.mismatches.map(x=>x.path).join(", ");const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}; paths: ${paths||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;err.results=results;err.game=game;throw err}}
     results.push({index:i,action,before,state,diagnostics});
   }
-  return {game,results,state:game.snapshot(),normalization};
+  return {game,results,state:game.snapshot(),normalization,compatibility};
 }
 export class ReplayRecorder{
   constructor(game,{seed,crew="security",captureState=true,build=null}={}){this.game=game;this.captureState=captureState;this.replay={format:REPLAY_FORMAT,state_schema:REPLAY_STATE_SCHEMA,seed:String(seed),crew,steps:[]};if(build)this.replay.source={git_sha:String(build),short_sha:String(build).slice(0,12)}}
