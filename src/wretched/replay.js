@@ -64,9 +64,9 @@ export function runReplay(data,replay,{verifyState=true}={}){
   const results=[];
   for(let i=0;i<replay.steps.length;i++){
     const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string"){const err=new Error(`Step ${i}: missing action.type`);err.step=i;err.results=results;err.game=game;throw err}
-    const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted){const err=new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);err.step=i;err.results=results;err.game=game;throw err}
+    const before=game.snapshot(),accepted=game.dispatch(action);if(!accepted){const err=new Error(`Step ${i}: nonsensical/rejected action ${JSON.stringify(action)}`);err.step=i;err.results=results;err.game=game;err.normalization=normalization;err.compatibility=compatibility;err.replay=replay;throw err}
     const state=game.snapshot(),diagnostics=replayDiagnostics(before,state);
-    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const paths=summary.mismatches.map(x=>x.path).join(", ");const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}; paths: ${paths||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;err.results=results;err.game=game;throw err}}
+    if(verifyState&&step.state!==undefined){const comparable=comparableState(step.state,state);if(!same(comparable.actual,comparable.expected)){const summary=diffSummary(comparable.expected,comparable.actual);const paths=summary.mismatches.map(x=>x.path).join(", ");const err=new Error(`Step ${i}: state mismatch after ${action.type}; changed: ${summary.changedTopLevel.join(", ")||"<unknown>"}; paths: ${paths||"<unknown>"}`);err.step=i;err.expected=step.state;err.actual=state;err.diff=summary;err.results=results;err.game=game;err.normalization=normalization;err.compatibility=compatibility;err.replay=replay;throw err}}
     results.push({index:i,action,before,state,diagnostics});
   }
   return {game,results,state:game.snapshot(),normalization,compatibility};
