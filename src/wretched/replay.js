@@ -55,8 +55,10 @@ function diffSummary(expected,actual){
   for(const k of keys)if(!same(expected?.[k],actual?.[k]))changed.push(k);
   return {changedTopLevel:changed,mismatches:mismatchPaths(expected,actual).slice(0,50),diagnostics:replayDiagnostics(expected||{},actual||{})};
 }
-export function runReplay(data,replay,{verifyState=true}={}){
-  const normalization=normalizeReplay(replay);replay=normalization.replay;
+export function runReplay(data,replay,{verifyState=true,forceCompatibility=false}={}){
+  const normalization=normalizeReplay(replay);
+  const compatibility=applyReplayCompatibility(normalization.replay,{force:forceCompatibility});
+  replay=compatibility.replay;
   if(replay?.format!==REPLAY_FORMAT)throw new Error(`Unsupported replay format: ${replay?.format??"<missing>"}`);
   if(replay.seed===undefined||replay.seed===null)throw new Error("Replay seed is required");
   if(!Array.isArray(replay.steps))throw new Error("Replay steps must be an array");
