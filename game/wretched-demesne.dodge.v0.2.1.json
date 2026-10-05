@@ -2796,6 +2796,25 @@
             "required": false
           }
         ]
+      },
+      {
+        "id": "search-fungal-vault",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
       }
     ],
     "scenario-mvp:rooms:entrance": [
