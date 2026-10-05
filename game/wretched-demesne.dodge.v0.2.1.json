@@ -1222,6 +1222,13 @@
         },
         "object_ref": "scenario-mvp:salvage:power-cell",
         "item_state": "either"
+      },
+      "sealed-threshold-access-condition": {
+        "op": "any",
+        "conditions": [
+          "has-power-cell",
+          "actor-is-engineer"
+        ]
       }
     },
     "effects": {
@@ -2794,6 +2801,27 @@
                 "ref": "old-machine-threat"
               }
             ]
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:sealed-door": [
+      {
+        "id": "sealed-threshold-entry",
+        "trigger": "enter",
+        "steps": [
+          {
+            "kind": "condition",
+            "condition_ref": "sealed-threshold-access-condition"
           }
         ],
         "subject_bindings": [
