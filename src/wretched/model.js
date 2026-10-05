@@ -27,6 +27,9 @@ export function runtimeFromResolved(resolved){
   data.resolved_dodge={document_id:resolved.document_id,dodge_version:resolved.dodge_version,scenario_id:resolved.scenario_id};
   data.action_definitions=structuredClone(resolved.rules?.actions||{});
   for(const card of data.cards||[])card.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:cards:${card.id}`]||[]);
+  for(const room of data.rooms||[])room.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:rooms:${room.id}`]||[]);
+  for(const encounter of data.encounters||[])encounter.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:encounters:${encounter.id}`]||[]);
+  data.rule_conditions=structuredClone(resolved.rules?.conditions||{});data.rule_requirements=structuredClone(resolved.rules?.requirements||{});data.rule_modifiers=structuredClone(resolved.rules?.modifiers||{});data.rule_effects=structuredClone(resolved.rules?.effects||{});
   data.starter_decks={};
   for(const crew of data.crew||[]){
     const instanceId=`${crew.id}-starter-deck-1`;
