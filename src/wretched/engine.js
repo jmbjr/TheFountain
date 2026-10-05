@@ -73,7 +73,7 @@ export class WretchedEngine {
   playCard(handIndex,enemyIndex=0,target=null){const id=this.state.hand[handIndex],c=this.card(id);if(!c)return false;const invocation=(c.invocations||[]).find(x=>x.trigger==="play");if(!invocation)throw new Error(`Playable card missing resolved invocation: ${id}`);const enemy=this.state.enemies[enemyIndex],context={enemyIndex,moveTarget:target,sourceRef:id,target:enemy};for(const binding of invocation.subject_bindings||[]){if(binding.source==="runtime-input"&&binding.required&&binding.input==="enemy-target"&&!enemy)return false}const ammoCost=(c.effects||[]).filter(e=>e.op==="subtract"&&e.target_ref==="ammunition").reduce((n,e)=>n+(Number(e.value)||0),0);if(this.state.ammo<ammoCost)return false;let ok=true;for(const step of invocation.steps||[]){if(step.kind==="action")ok=this.executeAction(step.ref,context);else if(step.kind==="effect")ok=this.resolveEffect(step.effect,this.state.crew.room,context);else throw new Error(`Unsupported invocation step: ${step.kind}`);if(!ok)break}if(ok)for(const effect of c.effects||[]){if(!this.resolveEffect(effect,this.state.crew.room,context)){ok=false;break}}if(ok){this.state.hand.splice(handIndex,1);this.state.discard.push(id)}return ok}
   dispatch(action){
     if(!action||typeof action.type!=="string")return false;
-    const beforeLog=this.state.log.length,beforeRound=this.state.round,beforeAction=this.state.actionNumber||0;
+    const before=this.snapshot(),beforeLog=this.state.log.length,beforeRound=this.state.round,beforeAction=this.state.actionNumber||0;
     this.state.actionNumber=beforeAction+1;
     let ok=false;
     switch(action.type){
