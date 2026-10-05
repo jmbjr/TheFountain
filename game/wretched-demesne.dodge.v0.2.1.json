@@ -2791,7 +2791,7 @@
     "scenario-mvp:encounters:old-machine": [
       {
         "id": "old-machine-resolve",
-        "trigger": "resolve",
+        "trigger": "interact",
         "steps": [
           {
             "kind": "branch",
