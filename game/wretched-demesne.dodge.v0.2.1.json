@@ -1220,7 +1220,7 @@
         "subject": {
           "relative": "current-actor"
         },
-        "item_ref": "power-cell",
+        "object_ref": "scenario-mvp:salvage:power-cell",
         "item_state": "either"
       }
     },
@@ -2576,25 +2576,6 @@
             "source": "runtime-input",
             "input": "equipment-to-discard",
             "required": false
-          }
-        ]
-      }
-    ],
-    "scenario-mvp:rooms:sealed-door": [
-      {
-        "id": "sealed-threshold-entry",
-        "trigger": "enter",
-        "requirement_refs": [
-          "sealed-threshold-access"
-        ],
-        "steps": [],
-        "subject_bindings": [
-          {
-            "slot": "current-actor",
-            "source": "context-subject",
-            "subject": {
-              "relative": "current-actor"
-            }
           }
         ]
       }
