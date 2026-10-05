@@ -1,0 +1,5813 @@
+{
+  "SaveName": "Wretched Demesne Scenario 01 Beta 6f3367ca2ee8",
+  "GameMode": "",
+  "Date": "",
+  "VersionNumber": "",
+  "GameType": "",
+  "GameComplexity": "",
+  "Tags": [
+    "DODGE",
+    "Wretched Demesne",
+    "Beta"
+  ],
+  "Gravity": 0.5,
+  "PlayArea": 0.5,
+  "Table": "",
+  "Sky": "",
+  "Note": "DODGE 0.2.1 \u00b7 source 6f3367ca2ee8609a05ce34d6bc29eca473952f39\nHealth alternatives are evaluation variants; choose one representation during play.",
+  "Rules": "",
+  "XmlUI": "",
+  "LuaScript": "",
+  "LuaScriptState": "",
+  "ObjectStates": [
+    {
+      "GUID": "35c40f",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": -8,
+        "posY": 1.2,
+        "posZ": -7,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Captain Starter Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        1000,
+        1100,
+        1200,
+        1300,
+        1400,
+        1500,
+        1600,
+        1700,
+        1800,
+        1900
+      ],
+      "CustomDeck": {
+        "10": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-00-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "11": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-01-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "12": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-02-take-cover.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "13": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-03-sidearm.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "14": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-04-reload.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "15": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-05-assist.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "16": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-06-assist.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "17": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-07-interact.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "18": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-08-command.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "19": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-09-command.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "93835b",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 1000,
+          "CustomDeck": {
+            "10": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-00-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "954a34",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 1100,
+          "CustomDeck": {
+            "11": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-01-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "d91ff7",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Take Cover",
+          "Description": "Gain +2 Defense until your next turn.",
+          "CardID": 1200,
+          "CustomDeck": {
+            "12": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-02-take-cover.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "ff8414",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sidearm",
+          "Description": "Attack an enemy within 2 rooms.",
+          "CardID": 1300,
+          "CustomDeck": {
+            "13": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-03-sidearm.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "3e1ec8",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Reload",
+          "Description": "Restore 2 shared Ammo, up to the maximum.",
+          "CardID": 1400,
+          "CustomDeck": {
+            "14": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-04-reload.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "0ad2f6",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Assist",
+          "Description": "Assist a crew member in your room; role abilities may modify this.",
+          "CardID": 1500,
+          "CustomDeck": {
+            "15": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-05-assist.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "712138",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Assist",
+          "Description": "Assist a crew member in your room; role abilities may modify this.",
+          "CardID": 1600,
+          "CustomDeck": {
+            "16": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-06-assist.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "def982",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Interact",
+          "Description": "Interact with an objective, device, corpse, door, or machinery in your room.",
+          "CardID": 1700,
+          "CustomDeck": {
+            "17": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-07-interact.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "006607",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Command",
+          "Description": "Another crew in your room gains 1 action this turn.",
+          "CardID": 1800,
+          "CustomDeck": {
+            "18": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-08-command.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "61ba83",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Command",
+          "Description": "Another crew in your room gains 1 action this turn.",
+          "CardID": 1900,
+          "CustomDeck": {
+            "19": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-captain-09-command.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "b59e61",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": -4,
+        "posY": 1.2,
+        "posZ": -7,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Security Starter Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        2100,
+        2200,
+        2300,
+        2400,
+        2500,
+        2600,
+        2700,
+        2800,
+        2900,
+        3000
+      ],
+      "CustomDeck": {
+        "21": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-00-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "22": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-01-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "23": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-02-take-cover.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "24": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-03-take-cover.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "25": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-04-sidearm.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "26": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-05-sidearm.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "27": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-06-reload.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "28": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-07-reload.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "29": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-08-suppressive-fire.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "30": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-09-security-training.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "ef511c",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 2100,
+          "CustomDeck": {
+            "21": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-00-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "21c648",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 2200,
+          "CustomDeck": {
+            "22": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-01-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "87cadd",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Take Cover",
+          "Description": "Gain +2 Defense until your next turn.",
+          "CardID": 2300,
+          "CustomDeck": {
+            "23": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-02-take-cover.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "a40766",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Take Cover",
+          "Description": "Gain +2 Defense until your next turn.",
+          "CardID": 2400,
+          "CustomDeck": {
+            "24": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-03-take-cover.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "6d14ad",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sidearm",
+          "Description": "Attack an enemy within 2 rooms.",
+          "CardID": 2500,
+          "CustomDeck": {
+            "25": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-04-sidearm.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "56e792",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sidearm",
+          "Description": "Attack an enemy within 2 rooms.",
+          "CardID": 2600,
+          "CustomDeck": {
+            "26": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-05-sidearm.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "f28da5",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Reload",
+          "Description": "Restore 2 shared Ammo, up to the maximum.",
+          "CardID": 2700,
+          "CustomDeck": {
+            "27": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-06-reload.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "655995",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Reload",
+          "Description": "Restore 2 shared Ammo, up to the maximum.",
+          "CardID": 2800,
+          "CustomDeck": {
+            "28": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-07-reload.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "e5fe1d",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Suppressive Fire",
+          "Description": "Spend 1 Ammo. One enemy within 2 rooms does not move this Enemy phase. Noise 2.",
+          "CardID": 2900,
+          "CustomDeck": {
+            "29": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-08-suppressive-fire.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "d6e08b",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Security Training",
+          "Description": "Your next attack this turn gets +2 attack.",
+          "CardID": 3000,
+          "CustomDeck": {
+            "30": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-security-09-security-training.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "b719f0",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 0,
+        "posY": 1.2,
+        "posZ": -7,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Engineer Starter Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        3200,
+        3300,
+        3400,
+        3500,
+        3600,
+        3700,
+        3800,
+        3900,
+        4000,
+        4100
+      ],
+      "CustomDeck": {
+        "32": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-00-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "33": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-01-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "34": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-02-take-cover.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "35": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-03-sidearm.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "36": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-04-reload.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "37": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-05-search.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "38": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-06-interact.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "39": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-07-interact.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "40": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-08-jury-rig.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "41": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-09-jury-rig.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "ddfdeb",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 3200,
+          "CustomDeck": {
+            "32": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-00-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "06171f",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 3300,
+          "CustomDeck": {
+            "33": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-01-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "27ac0c",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Take Cover",
+          "Description": "Gain +2 Defense until your next turn.",
+          "CardID": 3400,
+          "CustomDeck": {
+            "34": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-02-take-cover.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "f49464",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sidearm",
+          "Description": "Attack an enemy within 2 rooms.",
+          "CardID": 3500,
+          "CustomDeck": {
+            "35": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-03-sidearm.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "5efef4",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Reload",
+          "Description": "Restore 2 shared Ammo, up to the maximum.",
+          "CardID": 3600,
+          "CustomDeck": {
+            "36": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-04-reload.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "ed8c6c",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Search",
+          "Description": "Search your room if it has not been searched; draw 1 salvage.",
+          "CardID": 3700,
+          "CustomDeck": {
+            "37": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-05-search.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "4595db",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Interact",
+          "Description": "Interact with an objective, device, corpse, door, or machinery in your room.",
+          "CardID": 3800,
+          "CustomDeck": {
+            "38": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-06-interact.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "5c953e",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Interact",
+          "Description": "Interact with an objective, device, corpse, door, or machinery in your room.",
+          "CardID": 3900,
+          "CustomDeck": {
+            "39": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-07-interact.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "12042b",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Jury Rig",
+          "Description": "Gain 1 Scrap or ignore one machinery requirement this action.",
+          "CardID": 4000,
+          "CustomDeck": {
+            "40": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-08-jury-rig.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "b3a1fa",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Jury Rig",
+          "Description": "Gain 1 Scrap or ignore one machinery requirement this action.",
+          "CardID": 4100,
+          "CustomDeck": {
+            "41": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-engineer-09-jury-rig.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "9ed3fd",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 4,
+        "posY": 1.2,
+        "posZ": -7,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Medic Starter Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        4300,
+        4400,
+        4500,
+        4600,
+        4700,
+        4800,
+        4900,
+        5000,
+        5100,
+        5200,
+        5300
+      ],
+      "CustomDeck": {
+        "43": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-00-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "44": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-01-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "45": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-02-take-cover.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "46": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-03-sidearm.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "47": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-04-reload.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "48": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-05-assist.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "49": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-06-assist.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "50": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-07-search.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "51": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-08-interact.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "52": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-09-triage.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "53": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-10-triage.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "1a2b50",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 4300,
+          "CustomDeck": {
+            "43": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-00-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "f1d538",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 4400,
+          "CustomDeck": {
+            "44": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-01-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "6c4c87",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Take Cover",
+          "Description": "Gain +2 Defense until your next turn.",
+          "CardID": 4500,
+          "CustomDeck": {
+            "45": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-02-take-cover.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "0dfb5f",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sidearm",
+          "Description": "Attack an enemy within 2 rooms.",
+          "CardID": 4600,
+          "CustomDeck": {
+            "46": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-03-sidearm.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "b8d0bd",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Reload",
+          "Description": "Restore 2 shared Ammo, up to the maximum.",
+          "CardID": 4700,
+          "CustomDeck": {
+            "47": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-04-reload.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "5c9fe3",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Assist",
+          "Description": "Assist a crew member in your room; role abilities may modify this.",
+          "CardID": 4800,
+          "CustomDeck": {
+            "48": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-05-assist.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "bbe549",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Assist",
+          "Description": "Assist a crew member in your room; role abilities may modify this.",
+          "CardID": 4900,
+          "CustomDeck": {
+            "49": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-06-assist.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "6e6bf6",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Search",
+          "Description": "Search your room if it has not been searched; draw 1 salvage.",
+          "CardID": 5000,
+          "CustomDeck": {
+            "50": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-07-search.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "3efcda",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Interact",
+          "Description": "Interact with an objective, device, corpse, door, or machinery in your room.",
+          "CardID": 5100,
+          "CustomDeck": {
+            "51": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-08-interact.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "474e6e",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Triage",
+          "Description": "Restore 2 Health to a crew in your room.",
+          "CardID": 5200,
+          "CustomDeck": {
+            "52": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-09-triage.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "3bb915",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Triage",
+          "Description": "Restore 2 Health to a crew in your room.",
+          "CardID": 5300,
+          "CustomDeck": {
+            "53": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-medic-10-triage.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "7d1c94",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 8,
+        "posY": 1.2,
+        "posZ": -7,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Scout Starter Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        5500,
+        5600,
+        5700,
+        5800,
+        5900,
+        6000,
+        6100,
+        6200,
+        6300,
+        6400
+      ],
+      "CustomDeck": {
+        "55": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-00-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "56": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-01-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "57": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-02-move.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "58": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-03-take-cover.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "59": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-04-sidearm.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "60": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-05-reload.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "61": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-06-search.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "62": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-07-search.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "63": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-08-interact.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "64": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-09-scout-ahead.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "7698fb",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 5500,
+          "CustomDeck": {
+            "55": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-00-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "4df32b",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 5600,
+          "CustomDeck": {
+            "56": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-01-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "f907b9",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Move",
+          "Description": "Move to a connected revealed room. You may instead reveal and enter an unexplored connection.",
+          "CardID": 5700,
+          "CustomDeck": {
+            "57": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-02-move.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "4a91aa",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Take Cover",
+          "Description": "Gain +2 Defense until your next turn.",
+          "CardID": 5800,
+          "CustomDeck": {
+            "58": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-03-take-cover.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "80039b",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sidearm",
+          "Description": "Attack an enemy within 2 rooms.",
+          "CardID": 5900,
+          "CustomDeck": {
+            "59": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-04-sidearm.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "df75b1",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Reload",
+          "Description": "Restore 2 shared Ammo, up to the maximum.",
+          "CardID": 6000,
+          "CustomDeck": {
+            "60": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-05-reload.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "90af89",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Search",
+          "Description": "Search your room if it has not been searched; draw 1 salvage.",
+          "CardID": 6100,
+          "CustomDeck": {
+            "61": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-06-search.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "5fd963",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Search",
+          "Description": "Search your room if it has not been searched; draw 1 salvage.",
+          "CardID": 6200,
+          "CustomDeck": {
+            "62": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-07-search.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "6da55b",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Interact",
+          "Description": "Interact with an objective, device, corpse, door, or machinery in your room.",
+          "CardID": 6300,
+          "CustomDeck": {
+            "63": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-08-interact.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "01fd61",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Scout Ahead",
+          "Description": "Reveal an adjacent room without entering it; do not resolve its encounter until entered.",
+          "CardID": 6400,
+          "CustomDeck": {
+            "64": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/starter-scout-09-scout-ahead.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "7506b9",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": -7,
+        "posY": 1.2,
+        "posZ": -2,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Encounter Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        6600,
+        6700,
+        6800,
+        6900,
+        7000,
+        7100
+      ],
+      "CustomDeck": {
+        "66": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-00-skittering.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "67": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-01-fresh-remains.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "68": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-02-ambush.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "69": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-03-unstable-rock.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "70": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-04-old-machine.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "71": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-05-distant-howls.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "be6b7f",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Skittering in the Dark",
+          "Description": "Spawn 1 Small Spider.",
+          "CardID": 6600,
+          "CustomDeck": {
+            "66": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-00-skittering.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "836695",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Fresh Remains",
+          "Description": "Place 1 Spider Corpse.",
+          "CardID": 6700,
+          "CustomDeck": {
+            "67": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-01-fresh-remains.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "bf7a5f",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Ceiling Ambush",
+          "Description": "Spawn 1 Small Spider; active crew loses 1 Health.",
+          "CardID": 6800,
+          "CustomDeck": {
+            "68": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-02-ambush.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "08f215",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Unstable Rock",
+          "Description": "Add 1 Threat. This room costs +1 action to leave this turn.",
+          "CardID": 6900,
+          "CustomDeck": {
+            "69": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-03-unstable-rock.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "aaf0d4",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Dormant Machine",
+          "Description": "Engineer may Interact to gain 1 Scrap; otherwise add 1 Threat.",
+          "CardID": 7000,
+          "CustomDeck": {
+            "70": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-04-old-machine.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "91d6c0",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Distant Howls",
+          "Description": "Add 2 Threat.",
+          "CardID": 7100,
+          "CustomDeck": {
+            "71": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/encounters-05-distant-howls.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "6cb03d",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": -3,
+        "posY": 1.2,
+        "posZ": -2,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Salvage Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        7300,
+        7400,
+        7500,
+        7600,
+        7700,
+        7800,
+        7900,
+        8000
+      ],
+      "CustomDeck": {
+        "73": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-00-ammo-cache.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "74": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-01-med-gel.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "75": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-02-scrap.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "76": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-03-armor-plate.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "77": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-04-shotgun.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "78": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-05-translation-fragment.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "79": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-06-phase-cutter.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "80": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-07-power-cell.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "945cf6",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Ammo Cache",
+          "Description": "+3 Ammo.",
+          "CardID": 7300,
+          "CustomDeck": {
+            "73": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-00-ammo-cache.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "a5f565",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Medical Gel",
+          "Description": "Restore 3 Health.",
+          "CardID": 7400,
+          "CustomDeck": {
+            "74": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-01-med-gel.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "aae6fa",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Useful Scrap",
+          "Description": "+2 Scrap.",
+          "CardID": 7500,
+          "CustomDeck": {
+            "75": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-02-scrap.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "cdde6c",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Armor Plate",
+          "Description": "+1 Defense while equipped.",
+          "CardID": 7600,
+          "CustomDeck": {
+            "76": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-03-armor-plate.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "ac2136",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Shotgun",
+          "Description": "Attack 5, Range 1, Ammo 2, Noise 3.",
+          "CardID": 7700,
+          "CustomDeck": {
+            "77": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-04-shotgun.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "b49703",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Translation Fragment",
+          "Description": "Gain 1 Knowledge; keep after extraction.",
+          "CardID": 7800,
+          "CustomDeck": {
+            "78": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-05-translation-fragment.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "a96e6a",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Phase Cutter",
+          "Description": "Opens sealed passages.",
+          "CardID": 7900,
+          "CustomDeck": {
+            "79": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-06-phase-cutter.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "c2ca9a",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Ancient Power Cell",
+          "Description": "Activates ancient machinery; required by Scenario 01 relay.",
+          "CardID": 8000,
+          "CustomDeck": {
+            "80": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/salvage-07-power-cell.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "83176d",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 1,
+        "posY": 1.2,
+        "posZ": -2,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Unexplored Room Deck",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        8200,
+        8300,
+        8400,
+        8500,
+        8600,
+        8700,
+        8800,
+        8900,
+        9000
+      ],
+      "CustomDeck": {
+        "82": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-00-collapsed-gallery.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "83": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-01-flooded-passage.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "84": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-02-bone-pit.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "85": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-03-fungal-vault.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "86": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-04-nest.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "87": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-05-ruined-workshop.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "88": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-06-sealed-door.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "89": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-07-relay.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "90": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-08-dead-end.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "cf6132",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Collapsed Gallery",
+          "Description": "",
+          "CardID": 8200,
+          "CustomDeck": {
+            "82": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-00-collapsed-gallery.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "999b5a",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Flooded Passage",
+          "Description": "",
+          "CardID": 8300,
+          "CustomDeck": {
+            "83": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-01-flooded-passage.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "eda928",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Bone Pit",
+          "Description": "",
+          "CardID": 8400,
+          "CustomDeck": {
+            "84": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-02-bone-pit.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "c23cb1",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Fungal Vault",
+          "Description": "",
+          "CardID": 8500,
+          "CustomDeck": {
+            "85": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-03-fungal-vault.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "2a00af",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Nest",
+          "Description": "",
+          "CardID": 8600,
+          "CustomDeck": {
+            "86": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-04-nest.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "2c420e",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Ruined Workshop",
+          "Description": "",
+          "CardID": 8700,
+          "CustomDeck": {
+            "87": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-05-ruined-workshop.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "b6ca73",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Sealed Threshold",
+          "Description": "",
+          "CardID": 8800,
+          "CustomDeck": {
+            "88": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-06-sealed-door.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "f1376e",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Ancient Relay",
+          "Description": "",
+          "CardID": 8900,
+          "CustomDeck": {
+            "89": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-07-relay.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "4912ff",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Whispering Dead End",
+          "Description": "",
+          "CardID": 9000,
+          "CustomDeck": {
+            "90": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/rooms-08-dead-end.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "1cdc7d",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 5,
+        "posY": 1.2,
+        "posZ": -2,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Cave Mouth",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        9200
+      ],
+      "CustomDeck": {
+        "92": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/entrance-00-entrance.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "988e7e",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Cave Mouth",
+          "Description": "",
+          "CardID": 9200,
+          "CustomDeck": {
+            "92": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/entrance-00-entrance.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "ea65e7",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 9,
+        "posY": 1.2,
+        "posZ": -2,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Crew Reference Cards",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        9400,
+        9500,
+        9600,
+        9700,
+        9800
+      ],
+      "CustomDeck": {
+        "94": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-00-captain.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "95": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-01-security.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "96": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-02-engineer.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "97": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-03-medic.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "98": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-04-scout.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "c3e6dc",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Captain",
+          "Description": "Health 8 \u00b7 Accuracy +1 \u00b7 Defense 0\nCommand: once per turn, another crew in your room may draw 1 then discard 1.",
+          "CardID": 9400,
+          "CustomDeck": {
+            "94": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-00-captain.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "ff04b4",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Security",
+          "Description": "Health 10 \u00b7 Accuracy +2 \u00b7 Defense 1\nCombat Training: first firearm attack each turn gets +1 attack.",
+          "CardID": 9500,
+          "CustomDeck": {
+            "95": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-01-security.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "eb59b7",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Engineer",
+          "Description": "Health 8 \u00b7 Accuracy +0 \u00b7 Defense 0\nField Repair: Interact with machinery without spending Scrap once per turn.",
+          "CardID": 9600,
+          "CustomDeck": {
+            "96": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-02-engineer.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "700d61",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Medic",
+          "Description": "Health 8 \u00b7 Accuracy +0 \u00b7 Defense 0\nStabilize: Assist restores 2 Health to an injured crew in your room.",
+          "CardID": 9700,
+          "CustomDeck": {
+            "97": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-03-medic.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "8647a9",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Scout",
+          "Description": "Health 7 \u00b7 Accuracy +1 \u00b7 Defense 0\nPathfinder: first Move each turn costs 0 actions.",
+          "CardID": 9800,
+          "CustomDeck": {
+            "98": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/crew-reference-04-scout.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "b02646",
+      "Name": "Bag",
+      "Transform": {
+        "posX": -8,
+        "posY": 1,
+        "posZ": 4,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Small Spider Tokens",
+      "Description": "Prototype physical supply count; not game canon.",
+      "ContainedObjects": [
+        {
+          "GUID": "e8a708",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Small Spider",
+          "Description": "HP 2 \u00b7 ATK 1 \u00b7 DEF 0 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "c367db",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Small Spider",
+          "Description": "HP 2 \u00b7 ATK 1 \u00b7 DEF 0 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "971b8d",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Small Spider",
+          "Description": "HP 2 \u00b7 ATK 1 \u00b7 DEF 0 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "80f9ff",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Small Spider",
+          "Description": "HP 2 \u00b7 ATK 1 \u00b7 DEF 0 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "fb4469",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Small Spider",
+          "Description": "HP 2 \u00b7 ATK 1 \u00b7 DEF 0 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "59e2df",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Small Spider",
+          "Description": "HP 2 \u00b7 ATK 1 \u00b7 DEF 0 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "456668",
+      "Name": "Bag",
+      "Transform": {
+        "posX": -4,
+        "posY": 1,
+        "posZ": 4,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Large Spider Tokens",
+      "Description": "Prototype physical supply count; not game canon.",
+      "ContainedObjects": [
+        {
+          "GUID": "ef6121",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Large Spider",
+          "Description": "HP 5 \u00b7 ATK 2 \u00b7 DEF 1 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "dc3063",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Large Spider",
+          "Description": "HP 5 \u00b7 ATK 2 \u00b7 DEF 1 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "73ff33",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Large Spider",
+          "Description": "HP 5 \u00b7 ATK 2 \u00b7 DEF 1 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "00fc0d",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Large Spider",
+          "Description": "HP 5 \u00b7 ATK 2 \u00b7 DEF 1 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "66b150",
+      "Name": "Bag",
+      "Transform": {
+        "posX": 0,
+        "posY": 1,
+        "posZ": 4,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Alpha Spider Tokens",
+      "Description": "Prototype physical supply count; not game canon.",
+      "ContainedObjects": [
+        {
+          "GUID": "31792e",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Alpha Spider",
+          "Description": "HP 9 \u00b7 ATK 3 \u00b7 DEF 1 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "ca9aff",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Alpha Spider",
+          "Description": "HP 9 \u00b7 ATK 3 \u00b7 DEF 1 \u00b7 MOVE 2",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "f7e5cf",
+      "Name": "Bag",
+      "Transform": {
+        "posX": 4,
+        "posY": 1,
+        "posZ": 4,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Brood Mother Tokens",
+      "Description": "Prototype physical supply count; not game canon.",
+      "ContainedObjects": [
+        {
+          "GUID": "75e55e",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Brood Mother",
+          "Description": "HP 12 \u00b7 ATK 2 \u00b7 DEF 2 \u00b7 MOVE 1",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "8f7d08",
+      "Name": "Bag",
+      "Transform": {
+        "posX": 8,
+        "posY": 1,
+        "posZ": 4,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Men of Leng Servant Tokens",
+      "Description": "Prototype physical supply count; not game canon.",
+      "ContainedObjects": [
+        {
+          "GUID": "c511c7",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Men of Leng Servant",
+          "Description": "HP 6 \u00b7 ATK 2 \u00b7 DEF 1 \u00b7 MOVE 1",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "af1fdb",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Men of Leng Servant",
+          "Description": "HP 6 \u00b7 ATK 2 \u00b7 DEF 1 \u00b7 MOVE 1",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "82a2dd",
+      "Name": "Bag",
+      "Transform": {
+        "posX": -8,
+        "posY": 1,
+        "posZ": 8,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Spider Corpse Tokens",
+      "Description": "Prototype physical supply count.",
+      "ContainedObjects": [
+        {
+          "GUID": "c64d67",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "f8089c",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "3e6d64",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "21e2bd",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "c150cc",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "af7bbe",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "7d33f4",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "ebdd01",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Spider Corpse",
+          "Description": "Spider food",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "3b3eec",
+      "Name": "Bag",
+      "Transform": {
+        "posX": -4,
+        "posY": 1,
+        "posZ": 8,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Chrysalis Tokens",
+      "Description": "Prototype physical supply count.",
+      "ContainedObjects": [
+        {
+          "GUID": "9e7354",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Chrysalis",
+          "Description": "Hatches next End phase",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "44f5d0",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Chrysalis",
+          "Description": "Hatches next End phase",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "94226c",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Chrysalis",
+          "Description": "Hatches next End phase",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "941ce6",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Chrysalis",
+          "Description": "Hatches next End phase",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "c36686",
+      "Name": "Bag",
+      "Transform": {
+        "posX": 0,
+        "posY": 1,
+        "posZ": 8,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "HEALTH ALT A \u00b7 Unit Tokens",
+      "Description": "Alternative representation: unit tokens.",
+      "ContainedObjects": [
+        {
+          "GUID": "9eb641",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "a29da6",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "126e43",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "74c503",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "d06ab6",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "4ec38a",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "2604ea",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "a9df47",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "58fddb",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "d8dd87",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "9c4925",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "0959e8",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "6d1535",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "66dd50",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "e7cd92",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "8cd06f",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "ae14d9",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "3f52f2",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "6e82b3",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "1347ad",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "9a0de6",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "eef9ae",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "8a524c",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "bdce1a",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "2a1f20",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "de0cf4",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "0c1087",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "bc5fd3",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "69b488",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "f3bf51",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "c5d153",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "792ae9",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "9907a0",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "c8b72a",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "7cd6a4",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "57582d",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "44cfd3",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "661d70",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "b48a59",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "27967f",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "2706c2",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "6cc525",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "56b96f",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "d6a5ab",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "ef717e",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "fa99c8",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "1c5e03",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "d06998",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "0bee7c",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "3d0c32",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Health",
+          "Description": "+1 Health",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "98fcfb",
+      "Name": "Bag",
+      "Transform": {
+        "posX": 4,
+        "posY": 1,
+        "posZ": 8,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "HEALTH ALT B \u00b7 Numbered Tracks",
+      "Description": "Alternative representation: numbered tracks + markers.",
+      "ContainedObjects": [
+        {
+          "GUID": "7d503c",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Captain Health Track",
+          "Description": "0\u20138 numbered track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "893538",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Security Health Track",
+          "Description": "0\u201310 numbered track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "19f519",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Engineer Health Track",
+          "Description": "0\u20138 numbered track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "567918",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Medic Health Track",
+          "Description": "0\u20138 numbered track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "a870e0",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Scout Health Track",
+          "Description": "0\u20137 numbered track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "6fee44",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on numbered Health track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "8ce10d",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on numbered Health track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "6f3ad6",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on numbered Health track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "849aca",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on numbered Health track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "37993d",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on numbered Health track",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "c4e04c",
+      "Name": "DeckCustom",
+      "Transform": {
+        "posX": 8,
+        "posY": 1.2,
+        "posZ": 8,
+        "rotX": 0,
+        "rotY": 180,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "HEALTH ALT C \u00b7 Crew Health Cards",
+      "Description": "Generated from DODGE 0.2.1 \u00b7 6f3367ca2ee8",
+      "DeckIDs": [
+        10000,
+        10100,
+        10200,
+        10300,
+        10400
+      ],
+      "CustomDeck": {
+        "100": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-00-captain.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "101": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-01-security.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "102": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-02-engineer.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "103": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-03-medic.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        },
+        "104": {
+          "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-04-scout.png",
+          "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+          "NumWidth": 1,
+          "NumHeight": 1,
+          "BackIsHidden": true,
+          "UniqueBack": false,
+          "Type": 0
+        }
+      },
+      "ContainedObjects": [
+        {
+          "GUID": "a801dd",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Captain Health",
+          "Description": "Health 0\u20138. Use one marker on this card.",
+          "CardID": 10000,
+          "CustomDeck": {
+            "100": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-00-captain.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "1537e0",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Security Health",
+          "Description": "Health 0\u201310. Use one marker on this card.",
+          "CardID": 10100,
+          "CustomDeck": {
+            "101": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-01-security.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "862bed",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Engineer Health",
+          "Description": "Health 0\u20138. Use one marker on this card.",
+          "CardID": 10200,
+          "CustomDeck": {
+            "102": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-02-engineer.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "2b2aeb",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Medic Health",
+          "Description": "Health 0\u20138. Use one marker on this card.",
+          "CardID": 10300,
+          "CustomDeck": {
+            "103": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-03-medic.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        },
+        {
+          "GUID": "3899db",
+          "Name": "CardCustom",
+          "Transform": {
+            "posX": 0,
+            "posY": 1.2,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 180,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "Scout Health",
+          "Description": "Health 0\u20137. Use one marker on this card.",
+          "CardID": 10400,
+          "CustomDeck": {
+            "104": {
+              "FaceURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/health-cards-04-scout.png",
+              "BackURL": "https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/6f3367ca2ee8/card-back.png",
+              "NumWidth": 1,
+              "NumHeight": 1,
+              "BackIsHidden": true,
+              "UniqueBack": false,
+              "Type": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "GUID": "0bf03c",
+      "Name": "Bag",
+      "Transform": {
+        "posX": 11,
+        "posY": 1,
+        "posZ": 8,
+        "rotX": 0,
+        "rotY": 0,
+        "rotZ": 180,
+        "scaleX": 1,
+        "scaleY": 1,
+        "scaleZ": 1
+      },
+      "Nickname": "Health Card Markers",
+      "Description": "",
+      "ContainedObjects": [
+        {
+          "GUID": "1fc2f8",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on crew Health card",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "62cd64",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on crew Health card",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "b6a926",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on crew Health card",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "dc716e",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on crew Health card",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        },
+        {
+          "GUID": "d9d269",
+          "Name": "Chip",
+          "Transform": {
+            "posX": 0,
+            "posY": 1,
+            "posZ": 0,
+            "rotX": 0,
+            "rotY": 0,
+            "rotZ": 180,
+            "scaleX": 1,
+            "scaleY": 1,
+            "scaleZ": 1
+          },
+          "Nickname": "HP Marker",
+          "Description": "Place on crew Health card",
+          "ColorDiffuse": {
+            "r": 0.8,
+            "g": 0.8,
+            "b": 0.8
+          }
+        }
+      ]
+    }
+  ],
+  "DODGE": {
+    "version": "0.2.1",
+    "document_id": "wretched-demesne.scenario-01-v0.2.1",
+    "git_sha": "6f3367ca2ee8609a05ce34d6bc29eca473952f39",
+    "contract": "wd-beta-tts",
+    "health_representation_mode": "alternatives"
+  }
+}
