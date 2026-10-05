@@ -80,8 +80,10 @@ objects.append(make_deck("crew-reference","Crew Reference Cards",crewrefs,9,-2))
 enemy_prefix="scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/"
 enemy_items=[x for x in manifest["contents"] if x["content_id"].startswith(enemy_prefix) and x["inclusion"]!="excluded-override"]
 for n,e in enumerate(data["enemies"]):
-    item=next(x for x in enemy_items if x["source"]["ref"].endswith(":"+e["id"]))
-    count=item["resolved_quantity"]
+    token_ref=e["id"]+"-token"
+    matches=[x for x in enemy_items if x["source"]["ref"]==token_ref]
+    if len(matches)!=1: raise SystemExit(f"Expected one resolved enemy supply row for {token_ref}, got {len(matches)}")
+    count=matches[0]["resolved_quantity"]
     items=[chip(e["name"],f"HP {e['health']} · ATK {e['attack']} · DEF {e['defense']} · MOVE {e['move']}",f"{e['id']}-{i}") for i in range(count)]
     objects.append(bag(f"bag-{e['id']}",f"{e['name']} Tokens",items,-8+n*4,4,"Prototype physical supply count; not game canon."))
 scenario_supply_prefix="scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/"
