@@ -87,7 +87,7 @@ export class WretchedEngine {
       case "end-turn": if(this.state.status==="playing"){this.endTurn();ok=true} break;
       default: break;
     }
-    if(!ok){this.state.actionNumber=beforeAction;return false}
+    if(!ok){this.state=before;return false}
     if(this.state.log.length===beforeLog)this.log(`Action: ${action.type}.`,"DEBUG");
     if(this.state.round!==beforeRound)this.state.actionNumber=0;
     return true;
