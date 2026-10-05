@@ -974,6 +974,16 @@
         "assumptions": [
           "Scenario 01 crew Health values are provisional executable assumptions."
         ]
+      },
+      "overrun-round": {
+        "name": "Overrun round",
+        "type": "integer",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "minimum": 0,
+        "default": 0,
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
       }
     },
     "resources": {
@@ -1117,7 +1127,8 @@
             },
             "effects": [
               {
-                "prose": "The expedition is overrun; crew must extract this round or lose.",
+                "op": "emit",
+                "event": "mark-overrun-deadline",
                 "source_ref": "scenario-mvp",
                 "authority": "provisional"
               }
@@ -1196,7 +1207,46 @@
         "authority": "provisional"
       },
       "overrun-deadline-expired": {
-        "prose": "Threat has reached 12 and no crew extracted before the end of the current round.",
+        "op": "all",
+        "conditions": [
+          {
+            "op": "gte",
+            "left": {
+              "ref": "threat",
+              "subject": {
+                "relative": "expedition"
+              }
+            },
+            "right": 12
+          },
+          {
+            "op": "eq",
+            "left": {
+              "ref": "extracted",
+              "subject": {
+                "relative": "current-actor"
+              }
+            },
+            "right": false
+          },
+          {
+            "op": "gte",
+            "left": {
+              "ref": "round",
+              "subject": {
+                "relative": "scenario"
+              }
+            },
+            "right": {
+              "ref": "overrun-round",
+              "subject": {
+                "relative": "scenario"
+              }
+            },
+            "authority": "provisional",
+            "source_ref": "scenario-mvp"
+          }
+        ],
         "authority": "provisional",
         "source_ref": "scenario-mvp"
       },
@@ -1542,6 +1592,40 @@
             }
           }
         }
+      },
+      "large-spider-regeneration": {
+        "op": "add",
+        "target_ref": "enemy-health",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "value": 1,
+        "timing": {
+          "apply": "scheduled",
+          "at": {
+            "scope": "phase",
+            "boundary": "end",
+            "ref": "end-of-turn",
+            "occurrence": "current"
+          }
+        },
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
+      },
+      "mark-overrun-deadline": {
+        "op": "set",
+        "target_ref": "overrun-round",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": {
+          "ref": "round",
+          "subject": {
+            "relative": "scenario"
+          }
+        },
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
       }
     },
     "actions": {
@@ -2235,7 +2319,8 @@
       "authority": "provisional",
       "assumptions": [
         "The sidecar identifies Scenario 01 goals but the executable MVP remains provisional.",
-        "Reference executable runtime is intentionally single-active-crew. Cooperative 2–4 crew semantics, including abilities that target another crew, remain design-visible but are outside this reference executable variant."
+        "Reference executable runtime is intentionally single-active-crew. Cooperative 2–4 crew semantics, including abilities that target another crew, remain design-visible but are outside this reference executable variant.",
+        "Reference executable enemy AI is intentionally prototype-generic: enemies pursue the active crew and attack in-room. Distinct GDD enemy AI prose remains design-visible but is not claimed executable in this reference variant."
       ]
     }
   },

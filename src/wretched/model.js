@@ -30,7 +30,7 @@ export function runtimeFromResolved(resolved){
   for(const card of data.cards||[])card.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:cards:${card.id}`]||[]);
   for(const room of data.rooms||[])room.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:rooms:${room.id}`]||[]);
   for(const encounter of data.encounters||[])encounter.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:encounters:${encounter.id}`]||[]);
-  data.rule_conditions=structuredClone(resolved.rules?.conditions||{});data.rule_requirements=structuredClone(resolved.rules?.requirements||{});data.rule_modifiers=structuredClone(resolved.rules?.modifiers||{});data.rule_effects=structuredClone(resolved.rules?.effects||{});
+  data.rule_conditions=structuredClone(resolved.rules?.conditions||{});data.rule_requirements=structuredClone(resolved.rules?.requirements||{});data.rule_modifiers=structuredClone(resolved.rules?.modifiers||{});data.rule_effects=structuredClone(resolved.rules?.effects||{});data.enemy_runtime={ai_profile:"prototype-generic",regeneration_effect:structuredClone(resolved.rules?.effects?.["large-spider-regeneration"]||null),overrun_condition:structuredClone(resolved.rules?.conditions?.["overrun-deadline-expired"]||null)};
   data.starter_decks={};
   for(const crew of data.crew||[]){
     const instanceId=`${crew.id}-starter-deck-1`;
