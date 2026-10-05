@@ -61,5 +61,135 @@
   "manifest_identity_fields": [
     "git_sha",
     "dodge_document_id"
-  ]
+  ],
+  "content_configuration": {
+    "default_inclusion": "inherit-resolved",
+    "entries": [
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/captain-starter-deck-1",
+        "group": "Starter decks",
+        "notes": [
+          "Inherit the resolved Scenario 01 starter-deck collection and exact per-deck membership."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/security-starter-deck-1",
+        "group": "Starter decks",
+        "notes": [
+          "Inherit the resolved Scenario 01 starter-deck collection and exact per-deck membership."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/engineer-starter-deck-1",
+        "group": "Starter decks",
+        "notes": [
+          "Inherit the resolved Scenario 01 starter-deck collection and exact per-deck membership."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/medic-starter-deck-1",
+        "group": "Starter decks",
+        "notes": [
+          "Inherit the resolved Scenario 01 starter-deck collection and exact per-deck membership."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/scout-starter-deck-1",
+        "group": "Starter decks",
+        "notes": [
+          "Inherit the resolved Scenario 01 starter-deck collection and exact per-deck membership."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/rules-1",
+        "group": "Rules and references",
+        "notes": [
+          "Inherit the resolved DODGE reference component."
+        ]
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/0",
+        "group": "Scenario tokens",
+        "quantity_override": {
+          "value": 8,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta physical playtest supply quantity; canonical DODGE supply quantity remains unresolved."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/1",
+        "group": "Scenario tokens",
+        "quantity_override": {
+          "value": 4,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta physical playtest supply quantity; canonical DODGE supply quantity remains unresolved."
+        }
+      },
+      {
+        "content_ref": "representation/health-unit-tokens/component/0",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-numbered-track/component/0",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-numbered-track/component/1",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-crew-card-marker/component/0",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "representation/health-crew-card-marker/component/1",
+        "group": "Health alternatives"
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/0",
+        "group": "Enemy tokens",
+        "quantity_override": {
+          "value": 6,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta TTS physical playtest supply for Small Spider; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/1",
+        "group": "Enemy tokens",
+        "quantity_override": {
+          "value": 4,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta TTS physical playtest supply for Large Spider; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/2",
+        "group": "Enemy tokens",
+        "quantity_override": {
+          "value": 2,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta TTS physical playtest supply for Alpha Spider; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/3",
+        "group": "Enemy tokens",
+        "quantity_override": {
+          "value": 1,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta TTS physical playtest supply for Brood Mother; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      },
+      {
+        "content_ref": "scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/4",
+        "group": "Enemy tokens",
+        "quantity_override": {
+          "value": 2,
+          "classification": "noncanonical-playtest",
+          "reason": "Beta TTS physical playtest supply for Men of Leng Servant; pending Design Lead clarification in issue #73 and not a gameplay limit."
+        }
+      }
+    ]
+  }
 }
