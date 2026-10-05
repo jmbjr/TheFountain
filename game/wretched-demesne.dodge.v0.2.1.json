@@ -1199,6 +1199,29 @@
         "prose": "Threat has reached 12 and no crew extracted before the end of the current round.",
         "authority": "provisional",
         "source_ref": "scenario-mvp"
+      },
+      "actor-has-equipment": {
+        "op": "has-item",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "tag": "equipment",
+        "item_state": "either"
+      },
+      "actor-is-engineer": {
+        "op": "has-tag",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "tag": "engineer"
+      },
+      "has-power-cell": {
+        "op": "has-item",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "item_ref": "power-cell",
+        "item_state": "either"
       }
     },
     "effects": {
@@ -1354,6 +1377,68 @@
         "prose": "After a noisy attack, add the weapon's Noise value to scenario Threat. If an unrevealed adjacent room exists, reveal its encounter.",
         "authority": "provisional",
         "source_ref": "scenario-mvp"
+      },
+      "fungal-vault-damage": {
+        "op": "subtract",
+        "target_ref": "health",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "value": 1
+      },
+      "discard-selected-equipment": {
+        "op": "discard",
+        "subject": {
+          "relative": "target"
+        }
+      },
+      "apply-unstable-rock-exit-cost": {
+        "op": "apply_modifier",
+        "target_ref": "unstable-rock-exit-cost",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "timing": {
+          "apply": "immediate",
+          "expires_at": {
+            "scope": "turn",
+            "boundary": "end",
+            "occurrence": "current",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        }
+      },
+      "gain-one-scrap": {
+        "op": "add",
+        "target_ref": "scrap",
+        "subject": {
+          "relative": "expedition"
+        },
+        "value": 1
+      },
+      "old-machine-threat": {
+        "op": "add",
+        "target_ref": "threat",
+        "subject": {
+          "relative": "expedition"
+        },
+        "value": 1
+      },
+      "gain-power-cell": {
+        "op": "create",
+        "target_ref": "power-cell",
+        "subject": {
+          "relative": "current-actor"
+        }
+      },
+      "draw-salvage": {
+        "op": "draw",
+        "target_ref": "scenario-salvage-cards",
+        "subject": {
+          "relative": "current-actor"
+        }
       }
     },
     "actions": {
@@ -1876,6 +1961,34 @@
             "fallback_prose": "Pursue and attack; do not retreat."
           }
         ]
+      }
+    },
+    "requirements": {
+      "sealed-threshold-access": {
+        "name": "Sealed Threshold access",
+        "category": "machinery",
+        "tags": [
+          "sealed",
+          "machinery"
+        ],
+        "condition": {
+          "op": "any",
+          "conditions": [
+            "has-power-cell",
+            "actor-is-engineer"
+          ]
+        }
+      }
+    },
+    "modifiers": {
+      "unstable-rock-exit-cost": {
+        "name": "Unstable Rock exit surcharge",
+        "kind": "cost-adjustment",
+        "match": {
+          "action_ref": "move",
+          "event": "exit-location"
+        },
+        "amount": 1
       }
     }
   },
@@ -2412,6 +2525,303 @@
             "source": "runtime-input",
             "input": "enemy-target",
             "required": true
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:fungal-vault": [
+      {
+        "id": "fungal-vault-entry",
+        "trigger": "enter",
+        "steps": [
+          {
+            "kind": "choice",
+            "choice_options": [
+              {
+                "id": "take-damage",
+                "label": "Lose 1 Health",
+                "steps": [
+                  {
+                    "kind": "effect",
+                    "ref": "fungal-vault-damage"
+                  }
+                ]
+              },
+              {
+                "id": "discard-equipment",
+                "label": "Discard one Equipment",
+                "condition_refs": [
+                  "actor-has-equipment"
+                ],
+                "steps": [
+                  {
+                    "kind": "effect",
+                    "ref": "discard-selected-equipment"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          {
+            "slot": "target",
+            "source": "runtime-input",
+            "input": "equipment-to-discard",
+            "required": false
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:sealed-door": [
+      {
+        "id": "sealed-threshold-entry",
+        "trigger": "enter",
+        "requirement_refs": [
+          "sealed-threshold-access"
+        ],
+        "steps": [],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:entrance": [
+      {
+        "id": "search-entrance",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:collapsed-gallery": [
+      {
+        "id": "search-collapsed-gallery",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:flooded-passage": [
+      {
+        "id": "search-flooded-passage",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:bone-pit": [
+      {
+        "id": "search-bone-pit",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:nest": [
+      {
+        "id": "search-nest",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:relay": [
+      {
+        "id": "search-relay",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:dead-end": [
+      {
+        "id": "search-dead-end",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "draw-salvage"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:rooms:ruined-workshop": [
+      {
+        "id": "search-fixed-power-cell",
+        "trigger": "search",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "gain-power-cell"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:encounters:unstable-rock": [
+      {
+        "id": "unstable-rock-resolve",
+        "trigger": "resolve",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "apply-unstable-rock-exit-cost"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:encounters:old-machine": [
+      {
+        "id": "old-machine-resolve",
+        "trigger": "resolve",
+        "steps": [
+          {
+            "kind": "branch",
+            "branches": [
+              {
+                "id": "engineer-success",
+                "condition": "actor-is-engineer",
+                "steps": [
+                  {
+                    "kind": "effect",
+                    "ref": "gain-one-scrap"
+                  }
+                ]
+              }
+            ],
+            "else_steps": [
+              {
+                "kind": "effect",
+                "ref": "old-machine-threat"
+              }
+            ]
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
           }
         ]
       }
