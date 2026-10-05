@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 """Build a functional Wretched Demesne Scenario 01 TTS save from DODGE + canonical scenario data."""
 from __future__ import annotations
-import argparse,json,pathlib,hashlib,textwrap
+import argparse,json,pathlib,hashlib,textwrap,sys
 from PIL import Image,ImageDraw,ImageFont
 
 ROOT=pathlib.Path(__file__).parents[1]
+sys.path.insert(0,str(ROOT/"tools"))
+from resolve_wretched_dodge import resolve
 DODGE=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
 SCENARIO=ROOT/"game/wretched-demesne.scenario-01.mvp.v0.1.json"
 CONTRACT=ROOT/"game/export-contracts/wretched-beta-tts.dodge-export.json"
 p=argparse.ArgumentParser();p.add_argument("--git-sha",default="local");a=p.parse_args()
 sha=a.git_sha[:12] if a.git_sha!="local" else "local"
-dodge=json.loads(DODGE.read_text()); data=json.loads(SCENARIO.read_text()); contract=json.loads(CONTRACT.read_text())
+resolved=resolve(DODGE,CONTRACT); dodge=json.loads(DODGE.read_text()); data=resolved["canonical"]; contract=resolved["export_contract"]; manifest=resolved["target_manifest"]; manifest_by_id={x["content_id"]:x for x in manifest["contents"]}
 if dodge["dodge_version"]!="0.2.1": raise SystemExit("TTS beta requires DODGE 0.2.1")
 inc=next(x for x in contract["representation_inclusions"] if x["state_ref"]=="health")
 if inc["mode"]!="alternatives": raise SystemExit("TTS beta must bundle Health alternatives")
@@ -55,11 +57,15 @@ def bag(key,name,items,x,z,desc=""):
     return {"GUID":guid(key),"Name":"Bag","Transform":tr(x,z,1,0),"Nickname":name,"Description":desc,"ContainedObjects":items}
 
 objects=[]
-# Rational card groups: one starter deck per crew, plus independent encounter, salvage and room decks.
+# Starter decks come from resolved semantic collection membership, never qty_by_deck.
 for n,crew in enumerate(data["crew"]):
+    instance_id=f"{crew['id']}-starter-deck-1"
+    prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
     cards=[]
-    for c in data["cards"]:
-        for _ in range(c.get("qty_by_deck",{}).get(crew["id"],0)): cards.append(c)
+    for item in [x for x in manifest["contents"] if x["content_id"].startswith(prefix) and x["inclusion"]!="excluded-override"]:
+        _,catalog,item_id=item["source"]["ref"].split(":",2)
+        entity=next(x for x in data[catalog] if x["id"]==item_id)
+        cards.extend([entity]*item["resolved_quantity"])
     objects.append(make_deck(f"starter-{crew['id']}",f"{crew['name']} Starter Deck",cards,-8+n*4,-7))
 objects.append(make_deck("encounters","Encounter Deck",data["encounters"],-7,-2))
 objects.append(make_deck("salvage","Salvage Deck",data["salvage"],-3,-2))
@@ -71,23 +77,34 @@ crewrefs=[{"id":c["id"],"name":c["name"],"type":"crew reference","text":f"Health
 objects.append(make_deck("crew-reference","Crew Reference Cards",crewrefs,9,-2))
 
 # Separate physical supplies, never one massive token bag.
-enemy_counts={"small-spider":6,"large-spider":4,"alpha-spider":2,"brood-mother":1,"leng-servant":2}
+enemy_prefix="scene/scenario-01-the-cave/instance/enemy-token-supply-1/member/"
+enemy_items=[x for x in manifest["contents"] if x["content_id"].startswith(enemy_prefix) and x["inclusion"]!="excluded-override"]
 for n,e in enumerate(data["enemies"]):
-    count=enemy_counts[e["id"]]
+    item=next(x for x in enemy_items if x["source"]["ref"].endswith(":"+e["id"]))
+    count=item["resolved_quantity"]
     items=[chip(e["name"],f"HP {e['health']} · ATK {e['attack']} · DEF {e['defense']} · MOVE {e['move']}",f"{e['id']}-{i}") for i in range(count)]
     objects.append(bag(f"bag-{e['id']}",f"{e['name']} Tokens",items,-8+n*4,4,"Prototype physical supply count; not game canon."))
-objects.append(bag("corpse-bag","Spider Corpse Tokens",[chip("Spider Corpse","Spider food",f"corpse-{i}") for i in range(8)],-8,8,"Prototype physical supply count."))
-objects.append(bag("chrysalis-bag","Chrysalis Tokens",[chip("Chrysalis","Hatches next End phase",f"chrysalis-{i}") for i in range(4)],-4,8,"Prototype physical supply count."))
+scenario_supply_prefix="scene/scenario-01-the-cave/instance/scenario-token-supply-1/member/"
+scenario_supplies=[x for x in manifest["contents"] if x["content_id"].startswith(scenario_supply_prefix) and x["inclusion"]!="excluded-override"]
+corpse_count=next(x["resolved_quantity"] for x in scenario_supplies if x["source"]["ref"]=="spider-corpse")
+chrysalis_count=next(x["resolved_quantity"] for x in scenario_supplies if x["source"]["ref"]=="chrysalis")
+objects.append(bag("corpse-bag","Spider Corpse Tokens",[chip("Spider Corpse","Spider food",f"corpse-{i}") for i in range(corpse_count)],-8,8,"Target-manifest playtest supply count."))
+objects.append(bag("chrysalis-bag","Chrysalis Tokens",[chip("Chrysalis","Hatches next End phase",f"chrysalis-{i}") for i in range(chrysalis_count)],-4,8,"Target-manifest playtest supply count."))
 
-# Health representation laboratory: all three configured alternatives, kept separate.
-max_hp=max(c["health"] for c in data["crew"])
-objects.append(bag("health-unit-bag","HEALTH ALT A · Unit Tokens",[chip("Health","+1 Health",f"health-unit-{i}") for i in range(max_hp*len(data["crew"]))],0,8,"Alternative representation: unit tokens."))
-tracks=[chip(f"{c['name']} Health Track",f"0–{c['health']} numbered track",f"health-track-{c['id']}") for c in data["crew"]]
-markers=[chip("HP Marker","Place on numbered Health track",f"health-track-marker-{i}") for i in range(len(data["crew"]))]
+# Health representation laboratory: quantities come from resolved representation manifest rows.
+health_manifest=[x for x in manifest["contents"] if x["content_id"].startswith("representation/") and x["inclusion"]!="excluded-override"]
+unit_count=next(x["resolved_quantity"] for x in health_manifest if x["content_id"]=="representation/health-unit-tokens/component/0")
+objects.append(bag("health-unit-bag","HEALTH ALT A · Unit Tokens",[chip("Health","+1 Health",f"health-unit-{i}") for i in range(unit_count)],0,8,"Alternative representation: unit tokens."))
+track_count=next(x["resolved_quantity"] for x in health_manifest if x["content_id"]=="representation/health-numbered-track/component/0")
+track_marker_count=next(x["resolved_quantity"] for x in health_manifest if x["content_id"]=="representation/health-numbered-track/component/1")
+tracks=[chip(f"Health Track {i+1}","Numbered Health track",f"health-track-{i}") for i in range(track_count)]
+markers=[chip("HP Marker","Place on numbered Health track",f"health-track-marker-{i}") for i in range(track_marker_count)]
 objects.append(bag("health-track-bag","HEALTH ALT B · Numbered Tracks",tracks+markers,4,8,"Alternative representation: numbered tracks + markers."))
-healthcards=[{"id":c["id"],"name":f"{c['name']} Health","type":"health","text":f"Health 0–{c['health']}. Use one marker on this card."} for c in data["crew"]]
+health_card_count=next(x["resolved_quantity"] for x in health_manifest if x["content_id"]=="representation/health-crew-card-marker/component/0")
+health_card_marker_count=next(x["resolved_quantity"] for x in health_manifest if x["content_id"]=="representation/health-crew-card-marker/component/1")
+healthcards=[{"id":f"health-{i}","name":f"Health Card {i+1}","type":"health","text":"Health reference card. Use one marker to show current Health."} for i in range(health_card_count)]
 objects.append(make_deck("health-cards","HEALTH ALT C · Crew Health Cards",healthcards,8,8))
-objects.append(bag("health-card-markers","Health Card Markers",[chip("HP Marker","Place on crew Health card",f"health-card-marker-{i}") for i in range(len(data["crew"]))],11,8))
+objects.append(bag("health-card-markers","Health Card Markers",[chip("HP Marker","Place on crew Health card",f"health-card-marker-{i}") for i in range(health_card_marker_count)],11,8))
 
 save={"SaveName":f"Wretched Demesne Scenario 01 Beta {sha}","GameMode":"","Date":"","VersionNumber":"","GameType":"","GameComplexity":"","Tags":["DODGE","Wretched Demesne","Beta"],"Gravity":0.5,"PlayArea":0.5,"Table":"","Sky":"","Note":f"DODGE 0.2.1 · source {a.git_sha}\nHealth alternatives are evaluation variants; choose one representation during play.","Rules":"","XmlUI":"","LuaScript":"","LuaScriptState":"","ObjectStates":objects,"DODGE":{"version":"0.2.1","document_id":dodge["document_id"],"git_sha":a.git_sha,"contract":contract["contract_id"],"health_representation_mode":"alternatives"}}
 outfile.write_text(json.dumps(save,indent=2))
