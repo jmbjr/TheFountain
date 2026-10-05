@@ -2320,7 +2320,8 @@
       "assumptions": [
         "The sidecar identifies Scenario 01 goals but the executable MVP remains provisional.",
         "Reference executable runtime is intentionally single-active-crew. Cooperative 2–4 crew semantics, including abilities that target another crew, remain design-visible but are outside this reference executable variant.",
-        "Reference executable enemy AI is intentionally prototype-generic: enemies pursue the active crew and attack in-room. Distinct GDD enemy AI prose remains design-visible but is not claimed executable in this reference variant."
+        "Reference executable enemy AI is intentionally prototype-generic: enemies pursue the active crew and attack in-room. Distinct GDD enemy AI prose remains design-visible but is not claimed executable in this reference variant.",
+        "Engineer Field Repair is normalized as a once-per-turn machinery requirement waiver, but Scenario 01 currently declares no Scrap-gated machinery requirement on which to exercise that waiver; the reference runtime does not claim an unexercisable Scrap-waiver interaction."
       ]
     }
   },
