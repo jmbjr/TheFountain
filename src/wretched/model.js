@@ -26,6 +26,7 @@ export function runtimeFromResolved(resolved){
   if(resolved.rules?.topology)data.rules.topology=structuredClone(resolved.rules.topology);
   data.resolved_dodge={document_id:resolved.document_id,dodge_version:resolved.dodge_version,scenario_id:resolved.scenario_id};
   data.action_definitions=structuredClone(resolved.rules?.actions||{});
+  for(const crew of data.crew||[])crew.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:crew:${crew.id}`]||[]);
   for(const card of data.cards||[])card.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:cards:${card.id}`]||[]);
   for(const room of data.rooms||[])room.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:rooms:${room.id}`]||[]);
   for(const encounter of data.encounters||[])encounter.invocations=structuredClone(resolved.entity_invocations?.[`scenario-mvp:encounters:${encounter.id}`]||[]);

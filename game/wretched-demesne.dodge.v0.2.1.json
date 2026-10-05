@@ -1446,6 +1446,102 @@
         "subject": {
           "relative": "current-actor"
         }
+      },
+      "apply-security-combat-training": {
+        "op": "apply_modifier",
+        "target_ref": "security-first-firearm-attack",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "timing": {
+          "apply": "immediate",
+          "expires_at": {
+            "scope": "turn",
+            "boundary": "end",
+            "occurrence": "current",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          "usage": {
+            "count": 1,
+            "mode": "first",
+            "period": {
+              "scope": "turn",
+              "subject": {
+                "relative": "current-actor"
+              }
+            },
+            "consume_on": "resolve",
+            "match": {
+              "action_ref": "attack"
+            }
+          }
+        }
+      },
+      "apply-scout-pathfinder": {
+        "op": "apply_modifier",
+        "target_ref": "scout-first-move-free",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "timing": {
+          "apply": "immediate",
+          "expires_at": {
+            "scope": "turn",
+            "boundary": "end",
+            "occurrence": "current",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          "usage": {
+            "count": 1,
+            "mode": "first",
+            "period": {
+              "scope": "turn",
+              "subject": {
+                "relative": "current-actor"
+              }
+            },
+            "consume_on": "resolve",
+            "match": {
+              "action_ref": "move"
+            }
+          }
+        }
+      },
+      "apply-engineer-field-repair": {
+        "op": "apply_modifier",
+        "target_ref": "engineer-field-repair-waiver",
+        "subject": {
+          "relative": "current-actor"
+        },
+        "timing": {
+          "apply": "immediate",
+          "expires_at": {
+            "scope": "turn",
+            "boundary": "end",
+            "occurrence": "current",
+            "subject": {
+              "relative": "current-actor"
+            }
+          },
+          "usage": {
+            "count": 1,
+            "mode": "first",
+            "period": {
+              "scope": "turn",
+              "subject": {
+                "relative": "current-actor"
+              }
+            },
+            "consume_on": "resolve",
+            "match": {
+              "action_ref": "interact"
+            }
+          }
+        }
       }
     },
     "actions": {
@@ -1996,6 +2092,34 @@
           "event": "exit-location"
         },
         "amount": 1
+      },
+      "security-first-firearm-attack": {
+        "name": "Security Combat Training",
+        "kind": "value-adjustment",
+        "match": {
+          "action_ref": "attack",
+          "event": "calculate-attack"
+        },
+        "target_ref": "attack",
+        "amount": 1,
+        "maximum_matches": 1
+      },
+      "scout-first-move-free": {
+        "name": "Scout Pathfinder",
+        "kind": "cost-adjustment",
+        "match": {
+          "action_ref": "move"
+        },
+        "amount": -1,
+        "maximum_matches": 1
+      },
+      "engineer-field-repair-waiver": {
+        "name": "Engineer Field Repair",
+        "kind": "requirement-waiver",
+        "match": {
+          "requirement_category": "machinery"
+        },
+        "maximum_matches": 1
       }
     }
   },
@@ -2033,7 +2157,7 @@
       "topology_ref": "the-cave-unresolved",
       "players": {
         "min": 1,
-        "max": 4
+        "max": 1
       },
       "action_refs": [
         "move",
@@ -2110,7 +2234,8 @@
       "source_ref": "scenario-mvp",
       "authority": "provisional",
       "assumptions": [
-        "The sidecar identifies Scenario 01 goals but the executable MVP remains provisional."
+        "The sidecar identifies Scenario 01 goals but the executable MVP remains provisional.",
+        "Reference executable runtime is intentionally single-active-crew. Cooperative 2–4 crew semantics, including abilities that target another crew, remain design-visible but are outside this reference executable variant."
       ]
     }
   },
@@ -2822,6 +2947,69 @@
           {
             "kind": "condition",
             "condition_ref": "sealed-threshold-access-condition"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:crew:security": [
+      {
+        "id": "security-combat-training",
+        "trigger": "turn-start",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "apply-security-combat-training"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:crew:engineer": [
+      {
+        "id": "engineer-field-repair",
+        "trigger": "turn-start",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "apply-engineer-field-repair"
+          }
+        ],
+        "subject_bindings": [
+          {
+            "slot": "current-actor",
+            "source": "context-subject",
+            "subject": {
+              "relative": "current-actor"
+            }
+          }
+        ]
+      }
+    ],
+    "scenario-mvp:crew:scout": [
+      {
+        "id": "scout-pathfinder",
+        "trigger": "turn-start",
+        "steps": [
+          {
+            "kind": "effect",
+            "ref": "apply-scout-pathfinder"
           }
         ],
         "subject_bindings": [
