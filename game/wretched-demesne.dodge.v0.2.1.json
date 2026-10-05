@@ -974,6 +974,16 @@
         "assumptions": [
           "Scenario 01 crew Health values are provisional executable assumptions."
         ]
+      },
+      "overrun-round": {
+        "name": "Overrun round",
+        "type": "integer",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "minimum": 0,
+        "default": 0,
+        "authority": "provisional",
+        "source_ref": "scenario-mvp"
       }
     },
     "resources": {
@@ -1222,11 +1232,19 @@
           {
             "op": "gte",
             "left": {
-              "ref": "round"
+              "ref": "round",
+              "subject": {
+                "relative": "scenario"
+              }
             },
             "right": {
-              "ref": "overrun-round"
-            }
+              "ref": "overrun-round",
+              "subject": {
+                "relative": "scenario"
+              }
+            },
+            "authority": "provisional",
+            "source_ref": "scenario-mvp"
           }
         ],
         "authority": "provisional",
@@ -1601,7 +1619,10 @@
           "relative": "scenario"
         },
         "value": {
-          "relative": "current-round"
+          "ref": "round",
+          "subject": {
+            "relative": "scenario"
+          }
         },
         "authority": "provisional",
         "source_ref": "scenario-mvp"
