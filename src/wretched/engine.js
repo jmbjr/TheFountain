@@ -7,7 +7,8 @@ export class WretchedEngine {
     if(!startRoom)throw new Error("Scenario runtime missing start_room_ref");
     const extraction=this.data.scenario?.runtime?.extraction;if(!extraction?.room_ref||!extraction.success_status||!extraction.fallback_status)throw new Error("Scenario runtime extraction contract is incomplete");
     if(!Number.isFinite(this.data.rules?.reload?.ammo))throw new Error("Runtime rules missing normalized reload ammo");
-    this.state={round:1,phase:"crew",crew:{...crew,currentHealth:crew.health,room:startRoom,extracted:false,incapacitated:false},
+    const {invocations:_crewInvocations,...crewState}=crew;
+    this.state={round:1,phase:"crew",crew:{...crewState,currentHealth:crew.health,room:startRoom,extracted:false,incapacitated:false},
       actions:this.data.rules.actions_per_turn.value,ammo:this.data.rules.ammo.starting,scrap:0,knowledge:0,threat:this.data.rules.threat.start,
       "relay-active":false,inventory:[],searched:[],rooms:[startRoom],encounteredRooms:[startRoom],modifiers:[],pendingInteraction:null,roomDeck:[],
       encounters:this.shuffle(this.data.semantic_decks?.encounters||this.data.encounters.map(e=>e.id)),salvage:this.shuffle(this.data.semantic_decks?.salvage||this.data.salvage.map(s=>s.id)),
