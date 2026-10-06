@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Target-neutral Wretched Scenario 01 resolver for DODGE 0.2.1."""
 from __future__ import annotations
-import copy,hashlib,json\nfrom wretched_semantic_validation import require_source_semantics, require_resolved_semantics
+import copy,hashlib,json
+from wretched_semantic_validation import require_source_semantics, require_resolved_semantics
 from pathlib import Path
 ROOT=Path(__file__).parents[1]
 DEFAULT_DODGE=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
@@ -117,7 +118,8 @@ def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,r
 def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     dodge=_load(dodge_path)
     if dodge.get("dodge_version")!="0.2.1": raise ResolutionError("Requires DODGE 0.2.1")
-    canonical,scenario_src=_source(dodge,"scenario-mvp"); sidecar,gdd_src=_source(dodge,"gdd")\n    require_source_semantics(dodge,canonical)
+    canonical,scenario_src=_source(dodge,"scenario-mvp"); sidecar,gdd_src=_source(dodge,"gdd")
+    require_source_semantics(dodge,canonical)
     scenario=dodge["scenarios"]["scenario-01"]; scene=dodge["scenes"][scenario["scene_ref"]];topology=dodge["topologies"][scenario["topology_ref"]]
     semantic_collections={}
     for instance in scene.get("instances",[]):
@@ -143,8 +145,9 @@ def main():
     a=p.parse_args();resolved=resolve(a.dodge,a.export_contract)
     if a.manifest_out:
         if "target_manifest" not in resolved:raise SystemExit("--manifest-out requires --export-contract")
-        a.manifest_out.parent.mkdir(parents=True,exist_ok=True);a.manifest_out.write_text(json.dumps(resolved["target_manifest"],indent=2)+"\n")
+        a.manifest_out.parent.mkdir(parents=True,exist_ok=True);a.manifest_out.write_text(json.dumps(resolved["target_manifest"],indent=2)+"
+")
     text=json.dumps(resolved,indent=2)
-    if a.out:a.out.write_text(text+"\n")
+    if a.out:a.out.write_text(text+"\\n")
     elif not a.manifest_out:print(text)
 if __name__=="__main__": main()
