@@ -76,18 +76,20 @@ export class WretchedEngine {
     const before=this.snapshot(),beforeLog=this.state.log.length,beforeRound=this.state.round,beforeAction=this.state.actionNumber||0;
     this.state.actionNumber=beforeAction+1;
     let ok=false;
-    switch(action.type){
-      case "move": ok=this.move(action.target); break;
-      case "explore": ok=this.explore(); break;
-      case "search": ok=this.search(); break;
-      case "interact": ok=this.interact(); break;
-      case "reload": ok=this.reload(); break;
-      case "attack": ok=this.attack(action.enemyIndex??0,action.sourceRef??action.cardId); break;
-      case "play-card": ok=this.playCard(action.handIndex,action.enemyIndex??0,action.target??null); break;
-      case "extract": ok=this.extract(); break;
-      case "end-turn": if(this.state.status==="playing"){this.endTurn();ok=true} break;
-      default: break;
-    }
+    try{
+      switch(action.type){
+        case "move": ok=this.move(action.target); break;
+        case "explore": ok=this.explore(); break;
+        case "search": ok=this.search(); break;
+        case "interact": ok=this.interact(); break;
+        case "reload": ok=this.reload(); break;
+        case "attack": ok=this.attack(action.enemyIndex??0,action.sourceRef??action.cardId); break;
+        case "play-card": ok=this.playCard(action.handIndex,action.enemyIndex??0,action.target??null); break;
+        case "extract": ok=this.extract(); break;
+        case "end-turn": if(this.state.status==="playing"){this.endTurn();ok=true} break;
+        default: break;
+      }
+    }catch(error){this.state=before;throw error}
     if(!ok){this.state=before;return false}
     if(this.state.log.length===beforeLog)this.log(`Action: ${action.type}.`,"DEBUG");
     if(this.state.round!==beforeRound)this.state.actionNumber=0;
