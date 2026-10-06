@@ -47,6 +47,7 @@ for(const rejectedAction of [
   {type:"not-an-action"}
 ]){
   const atomicGame=new WretchedEngine(locationData,{rng:()=>0});
+  if(rejectedAction.type==="extract"){if(!atomicGame.state.rooms.includes("bone-pit"))atomicGame.state.rooms.push("bone-pit");atomicGame.state.crew.room="bone-pit"}
   const atomicBefore=atomicGame.snapshot();
   const atomicRecorder=new ReplayRecorder(atomicGame,{seed:"atomic-rejection",crew:"security",captureState:true});
   assert.equal(atomicRecorder.dispatch(rejectedAction),false,JSON.stringify(rejectedAction));
