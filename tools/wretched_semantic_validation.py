@@ -85,15 +85,15 @@ def validate_source_semantics(dodge, canonical):
             _invocation_refs(inv.get("steps",[]),effects,conditions,errors,f"{key}/{ident}")
 
     # Scenario/runtime references must point at canonical rooms/resources.
-    scenario=dodge.get("scenarios",{}).get("scenario-01",{})
-    runtime=scenario.get("runtime",{})
+    canonical_scenario=canonical.get("scenario",{})
+    runtime=canonical_scenario.get("runtime",{})
     room_ids=ids["rooms"]
     start=runtime.get("start_room_ref")
     if start not in room_ids:
-        errors.append(f"scenario runtime: start_room_ref {start} is not a room")
+        errors.append(f"canonical scenario runtime: start_room_ref {start} is not a room")
     extraction=runtime.get("extraction",{})
     if extraction.get("room_ref") not in room_ids:
-        errors.append(f"scenario runtime: extraction room_ref {extraction.get('room_ref')} is not a room")
+        errors.append(f"canonical scenario runtime: extraction room_ref {extraction.get('room_ref')} is not a room")
 
     # Semantic collection membership must resolve to exactly one canonical entity.
     for obj_id,obj in dodge.get("objects",{}).items():
