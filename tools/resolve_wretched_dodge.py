@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Target-neutral Wretched Scenario 01 resolver for DODGE 0.2.1."""
 from __future__ import annotations
-import copy,hashlib,json
+import copy,hashlib,json\nfrom wretched_semantic_validation import require_source_semantics, require_resolved_semantics
 from pathlib import Path
 ROOT=Path(__file__).parents[1]
 DEFAULT_DODGE=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
@@ -117,7 +117,7 @@ def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,r
 def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     dodge=_load(dodge_path)
     if dodge.get("dodge_version")!="0.2.1": raise ResolutionError("Requires DODGE 0.2.1")
-    canonical,scenario_src=_source(dodge,"scenario-mvp"); sidecar,gdd_src=_source(dodge,"gdd")
+    canonical,scenario_src=_source(dodge,"scenario-mvp"); sidecar,gdd_src=_source(dodge,"gdd")\n    require_source_semantics(dodge,canonical)
     scenario=dodge["scenarios"]["scenario-01"]; scene=dodge["scenes"][scenario["scene_ref"]];topology=dodge["topologies"][scenario["topology_ref"]]
     semantic_collections={}
     for instance in scene.get("instances",[]):
