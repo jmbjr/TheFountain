@@ -138,6 +138,7 @@ def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
                     for binding in bindings:out["inventory"]["representations"].append({"state_ref":inc["state_ref"],"mode":inc["mode"],"representation_ref":rep_ref,"object_ref":comp["object_ref"],"role":comp.get("role"),"binding_ref":binding.get("id") if binding else None,"quantity":_qty(q,binding)})
         out["export_contract"]=contract
         out["target_manifest"]=_manifest(dodge,dodge_path,contract,export_contract_path,scenario,scene,canonical,out["inventory"]["representations"])
+    require_resolved_semantics(out)
     return out
 def main():
     import argparse
@@ -145,9 +146,8 @@ def main():
     a=p.parse_args();resolved=resolve(a.dodge,a.export_contract)
     if a.manifest_out:
         if "target_manifest" not in resolved:raise SystemExit("--manifest-out requires --export-contract")
-        a.manifest_out.parent.mkdir(parents=True,exist_ok=True);a.manifest_out.write_text(json.dumps(resolved["target_manifest"],indent=2)+"
-")
+        a.manifest_out.parent.mkdir(parents=True,exist_ok=True);a.manifest_out.write_text(json.dumps(resolved["target_manifest"],indent=2)+"\n")
     text=json.dumps(resolved,indent=2)
-    if a.out:a.out.write_text(text+"\\n")
+    if a.out:a.out.write_text(text+"\n")
     elif not a.manifest_out:print(text)
 if __name__=="__main__": main()
