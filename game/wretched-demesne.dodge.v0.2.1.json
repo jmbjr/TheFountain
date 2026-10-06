@@ -192,51 +192,6 @@
     }
   },
   "objects": {
-    "security-starter-deck": {
-      "kind": "collection",
-      "archetype_ref": "deck",
-      "source_ref": "cards",
-      "members": [
-        {
-          "entity_ref": "cards:sidearm",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "cards:move",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "cards:take-cover",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "cards:reload",
-          "archetype_ref": "standard-card",
-          "quantity": 2
-        },
-        {
-          "entity_ref": "cards:suppressive-fire",
-          "archetype_ref": "standard-card"
-        },
-        {
-          "entity_ref": "cards:security-training",
-          "archetype_ref": "standard-card"
-        }
-      ],
-      "behaviors": [
-        {
-          "type": "shuffle"
-        },
-        {
-          "type": "draw",
-          "replacement": false,
-          "destination": "player-hand"
-        }
-      ]
-    },
     "spider-corpse": {
       "kind": "token",
       "archetype_ref": "board-token",

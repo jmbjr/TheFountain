@@ -99,6 +99,11 @@ jobs:
               assert sum(x["resolved_quantity"] for x in manifest["contents"] if x["content_id"].startswith(prefix))==total
           assert not any("prototype-action-cards" in x["content_id"] for x in manifest["contents"])
           assert not any("/instance/security-deck-1" in x["content_id"] for x in manifest["contents"])
+          assert "security-starter-deck" not in resolved["objects"]
+          assert all(resolved["semantic_collections"][f"{crew}-starter-deck-1"]["object_ref"]==f"scenario-{crew}-starter-deck" for crew in expected_decks)
+          primary=[x for x in manifest["contents"] if not x.get("parent_content_id") and x["inclusion"]!="excluded-override"]
+          assert any(x["content_id"].endswith("/instance/captain-starter-deck-1") for x in primary)
+          assert any(x["content_id"].endswith("/instance/scenario-room-cards-1") for x in primary)
           included=[x for x in manifest["contents"] if x["inclusion"]!="excluded-override"]
           assert included
           assert all("source" in x and "provenance" in x and "resolved_quantity" in x for x in included)
