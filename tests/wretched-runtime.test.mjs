@@ -5,6 +5,7 @@ const betaRenderer=fs.readFileSync(new URL("../src/renderers/wretched-beta-web.j
 // runtimeFromResolved(); the direct-engine test fixture materializes the same boundary explicitly.
 data.runtime_rules={resources:{actions:{default:data.rules.actions_per_turn.value},"hand-size":{default:data.rules.hand_size.value},ammunition:{default:data.rules.ammo.starting,maximum:data.rules.ammo.max},threat:{default:data.rules.threat.start,maximum:data.rules.threat.max,thresholds:structuredClone(data.rules.threat.thresholds||[])}},actions:{},topology:structuredClone(data.rules.topology||{})};
 data.starter_decks=Object.fromEntries(data.crew.map(crew=>[crew.id,data.cards.flatMap(card=>Array(card.qty_by_deck?.[crew.id]||0).fill(card.id))]));
+data.semantic_decks={rooms:data.rooms.map(x=>x.id),encounters:data.encounters.map(x=>x.id),salvage:data.salvage.map(x=>x.id)};
 const oneAction=()=>({costs:[{resource_ref:"actions",amount:1,subject:{relative:"current-actor"}}]});
 data.action_definitions=Object.fromEntries(["move","attack","reload","search","interact","assist","scout-ahead","play-card","explore","extract"].map(id=>[id,oneAction()]));
 data.runtime_rules.actions=structuredClone(data.action_definitions);data.runtime_rules.actions.reload.effects=[{op:"add",target_ref:"ammunition",value:data.cards.find(c=>c.id==="reload").restore_ammo}];
