@@ -33,7 +33,7 @@ contract=resolved["export_contract"]
 manifest=resolved["target_manifest"]
 manifest_by_id={x["content_id"]:x for x in manifest["contents"]}
 MANIFEST_OUT.parent.mkdir(parents=True,exist_ok=True)
-MANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\\n")
+MANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\n")
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
