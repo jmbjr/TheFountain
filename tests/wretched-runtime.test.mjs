@@ -4,7 +4,7 @@ const tempDir=fs.mkdtempSync(path.join(os.tmpdir(),"wretched-runtime-test-"));
 const resolvedPath=path.join(tempDir,"resolved.json");
 try{execFileSync("python",["tools/resolve_wretched_dodge.py","--out",resolvedPath],{cwd:repoRoot,stdio:"pipe"});}catch(error){process.stderr.write(error.stderr?.toString()||String(error));throw error}
 const data=runtimeFromResolved(JSON.parse(fs.readFileSync(resolvedPath,"utf8")));fs.rmSync(tempDir,{recursive:true,force:true});
-const betaRenderer=fs.readFileSync(new URL("../src/renderers/wretched-beta-web.js",import.meta.url),"utf8");assert.equal(betaRenderer.includes("s.relayActive"),false);assert.equal(betaRenderer.includes('s["relay-active"]'),true);assert.equal(betaRenderer.includes("Out of range"),true);
+const betaRenderer=fs.readFileSync(new URL("../src/renderers/wretched-beta-web.js",import.meta.url),"utf8");assert.equal(betaRenderer.includes("s.relayActive"),false);assert.equal(betaRenderer.includes('s["relay-active"]'),true);assert.equal(betaRenderer.includes("Out of range"),true);assert.equal(betaRenderer.includes("game.reset(id)"),false);assert.equal(betaRenderer.includes("crewId:id"),true);
 assert.equal(validateWretchedMvp(data).ok,true);
 const missingStarterDecks=structuredClone(data);delete missingStarterDecks.starter_decks;assert.throws(()=>new WretchedEngine(missingStarterDecks,{rng:()=>0}),/missing resolved starter deck/);
 const placementData=structuredClone(data);placementData.scenario.setup_constraints={deck_placements:[{collection_ref:"rooms",entity_ref:"bone-pit",within_last:2}]};const placementGame=new WretchedEngine(placementData,{rng:()=>0});assert.ok(placementGame.state.roomDeck.slice(-2).includes("bone-pit"));assert.equal(placementGame.state.roomDeck.filter(id=>id==="bone-pit").length,1);const g=new WretchedEngine(data,{rng:()=>0});
@@ -75,6 +75,8 @@ assert.equal(recorder.dispatch({type:"end-turn"}),true);
 const replay=recorder.toJSON();
 const replayed=runReplay(data,replay);
 assert.deepEqual(replayed.state,recGame.snapshot());
+const liveCaptain=new WretchedEngine(data,{rng:createSeededRng(seed),crewId:"captain"});const liveRecorder=new ReplayRecorder(liveCaptain,{seed,crew:"captain",captureState:true,build:"current-live-init"});assert.equal(liveRecorder.dispatch({type:"explore"}),true);assert.equal(liveRecorder.dispatch({type:"end-turn"}),true);assert.deepEqual(runReplay(data,liveRecorder.toJSON()).state,liveCaptain.snapshot());
+const ce22="ce22b122ec3f7ad3013f9ef096a11e98cd19901d";const historicalLive=new WretchedEngine(data,{rng:createSeededRng(seed)});historicalLive.reset("captain");const historicalRecorder=new ReplayRecorder(historicalLive,{seed,crew:"captain",captureState:true,build:ce22});assert.equal(historicalRecorder.dispatch({type:"explore"}),true);assert.deepEqual(runReplay(data,historicalRecorder.toJSON()).state,historicalLive.snapshot());
 assert.equal(replay.state_schema,REPLAY_STATE_SCHEMA);
 const legacyRename=structuredClone(replay);delete legacyRename.state_schema;for(const step of legacyRename.steps){if(step.state&&Object.prototype.hasOwnProperty.call(step.state,"relay-active")){step.state.relayActive=step.state["relay-active"];delete step.state["relay-active"]}}
 const legacyOriginal=structuredClone(legacyRename),normalizedLegacy=normalizeReplay(legacyRename);
