@@ -19,6 +19,10 @@ class SemanticValidationTests(unittest.TestCase):
         dodge=copy.deepcopy(self.dodge);key="scenario-mvp:rooms:fungal-vault"
         dodge["entity_invocations"][key]=[x for x in dodge["entity_invocations"][key] if x["trigger"]!="search"]
         self.assertTrue(any("fungal-vault" in e and "search" in e for e in validate_source_semantics(dodge,self.canonical)))
+    def test_invalid_canonical_runtime_room_ref_fails(self):
+        canonical=copy.deepcopy(self.canonical)
+        canonical["scenario"]["runtime"]["start_room_ref"]="not-a-room"
+        self.assertTrue(any("not-a-room" in e for e in validate_source_semantics(self.dodge,canonical)))
     def test_broken_invocation_reference_fails(self):
         dodge=copy.deepcopy(self.dodge);key="scenario-mvp:rooms:bone-pit";dodge["entity_invocations"][key][0]["steps"][0]["ref"]="missing-effect"
         self.assertTrue(any("missing-effect" in e for e in validate_source_semantics(dodge,self.canonical)))
