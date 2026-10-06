@@ -42,6 +42,20 @@ const machineEngineer=new WretchedEngine(locationData,{rng:()=>0});machineEngine
 const machineSecurity=new WretchedEngine(locationData,{rng:()=>0});machineSecurity.state.encounters=["old-machine"];machineSecurity.resolveEncounter();assert.equal(machineSecurity.state.threat,0);assert.equal(machineSecurity.interact(),true);assert.equal(machineSecurity.state.threat,1);
 const fixedSearchData=structuredClone(locationData);fixedSearchData.rule_effects["gain-power-cell"].target_ref="translation-fragment";const fixedSearch=new WretchedEngine(fixedSearchData,{rng:()=>0});fixedSearch.state.crew.room="ruined-workshop";fixedSearch.state.rooms.push("ruined-workshop");assert.equal(fixedSearch.search(),true);assert.equal(fixedSearch.state.inventory.includes("translation-fragment"),true);assert.equal(fixedSearch.state.inventory.includes("power-cell"),false);
 const rejectedSearch=new WretchedEngine(locationData,{rng:()=>0});rejectedSearch.state.crew.room="fungal-vault";rejectedSearch.state.rooms.push("fungal-vault");rejectedSearch.state.salvage=[];const rejectedBefore=rejectedSearch.snapshot();const rejectedRecorder=new ReplayRecorder(rejectedSearch,{seed:"rejected-action",crew:"security",captureState:true});assert.equal(rejectedRecorder.dispatch({type:"search"}),false);assert.deepEqual(rejectedSearch.snapshot(),rejectedBefore);assert.equal(rejectedRecorder.toJSON().steps.length,0);
+for(const rejectedAction of [
+  {type:"move",target:"not-a-room"},
+  {type:"attack",enemyIndex:0,sourceRef:"sidearm"},
+  {type:"play-card",handIndex:999},
+  {type:"extract"},
+  {type:"not-an-action"}
+]){
+  const atomicGame=new WretchedEngine(locationData,{rng:()=>0});
+  const atomicBefore=atomicGame.snapshot();
+  const atomicRecorder=new ReplayRecorder(atomicGame,{seed:"atomic-rejection",crew:"security",captureState:true});
+  assert.equal(atomicRecorder.dispatch(rejectedAction),false,JSON.stringify(rejectedAction));
+  assert.deepEqual(atomicGame.snapshot(),atomicBefore,JSON.stringify(rejectedAction));
+  assert.equal(atomicRecorder.toJSON().steps.length,0,JSON.stringify(rejectedAction));
+}
 const fungalSearchData=structuredClone(locationData);const fungalSearch=new WretchedEngine(fungalSearchData,{rng:()=>0});fungalSearch.state.crew.room="fungal-vault";fungalSearch.state.rooms.push("fungal-vault");const fungalRecorder=new ReplayRecorder(fungalSearch,{seed:"fungal-search",crew:"security",captureState:true});assert.equal(fungalRecorder.dispatch({type:"search"}),true);assert.equal(fungalSearch.state.searched.includes("fungal-vault"),true);assert.equal(fungalRecorder.toJSON().steps.length,1);
 const rollbackData=structuredClone(fungalSearchData);rollbackData.rooms.find(r=>r.id==="fungal-vault").invocations=rollbackData.rooms.find(r=>r.id==="fungal-vault").invocations.filter(x=>x.trigger!=="search");const rejectedFungal=new WretchedEngine(rollbackData,{rng:()=>0});rejectedFungal.state.crew.room="fungal-vault";rejectedFungal.state.rooms.push("fungal-vault");const rollbackBefore=rejectedFungal.snapshot();assert.equal(rejectedFungal.dispatch({type:"search"}),false);assert.deepEqual(rejectedFungal.snapshot(),rollbackBefore);
 const replayStateBoundary=new WretchedEngine(data,{rng:()=>0});assert.equal(Object.prototype.hasOwnProperty.call(replayStateBoundary.state.crew,"invocations"),false);
