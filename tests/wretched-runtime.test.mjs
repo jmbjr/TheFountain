@@ -86,7 +86,7 @@ assert.deepEqual(normalizedLegacy.replay.steps[0].state.modifiers,legacyRename.s
 assert.deepEqual(normalizedLegacy.replay.steps[0].state.exploredFrom,legacyRename.steps[0].state.exploredFrom??normalizedLegacy.replay.steps[0].state.exploredFrom);
 // Object key insertion order is not replay semantics; migrated snapshots may add canonical keys later.
 const reorderedLegacy=structuredClone(legacyRename);const reorderedState=reorderedLegacy.steps[0].state;for(const key of Object.keys(reorderedState).reverse()){const value=reorderedState[key];delete reorderedState[key];reorderedState[key]=value}
-const reorderedResult=runReplay(data,reorderedLegacy);assert.equal(reorderedResult.results.length,1);assert.equal(reorderedResult.normalization.changed,true);
+const reorderedResult=runReplay(data,reorderedLegacy);assert.equal(reorderedResult.results.length,reorderedLegacy.steps.length);assert.equal(reorderedResult.normalization.changed,true);
 assert.equal(normalizedLegacy.replay.steps.every(step=>step.state?.pendingInteraction!==undefined),true);
 assert.equal(normalizedLegacy.replay.steps.every(step=>Array.isArray(step.state?.completedInteractions)),true);
 assert.equal(normalizedLegacy.migrations.some(m=>m.id==="runtime-state-v3"),true);
