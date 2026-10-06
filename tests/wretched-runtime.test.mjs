@@ -87,7 +87,9 @@ assert.deepEqual(normalizedLegacy.replay.steps[0].state.exploredFrom,legacyRenam
 const reorderedLegacy=structuredClone(legacyRename);const reorderedState=reorderedLegacy.steps[0].state;for(const key of Object.keys(reorderedState).reverse()){const value=reorderedState[key];delete reorderedState[key];reorderedState[key]=value}
 const reorderedResult=runReplay(data,reorderedLegacy);assert.equal(reorderedResult.results.length,1);assert.equal(reorderedResult.normalization.changed,true);
 assert.equal(normalizedLegacy.replay.steps.every(step=>step.state?.pendingInteraction!==undefined),true);
+assert.equal(normalizedLegacy.replay.steps.every(step=>Array.isArray(step.state?.completedInteractions)),true);
 assert.equal(normalizedLegacy.migrations.some(m=>m.id==="runtime-state-v3"),true);
+assert.equal(normalizedLegacy.migrations.some(m=>m.id==="runtime-state-v4"),true);
 assert.equal(normalizedLegacy.replay.state_schema,REPLAY_STATE_SCHEMA);
 assert.equal(normalizedLegacy.replay.steps.some(step=>Object.prototype.hasOwnProperty.call(step.state||{},"relayActive")),false);
 const compatFixture=structuredClone(normalizedLegacy.replay);const exploreStep=compatFixture.steps.find(step=>step.action?.type==="explore");if(exploreStep?.state?.enemies?.length){const entered=exploreStep.state.crew.room,origin=(exploreStep.state.connections?.[entered]||[])[0];exploreStep.state.enemies[0].room=origin;const compatibility=applyReplayCompatibility(compatFixture,{force:true});assert.equal(compatibility.changed,true);assert.equal(compatibility.compatibility[0].kind,"semantic-compatibility-override");assert.equal(compatibility.replay.steps.find(step=>step.action?.type==="explore").state.enemies[0].room,entered)}
