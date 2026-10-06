@@ -64,7 +64,7 @@ export function runReplay(data,replay,{verifyState=true,forceCompatibility=false
   if(replay?.format!==REPLAY_FORMAT)throw new Error(`Unsupported replay format: ${replay?.format??"<missing>"}`);
   if(replay.seed===undefined||replay.seed===null)throw new Error("Replay seed is required");
   if(!Array.isArray(replay.steps))throw new Error("Replay steps must be an array");
-  const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});game.reset(replay.crew||"security");
+  const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});game.rng=createSeededRng(replay.seed);game.reset(replay.crew||"security");
   const results=[];
   for(let i=0;i<replay.steps.length;i++){
     const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string"){const err=new Error(`Step ${i}: missing action.type`);err.step=i;err.results=results;err.game=game;throw err}
