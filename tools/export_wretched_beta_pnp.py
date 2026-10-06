@@ -140,6 +140,16 @@ def diagnostic_contents_rows():
                 flags.append(f'override: {diag.get("field")}')
         provenance=" → ".join(f'{p["kind"]}:{p["ref"]}' for p in item.get("provenance",[]))
         member_rows=[x for x in children.get(identity,[]) if x["inclusion"]!="excluded-override"]
+        member_diagnostics=[diag for member in member_rows for diag in member.get("diagnostics",[])]
+        if any(diag.get("classification")=="noncanonical-playtest" for diag in member_diagnostics):
+            flags.append("NONCANONICAL PLAYTEST")
+        for field in dict.fromkeys(
+            diag.get("field")
+            for diag in member_diagnostics
+            if diag.get("status")=="overridden" and diag.get("field")!="inclusion"
+        ):
+            if field:
+                flags.append(f'member override: {field}')
         member_note=""
         quantity=str(item["resolved_quantity"])
         if member_rows:
