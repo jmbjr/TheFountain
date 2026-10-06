@@ -446,3 +446,22 @@ The preserved Scenario 01 implementation is being audited one coherent mechanic 
 Completed examples include Reload, Threat thresholds and encounter effects. Room setup follows the same pattern: room identity is not executable behavior; setup is canonical Scenario data expressed with the existing generic effect vocabulary and interpreted by the shared runtime effect boundary.
 
 The authoritative Design Lead source refresh is tracked in TheFountain issues #99–#103, with cross-document clarification in #104. Those sources describe a revised topology and Character Sheet/Backpack direction. They are intentionally not being mixed into the current reference variant mid-audit. After the current audit, the revised requirements receive a DODGE compatibility audit first; format gaps go to DODGE before implementation, and the revised game can be built as a separate DODGE-derived variant to test the intended clean requirements-to-target workflow.
+
+
+## Wretched semantic validation profile
+
+Scenario 01 uses a four-stage validation boundary before target generation:
+
+```text
+DODGE core schema validation
+  -> Wretched source semantic profile
+  -> shared target-neutral resolver
+  -> Wretched resolved-game validation
+  -> Web / PnP / TTS
+```
+
+`tools/wretched_semantic_validation.py` owns the game-specific cross-field contracts. The bounded profile currently covers capability-to-invocation completeness (including searchable rooms), invocation/rule-reference integrity, scenario runtime room references, semantic collection membership, and resolved executable collection completeness. These are Wretched contracts; they are intentionally not encoded into the neutral DODGE schema.
+
+`tools/resolve_wretched_dodge.py` enforces both Wretched semantic stages, so an exporter that consumes the shared resolver cannot generate a target from semantically contradictory source or an incomplete resolved game. `tools/validate_wretched_dodge.py` preserves the ordering of DODGE core validation before the Wretched profile and resolved-game gate.
+
+Negative validation fixtures live in `tests/test_wretched_validation.py`. Runtime conformance separately requires every rejected action to restore canonical state exactly and append no replay step; that invariant is exercised in `tests/wretched-runtime.test.mjs`.
