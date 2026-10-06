@@ -1,7 +1,7 @@
 // Shared, renderer-agnostic runtime for Wretched Demesne Scenario 01.
 // Gameplay values live in the canonical dataset, not here.
 export class WretchedEngine {
-  constructor(data, {rng=Math.random}={}) { this.data=data; this.rng=rng; this.reset(); }
+  constructor(data, {rng=Math.random,crewId="security"}={}) { this.data=data; this.rng=rng; this.reset(crewId); }
   reset(crewId="security") {
     const crew=this.data.crew.find(c=>c.id===crewId) || this.data.crew[0],startRoom=this.data.scenario?.runtime?.start_room_ref;
     if(!startRoom)throw new Error("Scenario runtime missing start_room_ref");
