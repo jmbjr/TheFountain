@@ -16,6 +16,7 @@ export function runtimeFromResolved(resolved){
   if(resolved?.format!=="wretched-resolved-game.v1")throw new Error("Unexpected resolved Wretched format");
   const data=structuredClone(resolved.canonical);
   data.rules=structuredClone(data.rules||{});
+  data.scenario=structuredClone(data.scenario||{});data.scenario.players=structuredClone(resolved.scenario?.players||data.scenario.players);
   data.runtime_rules=structuredClone(resolved.rules||{});
   data.resolved_dodge={document_id:resolved.document_id,dodge_version:resolved.dodge_version,scenario_id:resolved.scenario_id};
   data.action_definitions=structuredClone(resolved.rules?.actions||{});

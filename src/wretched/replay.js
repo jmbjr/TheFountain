@@ -2,11 +2,12 @@ import {WretchedEngine} from "./engine.js";
 import {createSeededRng} from "./random.js";
 
 export const REPLAY_FORMAT="wretched-replay.v1";
-export const REPLAY_STATE_SCHEMA="wretched-state.v3";
+export const REPLAY_STATE_SCHEMA="wretched-state.v4";
 const LEGACY_STATE_SCHEMA="wretched-state.v1";
 const STATE_MIGRATIONS=[
   {from:LEGACY_STATE_SCHEMA,to:"wretched-state.v2",id:"runtime-state-v2",description:"relayActive → relay-active; add replay bookkeeping defaults",apply(state){if(!state)return false;let changed=false;if(Object.prototype.hasOwnProperty.call(state,"relayActive")){if(!Object.prototype.hasOwnProperty.call(state,"relay-active"))state["relay-active"]=state.relayActive;delete state.relayActive;changed=true}if(!Object.prototype.hasOwnProperty.call(state,"encounteredRooms")){state.encounteredRooms=[...(state.rooms||[])];changed=true}if(!Object.prototype.hasOwnProperty.call(state,"modifiers")){state.modifiers=[];changed=true}if(!Object.prototype.hasOwnProperty.call(state,"exploredFrom")){const origins=[];for(const [room,neighbors] of Object.entries(state.connections||{}))if((neighbors||[]).length&&room!==(state.crew?.room))origins.push(room);if(origins.length){state.exploredFrom=origins;changed=true}}return changed}},
-  {from:"wretched-state.v2",to:REPLAY_STATE_SCHEMA,id:"runtime-state-v3",description:"add pending interaction replay state",apply(state){if(!state)return false;let changed=false;if(!Object.prototype.hasOwnProperty.call(state,"pendingInteraction")){state.pendingInteraction=null;changed=true}return changed}}
+  {from:"wretched-state.v2",to:"wretched-state.v3",id:"runtime-state-v3",description:"add pending interaction replay state",apply(state){if(!state)return false;let changed=false;if(!Object.prototype.hasOwnProperty.call(state,"pendingInteraction")){state.pendingInteraction=null;changed=true}return changed}},
+  {from:"wretched-state.v3",to:REPLAY_STATE_SCHEMA,id:"runtime-state-v4",description:"add completed interaction replay state",apply(state){if(!state)return false;let changed=false;if(!Object.prototype.hasOwnProperty.call(state,"completedInteractions")){state.completedInteractions=[];changed=true}return changed}}
 ];
 export function normalizeReplay(replay){
   const normalized=structuredClone(replay),migrations=[];
@@ -63,7 +64,7 @@ export function runReplay(data,replay,{verifyState=true,forceCompatibility=false
   if(replay?.format!==REPLAY_FORMAT)throw new Error(`Unsupported replay format: ${replay?.format??"<missing>"}`);
   if(replay.seed===undefined||replay.seed===null)throw new Error("Replay seed is required");
   if(!Array.isArray(replay.steps))throw new Error("Replay steps must be an array");
-  const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});game.reset(replay.crew||"security");
+  const game=new WretchedEngine(data,{rng:createSeededRng(replay.seed)});game.rng=createSeededRng(replay.seed);game.reset(replay.crew||"security");
   const results=[];
   for(let i=0;i<replay.steps.length;i++){
     const step=replay.steps[i],action=step?.action;if(!action||typeof action.type!=="string"){const err=new Error(`Step ${i}: missing action.type`);err.step=i;err.results=results;err.game=game;throw err}

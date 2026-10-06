@@ -2,6 +2,7 @@
 """Target-neutral Wretched Scenario 01 resolver for DODGE 0.2.1."""
 from __future__ import annotations
 import copy,hashlib,json
+from wretched_semantic_validation import require_source_semantics, require_resolved_semantics
 from pathlib import Path
 ROOT=Path(__file__).parents[1]
 DEFAULT_DODGE=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
@@ -118,6 +119,7 @@ def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     dodge=_load(dodge_path)
     if dodge.get("dodge_version")!="0.2.1": raise ResolutionError("Requires DODGE 0.2.1")
     canonical,scenario_src=_source(dodge,"scenario-mvp"); sidecar,gdd_src=_source(dodge,"gdd")
+    require_source_semantics(dodge,canonical)
     scenario=dodge["scenarios"]["scenario-01"]; scene=dodge["scenes"][scenario["scene_ref"]];topology=dodge["topologies"][scenario["topology_ref"]]
     semantic_collections={}
     for instance in scene.get("instances",[]):
@@ -136,6 +138,7 @@ def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
                     for binding in bindings:out["inventory"]["representations"].append({"state_ref":inc["state_ref"],"mode":inc["mode"],"representation_ref":rep_ref,"object_ref":comp["object_ref"],"role":comp.get("role"),"binding_ref":binding.get("id") if binding else None,"quantity":_qty(q,binding)})
         out["export_contract"]=contract
         out["target_manifest"]=_manifest(dodge,dodge_path,contract,export_contract_path,scenario,scene,canonical,out["inventory"]["representations"])
+    require_resolved_semantics(out)
     return out
 def main():
     import argparse
