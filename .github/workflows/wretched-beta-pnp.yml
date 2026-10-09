@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install reportlab pillow
+      - run: pip install reportlab pillow pypdf
 
       - name: Validate exporters and PnP geometry
         run: |
@@ -47,6 +47,9 @@ jobs:
         run: |
           SHORT_SHA="${GITHUB_SHA::12}"
           python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+          PNP_PDF="wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf"
+          PNP_MANIFEST="wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest-${SHORT_SHA}.json"
+          python tools/verify_wretched_beta_pnp.py --pdf "$PNP_PDF" --manifest "$PNP_MANIFEST" --git-sha "$GITHUB_SHA"
           python tools/export_wretched_beta_tts.py --git-sha "$GITHUB_SHA"
           TTS_JSON="wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.json"
           TTS_ZIP="wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip"
@@ -190,6 +193,7 @@ jobs:
           git add wretched-demesne/beta/web/
           git add wretched-demesne/beta/tts/
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-*.pdf
+          git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest-*.json
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-tts-*.json
           git add wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-tts-*.zip
           git diff --cached --quiet && exit 0

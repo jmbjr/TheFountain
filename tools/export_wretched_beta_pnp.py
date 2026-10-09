@@ -33,7 +33,7 @@ contract=resolved["export_contract"]
 manifest=resolved["target_manifest"]
 manifest_by_id={x["content_id"]:x for x in manifest["contents"]}
 MANIFEST_OUT.parent.mkdir(parents=True,exist_ok=True)
-MANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\\n")
+MANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\n")
 inclusion=next((x for x in contract["representation_inclusions"] if x["state_ref"]=="health"),None)
 if not inclusion or inclusion["mode"]!="alternatives":
     raise SystemExit("Beta PnP contract must bundle Health alternatives")
@@ -140,6 +140,16 @@ def diagnostic_contents_rows():
                 flags.append(f'override: {diag.get("field")}')
         provenance=" → ".join(f'{p["kind"]}:{p["ref"]}' for p in item.get("provenance",[]))
         member_rows=[x for x in children.get(identity,[]) if x["inclusion"]!="excluded-override"]
+        member_diagnostics=[diag for member in member_rows for diag in member.get("diagnostics",[])]
+        if any(diag.get("classification")=="noncanonical-playtest" for diag in member_diagnostics):
+            flags.append("NONCANONICAL PLAYTEST")
+        for field in dict.fromkeys(
+            diag.get("field")
+            for diag in member_diagnostics
+            if diag.get("status")=="overridden" and diag.get("field")!="inclusion"
+        ):
+            if field:
+                flags.append(f'member override: {field}')
         member_note=""
         quantity=str(item["resolved_quantity"])
         if member_rows:

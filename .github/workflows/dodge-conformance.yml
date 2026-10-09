@@ -11,6 +11,7 @@ on:
       - "src/wretched/**"
       - "tools/resolve_wretched_dodge.py"
       - "tools/export_wretched_beta_pnp.py"
+      - "tools/verify_wretched_beta_pnp.py"
       - ".github/workflows/dodge-conformance.yml"
   push:
     branches: [main]
@@ -23,6 +24,7 @@ on:
       - "src/wretched/**"
       - "tools/resolve_wretched_dodge.py"
       - "tools/export_wretched_beta_pnp.py"
+      - "tools/verify_wretched_beta_pnp.py"
       - ".github/workflows/dodge-conformance.yml"
   workflow_dispatch:
 
@@ -43,12 +45,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install "jsonschema>=4.23,<5"
+      - run: pip install "jsonschema>=4.23,<5" reportlab pillow pypdf
       - name: Validate active Wretched documents and resolved PnP manifest
         working-directory: the-fountain
         run: |
           python tools/validate_wretched_dodge.py --schema-root ../dodge/draft/v0.2.1
-          python -m py_compile tools/resolve_wretched_dodge.py tools/wretched_semantic_validation.py tools/export_wretched_beta_pnp.py
+          python -m py_compile tools/resolve_wretched_dodge.py tools/wretched_semantic_validation.py tools/export_wretched_beta_pnp.py tools/verify_wretched_beta_pnp.py
           python -m unittest tests/test_wretched_validation.py
           npm test
           python tools/resolve_wretched_dodge.py --export-contract game/export-contracts/wretched-beta-pnp.dodge-export.json --out /tmp/wretched-resolved.json --manifest-out /tmp/wretched-pnp-manifest.json
@@ -109,3 +111,9 @@ jobs:
           assert all("source" in x and "provenance" in x and "resolved_quantity" in x for x in included)
           assert any(any(d.get("classification")=="noncanonical-playtest" for d in x["diagnostics"]) for x in included)
           PY
+          SHORT_SHA="${GITHUB_SHA::12}"
+          python tools/export_wretched_beta_pnp.py --git-sha "$GITHUB_SHA"
+          python tools/verify_wretched_beta_pnp.py \
+            --pdf "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-${SHORT_SHA}.pdf" \
+            --manifest "wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest-${SHORT_SHA}.json" \
+            --git-sha "$GITHUB_SHA"
