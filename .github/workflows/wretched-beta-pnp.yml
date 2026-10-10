@@ -27,7 +27,7 @@ jobs:
 
       - name: Validate exporters and PnP geometry
         run: |
-          python -m py_compile tools/export_wretched_beta_pnp.py tools/export_wretched_beta_tts.py
+          python -m py_compile tools/export_wretched_beta_pnp.py tools/verify_wretched_beta_pnp.py tools/export_wretched_beta_tts.py tools/verify_wretched_beta_tts.py
           grep -q 'doc=BaseDocTemplate' tools/export_wretched_beta_pnp.py
           grep -q 'topPadding=0,bottomPadding=0' tools/export_wretched_beta_pnp.py
           if grep -q 'doc=SimpleDocTemplate' tools/export_wretched_beta_pnp.py; then exit 1; fi
@@ -52,13 +52,26 @@ jobs:
           python tools/verify_wretched_beta_pnp.py --pdf "$PNP_PDF" --manifest "$PNP_MANIFEST" --git-sha "$GITHUB_SHA"
           python tools/export_wretched_beta_tts.py --git-sha "$GITHUB_SHA"
           TTS_JSON="wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.json"
+          TTS_MANIFEST="wretched-demesne-scenario-01-beta-tts-manifest-${SHORT_SHA}.json"
           TTS_ZIP="wretched-demesne-scenario-01-beta-tts-${SHORT_SHA}.zip"
+          python tools/verify_wretched_beta_tts.py \
+            --save "wretched-demesne/beta/downloads/$TTS_JSON" \
+            --manifest "wretched-demesne/beta/downloads/$TTS_MANIFEST" \
+            --asset-dir "wretched-demesne/beta/tts/assets/${SHORT_SHA}" \
+            --git-sha "$GITHUB_SHA"
           STAGE="$(mktemp -d)"
           mkdir -p "$STAGE/assets"
           cp "wretched-demesne/beta/downloads/$TTS_JSON" "$STAGE/"
+          cp "wretched-demesne/beta/downloads/$TTS_MANIFEST" "$STAGE/"
           cp -R "wretched-demesne/beta/tts/assets/${SHORT_SHA}/." "$STAGE/assets/"
           (cd "$STAGE" && zip -qr "$GITHUB_WORKSPACE/wretched-demesne/beta/downloads/$TTS_ZIP" .)
-          printf '{"git_sha":"%s","artifact":"%s","save":"%s"}\n' "$GITHUB_SHA" "$TTS_ZIP" "$TTS_JSON" > wretched-demesne/beta/tts-build.json
+          python tools/verify_wretched_beta_tts.py \
+            --save "wretched-demesne/beta/downloads/$TTS_JSON" \
+            --manifest "wretched-demesne/beta/downloads/$TTS_MANIFEST" \
+            --asset-dir "wretched-demesne/beta/tts/assets/${SHORT_SHA}" \
+            --git-sha "$GITHUB_SHA" \
+            --zip "wretched-demesne/beta/downloads/$TTS_ZIP"
+          printf '{"git_sha":"%s","artifact":"%s","save":"%s","manifest":"%s"}\n' "$GITHUB_SHA" "$TTS_ZIP" "$TTS_JSON" "$TTS_MANIFEST" > wretched-demesne/beta/tts-build.json
           printf '{"git_sha":"%s"}\n' "$GITHUB_SHA" > wretched-demesne/beta/build.json
           SHORT_SHA="$SHORT_SHA" python - <<'PY'
           import os, re

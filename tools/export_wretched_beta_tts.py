@@ -19,6 +19,8 @@ if inc["mode"]!="alternatives": raise SystemExit("TTS beta must bundle Health al
 outdir=ROOT/"wretched-demesne/beta/downloads"; assetdir=ROOT/"wretched-demesne/beta/tts/assets"/sha
 outdir.mkdir(parents=True,exist_ok=True);assetdir.mkdir(parents=True,exist_ok=True)
 outfile=outdir/f"wretched-demesne-scenario-01-beta-tts-{sha}.json"
+MANIFEST_OUT=outdir/f"wretched-demesne-scenario-01-beta-tts-manifest-{sha}.json"
+MANIFEST_OUT.write_text(json.dumps(manifest,indent=2)+"\n")
 BASE=f"https://jmbjr.github.io/TheFountain/wretched-demesne/beta/tts/assets/{sha}"
 
 font=ImageFont.load_default()
@@ -56,24 +58,41 @@ def chip(name,desc,seed):
 def bag(key,name,items,x,z,desc=""):
     return {"GUID":guid(key),"Name":"Bag","Transform":tr(x,z,1,0),"Nickname":name,"Description":desc,"ContainedObjects":items}
 
+def manifest_entities(instance_id):
+    prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
+    rows=[x for x in manifest["contents"] if x["content_id"].startswith(prefix) and x["inclusion"]!="excluded-override"]
+    if not rows:
+        raise SystemExit(f"Resolved TTS manifest has no included members for {instance_id}")
+    entities=[]
+    for item in rows:
+        ref=item["source"]["ref"]
+        if not ref.startswith("scenario-mvp:"):
+            raise SystemExit(f"TTS semantic collection member is not Scenario 01 content: {ref}")
+        _,catalog,item_id=ref.split(":",2)
+        matches=[x for x in data.get(catalog,[]) if x.get("id")==item_id]
+        if len(matches)!=1:
+            raise SystemExit(f"Expected one canonical entity for {ref}, got {len(matches)}")
+        entities.extend([matches[0]]*item["resolved_quantity"])
+    return entities
+
 objects=[]
 # Starter decks come from resolved semantic collection membership, never qty_by_deck.
 for n,crew in enumerate(data["crew"]):
     instance_id=f"{crew['id']}-starter-deck-1"
-    prefix=f"scene/scenario-01-the-cave/instance/{instance_id}/member/"
-    cards=[]
-    for item in [x for x in manifest["contents"] if x["content_id"].startswith(prefix) and x["inclusion"]!="excluded-override"]:
-        _,catalog,item_id=item["source"]["ref"].split(":",2)
-        entity=next(x for x in data[catalog] if x["id"]==item_id)
-        cards.extend([entity]*item["resolved_quantity"])
+    cards=manifest_entities(instance_id)
     objects.append(make_deck(f"starter-{crew['id']}",f"{crew['name']} Starter Deck",cards,-8+n*4,-7))
-objects.append(make_deck("encounters","Encounter Deck",data["encounters"],-7,-2))
-objects.append(make_deck("salvage","Salvage Deck",data["salvage"],-3,-2))
-entrance=next(r for r in data["rooms"] if r["id"]=="entrance")
-rooms=[r for r in data["rooms"] if r["id"]!="entrance"]
+objects.append(make_deck("encounters","Encounter Deck",manifest_entities("scenario-encounter-cards-1"),-7,-2))
+objects.append(make_deck("salvage","Salvage Deck",manifest_entities("scenario-salvage-cards-1"),-3,-2))
+room_cards=manifest_entities("scenario-room-cards-1")
+start_room_ref=data["scenario"]["runtime"]["start_room_ref"]
+start_rooms=[r for r in room_cards if r["id"]==start_room_ref]
+if len(start_rooms)!=1:
+    raise SystemExit(f"Expected one start-room card for {start_room_ref}, got {len(start_rooms)}")
+rooms=[r for r in room_cards if r["id"]!=start_room_ref]
 objects.append(make_deck("rooms","Unexplored Room Deck",rooms,1,-2))
-objects.append(make_deck("entrance","Cave Mouth",[entrance],5,-2))
-crewrefs=[{"id":c["id"],"name":c["name"],"type":"crew reference","text":f"Health {c['health']} · Accuracy {c['accuracy']:+d} · Defense {c['defense']}\n{c['ability']}"} for c in data["crew"]]
+objects.append(make_deck("entrance",start_rooms[0]["name"],start_rooms,5,-2))
+crew_entities=manifest_entities("crew-reference-cards-1")
+crewrefs=[{"id":c["id"],"name":c["name"],"type":"crew reference","text":f"Health {c['health']} · Accuracy {c['accuracy']:+d} · Defense {c['defense']}\n{c['ability']}"} for c in crew_entities]
 objects.append(make_deck("crew-reference","Crew Reference Cards",crewrefs,9,-2))
 
 # Separate physical supplies, never one massive token bag.
@@ -108,6 +127,6 @@ healthcards=[{"id":f"health-{i}","name":f"Health Card {i+1}","type":"health","te
 objects.append(make_deck("health-cards","HEALTH ALT C · Crew Health Cards",healthcards,8,8))
 objects.append(bag("health-card-markers","Health Card Markers",[chip("HP Marker","Place on crew Health card",f"health-card-marker-{i}") for i in range(health_card_marker_count)],11,8))
 
-save={"SaveName":f"Wretched Demesne Scenario 01 Beta {sha}","GameMode":"","Date":"","VersionNumber":"","GameType":"","GameComplexity":"","Tags":["DODGE","Wretched Demesne","Beta"],"Gravity":0.5,"PlayArea":0.5,"Table":"","Sky":"","Note":f"DODGE 0.2.1 · source {a.git_sha}\nHealth alternatives are evaluation variants; choose one representation during play.","Rules":"","XmlUI":"","LuaScript":"","LuaScriptState":"","ObjectStates":objects,"DODGE":{"version":"0.2.1","document_id":dodge["document_id"],"git_sha":a.git_sha,"contract":contract["contract_id"],"health_representation_mode":"alternatives"}}
+save={"SaveName":f"Wretched Demesne Scenario 01 Beta {sha}","GameMode":"","Date":"","VersionNumber":"","GameType":"","GameComplexity":"","Tags":["DODGE","Wretched Demesne","Beta"],"Gravity":0.5,"PlayArea":0.5,"Table":"","Sky":"","Note":f"DODGE 0.2.1 · source {a.git_sha}\nHealth alternatives are evaluation variants; choose one representation during play.","Rules":"","XmlUI":"","LuaScript":"","LuaScriptState":"","ObjectStates":objects,"DODGE":{"version":"0.2.1","document_id":dodge["document_id"],"git_sha":a.git_sha,"contract":contract["contract_id"],"manifest_id":manifest["manifest_id"],"health_representation_mode":"alternatives"}}
 outfile.write_text(json.dumps(save,indent=2))
 print(outfile)
