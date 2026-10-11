@@ -498,13 +498,13 @@ The workflow pins an exact DODGE source revision. Updating that pin is a deliber
 
 ## DIRPS G0 scaffold
 
-`game/dirps/` is the second independent DODGE implementation track and intentionally begins at **G0 — Scaffold**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
+`game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** to **G1 — Schema-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
 
 The initial scaffold contains:
 
-- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G0"`;
+- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G1"`;
 - `game/dirps/scenarios/scenario-01/scenario.json` — bounded tutorial source for *The Missing Courier*;
-- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — provisional working document targeting DODGE 0.2.1, explicitly carrying no conformance claim yet;
+- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — G1 document validated against the exact DODGE 0.2.1 schema pinned by CI; actor values declare `owner_scope: actor` and Scenario 01 persistence, while post-scenario persistence remains explicitly unresolved;
 - `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json` — suspected RPG-shaped neutral gaps retained adjacent to DODGE;
 - `game/dirps/docs/compatibility-audit.md` — bounded compatibility hypotheses for Scenario 01.
 
