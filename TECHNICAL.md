@@ -481,3 +481,17 @@ target    = web / pnp / tts
 ```
 
 Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelated implementations such as the GURPS experiment receive their own game namespace. Generated target artifacts remain outside `game/` and are never sources of canonical semantics. Historical SHA-addressed Wretched Beta builds are not rewritten during source-layout migrations.
+
+## Multi-game DODGE conformance discovery
+
+`tools/validate_registered_dodge.py` is the repository-wide DODGE conformance entry point. It discovers every registered scenario with a DODGE document, selects the matching version from the pinned DODGE checkout, validates the document and export contracts, loads game/application semantic validators declared by DODGE `validation.required_profiles`, invokes the scenario's declared target-neutral resolver, reruns required resolved-game profiles, and validates resolved target manifests for mature target-bearing scenarios.
+
+Repository-specific executable hooks are deliberately narrow:
+
+- semantic validator modules expose `validate_source_context(context)` and `validate_resolved_context(context)`;
+- resolver modules expose `resolve_context(context, export_contract_path=None)`;
+- `game.json` declares the resolver path and implementation maturity, but contains no shell commands.
+
+Python tests use unittest discovery over `tests/test_*.py`. JavaScript runtime tests use the `tests/*-runtime.test.mjs` naming convention. This means a newly registered game can enter the standard conformance/test pipeline without adding another game-specific workflow block.
+
+The workflow pins an exact DODGE source revision. Updating that pin is a deliberate conformance migration and may require updating documents, validation evidence, or target manifests before CI can pass.
