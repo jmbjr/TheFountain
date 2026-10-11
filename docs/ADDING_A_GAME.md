@@ -335,41 +335,80 @@ A repository-wide green CI badge is not enough.
 
 ---
 
-## 10. Wire candidate-specific validation into CI
+## 10. Declare the conformance pipeline; CI discovers it
 
-This is currently mandatory because TheFountain's existing DODGE workflow is still largely Wretched-specific.
-
-The current workflow is:
+TheFountain now discovers registered DODGE-backed scenarios through:
 
 ```text
-.github/workflows/dodge-conformance.yml
+tools/validate_registered_dodge.py
 ```
 
-When adding a new active DODGE game, update CI so the job actually validates that candidate.
+The workflow no longer needs one hardcoded block per game for the standard DODGE lifecycle.
 
-At minimum, the job log should explicitly show candidate-specific stages such as:
+For an active scenario, add a repository-specific resolver declaration to `game.json`:
+
+```json
+{
+  "conformance": {
+    "maturity": "G4",
+    "resolver": "tools/resolve_my_game_dodge.py"
+  }
+}
+```
+
+The resolver path is repository-root-relative and must point to a Python module exposing:
+
+```python
+def resolve_context(context, export_contract_path=None):
+    ...
+```
+
+Game/application semantic validators are **not** listed again in `game.json`. Declare them in the DODGE document using `validation.required_profiles` and a `semantic_validator` source. The referenced validator module must expose the TheFountain hooks:
+
+```python
+def validate_source_context(context):
+    return []  # or error strings
+
+def validate_resolved_context(context):
+    return []  # or error strings
+```
+
+The context contains the discovered game/scenario config, parsed DODGE document, canonical scenario source when present, and—at the resolved stage—the exact resolved model.
+
+The generic runner now performs, for every discovered active DODGE scenario:
 
 ```text
-Validate <game> DODGE document
-Run <game> semantic validation
-Resolve <game> Scenario 01
-Validate <game> resolved model
-Run <game> tests
+exact-version DODGE schema
+→ export-contract schema(s)
+→ declared semantic source profile(s)
+→ declared neutral resolver
+→ declared semantic resolved-game profile(s)
+→ resolved target-manifest schema(s) for G6/G7 scenarios
 ```
+
+A DODGE-backed scenario without a conformance declaration is an error unless it is explicitly `planned` or `scaffold`. A `G0` conformance declaration is also explicitly skipped.
+
+### Test discovery
+
+Python tests are discovered by:
+
+```text
+tests/test_*.py
+```
+
+Runtime JavaScript tests are discovered by:
+
+```text
+tests/*-runtime.test.mjs
+```
+
+Adding tests that follow those conventions does not require editing the workflow.
 
 ### Important
 
-Do not accept:
+A green CI result now means the generic runner discovered the registered active DODGE scenarios present in that checkout and ran their declared standard conformance stages. Still inspect the named PASS/SKIP lines when reviewing maturity claims.
 
-> Validate DODGE 0.2.1 Conformance — SUCCESS
-
-as proof that a new game passes DODGE.
-
-Open the workflow steps and verify the candidate game itself was validated.
-
-This failure mode occurred during the DIRPS scaffold review: the repository was green because Wretched passed, while the new DIRPS document had not been validated by the workflow.
-
-Until generic game discovery is added to CI, every game onboarding must explicitly wire itself into the conformance job.
+The DIRPS scaffold failure mode that motivated this work—green CI validating Wretched while never reading the new DIRPS DODGE document—is now structurally blocked once DIRPS is registered as an active conformance candidate.
 
 ---
 
@@ -732,28 +771,24 @@ to understand why a core-valid document can still be rejected by a game semantic
 
 ---
 
-## 23. Current tooling gap
+## 23. Generic conformance discovery
 
-TheFountain now has generic **game registry discovery**, but not yet generic **conformance execution discovery**.
+TheFountain has both generic game discovery and generic standard DODGE conformance discovery.
 
-`tools/game_registry.py` can find game/scenario descriptors.
+`tools/game_registry.py` discovers game/scenario descriptors.
 
-`.github/workflows/dodge-conformance.yml` still contains Wretched-specific validation and assertions.
+`tools/validate_registered_dodge.py` discovers every scenario with a DODGE document and uses:
 
-Therefore, until a generic conformance runner exists:
+- the document's own `dodge_version` to select the exact checked-out DODGE version root;
+- the DODGE `validation.required_profiles` declaration to discover semantic validators;
+- the scenario's small `conformance.resolver` declaration to discover the neutral resolver;
+- scenario export-contract declarations to validate resolved target manifests.
 
-> onboarding a new active DODGE implementation is incomplete until that candidate is explicitly validated by CI.
+The descriptor contains no arbitrary shell commands.
 
-A future improvement should let a game descriptor declare enough conformance metadata for a generic runner to discover:
+Runtime and game-specific regression tests remain normal repository tests and are discovered by filename convention.
 
-- DODGE version;
-- source validator;
-- required semantic profile;
-- resolver;
-- resolved validator;
-- test entry points.
-
-That future tooling should eliminate manual CI wiring without turning `game.json` into a shell-script manifest.
+A remaining upstream tooling opportunity is a reusable DODGE-owned implementation of every generic section 15.3 core semantic check. TheFountain's generic runner guarantees exact schema/profile/resolver/manifest discovery; it does not claim that a missing upstream generic core-validator executable has been invented locally.
 
 ---
 
@@ -769,7 +804,7 @@ When a new game arrives with only a rules document/GDD and loose direction, foll
 [ ] Define small Scenario 01 + executable claims
 [ ] Create canonical scenario data
 [ ] Create DODGE document
-[ ] Wire exact candidate schema validation into CI
+[ ] Add conformance declaration so generic CI discovers the candidate
 [ ] Pass G1
 [ ] Pass full core checks / G2
 [ ] Create game semantic validator
