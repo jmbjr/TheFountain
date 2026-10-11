@@ -4,36 +4,19 @@ on:
   pull_request:
     paths:
       - "game/**"
-      - "tools/validate_wretched_dodge.py"
-      - "tools/validate_registered_dodge.py"
-      - "tools/wretched_semantic_validation.py"
-      - "tests/test_wretched_validation.py"
-      - "tests/test_game_registry.py"
-      - "tests/test_game_registry.py"
-      - "tests/**/*-runtime.test.mjs"
+      - "tools/**"
+      - "tests/**"
+      - "src/**"
       - "package.json"
-      - "src/wretched/**"
-      - "tools/resolve_wretched_dodge.py"
-      - "tools/game_registry.py"
-      - "tools/export_wretched_beta_pnp.py"
-      - "tools/verify_wretched_beta_pnp.py"
-      - "tools/export_wretched_beta_tts.py"
-      - "tools/verify_wretched_beta_tts.py"
-      - "tools/export_wretched_beta_tts.py"
-      - "tools/verify_wretched_beta_tts.py"
       - ".github/workflows/dodge-conformance.yml"
   push:
     branches: [main]
     paths:
       - "game/**"
-      - "tools/validate_wretched_dodge.py"
-      - "tools/wretched_semantic_validation.py"
-      - "tests/test_wretched_validation.py"
-      - "tests/wretched-runtime.test.mjs"
-      - "src/wretched/**"
-      - "tools/resolve_wretched_dodge.py"
-      - "tools/export_wretched_beta_pnp.py"
-      - "tools/verify_wretched_beta_pnp.py"
+      - "tools/**"
+      - "tests/**"
+      - "src/**"
+      - "package.json"
       - ".github/workflows/dodge-conformance.yml"
   workflow_dispatch:
 
