@@ -18,11 +18,13 @@ from reportlab.platypus import BaseDocTemplate, PageTemplate, Frame, Paragraph, 
 ROOT=pathlib.Path(__file__).parents[1]
 sys.path.insert(0,str(ROOT/"tools"))
 from resolve_wretched_dodge import resolve
-DODGE_PATH=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
+from game_registry import scenario_config
+WD_SCENARIO=scenario_config("wretched-demesne","scenario-01")
+DODGE_PATH=WD_SCENARIO["dodge"]
 parser=argparse.ArgumentParser()
 parser.add_argument("--git-sha",default="local")
 args=parser.parse_args()
-CONTRACT_PATH=ROOT/"game/export-contracts/wretched-beta-pnp.dodge-export.json"
+CONTRACT_PATH=WD_SCENARIO["export_contracts"]["pnp"]
 SHORT_SHA=args.git_sha[:12] if args.git_sha!="local" else "local"
 OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-{SHORT_SHA}.pdf"
 MANIFEST_OUT=ROOT/f"wretched-demesne/beta/downloads/wretched-demesne-scenario-01-beta-pnp-manifest-{SHORT_SHA}.json"
