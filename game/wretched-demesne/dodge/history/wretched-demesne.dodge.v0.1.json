@@ -7,17 +7,17 @@
   "sources": {
     "gdd": {
       "kind": "rules",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json",
       "version": "prototype-v0.1"
     },
     "cards": {
       "kind": "entity_catalog",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
       "version": "prototype-v0.1"
     },
     "enemies": {
       "kind": "entity_catalog",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
       "version": "prototype-v0.1"
     }
   },
@@ -176,7 +176,7 @@
   },
   "metadata": {
     "status": "prototype",
-    "sidecar": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+    "sidecar": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json",
     "lossless_import": true,
     "limitations": [
       "DODGE v0.1 does not normalize game rules, turn phases, resources, AI, progression, map topology, campaign state, scenario logic, or GDD design intent.",

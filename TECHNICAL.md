@@ -60,7 +60,7 @@ Under DODGE 0.2.1, exporters for a build must consume the same deterministic res
 
 This is the most important directory.
 
-`game/game.json` is the original neutral Fountain prototype definition.
+`game/the-fountain/source/game.json` is the original neutral Fountain prototype definition.
 
 Wretched Demesne adds a more formal DODGE workflow:
 
@@ -106,7 +106,7 @@ The root `index.html` is the **Forbidden Places** game hub. It links to:
 - `/the-fountain/`
 - `/wretched-demesne/`
 
-The Fountain is currently playable. Its page loads `src/renderers/web.js`, which loads neutral `game/game.json` and drives `src/engine.js`.
+The Fountain is currently playable. Its page loads `src/renderers/web.js`, which loads neutral `game/the-fountain/source/game.json` and drives `src/engine.js`.
 
 Wretched Demesne has a playable Pages route plus generated Beta PnP/TTS review artifacts. A single Beta release workflow now builds all three deploy targets from the same triggering source revision. The remaining DODGE work is deeper semantic convergence: make the Web runtime and both exporters consume the same DODGE 0.2.1 resolved model/inventory rather than merely sharing the same checkout and canonical sources.
 
@@ -303,7 +303,7 @@ Run from the repository root:
 python tools/export_pnp.py
 ```
 
-At the current project stage this exporter is an architectural proof for The Fountain. It reads `game/game.json` and writes:
+At the current project stage this exporter is an architectural proof for The Fountain. It reads `game/the-fountain/source/game.json` and writes:
 
 ```text
 dist/pnp/prototype.txt
@@ -321,7 +321,7 @@ Run:
 python tools/export_tts.py
 ```
 
-The current adapter reads `game/game.json` and writes:
+The current adapter reads `game/the-fountain/source/game.json` and writes:
 
 ```text
 dist/tts/TheFountain.json
@@ -434,7 +434,7 @@ TTS gameplay work remains paused until Web/PnP and DODGE convergence are satisfa
 
 ### Wretched Beta PnP
 
-DODGE **0.2.1 is the current project baseline**. `tools/export_wretched_beta_pnp.py` reads the active `game/wretched-demesne.dodge.v0.2.1.json`, follows its declared Scenario 01 source, and renders a cuttable Beta PDF. The exporter owns page/card/token layout only; game rules and balance stay in neutral sources. The Beta artifact is isolated at `wretched-demesne/beta/downloads/` and must not replace the Stable Design Lead review artifact under `wretched-demesne/downloads/`.
+DODGE **0.2.1 is the current project baseline**. `tools/export_wretched_beta_pnp.py` reads the active `game/wretched-demesne/dodge/wretched-demesne.dodge.v0.2.1.json`, follows its declared Scenario 01 source, and renders a cuttable Beta PDF. The exporter owns page/card/token layout only; game rules and balance stay in neutral sources. The Beta artifact is isolated at `wretched-demesne/beta/downloads/` and must not replace the Stable Design Lead review artifact under `wretched-demesne/downloads/`.
 
 The first physical build intentionally labels its token-sheet counts non-canonical because Scenario 01 does not yet declare physical supply quantities. The known Medic starter deck discrepancy is likewise rendered from source rather than silently corrected. GitHub Actions generates the Beta PDF after the 0.2.1 adoption reaches `main`.
 
@@ -465,3 +465,18 @@ DODGE core schema validation
 `tools/resolve_wretched_dodge.py` enforces both Wretched semantic stages, so an exporter that consumes the shared resolver cannot generate a target from semantically contradictory source or an incomplete resolved game. `tools/validate_wretched_dodge.py` preserves the ordering of DODGE core validation before the Wretched profile and resolved-game gate.
 
 Negative validation fixtures live in `tests/test_wretched_validation.py`. Runtime conformance separately requires every rejected action to restore canonical state exactly and append no replay step; that invariant is exercised in `tests/wretched-runtime.test.mjs`.
+
+
+## Multi-game source discovery
+
+Authored source is game-scoped under `game/<game-id>/`. `tools/game_registry.py` discovers each `game.json` descriptor and resolves scenario source, DODGE documents, sidecars, and export contracts by `game-id + scenario-id`.
+
+This separates identity cleanly:
+
+```text
+game      = wretched-demesne
+scenario  = scenario-01
+target    = web / pnp / tts
+```
+
+Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelated implementations such as the GURPS experiment receive their own game namespace. Generated target artifacts remain outside `game/` and are never sources of canonical semantics. Historical SHA-addressed Wretched Beta builds are not rewritten during source-layout migrations.

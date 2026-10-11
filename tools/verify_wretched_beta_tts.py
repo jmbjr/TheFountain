@@ -7,7 +7,8 @@ from collections import Counter
 from pathlib import Path
 
 ROOT=Path(__file__).parents[1]
-SCENARIO=ROOT/"game/wretched-demesne.scenario-01.mvp.v0.1.json"
+from game_registry import scenario_config
+SCENARIO=scenario_config("wretched-demesne","scenario-01")["source"]
 
 def fail(msg): raise SystemExit(f"TTS verification failed: {msg}")
 

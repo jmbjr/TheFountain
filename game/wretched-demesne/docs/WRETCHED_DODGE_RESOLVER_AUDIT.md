@@ -4,9 +4,9 @@ This audit records the authority boundary used by the shared resolver. It is int
 
 | Layer | Current role | Authority / rule |
 |---|---|---|
-| `game/wretched-demesne.dodge.v0.2.1.json` | Normalized DODGE structure: scene/scenario selection, rules/resources, phases/procedures, topology declaration, representations, source declarations | Active DODGE 0.2.1 working contract |
-| `game/wretched-demesne.gdd.sidecar.v0.1.json` | Lossless Design Lead/GDD semantics and authoritative catalogs referenced by DODGE | Authoritative where DODGE declares the source authoritative; never silently normalized/promoted |
-| `game/wretched-demesne.scenario-01.mvp.v0.1.json` | Executable Scenario 01 prototype facts used by the current Beta | Provisional where declared by DODGE; does not override authoritative GDD facts |
+| `game/wretched-demesne/dodge/wretched-demesne.dodge.v0.2.1.json` | Normalized DODGE structure: scene/scenario selection, rules/resources, phases/procedures, topology declaration, representations, source declarations | Active DODGE 0.2.1 working contract |
+| `game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json` | Lossless Design Lead/GDD semantics and authoritative catalogs referenced by DODGE | Authoritative where DODGE declares the source authoritative; never silently normalized/promoted |
+| `game/wretched-demesne/scenarios/scenario-01/scenario.json` | Executable Scenario 01 prototype facts used by the current Beta | Provisional where declared by DODGE; does not override authoritative GDD facts |
 | export contract | Target selection of representations/features | May select/arrange representations; may not invent game semantics or canonical quantities |
 | shared resolver | Follows DODGE references, preserves authority, emits one target-neutral resolved model/inventory | No target presentation policy |
 | PnP renderer | Physical page/card/token presentation | Layout only |

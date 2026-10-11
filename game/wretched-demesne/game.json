@@ -1,0 +1,32 @@
+{
+  "registry_version": "1",
+  "id": "wretched-demesne",
+  "title": "Wretched Demesne",
+  "status": "active",
+  "description": "DODGE reference implementation and multi-scenario game project.",
+  "scenarios": {
+    "scenario-01": {
+      "title": "Scenario 01: The Cave",
+      "status": "reference",
+      "dodge": "dodge/wretched-demesne.dodge.v0.2.1.json",
+      "source": "scenarios/scenario-01/scenario.json",
+      "sidecars": [
+        "sidecars/wretched-demesne.gdd.sidecar.v0.1.json"
+      ],
+      "export_contracts": {
+        "pnp": "scenarios/scenario-01/export-contracts/pnp.dodge-export.json",
+        "tts": "scenarios/scenario-01/export-contracts/tts.dodge-export.json"
+      },
+      "generated_targets": {
+        "web": "../../wretched-demesne/beta",
+        "pnp": "../../wretched-demesne/beta/downloads",
+        "tts": "../../wretched-demesne/beta/downloads"
+      }
+    },
+    "scenario-02": {
+      "title": "Scenario 02",
+      "status": "planned",
+      "path": "scenarios/scenario-02"
+    }
+  }
+}

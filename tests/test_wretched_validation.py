@@ -6,12 +6,14 @@ ROOT=Path(__file__).parents[1]
 sys.path.insert(0,str(ROOT/"tools"))
 from wretched_semantic_validation import validate_source_semantics,validate_resolved_semantics
 from resolve_wretched_dodge import resolve
+from game_registry import scenario_config
 
 class SemanticValidationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.dodge=json.loads((ROOT/"game/wretched-demesne.dodge.v0.2.1.json").read_text())
-        cls.canonical=json.loads((ROOT/"game/wretched-demesne.scenario-01.mvp.v0.1.json").read_text())
+        cfg=scenario_config("wretched-demesne","scenario-01")
+        cls.dodge=json.loads(cfg["dodge"].read_text())
+        cls.canonical=json.loads(cfg["source"].read_text())
     def test_current_source_and_resolved_game_pass(self):
         self.assertEqual(validate_source_semantics(self.dodge,self.canonical),[])
         self.assertEqual(validate_resolved_semantics(resolve()),[])

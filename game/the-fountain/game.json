@@ -1,0 +1,11 @@
+{
+  "registry_version": "1",
+  "id": "the-fountain",
+  "title": "The Fountain",
+  "status": "prototype",
+  "description": "Original playable Fountain prototype.",
+  "source": {
+    "canonical": "source/game.json"
+  },
+  "scenarios": {}
+}

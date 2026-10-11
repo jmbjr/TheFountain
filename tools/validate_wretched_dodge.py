@@ -5,12 +5,11 @@ from pathlib import Path
 from jsonschema import Draft202012Validator
 from resolve_wretched_dodge import resolve
 from wretched_semantic_validation import validate_source_semantics, validate_resolved_semantics
+from game_registry import scenario_config
 
-DODGE_DOCUMENT = Path("game/wretched-demesne.dodge.v0.2.1.json")
-EXPORT_CONTRACTS = [
-    Path("game/export-contracts/wretched-beta-pnp.dodge-export.json"),
-    Path("game/export-contracts/wretched-beta-tts.dodge-export.json"),
-]
+WD_SCENARIO=scenario_config("wretched-demesne","scenario-01")
+DODGE_DOCUMENT = WD_SCENARIO["dodge"]
+EXPORT_CONTRACTS = list(WD_SCENARIO["export_contracts"].values())
 
 def validate(instance_path, schema_path):
     instance=json.loads(instance_path.read_text())
@@ -33,7 +32,7 @@ def main():
     contract_schema=a.schema_root/"schemas/dodge-export-contract.schema.v0.2.1.json"
     ok=validate(DODGE_DOCUMENT,doc_schema)
     dodge=json.loads(DODGE_DOCUMENT.read_text())
-    canonical=json.loads(Path("game/wretched-demesne.scenario-01.mvp.v0.1.json").read_text())
+    canonical=json.loads(WD_SCENARIO["source"].read_text())
     semantic_errors=validate_source_semantics(dodge,canonical)
     if semantic_errors:
         ok=False

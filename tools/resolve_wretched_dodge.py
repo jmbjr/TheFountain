@@ -3,9 +3,11 @@
 from __future__ import annotations
 import copy,hashlib,json
 from wretched_semantic_validation import require_source_semantics, require_resolved_semantics
+from game_registry import scenario_config
 from pathlib import Path
 ROOT=Path(__file__).parents[1]
-DEFAULT_DODGE=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
+WD_SCENARIO=scenario_config("wretched-demesne","scenario-01")
+DEFAULT_DODGE=WD_SCENARIO["dodge"]
 class ResolutionError(ValueError): pass
 def _load(p): return json.loads(Path(p).read_text())
 def _sha256(p): return hashlib.sha256(Path(p).read_bytes()).hexdigest()

@@ -7,19 +7,19 @@
   "sources": {
     "gdd": {
       "kind": "sidecar",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json",
       "version": "prototype-v0.1",
       "authority": "authoritative"
     },
     "cards": {
       "kind": "entity_catalog",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
       "version": "prototype-v0.1",
       "authority": "authoritative"
     },
     "enemies": {
       "kind": "entity_catalog",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
       "version": "prototype-v0.1",
       "authority": "authoritative"
     }
@@ -201,7 +201,7 @@
   },
   "metadata": {
     "status": "prototype",
-    "sidecar": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+    "sidecar": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json",
     "lossless_import": true,
     "limitations": [
       "DODGE 0.2.0 intentionally does not normalize turn/action/rules semantics, resources/costs, enemy AI, procedural map topology, campaign progression, or scenario objectives/triggers.",

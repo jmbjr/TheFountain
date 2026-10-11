@@ -7,25 +7,25 @@
   "sources": {
     "gdd": {
       "kind": "sidecar",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json",
       "version": "prototype-v0.1",
       "authority": "authoritative"
     },
     "cards": {
       "kind": "entity_catalog",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/deck_building",
       "version": "prototype-v0.1",
       "authority": "authoritative"
     },
     "scenario-mvp": {
       "kind": "scenario",
-      "uri": "game/wretched-demesne.scenario-01.mvp.v0.1.json",
+      "uri": "game/wretched-demesne/scenarios/scenario-01/scenario.json",
       "version": "prototype-v0.1",
       "authority": "provisional"
     },
     "enemies": {
       "kind": "entity_catalog",
-      "uri": "game/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
+      "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
       "version": "prototype-v0.1",
       "authority": "authoritative"
     }
