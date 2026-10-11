@@ -1,0 +1,401 @@
+{
+  "dodge_version": "0.2.1",
+  "document_id": "dirps.scenario-01-v0.2.1",
+  "game_id": "dirps",
+  "title": "DIRPS — Scenario 01",
+  "description": "G0 working document targeting DODGE 0.2.1 for the first DIRPS RPG tutorial scenario. It is preserved as scaffold input and is not yet claimed schema/core-valid; unsupported or suspected neutral semantics remain isolated in the DIRPS proto sidecar.",
+  "sources": {
+    "gurps-lite": {
+      "kind": "rules",
+      "uri": "https://www.sjgames.com/gurps/lite/3e/gurpslite.pdf",
+      "version": "June-2003",
+      "media_type": "application/pdf",
+      "authority": "authoritative",
+      "description": "External rules reference used for the first DIRPS stress test."
+    },
+    "dirps-proto": {
+      "kind": "sidecar",
+      "uri": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json",
+      "version": "0.1.0",
+      "authority": "provisional",
+      "description": "Prototype neutral semantics for gaps discovered while applying DODGE 0.2.1 to an RPG."
+    },
+    "scenario-01-source": {
+      "kind": "scenario",
+      "uri": "game/dirps/scenarios/scenario-01/scenario.json",
+      "version": "prototype-v0.1",
+      "authority": "provisional"
+    }
+  },
+  "sidecars": [
+    {
+      "source_ref": "dirps-proto",
+      "purpose": "Preserve and exercise neutral proto semantics that are not first-class in DODGE 0.2.1.",
+      "lossless": false,
+      "promotion_status": "experimental"
+    }
+  ],
+  "game_profile": {
+    "players": {
+      "min": 1,
+      "max": 1
+    },
+    "modes": [
+      "solo"
+    ],
+    "genre": "tabletop roleplaying tutorial",
+    "setting": "low-fantasy roadside investigation",
+    "tags": [
+      "roleplaying",
+      "tutorial",
+      "replay"
+    ]
+  },
+  "archetypes": {
+    "rpg-actor": {
+      "kind": "token",
+      "face_slots": [
+        {
+          "id": "front",
+          "role": "front"
+        }
+      ],
+      "component": {
+        "form": "custom",
+        "size_class": "rpg-actor",
+        "shape": "none"
+      },
+      "description": "Logical RPG actor. Physical representation is target-owned."
+    }
+  },
+  "objects": {
+    "tutorial-pc": {
+      "kind": "token",
+      "archetype_ref": "rpg-actor",
+      "name": "Rook",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "ROOK"
+        }
+      ],
+      "tags": [
+        "actor",
+        "player-character"
+      ]
+    },
+    "tutorial-opponent": {
+      "kind": "token",
+      "archetype_ref": "rpg-actor",
+      "name": "Bandit Scout",
+      "faces": [
+        {
+          "slot": "front",
+          "text": "BANDIT SCOUT"
+        }
+      ],
+      "tags": [
+        "actor",
+        "non-player-character"
+      ]
+    }
+  },
+  "scenes": {
+    "scenario-01-setup": {
+      "name": "Scenario 01 setup",
+      "source_ref": "scenario-01-source",
+      "instances": [
+        {
+          "id": "pc",
+          "object_ref": "tutorial-pc",
+          "state": {
+            "st": 10,
+            "dx": 11,
+            "iq": 11,
+            "ht": 10,
+            "hit-points": 10,
+            "fatigue": 10,
+            "stunned": false,
+            "unconscious": false
+          },
+          "extensions": {
+            "org.dirps.character": {
+              "skills": {
+                "area-knowledge": 11,
+                "first-aid": 11,
+                "broadsword": 12,
+                "tracking": 12
+              },
+              "equipment": [
+                "travel-clothes",
+                "broadsword",
+                "basic-first-aid-kit"
+              ]
+            }
+          }
+        },
+        {
+          "id": "bandit-scout",
+          "object_ref": "tutorial-opponent",
+          "state": {
+            "st": 10,
+            "dx": 10,
+            "iq": 10,
+            "ht": 10,
+            "hit-points": 10,
+            "fatigue": 10,
+            "stunned": false,
+            "unconscious": false
+          }
+        }
+      ]
+    }
+  },
+  "rules": {
+    "values": {
+      "st": {
+        "name": "Strength",
+        "type": "integer",
+        "scope": "actor",
+        "minimum": 1,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "dx": {
+        "name": "Dexterity",
+        "type": "integer",
+        "scope": "actor",
+        "minimum": 1,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "iq": {
+        "name": "Intelligence",
+        "type": "integer",
+        "scope": "actor",
+        "minimum": 1,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "ht": {
+        "name": "Health",
+        "type": "integer",
+        "scope": "actor",
+        "minimum": 1,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "hit-points": {
+        "name": "Hit points",
+        "type": "integer",
+        "scope": "actor",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "fatigue": {
+        "name": "Fatigue",
+        "type": "integer",
+        "scope": "actor",
+        "minimum": 0,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "stunned": {
+        "name": "Stunned",
+        "type": "boolean",
+        "scope": "actor",
+        "default": false,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "unconscious": {
+        "name": "Unconscious",
+        "type": "boolean",
+        "scope": "actor",
+        "default": false,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      }
+    },
+    "conditions": {
+      "actor-conscious": {
+        "op": "eq",
+        "left": {
+          "ref": "unconscious",
+          "subject": {
+            "relative": "current-actor"
+          }
+        },
+        "right": false,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      }
+    },
+    "effects": {},
+    "actions": {
+      "attempt-skill": {
+        "name": "Attempt skill",
+        "condition_refs": [
+          "actor-conscious"
+        ],
+        "procedure_ref": "success-roll",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "attack": {
+        "name": "Attack",
+        "condition_refs": [
+          "actor-conscious"
+        ],
+        "procedure_ref": "attack-resolution",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "recover": {
+        "name": "Recover",
+        "condition_refs": [
+          "actor-conscious"
+        ],
+        "procedure_ref": "recovery-check",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      }
+    },
+    "procedures": {
+      "success-roll": {
+        "name": "Success roll",
+        "scope": "turn",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Resolve base target and situational modifiers."
+          },
+          {
+            "kind": "prose",
+            "prose": "Use the DIRPS dice-resolution proto contract to roll and preserve the random terms."
+          },
+          {
+            "kind": "prose",
+            "prose": "Compare the roll with the effective target and preserve success/failure and margin."
+          }
+        ]
+      },
+      "attack-resolution": {
+        "name": "Attack resolution",
+        "scope": "turn",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "procedure",
+            "ref": "success-roll"
+          },
+          {
+            "kind": "prose",
+            "prose": "On a successful attack, open the applicable active-defense reaction window."
+          },
+          {
+            "kind": "prose",
+            "prose": "If the attack is not defended, resolve damage and resulting injury/state changes."
+          }
+        ]
+      },
+      "recovery-check": {
+        "name": "Recovery check",
+        "scope": "turn",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative",
+        "steps": [
+          {
+            "kind": "prose",
+            "prose": "Resolve the applicable HT-based recovery or consciousness check when required."
+          }
+        ]
+      },
+      "tutorial-turn": {
+        "name": "Tutorial turn",
+        "scope": "turn",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional",
+        "steps": [
+          {
+            "kind": "choice",
+            "options": [
+              {
+                "kind": "action",
+                "ref": "attempt-skill"
+              },
+              {
+                "kind": "action",
+                "ref": "attack"
+              },
+              {
+                "kind": "action",
+                "ref": "recover"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "phases": {},
+    "ai_profiles": {}
+  },
+  "scenarios": {
+    "scenario-01": {
+      "name": "Scenario 01: The Missing Courier",
+      "description": "A bounded solo tutorial used to exercise RPG mechanics and DIRPS replay/rules trace semantics.",
+      "scene_ref": "scenario-01-setup",
+      "players": {
+        "min": 1,
+        "max": 1
+      },
+      "action_refs": [
+        "attempt-skill",
+        "attack",
+        "recover"
+      ],
+      "turn_procedure_ref": "tutorial-turn",
+      "objectives": [
+        {
+          "id": "resolve-courier-mystery",
+          "name": "Determine what happened to the missing courier",
+          "completion": {
+            "prose": "The player has obtained enough scenario information to identify the courier's fate."
+          }
+        }
+      ],
+      "end_conditions": [
+        {
+          "id": "tutorial-complete",
+          "outcome": "win",
+          "condition": {
+            "prose": "The tutorial objective is complete and the player has returned safely."
+          },
+          "priority": 10
+        }
+      ],
+      "target_duration_minutes": {
+        "min": 45,
+        "max": 90
+      },
+      "source_ref": "scenario-01-source",
+      "authority": "provisional"
+    }
+  },
+  "metadata": {
+    "status": "scaffold-g0",
+    "implementation_identity": "DIRPS",
+    "rules_reference": "GURPS Lite 3E",
+    "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
+    "conformance_claim": "none"
+  },
+  "extensions": {
+    "org.dirps.proto": {
+      "sidecar_ref": "dirps-proto",
+      "rule": "DODGE 0.2.1 remains the base contract. Proto semantics must not be hidden in target code."
+    }
+  }
+}
