@@ -19,3 +19,9 @@ game/<game-id>/
 A descriptor may point a scenario at a game-level DODGE document or at a future scenario-local document. Generated Web/PnP/TTS artifacts are not canonical source and do not belong under `game/`.
 
 Adding a new unrelated game should require adding a new directory and descriptor, not changing a central hardcoded game list.
+
+## Adding a new game
+
+Start with [`docs/ADDING_A_GAME.md`](../docs/ADDING_A_GAME.md). It maps the DODGE implementation lifecycle onto TheFountain's exact directory, registry, validation, resolver, testing, CI, and target conventions.
+
+Do not treat a familiar directory layout or a green repository workflow as DODGE conformance. The candidate game itself must pass the maturity gates described there.
