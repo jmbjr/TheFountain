@@ -518,3 +518,14 @@ The proto sidecar was also reclassified. Dice resolution, derived values, expres
 **Milestone:** a second game can now enter TheFountain honestly at G0 without being mistaken for a conforming implementation, and the repository has a deterministic process for advancing it through G1–G7.
 
 The next DIRPS convergence inventory remains issue #163.
+
+
+## DIRPS Scenario 01 reaches G1 schema validity
+
+**October 11, 2026.**
+
+DIRPS Scenario 01, *The Missing Courier*, advanced from the PR #166 G0 scaffold to **G1 — Schema-valid** using the generic registered-game conformance path. The exact CI-pinned DODGE source is commit `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`, with `draft/v0.2.1/schemas/dodge.schema.v0.2.1.json` as the candidate schema.
+
+Exact schema validation exposed the expected structural defect across all eight actor value definitions: `st`, `dx`, `iq`, `ht`, `hit-points`, `fatigue`, `stunned`, and `unconscious` lacked required `owner_scope` and `persistence_scope`. The redundant general `scope: actor` declarations were replaced with explicit `owner_scope: actor` and `persistence_scope: scenario`. Because persistence beyond this bounded tutorial is not yet established, each value records that post-scenario persistence remains unresolved rather than inventing campaign semantics at G1.
+
+The registry now declares G1, causing `tools/validate_registered_dodge.py` to validate DIRPS instead of intentionally skipping it. This transition makes no G2 core-valid, semantic-profile, resolver, runtime, replay, target, or proto-promotion claim. Issue #163 remains the convergence inventory; G2 is next.
