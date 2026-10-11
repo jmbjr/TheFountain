@@ -23,6 +23,11 @@ class GameRegistryTests(unittest.TestCase):
         self.assertEqual(set(cfg["export_contracts"]),{"pnp","tts"})
         self.assertTrue(all(p.is_file() for p in cfg["export_contracts"].values()))
 
+    def test_wretched_conformance_hook_is_discoverable(self):
+        cfg=scenario_config("wretched-demesne","scenario-01")
+        self.assertEqual(cfg["conformance"]["maturity"],"G7")
+        self.assertTrue(cfg["conformance"]["resolver"].is_file())
+
     def test_wretched_scenario_02_has_reserved_home(self):
         cfg=scenario_config("wretched-demesne","scenario-02")
         self.assertEqual(cfg["status"],"planned")
