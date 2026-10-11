@@ -7,6 +7,8 @@ on:
       - "tools/validate_wretched_dodge.py"
       - "tools/wretched_semantic_validation.py"
       - "tests/test_wretched_validation.py"
+      - "tests/test_game_registry.py"
+      - "tests/test_game_registry.py"
       - "tests/wretched-runtime.test.mjs"
       - "src/wretched/**"
       - "tools/resolve_wretched_dodge.py"
@@ -56,7 +58,7 @@ jobs:
         run: |
           python tools/validate_wretched_dodge.py --schema-root ../dodge/draft/v0.2.1
           python -m py_compile tools/resolve_wretched_dodge.py tools/wretched_semantic_validation.py tools/export_wretched_beta_pnp.py tools/verify_wretched_beta_pnp.py tools/export_wretched_beta_tts.py tools/verify_wretched_beta_tts.py
-          python -m unittest tests/test_wretched_validation.py
+          python -m unittest tests/test_game_registry.py tests/test_wretched_validation.py
           npm test
           python tools/resolve_wretched_dodge.py --export-contract game/wretched-demesne/scenarios/scenario-01/export-contracts/pnp.dodge-export.json --out /tmp/wretched-resolved.json --manifest-out /tmp/wretched-pnp-manifest.json
           python - <<'PY'
