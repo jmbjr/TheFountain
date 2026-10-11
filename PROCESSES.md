@@ -222,6 +222,78 @@ Promote only after the declared gate is satisfied:
 - blockers resolved or explicitly deferred;
 - exact DODGE revision recorded.
 
+## Reviewing a new game implementation
+
+A new-game review is a **conformance and architecture review**, not a visual comparison against Wretched.
+
+Use the existing authoritative documents in this order:
+
+1. **TheFountain repository workflow:** [`docs/ADDING_A_GAME.md`](docs/ADDING_A_GAME.md)  
+   Defines the concrete directory, registry, maturity, validation, resolver, test, CI, and target workflow for this repository.
+2. **Portable DODGE adoption lifecycle:** `jmbjr/DODGE/draft/v0.2.1/IMPLEMENTATION_GUIDE.md`  
+   Defines the G0-G7 maturity gates, authority rules, validation lifecycle, perturbation guidance, and evidence required before promoting specification gaps.
+3. **Exact DODGE normative source:** the selected version's `DODGE_SPEC.md` and JSON Schemas.  
+   These override memory, examples, prior drafts, and implementation assumptions.
+4. **Repository architecture:** `TECHNICAL.md`, `game/README.md`, and the candidate game's own `README.md` / compatibility audit.  
+   These explain TheFountain's current shared boundaries and the candidate's declared scope.
+5. **Reference implementations:** Wretched Demesne Scenario 01 and DODGE examples.  
+   Copy the architecture and evidence pattern, **not Wretched-specific gameplay semantics**.
+
+### Review procedure
+
+For each new game or major new scenario implementation:
+
+1. **Identify the claimed maturity gate.**  
+   Do not infer maturity from the number of files, a familiar directory structure, or a green badge. Record the highest claimed gate from G0-G7.
+
+2. **Verify the candidate itself is visible to the generic pipeline.**  
+   Check `game/<game-id>/game.json`, the discovered scenario, and the exact CI log. A green workflow only counts when the candidate appears by name as PASS or an intentional maturity-based SKIP.
+
+3. **Verify source authority.**  
+   Confirm authoritative, provisional, derived, and reference sources are distinguished. Look for duplicated executable facts across scenario data, DODGE, runtime defaults, or targets.
+
+4. **Check the exact DODGE version.**  
+   For G1+, validate the candidate document against the selected version's schema. For later gates, verify the corresponding core, semantic, resolver, resolved-game, runtime, and target evidence actually exists.
+
+5. **Review executable claims, not prose intent.**  
+   A scenario saying it contains combat, search, reactions, injury, or another mechanic does not prove the runtime executes it. Match claimed mechanics to DODGE bindings, resolver output, runtime behavior, and tests.
+
+6. **Check game-owned semantic validation.**  
+   Domain implications that DODGE core cannot infer belong in a game/application semantic profile. Do not push game-specific completeness rules into DODGE merely to make validation easier.
+
+7. **Check the neutral resolver boundary.**  
+   Runtime and targets should consume one resolved model. Flag duplicated target interpretation, hardcoded historical literals, or target-specific gameplay fallbacks.
+
+8. **Require evidence appropriate to the gate.**  
+   Prefer negative and perturbation tests in addition to happy-path snapshots. For random or replay-sensitive games, require inspectable deterministic evidence before claiming execution maturity.
+
+9. **Treat future DODGE gaps conservatively.**  
+   Use `suspected -> exercised -> candidate`. A rules document suggesting a missing concept is not enough to justify an upstream DODGE proposal.
+
+10. **Write the review down.**  
+    Create or update one master convergence issue for the game/scenario. That issue must point to the reviewed baseline PR/SHA, list what was done well, list what is still missing by maturity gate, and become the inventory for follow-up PRs.
+
+11. **Update durable repository docs when architecture/process changes.**  
+    - `HISTORY.md` records what changed and why.
+    - `TECHNICAL.md` records the resulting architecture/invariants.
+    - `PROCESSES.md` changes only when the reusable workflow itself changes.
+    - `ROADMAP.md` changes when project state/priorities materially move.
+
+### Review output
+
+A useful review should end with an explicit statement like:
+
+```text
+Baseline: PR #NNN / <head SHA>
+Current maturity: Gx
+Validated evidence: ...
+Intentional gaps: ...
+Blocking gaps to next gate: ...
+Master convergence issue: #NNN
+```
+
+This makes the next implementation turn deterministic and keeps review knowledge out of chat history.
+
 ## Scenario 2 starting checklist
 
 When the revised Wretched design becomes Scenario 2, start here rather than copying Scenario 1 code:
