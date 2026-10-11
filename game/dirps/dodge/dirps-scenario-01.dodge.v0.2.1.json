@@ -3,7 +3,7 @@
   "document_id": "dirps.scenario-01-v0.2.1",
   "game_id": "dirps",
   "title": "DIRPS — Scenario 01",
-  "description": "G0 working document targeting DODGE 0.2.1 for the first DIRPS RPG tutorial scenario. It is preserved as scaffold input and is not yet claimed schema/core-valid; unsupported or suspected neutral semantics remain isolated in the DIRPS proto sidecar.",
+  "description": "G1 schema-valid DODGE 0.2.1 document for the first DIRPS RPG tutorial scenario. Structural validity is proven against TheFountain CI's pinned 0.2.1 schema; core semantics, game semantic validation, resolution, execution, replay, and targets remain later gates.",
   "sources": {
     "gurps-lite": {
       "kind": "rules",
@@ -156,65 +156,97 @@
       "st": {
         "name": "Strength",
         "type": "integer",
-        "scope": "actor",
         "minimum": 1,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "dx": {
         "name": "Dexterity",
         "type": "integer",
-        "scope": "actor",
         "minimum": 1,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "iq": {
         "name": "Intelligence",
         "type": "integer",
-        "scope": "actor",
         "minimum": 1,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "ht": {
         "name": "Health",
         "type": "integer",
-        "scope": "actor",
         "minimum": 1,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "hit-points": {
         "name": "Hit points",
         "type": "integer",
-        "scope": "actor",
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "fatigue": {
         "name": "Fatigue",
         "type": "integer",
-        "scope": "actor",
         "minimum": 0,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "stunned": {
         "name": "Stunned",
         "type": "boolean",
-        "scope": "actor",
         "default": false,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       },
       "unconscious": {
         "name": "Unconscious",
         "type": "boolean",
-        "scope": "actor",
         "default": false,
         "source_ref": "gurps-lite",
-        "authority": "authoritative"
+        "authority": "authoritative",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+          "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
+        ]
       }
     },
     "conditions": {
@@ -386,11 +418,11 @@
     }
   },
   "metadata": {
-    "status": "scaffold-g0",
+    "status": "schema-valid-g1",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "none"
+    "conformance_claim": "G1 — Schema-valid only; G2 core validity and later gates are not claimed."
   },
   "extensions": {
     "org.dirps.proto": {

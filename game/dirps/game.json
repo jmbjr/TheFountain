@@ -7,14 +7,14 @@
   "scenarios": {
     "scenario-01": {
       "title": "Scenario 01: The Missing Courier",
-      "status": "scaffold",
+      "status": "incubating",
       "dodge": "dodge/dirps-scenario-01.dodge.v0.2.1.json",
       "source": "scenarios/scenario-01/scenario.json",
       "sidecars": [
         "sidecars/dirps.proto.sidecar.v0.1.json"
       ],
       "conformance": {
-        "maturity": "G0"
+        "maturity": "G1"
       }
     }
   }

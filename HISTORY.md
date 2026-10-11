@@ -518,3 +518,25 @@ The proto sidecar was also reclassified. Dice resolution, derived values, expres
 **Milestone:** a second game can now enter TheFountain honestly at G0 without being mistaken for a conforming implementation, and the repository has a deterministic process for advancing it through G1–G7.
 
 The next DIRPS convergence inventory remains issue #163.
+
+
+## DIRPS Scenario 01 reaches G1 schema validity
+
+**October 11, 2026.**
+
+DIRPS Scenario 01, *The Missing Courier*, advanced from the PR #166 G0 scaffold to **G1 — Schema-valid** using the generic registered-game conformance path. The exact CI-pinned DODGE source is commit `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`, with `draft/v0.2.1/schemas/dodge.schema.v0.2.1.json` as the candidate schema.
+
+Exact schema validation exposed the expected structural defect across all eight actor value definitions: `st`, `dx`, `iq`, `ht`, `hit-points`, `fatigue`, `stunned`, and `unconscious` lacked required `owner_scope` and `persistence_scope`. The redundant general `scope: actor` declarations were replaced with explicit `owner_scope: actor` and `persistence_scope: scenario`. Because persistence beyond this bounded tutorial is not yet established, each value records that post-scenario persistence remains unresolved rather than inventing campaign semantics at G1.
+
+The registry now declares G1, causing `tools/validate_registered_dodge.py` to validate DIRPS instead of intentionally skipping it. This transition makes no G2 core-valid, semantic-profile, resolver, runtime, replay, target, or proto-promotion claim. Issue #163 remains the convergence inventory; G2 is next.
+
+
+## Conformance CI records exact candidate source identity
+
+**October 11, 2026.**
+
+Review of DIRPS PR #168 found that the generic conformance workflow was candidate-specific but used GitHub's default pull-request synthetic merge checkout. That proved the candidate merged with the current base, but it did not literally prove the PR-head SHA required by the G1 handoff.
+
+The repository now treats source identity as part of conformance evidence. Pull-request conformance checks out the exact PR head, reports the TheFountain SHA being validated, and asserts that the checkout matches the expected head before running the registered-game pipeline. Push/main and manual runs continue to use the triggering `github.sha`. The onboarding guide, review process, and technical architecture record the same invariant so future maturity reviews do not infer exact-head evidence from a synthetic merge run.
+
+This closes the repository-level provenance gap discovered in TheFountain issue #169; it does not change DODGE semantics or raise DIRPS beyond G1.

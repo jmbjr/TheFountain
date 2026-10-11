@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G0 — Scaffold.** This directory defines what the first executable slice should eventually prove. It does not yet claim schema/core validity, a semantic validator, a neutral resolver, runtime execution, or replay support.
+**G1 — Schema-valid.** The authored DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI. G2 core validity, a semantic validator, a neutral resolver, runtime execution, replay, and targets are not yet claimed.
 
 ## Goal
 
