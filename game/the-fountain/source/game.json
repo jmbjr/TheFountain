@@ -1,0 +1,25 @@
+{
+  "schema_version":"0.1.0",
+  "id":"the-fountain",
+  "title":"The Fountain",
+  "tagline":"Immortality is not the reward. Immortality is the mechanism by which the horror happens.",
+  "pillars":["Survival through transformation","Healing keeps you alive","Death makes you stronger","Mutation makes you more capable","Knowledge reveals the truth","Power costs humanity"],
+  "player":{"max_health":100,"health":72,"humanity":100,"mutation":0,"deaths":0,"knowledge":0},
+  "mutation_stages":[
+    {"min":0,"name":"Human"},{"min":15,"name":"The Marked"},{"min":35,"name":"The Altered"},{"min":55,"name":"The Adapted"},{"min":75,"name":"The Inhuman"},{"min":95,"name":"The Ascended"}
+  ],
+  "mutations":[
+    {"id":"enlarged-eyes","name":"Enlarged Eyes","benefit":"See in darkness","cost":"Increased light sensitivity"},
+    {"id":"gills","name":"Gills","benefit":"Breathe underwater","cost":"Reduced lung capacity"},
+    {"id":"regenerative-tissue","name":"Regenerative Tissue","benefit":"Faster healing","cost":"Increased hunger"},
+    {"id":"chitin-growth","name":"Chitin Growth","benefit":"Armor","cost":"Reduced mobility"},
+    {"id":"alien-hearing","name":"Alien Hearing","benefit":"Detect hidden creatures","cost":"Constant disturbing sounds"},
+    {"id":"adaptive-skin","name":"Adaptive Skin","benefit":"Resist environmental hazards","cost":"Skin becomes non-human"}
+  ],
+  "encounters":[
+    {"id":"wounded","title":"A Wound That Will Not Stay","text":"Something tears through your side. The Fountain answers before you can.","choices":[{"label":"Let it heal","health":28,"mutation":7,"humanity":-3},{"label":"Bind the wound and resist","health":10,"mutation":1,"humanity":2}]},
+    {"id":"pool","title":"Living Water","text":"A black pool pulses beneath translucent roots. Your scars ache toward it.","choices":[{"label":"Drink","health":35,"mutation":13,"humanity":-6,"knowledge":2},{"label":"Study it","mutation":2,"knowledge":8},{"label":"Leave it","humanity":2}]},
+    {"id":"spores","title":"The Breathing Grove","text":"Pale spores hang in the air. The forest inhales with you.","choices":[{"label":"Enter","mutation":9,"knowledge":4},{"label":"Turn back","humanity":1}]},
+    {"id":"guardian","title":"The Old Immortal","text":"A figure remembers being human. It asks how many times you have died.","choices":[{"label":"Listen","knowledge":12,"humanity":-2},{"label":"Fight","health":-120,"knowledge":3}]}
+  ]
+}
