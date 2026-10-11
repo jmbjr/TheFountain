@@ -12,7 +12,8 @@ class GameRegistryTests(unittest.TestCase):
         games=discover_games()
         self.assertIn("the-fountain",games)
         self.assertIn("wretched-demesne",games)
-        self.assertIn("dirps",games)\n        self.assertNotIn("gurps",games)
+        self.assertIn("dirps",games)
+        self.assertNotIn("gurps",games)
 
     def test_dirps_scenario_01_is_explicit_g0_scaffold(self):
         cfg=scenario_config("dirps","scenario-01")
