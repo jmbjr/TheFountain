@@ -7,9 +7,11 @@ from PIL import Image,ImageDraw,ImageFont
 ROOT=pathlib.Path(__file__).parents[1]
 sys.path.insert(0,str(ROOT/"tools"))
 from resolve_wretched_dodge import resolve
-DODGE=ROOT/"game/wretched-demesne.dodge.v0.2.1.json"
-SCENARIO=ROOT/"game/wretched-demesne.scenario-01.mvp.v0.1.json"
-CONTRACT=ROOT/"game/export-contracts/wretched-beta-tts.dodge-export.json"
+from game_registry import scenario_config
+WD_SCENARIO=scenario_config("wretched-demesne","scenario-01")
+DODGE=WD_SCENARIO["dodge"]
+SCENARIO=WD_SCENARIO["source"]
+CONTRACT=WD_SCENARIO["export_contracts"]["tts"]
 p=argparse.ArgumentParser();p.add_argument("--git-sha",default="local");a=p.parse_args()
 sha=a.git_sha[:12] if a.git_sha!="local" else "local"
 resolved=resolve(DODGE,CONTRACT); dodge=json.loads(DODGE.read_text()); data=resolved["canonical"]; contract=resolved["export_contract"]; manifest=resolved["target_manifest"]; manifest_by_id={x["content_id"]:x for x in manifest["contents"]}
