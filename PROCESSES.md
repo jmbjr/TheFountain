@@ -1,5 +1,7 @@
 # Implementation Process
 
+> **Adding a new game?** Start with [`docs/ADDING_A_GAME.md`](docs/ADDING_A_GAME.md). It is the operational checklist for applying this process inside TheFountain. The portable DODGE conformance lifecycle lives in `jmbjr/DODGE/draft/v0.2.1/IMPLEMENTATION_GUIDE.md`.
+
 This document is the working adapter between game-domain leadership and implementation. It describes the process we want to reuse when moving from a Design Lead's requirements to a DODGE-backed playable game.
 
 It is deliberately not a project history. `HISTORY.md` records what happened; this file records the practices we want to repeat.

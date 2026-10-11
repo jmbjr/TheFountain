@@ -42,6 +42,10 @@ These initial exporters establish the shared-source contract. PnP PDF/card layou
 > Immortality is not the reward. Immortality is the mechanism by which the horror happens.
 
 
+## Adding a new game
+
+Use [`docs/ADDING_A_GAME.md`](docs/ADDING_A_GAME.md) as the repository onboarding checklist. It applies the versioned DODGE implementation guide to TheFountain's game registry, validation, resolver, CI, testing, and target structure.
+
 ## Multi-game implementation hub
 
 TheFountain now treats authored game source as a registry of independent game namespaces under `game/`. Each game is discovered by `game/<game-id>/game.json`; shared tooling must not require a central hardcoded game list.
