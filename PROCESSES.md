@@ -254,3 +254,10 @@ When the revised Wretched design becomes Scenario 2, start here rather than copy
 **Keep variants reproducible.** A new design should be a new scenario/variant when preserving the old one helps comparison, replay, and process learning.
 
 **Targets render; they do not design.** Web, PnP, TTS, and future targets consume the game. They do not define it.
+
+
+## Multi-game repository workflow
+
+Before adding a new game, create `game/<game-id>/game.json` and keep that game's canonical sources, sidecars, scenarios, and target contracts inside its namespace. Shared tooling discovers descriptors through `tools/game_registry.py`; do not add repository-wide `if game == ...` discovery logic merely to make a new game visible.
+
+Within a game, preserve scenarios as siblings when retaining the older implementation is useful for replay, comparison, or DODGE conformance. A target remains a projection of one resolved scenario and does not become a source directory under `game/`.
