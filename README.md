@@ -4,7 +4,7 @@ Lovecraftian survival-horror prototype built around **survival through transform
 
 ## DODGE architecture — firm requirement
 
-This repository must remain compliant with the **official DODGE specification**. Wretched Demesne currently adopts **DODGE 0.2.1** via `game/wretched-demesne.dodge.v0.2.1.json`. The governing 0.2.1 specification is still under `jmbjr/DODGE/draft/v0.2.1`, so this is a working adoption and must be revalidated when 0.2.1 is promoted to `official/`. Older DODGE documents are retained for history/traceability.
+This repository must remain compliant with the **official DODGE specification**. Wretched Demesne currently adopts **DODGE 0.2.1** via `game/wretched-demesne/dodge/wretched-demesne.dodge.v0.2.1.json`. The governing 0.2.1 specification is still under `jmbjr/DODGE/draft/v0.2.1`, so this is a working adoption and must be revalidated when 0.2.1 is promoted to `official/`. Older DODGE documents are retained for history/traceability.
 
 Canonical game facts may remain in referenced sources as DODGE permits. DODGE governs scene composition and resolved component inventory. Targets are adapters/renderers, never independent game definitions:
 
@@ -40,3 +40,16 @@ These initial exporters establish the shared-source contract. PnP PDF/card layou
 ## Design North Star
 
 > Immortality is not the reward. Immortality is the mechanism by which the horror happens.
+
+
+## Multi-game implementation hub
+
+TheFountain now treats authored game source as a registry of independent game namespaces under `game/`. Each game is discovered by `game/<game-id>/game.json`; shared tooling must not require a central hardcoded game list.
+
+Current namespaces:
+
+- `game/the-fountain/` — original Fountain prototype;
+- `game/wretched-demesne/` — Wretched Demesne, with preserved Scenario 01 and a reserved Scenario 02 sibling;
+- `game/gurps/` — clean incubation namespace for the separate GURPS/DODGE experiment.
+
+Wretched Scenario 01 remains the current DODGE 0.2.1 reference implementation. Generated historical Beta trees under `wretched-demesne/beta/web/<sha>/` remain immutable deployment evidence and are intentionally not reorganized with authored source.
