@@ -94,6 +94,8 @@ These are review labels, not DODGE schema fields.
 
 Every new game PR should state the highest gate it actually reaches.
 
+CI evidence must also identify the TheFountain source revision actually validated. For pull requests that require exact-head evidence, the conformance workflow must check out `github.event.pull_request.head.sha` (or otherwise prove that literal source identity); GitHub's default synthetic merge ref is useful merge-compatibility evidence but is not exact PR-head evidence. A named candidate PASS only supports a maturity claim when it is tied to the source SHA that the workflow actually validated.
+
 Do not use vague labels such as "prototype" as a substitute for saying which gate is complete.
 
 ---
