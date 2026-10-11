@@ -108,7 +108,7 @@ It added provisional but executable definitions for the crew roles, starter card
 
 Where the GDD supplied a fact, the data preserves that provenance. Where we had to choose a value simply to make a test possible, the record identifies it as a **prototype assumption** rather than GDD canon.
 
-We also added `game/WRETCHED_SCENARIO01_MVP.md`, which records the assumptions and target explicitly. The core acceptance goal is for a playtest to exercise exploration, the five-card hand, three-action turns, searching and loot, firearm ammo and Noise, global Threat, enemy activation, Spider Corpses, feeding, chrysalis/evolution, voluntary retreat, the objective chain, extraction, and both win and loss.
+We also added `game/wretched-demesne/scenarios/scenario-01/README.md`, which records the assumptions and target explicitly. The core acceptance goal is for a playtest to exercise exploration, the five-card hand, three-action turns, searching and loot, firearm ammo and Noise, global Threat, enemy activation, Spider Corpses, feeding, chrysalis/evolution, voluntary retreat, the objective chain, extraction, and both win and loss.
 
 Just as importantly, that note codifies the tuning rule: **change the canonical data, not the individual Web/PnP/TTS implementations.**
 
