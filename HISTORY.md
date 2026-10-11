@@ -193,7 +193,7 @@ Both review artifacts come from the same canonical Scenario 01 MVP dataset used 
 
 **Merged September 28, 2026.**
 
-Once official DODGE 0.2.0 was available, we migrated Wretched rather than allowing the implementation to become a historical fork. The new `game/wretched-demesne.dodge.v0.2.json` declares DODGE 0.2.0, formally identifies the lossless GDD sidecar and source authority, and adds neutral component profiles. The v0.1 document remains for traceability.
+Once official DODGE 0.2.0 was available, we migrated Wretched rather than allowing the implementation to become a historical fork. The new `game/wretched-demesne/dodge/history/wretched-demesne.dodge.v0.2.json` declares DODGE 0.2.0, formally identifies the lossless GDD sidecar and source authority, and adds neutral component profiles. The v0.1 document remains for traceability.
 
 This establishes an ongoing project rule: **Wretched Demesne and its Web/PnP/TTS pipeline must remain compliant with the official DODGE specification.** DODGE changes require deliberate conformance review/migration rather than target-specific workarounds.
 
@@ -212,7 +212,7 @@ PR: https://github.com/jmbjr/TheFountain/pull/12
 
 After using Scenario 01 to pressure-test the DODGE 0.2.1 draft, we identified four requirements for Wretched adoption: deterministic timing/effect lifetime, explicit subject/resource ownership, atomic transformation semantics, and a clear boundary between unresolved topology generation and materialized runtime topology. Those requirements were captured in DODGE issue #21 and incorporated into the 0.2.1 draft.
 
-PR #14 moves Wretched onto that model. The active working document is now `game/wretched-demesne.dodge.v0.2.1.json`, with representative rules/resources, timing, ownership, spider transformation, topology, Scenario 01 and campaign semantics promoted out of the generic sidecar boundary. Scenario 01 now points to the 0.2.1 document as its DODGE authority, while older DODGE documents remain for traceability.
+PR #14 moves Wretched onto that model. The active working document is now `game/wretched-demesne/dodge/wretched-demesne.dodge.v0.2.1.json`, with representative rules/resources, timing, ownership, spider transformation, topology, Scenario 01 and campaign semantics promoted out of the generic sidecar boundary. Scenario 01 now points to the 0.2.1 document as its DODGE authority, while older DODGE documents remain for traceability.
 
 The governing DODGE specification is still under `draft/v0.2.1`, so this milestone is deliberately a **working adoption**, not a claim of official 0.2.1 conformance. When DODGE publishes `official/v0.2.1/`, Wretched must revalidate the document, semantic rules, resolver and exporters against that exact revision.
 
@@ -494,3 +494,8 @@ Five new Design Lead documents were preserved as authoritative source issues #99
 The implementation does not choose between conflicting source statements. The existing playable Scenario 01 variant remains a useful DODGE 0.2.1 reference while its mechanic-by-mechanic semantic audit continues. After that audit, the clarified new requirements will receive a light DODGE compatibility/boundary audit before implementation. Genuine DODGE gaps are raised upstream rather than patched with Wretched-only semantics; the revised design can then become another DODGE-derived variant, providing a practical test of the requirements → DODGE → resolver → targets workflow.
 
 PR #105 continued that audit by removing encounter-ID gameplay branching in favor of canonical structured effects. The room-setup audit follows the same ownership rule for room-specific setup facts.
+
+
+## Multi-game source layout
+
+Refactored authored source under `game/<game-id>/`, preserving Wretched Scenario 01 as the reference scenario, reserving Wretched Scenario 02, moving the original Fountain prototype into its own namespace, and creating a clean GURPS/DODGE incubation namespace. Added descriptor-based game/scenario discovery while leaving historical generated Beta builds untouched.
