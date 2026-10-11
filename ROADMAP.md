@@ -181,9 +181,9 @@ Current DIRPS maturity:
 
 - **G2 — Core-valid**;
 - the DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI;
-- G2 generic core validity is the next gate and is **not** claimed by G1;
-- proto concepts remain **suspected** gaps; none were exercised or promoted at G1;
-- the remaining convergence work is tracked in issue **#163** and should proceed through G2 → G3 → G4 → G5 → G6 using the onboarding/conformance process.
+- G2 generic core validity is supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
+- proto concepts remain **suspected** gaps; none were exercised or promoted at G2;
+- the remaining convergence work is tracked in issue **#163** and should proceed through G3 → G4 → G5 → G6 using the onboarding/conformance process.
 
 ## DODGE 0.2.1 / reference-release direction
 
