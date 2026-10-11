@@ -27,9 +27,9 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 currently reaches **G1 — Schema-valid**.
+DIRPS Scenario 01 currently reaches **G2 — Core-valid**.
 
-The authored DODGE document now validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI. This is a structural claim only: the scenario does **not** yet claim G2 core validity, semantic validation, resolution, runtime execution, replay, or target support.
+The authored DODGE document validates against the exact DODGE 0.2.1 schema and now has a check-by-check §15.3 core-validation evidence record at `docs/g2-core-validation.md`, including PASS/N/A classification and negative fixtures. This does **not** yet claim G3 game semantic validation, resolution, runtime execution, replay, or target support.
 
 The generic TheFountain conformance runner now validates DIRPS by name and must report `PASS dirps/scenario-01: DODGE 0.2.1 schema`.
 
@@ -53,7 +53,7 @@ resolved game
 runtime / replay / targets
 ```
 
-The DODGE document targets DODGE 0.2.1 and is schema-valid at G1. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
+The DODGE document targets DODGE 0.2.1 and is core-valid at G2. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
 The proto sidecar records suspected gaps to exercise. A proto concept is not a DODGE 0.2.2 candidate until Scenario 01 actually exercises it through the neutral validation/resolver/runtime path.
 
