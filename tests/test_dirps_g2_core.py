@@ -55,24 +55,149 @@ def validate_dirps_core(doc):
     phases = rules.get("phases", {})
     ai_profiles = rules.get("ai_profiles", {})
 
+    rule_tables = {
+        "value": values,
+        "resource": resources,
+        "requirement": requirements,
+        "modifier": modifiers,
+        "condition": conditions,
+        "effect": effects,
+        "action": actions,
+        "procedure": procedures,
+        "phase": phases,
+        "ai": ai_profiles,
+    }
+
+    def rule_ref_owner(ref):
+        return [kind for kind, table in rule_tables.items() if ref in table]
+
+    def require_rule_ref(owner, ref, expected_kinds):
+        if not ref:
+            return
+        expected = tuple(expected_kinds)
+        if any(ref in rule_tables[kind] for kind in expected):
+            return
+        actual = rule_ref_owner(ref)
+        if actual:
+            failures.append(
+                f"15.3.8 {owner} expected {expected} ref but {ref} belongs to {tuple(actual)}"
+            )
+        else:
+            failures.append(f"15.3.1 {owner} unresolved rule ref: {ref}")
+
+    def require_source_ref(owner, ref):
+        if ref and ref not in sources:
+            failures.append(f"15.3.1 {owner} unresolved source_ref: {ref}")
+
+    def walk_source_refs(node, path="$"):
+        if isinstance(node, dict):
+            for key, value in node.items():
+                current = f"{path}.{key}"
+                if key == "source_ref":
+                    require_source_ref(current, value)
+                elif key != "extensions":
+                    walk_source_refs(value, current)
+        elif isinstance(node, list):
+            for index, value in enumerate(node):
+                walk_source_refs(value, f"{path}[{index}]")
+
+    def validate_operand(owner, operand):
+        if isinstance(operand, dict) and "ref" in operand:
+            require_rule_ref(owner, operand["ref"], ("value", "resource"))
+
+    def validate_condition(owner, condition):
+        if isinstance(condition, str):
+            require_rule_ref(owner, condition, ("condition",))
+            return
+        if not isinstance(condition, dict):
+            return
+        validate_operand(f"{owner}.left", condition.get("left"))
+        validate_operand(f"{owner}.right", condition.get("right"))
+        for index, nested in enumerate(condition.get("conditions", []) or []):
+            validate_condition(f"{owner}.conditions[{index}]", nested)
+        require_source_ref(f"{owner}.source_ref", condition.get("source_ref"))
+
     for source_id, source in sources.items():
         uri = source.get("uri", "")
         if uri and not uri.startswith(("http://", "https://")) and not (ROOT / uri).exists():
             failures.append(f"15.3.1 missing local source URI {source_id}: {uri}")
+
+    # Every normative source_ref in the candidate is checked, including sidecars
+    # and rule/value/condition/action/procedure declarations. Extensions are
+    # intentionally opaque to DODGE core.
+    walk_source_refs({key: value for key, value in doc.items() if key != "extensions"})
+
+    for sidecar_index, sidecar in enumerate(doc.get("sidecars", [])):
+        require_source_ref(f"sidecars[{sidecar_index}].source_ref", sidecar.get("source_ref"))
+
     for object_id, obj in objects.items():
-        if obj.get("archetype_ref") not in archetypes:
-            failures.append(f"15.3.1 object {object_id} archetype_ref missing")
+        archetype_ref = obj.get("archetype_ref")
+        if archetype_ref not in archetypes:
+            failures.append(f"15.3.1 object {object_id} unresolved archetype_ref: {archetype_ref}")
+
     for scene_id, scene in scenes.items():
-        if scene.get("source_ref") and scene["source_ref"] not in sources:
-            failures.append(f"15.3.1 scene {scene_id} source_ref missing")
-        for instance in scene.get("instances", []):
-            if instance.get("object_ref") not in objects:
-                failures.append(f"15.3.1 scene {scene_id} object_ref missing")
+        for instance_index, instance in enumerate(scene.get("instances", [])):
+            object_ref = instance.get("object_ref")
+            if object_ref not in objects:
+                failures.append(
+                    f"15.3.1 scene {scene_id} instance[{instance_index}] unresolved object_ref: {object_ref}"
+                )
+
+    for condition_id, condition in conditions.items():
+        validate_condition(f"condition {condition_id}", condition)
+
+    for action_id, action in actions.items():
+        for ref in action.get("condition_refs", []):
+            require_rule_ref(f"action {action_id}.condition_refs", ref, ("condition",))
+        require_rule_ref(f"action {action_id}.procedure_ref", action.get("procedure_ref"), ("procedure",))
+        for ref in action.get("effect_refs", []):
+            require_rule_ref(f"action {action_id}.effect_refs", ref, ("effect",))
+
+    step_expected_kinds = {
+        "action": ("action",),
+        "condition": ("condition",),
+        "effect": ("effect",),
+        "procedure": ("procedure",),
+        "phase": ("phase",),
+        "ai": ("ai",),
+    }
+    for proc_id, proc in procedures.items():
+        for step in walk_steps(proc.get("steps", [])):
+            kind, ref = step.get("kind"), step.get("ref")
+            if kind in step_expected_kinds and ref:
+                require_rule_ref(
+                    f"procedure {proc_id} step[{kind}]", ref, step_expected_kinds[kind]
+                )
+            if step.get("condition_ref"):
+                require_rule_ref(
+                    f"procedure {proc_id}.condition_ref",
+                    step["condition_ref"],
+                    ("condition",),
+                )
+            if step.get("condition"):
+                validate_condition(f"procedure {proc_id}.condition", step["condition"])
+
     for scenario_id, scenario in scenarios.items():
-        if scenario.get("scene_ref") not in scenes:
-            failures.append(f"15.3.1 scenario {scenario_id} scene_ref missing")
-        if scenario.get("source_ref") and scenario["source_ref"] not in sources:
-            failures.append(f"15.3.1 scenario {scenario_id} source_ref missing")
+        scene_ref = scenario.get("scene_ref")
+        if scene_ref not in scenes:
+            failures.append(f"15.3.1 scenario {scenario_id} unresolved scene_ref: {scene_ref}")
+        for ref in scenario.get("action_refs", []):
+            require_rule_ref(f"scenario {scenario_id}.action_refs", ref, ("action",))
+        require_rule_ref(
+            f"scenario {scenario_id}.turn_procedure_ref",
+            scenario.get("turn_procedure_ref"),
+            ("procedure",),
+        )
+        for objective_index, objective in enumerate(scenario.get("objectives", [])):
+            validate_condition(
+                f"scenario {scenario_id}.objectives[{objective_index}].completion",
+                objective.get("completion"),
+            )
+        for end_index, end_condition in enumerate(scenario.get("end_conditions", [])):
+            validate_condition(
+                f"scenario {scenario_id}.end_conditions[{end_index}].condition",
+                end_condition.get("condition"),
+            )
 
     for object_id, obj in objects.items():
         arch = archetypes.get(obj.get("archetype_ref"), {})
@@ -143,34 +268,6 @@ def validate_dirps_core(doc):
     if any(topology.get("edges") for topology in topologies.values()):
         failures.append("15.3.7 audit assumption changed: topology edges are now present")
 
-    def require(owner, ref, table, kind):
-        if ref and ref not in table:
-            failures.append(f"15.3.8 {owner} {kind} ref does not resolve: {ref}")
-
-    for action_id, action in actions.items():
-        for ref in action.get("condition_refs", []):
-            require(f"action {action_id}", ref, conditions, "condition")
-        require(f"action {action_id}", action.get("procedure_ref"), procedures, "procedure")
-        for ref in action.get("effect_refs", []):
-            require(f"action {action_id}", ref, effects, "effect")
-    step_tables = {
-        "action": actions,
-        "condition": conditions,
-        "effect": effects,
-        "procedure": procedures,
-        "phase": phases,
-        "ai": ai_profiles,
-    }
-    for proc_id, proc in procedures.items():
-        for step in walk_steps(proc.get("steps", [])):
-            kind, ref = step.get("kind"), step.get("ref")
-            if kind in step_tables and ref:
-                require(f"procedure {proc_id}", ref, step_tables[kind], kind)
-    for scenario_id, scenario in scenarios.items():
-        for ref in scenario.get("action_refs", []):
-            require(f"scenario {scenario_id}", ref, actions, "action")
-        require(f"scenario {scenario_id}", scenario.get("turn_procedure_ref"), procedures, "procedure")
-
     for family_name, family in (("value", values), ("resource", resources)):
         for item_id, definition in family.items():
             if "default" not in definition:
@@ -240,11 +337,19 @@ def validate_dirps_core(doc):
             failures.append(f"15.3 choice {proc_id} option ids must be present and unique")
         for option in options:
             for ref in option.get("condition_refs", []):
-                require(f"choice {proc_id}/{option.get('id')}", ref, conditions, "condition")
+                require_rule_ref(
+                    f"choice {proc_id}/{option.get('id')}.condition_refs",
+                    ref,
+                    ("condition",),
+                )
             for nested in walk_steps(option.get("steps", [])):
                 kind, ref = nested.get("kind"), nested.get("ref")
-                if kind in step_tables and ref:
-                    require(f"choice {proc_id}/{option.get('id')}", ref, step_tables[kind], kind)
+                if kind in step_expected_kinds and ref:
+                    require_rule_ref(
+                        f"choice {proc_id}/{option.get('id')} step[{kind}]",
+                        ref,
+                        step_expected_kinds[kind],
+                    )
 
     return failures
 
@@ -256,6 +361,26 @@ class DirpsG2CoreValidationTests(unittest.TestCase):
     def test_negative_missing_reference_is_rejected(self):
         doc = load_doc()
         doc["objects"]["tutorial-pc"]["archetype_ref"] = "missing-archetype"
+        self.assertTrue(any("15.3.1" in x for x in validate_dirps_core(doc)))
+
+    def test_negative_rule_source_ref_is_rejected(self):
+        doc = load_doc()
+        doc["rules"]["values"]["st"]["source_ref"] = "missing-source"
+        self.assertTrue(any("15.3.1" in x for x in validate_dirps_core(doc)))
+
+    def test_negative_operand_ref_is_rejected(self):
+        doc = load_doc()
+        doc["rules"]["conditions"]["actor-conscious"]["left"]["ref"] = "missing-value"
+        self.assertTrue(any("15.3.1" in x for x in validate_dirps_core(doc)))
+
+    def test_negative_operand_wrong_kind_is_rejected(self):
+        doc = load_doc()
+        doc["rules"]["conditions"]["actor-conscious"]["left"]["ref"] = "attempt-skill"
+        self.assertTrue(any("15.3.8" in x for x in validate_dirps_core(doc)))
+
+    def test_negative_sidecar_source_ref_is_rejected(self):
+        doc = load_doc()
+        doc["sidecars"][0]["source_ref"] = "missing-sidecar-source"
         self.assertTrue(any("15.3.1" in x for x in validate_dirps_core(doc)))
 
     def test_negative_face_slot_mismatch_is_rejected(self):
