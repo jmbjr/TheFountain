@@ -496,7 +496,9 @@ Python tests use unittest discovery over `tests/test_*.py`. JavaScript runtime t
 
 The workflow pins an exact DODGE source revision. Updating that pin is a deliberate conformance migration and may require updating documents, validation evidence, or target manifests before CI can pass.
 
-## DIRPS G0 scaffold
+Conformance provenance is also explicit on the TheFountain side. Pull-request runs check out `github.event.pull_request.head.sha`, print the validated TheFountain source SHA, and assert that `git rev-parse HEAD` equals that expected identity before candidate validation begins. Push/main and manual runs validate `github.sha`. The default GitHub synthetic pull-request merge ref may still be useful for merge-compatibility testing, but it is not used as exact-head maturity evidence.
+
+## DIRPS G1 schema-valid
 
 `game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** to **G1 — Schema-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
 
