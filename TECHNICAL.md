@@ -480,7 +480,7 @@ scenario  = scenario-01
 target    = web / pnp / tts
 ```
 
-Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelated implementations such as the GURPS experiment receive their own game namespace. Generated target artifacts remain outside `game/` and are never sources of canonical semantics. Historical SHA-addressed Wretched Beta builds are not rewritten during source-layout migrations.
+Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelated implementations such as the DIRPS experiment receive their own game namespace. Generated target artifacts remain outside `game/` and are never sources of canonical semantics. Historical SHA-addressed Wretched Beta builds are not rewritten during source-layout migrations.
 
 ## Multi-game DODGE conformance discovery
 
@@ -495,3 +495,25 @@ Repository-specific executable hooks are deliberately narrow:
 Python tests use unittest discovery over `tests/test_*.py`. JavaScript runtime tests use the `tests/*-runtime.test.mjs` naming convention. This means a newly registered game can enter the standard conformance/test pipeline without adding another game-specific workflow block.
 
 The workflow pins an exact DODGE source revision. Updating that pin is a deliberate conformance migration and may require updating documents, validation evidence, or target manifests before CI can pass.
+
+## DIRPS G0 scaffold
+
+`game/dirps/` is the second independent DODGE implementation track and intentionally begins at **G0 — Scaffold**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
+
+The initial scaffold contains:
+
+- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G0"`;
+- `game/dirps/scenarios/scenario-01/scenario.json` — bounded tutorial source for *The Missing Courier*;
+- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — provisional working document targeting DODGE 0.2.1, explicitly carrying no conformance claim yet;
+- `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json` — suspected RPG-shaped neutral gaps retained adjacent to DODGE;
+- `game/dirps/docs/compatibility-audit.md` — bounded compatibility hypotheses for Scenario 01.
+
+At G0, the generic conformance runner discovers DIRPS but intentionally skips schema/profile/resolver execution. This is a positive state, not a loophole: it prevents a familiar-looking scaffold from being confused with a conforming implementation. When DIRPS advances to G1+, the same registered scenario must begin passing the exact DODGE gates required by its declared maturity.
+
+DIRPS proto semantics use the progression:
+
+```text
+suspected → exercised → candidate
+```
+
+A suspected gap does not become a DODGE proposal merely because the external ruleset appears to need it. Scenario 01 must first exercise the concept through target-neutral validation/resolution/runtime behavior with appropriate deterministic, negative, and perturbation evidence. This is the practical acceptance test for the new `docs/ADDING_A_GAME.md` process and generic conformance discovery introduced after the original DIRPS scaffold review.

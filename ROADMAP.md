@@ -15,7 +15,7 @@ game/
 │   └── scenarios/
 │       ├── scenario-01/
 │       └── scenario-02/
-└── gurps/
+└── dirps/
 ```
 
 `tools/game_registry.py` discovers `game/<game-id>/game.json` descriptors and resolves scenario source, DODGE documents, sidecars, and export contracts by **game ID + scenario ID**. Adding another game should not require teaching repository-wide code a new set of hardcoded paths.
@@ -116,7 +116,7 @@ The refactor:
 - moved Wretched authored source into `game/wretched-demesne/`;
 - preserved Scenario 01 as a named reference scenario;
 - reserved a sibling Scenario 02 home;
-- created a clean GURPS/DODGE incubation namespace;
+- created a clean DIRPS incubation namespace for the GURPS-inspired RPG stress test;
 - added descriptor-based game/scenario discovery;
 - updated active resolver, validation, exporters, tests, workflows, and project documentation;
 - left generated historical Beta/Web builds untouched.
@@ -160,20 +160,28 @@ Before coding Scenario 02:
 
 Scenario 01 should remain reproducible while Scenario 02 evolves.
 
-### 3. GURPS DODGE experiment
+### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/gurps/` namespace is ready for a separate implementation effort.
+The `game/dirps/` namespace now contains the explicit **G0 — Scaffold** for Scenario 01, *The Missing Courier*.
 
-The purpose is not merely to implement GURPS. It is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions.
+The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
-Use the GURPS work to identify:
+Use DIRPS to identify:
 
 - genuinely reusable neutral concepts;
 - Wretched-specific assumptions that should not live in shared infrastructure;
 - missing DODGE contracts;
 - opportunities to generalize resolver/validation/target tooling.
 
-Reusable contract improvements belong in DODGE rather than private GURPS or Wretched dialects.
+Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
+
+Current DIRPS maturity:
+
+- **G0 — Scaffold** only;
+- source layout, Scenario 01, compatibility audit, provisional DODGE working document, and proto sidecar are present;
+- the DODGE document is intentionally **not yet claimed schema/core-valid**;
+- proto concepts are **suspected** gaps, not DODGE 0.2.2 candidates;
+- the next convergence work is tracked in issue **#163** and should proceed through G1/G2 → G3 → G4 → G5 → G6 using the new onboarding/conformance process.
 
 ## DODGE 0.2.1 / reference-release direction
 
@@ -210,7 +218,7 @@ Lossless sidecars retain design intent that DODGE cannot yet represent.
 Missing required semantics should fail validation instead of reviving old defaults.
 
 **Use multiple games to shape DODGE.**  
-Wretched provided the first deep implementation. Scenario 02 and GURPS should now pressure-test what is truly generic.
+Wretched provided the first deep implementation. Scenario 02 and DIRPS should now pressure-test what is truly generic.
 
 ## Longer-term direction
 
