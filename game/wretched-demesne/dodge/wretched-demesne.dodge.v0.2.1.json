@@ -28,6 +28,13 @@
       "uri": "game/wretched-demesne/sidecars/wretched-demesne.gdd.sidecar.v0.1.json#/structured_extensions/initial_enemy_classes",
       "version": "prototype-v0.1",
       "authority": "authoritative"
+    },
+    "wretched-semantic-validator": {
+      "kind": "semantic_validator",
+      "uri": "tools/wretched_semantic_validation.py",
+      "version": "0.1.0",
+      "authority": "authoritative",
+      "description": "Wretched-owned domain semantic validation for Scenario 01 source and resolved-game stages."
     }
   },
   "sidecars": [
@@ -38,6 +45,25 @@
       "promotion_status": "partially-promoted"
     }
   ],
+  "validation": {
+    "core_profile": {
+      "profile_id": "dodge-core",
+      "version": "0.2.1"
+    },
+    "required_profiles": [
+      {
+        "profile_id": "wretched-demesne",
+        "version": "0.1.0",
+        "kind": "game",
+        "stages": [
+          "source",
+          "resolved-game"
+        ],
+        "validator_source_ref": "wretched-semantic-validator",
+        "description": "Checks Wretched domain completeness and cross-field executable semantics."
+      }
+    ]
+  },
   "game_profile": {
     "players": {
       "min": 1,
