@@ -46,6 +46,16 @@ def _resolve(root: Path, rel: str | None):
         raise GameRegistryError(f"path escapes repository root: {rel}") from exc
     return path
 
+def _resolve_repo(rel: str | None):
+    if rel is None:
+        return None
+    path=(ROOT/rel).resolve()
+    try:
+        path.relative_to(ROOT.resolve())
+    except ValueError as exc:
+        raise GameRegistryError(f"path escapes repository root: {rel}") from exc
+    return path
+
 def scenario_config(game_id: str, scenario_id: str):
     game=game_config(game_id)
     scenarios=game["descriptor"].get("scenarios",{})
@@ -66,6 +76,10 @@ def scenario_config(game_id: str, scenario_id: str):
         "sidecars":[_resolve(root,p) for p in spec.get("sidecars",[])],
         "export_contracts":{k:_resolve(root,p) for k,p in spec.get("export_contracts",{}).items()},
         "generated_targets":dict(spec.get("generated_targets",{})),
+        "conformance":{
+            **{k:v for k,v in spec.get("conformance",{}).items() if k!="resolver"},
+            "resolver":_resolve_repo(spec.get("conformance",{}).get("resolver")),
+        } if spec.get("conformance") else None,
     }
     return out
 
