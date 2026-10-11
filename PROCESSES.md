@@ -247,7 +247,7 @@ For each new game or major new scenario implementation:
    Do not infer maturity from the number of files, a familiar directory structure, or a green badge. Record the highest claimed gate from G0-G7.
 
 2. **Verify the candidate itself is visible to the generic pipeline.**  
-   Check `game/<game-id>/game.json`, the discovered scenario, and the exact CI log. A green workflow only counts when the candidate appears by name as PASS or an intentional maturity-based SKIP.
+   Check `game/<game-id>/game.json`, the discovered scenario, and the exact CI log. A green workflow only counts when the candidate appears by name as PASS or an intentional maturity-based SKIP. Tie that evidence to the TheFountain source SHA actually checked out and validated. If the review requires exact PR-head evidence, a default GitHub synthetic merge checkout does not count as the literal PR head; the workflow must validate the head SHA explicitly (or run and clearly label separate head and merge checks).
 
 3. **Verify source authority.**  
    Confirm authoritative, provisional, derived, and reference sources are distinguished. Look for duplicated executable facts across scenario data, DODGE, runtime defaults, or targets.
