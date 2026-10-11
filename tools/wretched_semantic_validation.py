@@ -143,6 +143,14 @@ def validate_resolved_semantics(resolved):
                 errors.append(f"resolved: {instance} has unsatisfied member {ref}")
     return errors
 
+def validate_source_context(context):
+    """Generic TheFountain conformance hook."""
+    return validate_source_semantics(context["dodge"],context["scenario_source"])
+
+def validate_resolved_context(context):
+    """Generic TheFountain conformance hook."""
+    return validate_resolved_semantics(context["resolved"])
+
 def require_source_semantics(dodge,canonical):
     errors=validate_source_semantics(dodge,canonical)
     if errors: raise SemanticValidationError("\n".join(errors))

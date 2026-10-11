@@ -37,6 +37,22 @@ def _diag(field,status,classification,canonical=None,effective=None,reason=None)
     if effective is not None: d["effective"]=copy.deepcopy(effective)
     if reason: d["reason"]=reason
     return d
+
+def _validation_evidence(dodge):
+    declaration=dodge.get("validation") or {}
+    core=declaration.get("core_profile") or {"profile_id":"dodge-core","version":dodge["dodge_version"]}
+    required=declaration.get("required_profiles",[])
+    return {
+        "core":{"profile_id":core["profile_id"],"version":core["version"],"stage":"core","status":"pass"},
+        "required_profiles":[
+            {"profile_id":p["profile_id"],"version":p["version"],"stage":"source","status":"pass"}
+            for p in required if "source" in p.get("stages",[])
+        ],
+        "resolved_game":[
+            {"profile_id":p["profile_id"],"version":p["version"],"stage":"resolved-game","status":"pass"}
+            for p in required if "resolved-game" in p.get("stages",[])
+        ],
+    }
 def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,rep_rows):
     scene_ref=scenario["scene_ref"]
     entries=[]
@@ -116,7 +132,7 @@ def _manifest(dodge,dodge_path,contract,contract_path,scenario,scene,canonical,r
                     q=v["quantity_override"];oldq=ve["resolved_quantity"];ve["resolved_quantity"]=q["value"];ve["diagnostics"].append(_diag("quantity","overridden",q["classification"],oldq,q["value"],q["reason"]))
                 if "notes" in v:ve["notes"]=copy.deepcopy(v["notes"])
                 entries.append(ve)
-    return {"manifest_version":"0.2.1","manifest_id":f"{contract['contract_id']}:{scenario['scene_ref']}".replace("-","."),"target":contract["target"],"dodge_identity":{"dodge_version":dodge["dodge_version"],"document_id":dodge["document_id"],"sha256":_sha256(dodge_path)},"contract_identity":{"contract_version":contract["contract_version"],"contract_id":contract["contract_id"],"sha256":_sha256(contract_path)},"resolution_scope":{"scene_ref":scene_ref,"scenario_ref":"scenario-01"},"contents":entries}
+    return {"manifest_version":"0.2.1","manifest_id":f"{contract['contract_id']}:{scenario['scene_ref']}".replace("-","."),"target":contract["target"],"dodge_identity":{"dodge_version":dodge["dodge_version"],"document_id":dodge["document_id"],"sha256":_sha256(dodge_path)},"contract_identity":{"contract_version":contract["contract_version"],"contract_id":contract["contract_id"],"sha256":_sha256(contract_path)},"resolution_scope":{"scene_ref":scene_ref,"scenario_ref":"scenario-01"},"validation_evidence":_validation_evidence(dodge),"contents":entries}
 def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
     dodge=_load(dodge_path)
     if dodge.get("dodge_version")!="0.2.1": raise ResolutionError("Requires DODGE 0.2.1")
@@ -139,9 +155,14 @@ def resolve(dodge_path=DEFAULT_DODGE,export_contract_path=None):
                     q=comp.get("quantity",{"basis":"fixed","value":1});bindings=canonical["crew"] if q.get("per_binding") else [None]
                     for binding in bindings:out["inventory"]["representations"].append({"state_ref":inc["state_ref"],"mode":inc["mode"],"representation_ref":rep_ref,"object_ref":comp["object_ref"],"role":comp.get("role"),"binding_ref":binding.get("id") if binding else None,"quantity":_qty(q,binding)})
         out["export_contract"]=contract
-        out["target_manifest"]=_manifest(dodge,dodge_path,contract,export_contract_path,scenario,scene,canonical,out["inventory"]["representations"])
     require_resolved_semantics(out)
+    if export_contract_path:
+        out["target_manifest"]=_manifest(dodge,dodge_path,contract,export_contract_path,scenario,scene,canonical,out["inventory"]["representations"])
     return out
+def resolve_context(context, export_contract_path=None):
+    """Generic TheFountain conformance hook."""
+    return resolve(context["dodge_path"],export_contract_path)
+
 def main():
     import argparse
     p=argparse.ArgumentParser();p.add_argument("--dodge",type=Path,default=DEFAULT_DODGE);p.add_argument("--export-contract",type=Path);p.add_argument("--out",type=Path);p.add_argument("--manifest-out",type=Path)

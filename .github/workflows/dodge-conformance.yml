@@ -4,34 +4,19 @@ on:
   pull_request:
     paths:
       - "game/**"
-      - "tools/validate_wretched_dodge.py"
-      - "tools/wretched_semantic_validation.py"
-      - "tests/test_wretched_validation.py"
-      - "tests/test_game_registry.py"
-      - "tests/test_game_registry.py"
-      - "tests/wretched-runtime.test.mjs"
-      - "src/wretched/**"
-      - "tools/resolve_wretched_dodge.py"
-      - "tools/game_registry.py"
-      - "tools/export_wretched_beta_pnp.py"
-      - "tools/verify_wretched_beta_pnp.py"
-      - "tools/export_wretched_beta_tts.py"
-      - "tools/verify_wretched_beta_tts.py"
-      - "tools/export_wretched_beta_tts.py"
-      - "tools/verify_wretched_beta_tts.py"
+      - "tools/**"
+      - "tests/**"
+      - "src/**"
+      - "package.json"
       - ".github/workflows/dodge-conformance.yml"
   push:
     branches: [main]
     paths:
       - "game/**"
-      - "tools/validate_wretched_dodge.py"
-      - "tools/wretched_semantic_validation.py"
-      - "tests/test_wretched_validation.py"
-      - "tests/wretched-runtime.test.mjs"
-      - "src/wretched/**"
-      - "tools/resolve_wretched_dodge.py"
-      - "tools/export_wretched_beta_pnp.py"
-      - "tools/verify_wretched_beta_pnp.py"
+      - "tools/**"
+      - "tests/**"
+      - "src/**"
+      - "package.json"
       - ".github/workflows/dodge-conformance.yml"
   workflow_dispatch:
 
@@ -47,18 +32,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: jmbjr/DODGE
-          ref: 7533795a7631d39fbcb27724e3ff56e6c6852fb9
+          ref: 978700d8c2887f65a60930f9e0f2ac8f8963d2f9
           path: dodge
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install "jsonschema>=4.23,<5" reportlab pillow pypdf
-      - name: Validate active Wretched documents and resolved PnP manifest
+      - name: Discover and validate registered DODGE games
         working-directory: the-fountain
         run: |
-          python tools/validate_wretched_dodge.py --schema-root ../dodge/draft/v0.2.1
-          python -m py_compile tools/resolve_wretched_dodge.py tools/wretched_semantic_validation.py tools/export_wretched_beta_pnp.py tools/verify_wretched_beta_pnp.py tools/export_wretched_beta_tts.py tools/verify_wretched_beta_tts.py
-          python -m unittest tests/test_game_registry.py tests/test_wretched_validation.py
+          python tools/validate_registered_dodge.py --dodge-root ../dodge
+          python -m py_compile tools/validate_registered_dodge.py tools/game_registry.py tools/resolve_wretched_dodge.py tools/wretched_semantic_validation.py tools/export_wretched_beta_pnp.py tools/verify_wretched_beta_pnp.py tools/export_wretched_beta_tts.py tools/verify_wretched_beta_tts.py
+          python -m unittest discover -s tests -p 'test_*.py'
           npm test
           python tools/resolve_wretched_dodge.py --export-contract game/wretched-demesne/scenarios/scenario-01/export-contracts/pnp.dodge-export.json --out /tmp/wretched-resolved.json --manifest-out /tmp/wretched-pnp-manifest.json
           python - <<'PY'

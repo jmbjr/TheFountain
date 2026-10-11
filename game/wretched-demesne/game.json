@@ -21,6 +21,10 @@
         "web": "../../wretched-demesne/beta",
         "pnp": "../../wretched-demesne/beta/downloads",
         "tts": "../../wretched-demesne/beta/downloads"
+      },
+      "conformance": {
+        "maturity": "G7",
+        "resolver": "tools/resolve_wretched_dodge.py"
       }
     },
     "scenario-02": {

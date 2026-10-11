@@ -1,1 +1,8 @@
-{"name":"forbidden-places","private":true,"type":"module","scripts":{"test":"node tests/wretched-runtime.test.mjs"}}
+{
+  "name": "forbidden-places",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*-runtime.test.mjs"
+  }
+}
