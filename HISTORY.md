@@ -499,3 +499,14 @@ PR #105 continued that audit by removing encounter-ID gameplay branching in favo
 ## Multi-game source layout
 
 Refactored authored source under `game/<game-id>/`, preserving Wretched Scenario 01 as the reference scenario, reserving Wretched Scenario 02, moving the original Fountain prototype into its own namespace, and creating a clean GURPS/DODGE incubation namespace. Added descriptor-based game/scenario discovery while leaving historical generated Beta builds untouched.
+
+
+## DIRPS incubation namespace
+
+**October 11, 2026.**
+
+The reserved `game/gurps/` namespace was renamed to `game/dirps/` before substantive implementation began. This keeps the implementation identity separate from the first external ruleset used to stress-test it: GURPS Lite supplies the initial RPG mechanics, while DIRPS owns the DODGE-backed experiment.
+
+DIRPS deliberately mirrors the Wretched Demesne authored-source layout with a game descriptor, DODGE document, explicit sidecar, documentation, and a sibling Scenario 01 directory. Its first proto sidecar records RPG-shaped gaps in DODGE 0.2.1—random resolution, derived values, expressions, procedure context, reaction timing, hidden information, character/skill structure, resolution traces, and replay/session history—without changing DODGE itself.
+
+**Milestone:** the second independent DODGE stress test now has the same source vocabulary and ownership boundaries as the Wretched reference implementation, while keeping all candidate DODGE 0.2.2 semantics explicit and provisional.

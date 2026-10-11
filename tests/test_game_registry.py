@@ -12,7 +12,7 @@ class GameRegistryTests(unittest.TestCase):
         games=discover_games()
         self.assertIn("the-fountain",games)
         self.assertIn("wretched-demesne",games)
-        self.assertIn("gurps",games)
+        self.assertIn("dirps",games)
 
     def test_wretched_scenario_01_paths_exist(self):
         cfg=scenario_config("wretched-demesne","scenario-01")

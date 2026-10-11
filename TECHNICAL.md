@@ -479,4 +479,4 @@ scenario  = scenario-01
 target    = web / pnp / tts
 ```
 
-Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelated implementations such as the GURPS experiment receive their own game namespace. Generated target artifacts remain outside `game/` and are never sources of canonical semantics. Historical SHA-addressed Wretched Beta builds are not rewritten during source-layout migrations.
+Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelated implementations such as DIRPS receive their own game namespace. DIRPS uses GURPS Lite as its first external rules stress test. Generated target artifacts remain outside `game/` and are never sources of canonical semantics. Historical SHA-addressed Wretched Beta builds are not rewritten during source-layout migrations.

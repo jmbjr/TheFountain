@@ -15,7 +15,7 @@ game/
 │   └── scenarios/
 │       ├── scenario-01/
 │       └── scenario-02/
-└── gurps/
+└── dirps/
 ```
 
 `tools/game_registry.py` discovers `game/<game-id>/game.json` descriptors and resolves scenario source, DODGE documents, sidecars, and export contracts by **game ID + scenario ID**. Adding another game should not require teaching repository-wide code a new set of hardcoded paths.
@@ -160,20 +160,20 @@ Before coding Scenario 02:
 
 Scenario 01 should remain reproducible while Scenario 02 evolves.
 
-### 3. GURPS DODGE experiment
+### 3. DIRPS RPG/DODGE experiment
 
-The `game/gurps/` namespace is ready for a separate implementation effort.
+The `game/dirps/` namespace is the RPG-focused implementation effort. GURPS Lite is its first external rules stress test.
 
-The purpose is not merely to implement GURPS. It is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions.
+The purpose is not merely to implement GURPS. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions.
 
-Use the GURPS work to identify:
+Use the DIRPS/GURPS stress test to identify:
 
 - genuinely reusable neutral concepts;
 - Wretched-specific assumptions that should not live in shared infrastructure;
 - missing DODGE contracts;
 - opportunities to generalize resolver/validation/target tooling.
 
-Reusable contract improvements belong in DODGE rather than private GURPS or Wretched dialects.
+Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
 ## DODGE 0.2.1 / reference-release direction
 

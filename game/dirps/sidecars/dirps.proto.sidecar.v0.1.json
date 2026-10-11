@@ -1,0 +1,269 @@
+{
+  "sidecar_format": "dodge-adjacent-proto-sidecar",
+  "sidecar_version": "0.1.0",
+  "game_id": "dirps",
+  "dodge_target_version": "0.2.1",
+  "source": {
+    "ruleset": "GURPS Lite",
+    "edition_context": "Third Edition / June 2003",
+    "authority": "external authoritative rules reference",
+    "note": "This sidecar does not reproduce the source rules text. It records neutral prototype semantics needed to test DODGE gaps."
+  },
+  "migration_intent": {
+    "purpose": "Define provisional neutral contracts for semantics DIRPS needs but DODGE 0.2.1 cannot express cleanly.",
+    "rule": "DIRPS must remain valid DODGE 0.2.1 first. Proto semantics live here until proven generic enough for upstream DODGE.",
+    "target": "candidate input to DODGE v0.2.2",
+    "promotion_gate": [
+      "exercised by Scenario 01",
+      "implemented through shared resolver/runtime rather than target-specific code",
+      "covered by positive and negative/perturbation tests",
+      "demonstrated to be reusable beyond GURPS-specific terminology"
+    ]
+  },
+  "proto_specs": {
+    "dice_resolution": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 has randomizer objects but no first-class executable roll/resolution primitive that records rolled terms and a deterministic outcome.",
+      "proposed_shape": {
+        "id": "success-roll-3d6",
+        "randomizer": {
+          "kind": "dice-pool",
+          "count": 3,
+          "sides": 6,
+          "combine": "sum"
+        },
+        "comparator": {
+          "op": "lte",
+          "target_ref": "effective-target"
+        },
+        "outputs": [
+          "rolled_terms",
+          "total",
+          "success",
+          "margin"
+        ]
+      },
+      "dirps_evidence": [
+        "ordinary success rolls",
+        "attack rolls",
+        "active defense rolls",
+        "HT recovery checks"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "derived_values": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 value definitions store typed state but do not define dependency formulas for derived values.",
+      "proposed_shape": {
+        "id": "derived-value",
+        "value_type": "number",
+        "expression_ref": "expression-id",
+        "dependencies": [
+          "value-or-resource-ref"
+        ],
+        "recompute": "on-dependency-change"
+      },
+      "dirps_evidence": [
+        "Move",
+        "Dodge",
+        "effective target values"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "expressions": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 conditions/effects provide bounded operators but not a reusable arithmetic expression graph for rules math.",
+      "proposed_shape": {
+        "operators": [
+          "literal",
+          "ref",
+          "add",
+          "subtract",
+          "multiply",
+          "divide",
+          "floor",
+          "ceil",
+          "min",
+          "max"
+        ],
+        "evaluation": "pure",
+        "inputs": "semantic references only"
+      },
+      "dirps_evidence": [
+        "effective skill after modifiers",
+        "defense derivation",
+        "damage adjustments"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "lookup_tables": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 has no first-class table lookup semantic for rules that map one value/range to another result.",
+      "proposed_shape": {
+        "key_expression_ref": "expression-id",
+        "rows": [
+          {
+            "when": {
+              "min": 0,
+              "max": 0
+            },
+            "value": "result"
+          }
+        ],
+        "fallback": "error-or-explicit-default"
+      },
+      "dirps_evidence": [
+        "strength-to-damage style tables",
+        "range/modifier tables where required"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "procedure_context": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 ordered procedures lack named local variables/outputs that later steps can reference.",
+      "proposed_shape": {
+        "inputs": [
+          "named binding"
+        ],
+        "locals": [
+          "named typed value"
+        ],
+        "outputs": [
+          "named result"
+        ],
+        "result_visibility": "procedure"
+      },
+      "dirps_evidence": [
+        "base target -> modifiers -> effective target -> roll -> margin -> consequence"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "reaction_timing": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 phases and ordered procedures do not explicitly model interrupt/reaction windows or constrained defensive responses.",
+      "proposed_shape": {
+        "trigger_event": "semantic-event",
+        "eligible_action_refs": [
+          "action-id"
+        ],
+        "responder_selector": "subject",
+        "resolution_order": "declared"
+      },
+      "dirps_evidence": [
+        "active defenses after a successful attack"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "visibility_and_secret_state": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 has no generic visibility contract for GM-only state, hidden checks, or player-visible versus concealed information.",
+      "proposed_shape": {
+        "visibility": [
+          "public",
+          "actor",
+          "player",
+          "gm",
+          "system"
+        ],
+        "reveal_event_ref": "optional-event",
+        "audit_record": "always-available-to-replay-policy"
+      },
+      "dirps_evidence": [
+        "GM rolls",
+        "hidden NPC information",
+        "undiscovered scenario facts"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "actor_character_model": {
+      "status": "proto",
+      "dodge_gap": "DODGE actors can be objects with state, but RPG character structure is currently ad hoc instance state/extensions.",
+      "proposed_shape": {
+        "actor_ref": "instance-or-object",
+        "attributes": [
+          "trait binding"
+        ],
+        "advantages": [
+          "trait ref"
+        ],
+        "disadvantages": [
+          "trait ref"
+        ],
+        "skills": [
+          "skill binding"
+        ],
+        "equipment": [
+          "object or inventory ref"
+        ]
+      },
+      "dirps_evidence": [
+        "player characters and NPCs"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "skill_model": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 has no reusable semantic model for learned skills, defaults, governing attributes, or resolved levels.",
+      "proposed_shape": {
+        "id": "skill-definition",
+        "governing_value_ref": "attribute-id",
+        "level_binding": "actor scoped",
+        "default_rules": [
+          "optional rule refs"
+        ],
+        "tags": [
+          "project-defined"
+        ]
+      },
+      "dirps_evidence": [
+        "Tracking",
+        "First Aid",
+        "Broadsword",
+        "Area Knowledge"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "resolution_trace": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 describes rules but not a standard evidence record showing which rules, modifiers, random terms, and state changes produced a result.",
+      "proposed_shape": {
+        "action_ref": "semantic-action",
+        "rule_refs": [
+          "rule-or-procedure"
+        ],
+        "inputs": {},
+        "random_events": [],
+        "outputs": {},
+        "state_delta": []
+      },
+      "dirps_evidence": [
+        "teaching mode and rule-reference explanations"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    },
+    "replay_session_history": {
+      "status": "proto",
+      "dodge_gap": "DODGE 0.2.1 has no first-class immutable session/replay sequence comparable to the Wretched replay contract.",
+      "proposed_shape": {
+        "format": "dodge-replay-proto",
+        "source_identity": "rules + scenario + runtime revision",
+        "initial_state_hash": "hash",
+        "steps": [
+          {
+            "sequence": 1,
+            "declared_action": {},
+            "resolution_trace": {},
+            "state_before_hash": "hash",
+            "state_after_hash": "hash"
+          }
+        ]
+      },
+      "dirps_evidence": [
+        "Chat/GM continuity",
+        "deterministic reproduction",
+        "state-divergence detection"
+      ],
+      "candidate_for_dodge": "0.2.2"
+    }
+  }
+}

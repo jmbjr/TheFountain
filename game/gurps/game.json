@@ -1,8 +1,0 @@
-{
-  "registry_version": "1",
-  "id": "gurps",
-  "title": "GURPS DODGE Experiment",
-  "status": "incubating",
-  "description": "Clean namespace for the separate GURPS-based DODGE implementation experiment.",
-  "scenarios": {}
-}

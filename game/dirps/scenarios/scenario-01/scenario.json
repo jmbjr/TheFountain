@@ -1,0 +1,89 @@
+{
+  "schema_version": "0.1.0",
+  "game_id": "dirps",
+  "dataset_id": "scenario-01-the-missing-courier",
+  "status": "prototype",
+  "authority": {
+    "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
+    "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
+    "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
+  },
+  "artifact_note": {
+    "target": "A small solo tutorial scenario that exercises enough RPG mechanics to pressure-test DODGE without turning target code into a rules source.",
+    "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
+    "acceptance": [
+      "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
+      "Play exercises an ordinary success roll, a social or reaction-oriented interaction, an environmental challenge, and one manageable combat exchange.",
+      "Every random result is preserved in replay evidence.",
+      "Every mechanical resolution can identify the rule/procedure used and its source locator.",
+      "Unsupported or uncertain rules fail visibly rather than being guessed."
+    ]
+  },
+  "tutorial": {
+    "title": "The Missing Courier",
+    "premise": "A courier failed to return along an isolated road. The player follows the route, investigates what happened, deals with one grounded obstacle, and returns with an answer.",
+    "design_goal": "Teach core RPG resolution progressively while generating deterministic replay evidence for DIRPS/DODGE development.",
+    "target_minutes": {
+      "min": 45,
+      "max": 90
+    }
+  },
+  "player_character": {
+    "id": "pc",
+    "name": "Rook",
+    "provenance": "prototype_assumption",
+    "attributes": {
+      "st": 10,
+      "dx": 11,
+      "iq": 11,
+      "ht": 10
+    },
+    "skills": {
+      "area-knowledge": 11,
+      "first-aid": 11,
+      "broadsword": 12,
+      "tracking": 12
+    },
+    "equipment": [
+      "travel-clothes",
+      "broadsword",
+      "basic-first-aid-kit"
+    ]
+  },
+  "encounters": [
+    {
+      "id": "roadside-tracks",
+      "type": "investigation",
+      "purpose": "Exercise an ordinary success roll with a situational modifier."
+    },
+    {
+      "id": "frightened-witness",
+      "type": "social",
+      "purpose": "Exercise a social/reaction-oriented resolution without requiring a large NPC subsystem."
+    },
+    {
+      "id": "washed-out-path",
+      "type": "environmental",
+      "purpose": "Exercise an attribute or skill test with clear consequences."
+    },
+    {
+      "id": "bandit-scout",
+      "type": "combat",
+      "purpose": "Exercise attack, active defense, damage, injury, and state change in a bounded encounter."
+    }
+  ],
+  "implementation_boundary": {
+    "canonical_here": [
+      "scenario fiction and encounter ordering",
+      "prototype character build",
+      "which mechanics the tutorial intends to exercise"
+    ],
+    "not_canonical_here": [
+      "GURPS rule text",
+      "dice-resolution semantics",
+      "derived-stat formulas",
+      "replay schema",
+      "target presentation"
+    ]
+  }
+}
