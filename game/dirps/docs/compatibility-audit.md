@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded **G0 compatibility audit** for DIRPS Scenario 01. Classifications are working hypotheses until exact schema/core validation and executable Scenario 01 evidence confirm them.
+This is the bounded compatibility audit for DIRPS Scenario 01. The DODGE document has reached **G1 — Schema-valid** against TheFountain CI's pinned DODGE 0.2.1 schema; classifications remain working hypotheses until G2 core validation and later executable Scenario 01 evidence confirm them.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -37,7 +37,7 @@ The sidecar uses the onboarding progression:
 suspected → exercised → candidate
 ```
 
-Every gap in this G0 audit is currently **suspected**, even when a likely future DODGE version is obvious.
+Every gap in this audit is currently **suspected**, even when a likely future DODGE version is obvious.
 
 ## Promotion test
 
