@@ -540,3 +540,16 @@ Review of DIRPS PR #168 found that the generic conformance workflow was candidat
 The repository now treats source identity as part of conformance evidence. Pull-request conformance checks out the exact PR head, reports the TheFountain SHA being validated, and asserts that the checkout matches the expected head before running the registered-game pipeline. Push/main and manual runs continue to use the triggering `github.sha`. The onboarding guide, review process, and technical architecture record the same invariant so future maturity reviews do not infer exact-head evidence from a synthetic merge run.
 
 This closes the repository-level provenance gap discovered in TheFountain issue #169; it does not change DODGE semantics or raise DIRPS beyond G1.
+
+
+## DIRPS Scenario 01 reaches G2 core validity
+
+**October 11, 2026.**
+
+DIRPS Scenario 01 advanced from the merged PR #168 G1 baseline to **G2 — Core-valid** by auditing the candidate against every DODGE 0.2.1 `DODGE_SPEC.md` §15.3 base rule and conditional group. The exact DODGE revision remains `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
+
+The G2 audit found two real G1-era core gaps. The tutorial turn used unnamed legacy choice options, so it now uses stable named `choice_options`. The scenario also declared a prose-only end condition; because §15.3 requires deterministic end-condition evaluation, that executable declaration was removed rather than inventing completion state. Completion intent remains preserved in the prose objective and Scenario 01 source for later formalization.
+
+The durable evidence record is `game/dirps/docs/g2-core-validation.md`. It records PASS/N/A for all twelve base checks plus the representation, target-content, invocation, and requirements/modifiers/choices/equipment conditional groups. `tests/test_dirps_g2_core.py` makes those applicability assumptions executable and includes negative fixtures for missing refs, face-slot mismatch, procedure cycles, duplicate scene IDs, wrong-kind rule refs, invalid defaults, prose-only end conditions, and duplicate choice IDs.
+
+The repository onboarding/review docs now require this check-by-check G2 evidence format, closing TheFountain issue #170's documentation gap. No DIRPS semantic profile, resolver, executable dice, replay system, target, UI, or proto promotion was added. **G3 — Semantic-valid** is next.
