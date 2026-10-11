@@ -7,9 +7,10 @@ only Wretched can define, both before and after target-neutral resolution.
 from __future__ import annotations
 import json
 from pathlib import Path
+from game_registry import scenario_config
 
 ROOT=Path(__file__).parents[1]
-SCENARIO=ROOT/"game/wretched-demesne.scenario-01.mvp.v0.1.json"
+SCENARIO=scenario_config("wretched-demesne","scenario-01")["source"]
 ALLOWED_TRIGGERS={"play","enter","search","interact","resolve","turn-start"}
 
 class SemanticValidationError(ValueError):
