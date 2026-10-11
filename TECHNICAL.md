@@ -398,6 +398,7 @@ When adding or changing gameplay:
 To keep the repository approachable:
 
 - **README.md** — short project introduction and useful entry points.
+- **docs/ADDING_A_GAME.md** — deterministic repository onboarding path for a new DODGE-backed game.
 - **HISTORY.md** — conversational history: what we did and why.
 - **TECHNICAL.md** — architecture, builds, CI/CD, cache policy and implementation details.
 - **game/*.md** — game/import-specific assumptions and contracts.
