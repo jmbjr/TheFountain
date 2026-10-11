@@ -1,0 +1,679 @@
+{
+  "sidecar_format": "dodge-adjacent-gdd-sidecar",
+  "sidecar_version": "0.1.0",
+  "game_id": "wretched-demesne-plateau-of-leng",
+  "dodge_target_version": "0.1.0",
+  "source": {
+    "title": "Wretched Demesne: Plateau of Leng — GDD Prototype v0.1",
+    "format": "pdf",
+    "pages": 31,
+    "authority": "authoritative design input"
+  },
+  "migration_intent": {
+    "purpose": "Lossless holding area for GDD semantics not representable in DODGE v0.1.0.",
+    "rule": "Do not discard, resolve, normalize away, or invent design information. Promote fields into future DODGE versions when the official schema gains an equivalent concept.",
+    "fidelity": "source_transcription preserves the complete parsed source text; structured_extensions provides DODGE-adjacent machine-readable concepts."
+  },
+  "structured_extensions": {
+    "game_profile": {
+      "genre": "Cooperative Sci-Fi Cosmic Horror Deck-Building Dungeon Crawler",
+      "players": {
+        "min": 1,
+        "max": 4
+      },
+      "primary_mode": "Cooperative",
+      "secondary_mode": "Solo",
+      "setting": "Sci-Fi Cosmic Horror / Survival Horror",
+      "core_inspirations": [
+        "Cloudy Mountain",
+        "Vampire Survivors",
+        "Diablo",
+        "Alien",
+        "Lovecraftian Horror",
+        "Stargate"
+      ]
+    },
+    "design_pillars": [
+      "Explore the Unknown",
+      "Scarcity Creates Decisions",
+      "The Planet Reacts to You",
+      "Violence Has Consequences",
+      "Knowledge Is Progression"
+    ],
+    "macro_structure": {
+      "phases": [
+        "Ship Phase",
+        "Expedition Phase"
+      ],
+      "ship_phase_actions": [
+        "Heal crew",
+        "Manage injuries",
+        "Modify decks",
+        "Equip weapons",
+        "Research artifacts",
+        "Repair ship systems",
+        "Select crew",
+        "Prepare supplies",
+        "Choose next destination",
+        "Review discovered information"
+      ],
+      "expedition_end_conditions": [
+        "Objective reached and extracted",
+        "Voluntary retreat",
+        "All crew incapacitated",
+        "Scenario-specific defeat"
+      ]
+    },
+    "turn_structure": {
+      "phases": [
+        "Ready",
+        "Crew Action",
+        "Encounter / Environment",
+        "Enemy",
+        "End of Turn"
+      ],
+      "hand_size": 5,
+      "actions_per_crew": 3,
+      "action_costs": {
+        "move": 1,
+        "attack": 1,
+        "search": 1,
+        "interact": 1,
+        "assist": 1,
+        "recover": 1
+      }
+    },
+    "movement": {
+      "default": "Horizontal or vertical between connected spaces",
+      "cost_actions": 1,
+      "terrain_modifiers": [
+        "Rubble",
+        "Narrow passages",
+        "Vertical terrain",
+        "Water",
+        "Toxic areas",
+        "Locked doors",
+        "Collapsed tunnels"
+      ]
+    },
+    "attack": {
+      "cost_actions": 1,
+      "resolution": [
+        "Choose target",
+        "Determine range",
+        "Calculate attack value",
+        "Apply enemy defenses/resistances",
+        "Deal damage",
+        "Resolve special effects",
+        "Check for death"
+      ]
+    },
+    "noise": {
+      "weapon_noise": {
+        "Knife": 0,
+        "Pistol": 1,
+        "Rifle": 2,
+        "Shotgun": 3,
+        "Heavy Weapon": 4,
+        "Grenade": 5,
+        "Alien Weapon": "Variable"
+      },
+      "effects": [
+        "Attract nearby enemies",
+        "Increase enemy aggression",
+        "Trigger special encounters",
+        "Reveal hidden enemies",
+        "Advance scenario Threat track"
+      ]
+    },
+    "search": {
+      "cost_actions": 1,
+      "reveals": [
+        "Scrap",
+        "Ammunition",
+        "Medical supplies",
+        "Weapons",
+        "Equipment",
+        "Ancient technology",
+        "Clues",
+        "Key items",
+        "Corpses/remains",
+        "Traps",
+        "Hidden enemies"
+      ]
+    },
+    "interact": {
+      "cost_actions": 1,
+      "examples": [
+        "Open a door",
+        "Activate an ancient device",
+        "Use a key",
+        "Operate machinery",
+        "Examine a corpse",
+        "Activate a terminal",
+        "Repair an object",
+        "Open a Stargate-like structure",
+        "Investigate a clue"
+      ]
+    },
+    "assist": {
+      "cost_actions": 1,
+      "examples": [
+        "Help injured character move",
+        "Stabilize dying crew member",
+        "Provide cover",
+        "Transfer equipment",
+        "Give temporary bonus"
+      ],
+      "role_affinity": [
+        "Captain",
+        "Medic"
+      ]
+    },
+    "recover": {
+      "cost_actions": 1,
+      "possible_effects": [
+        "Remove minor temporary condition",
+        "Recover from suppression",
+        "Regain small amount of stamina",
+        "Prepare defensive equipment"
+      ],
+      "full_healing": "Generally requires Medic or Ship Phase"
+    },
+    "card_play": {
+      "roles": [
+        "Modify an action",
+        "Create an additional action",
+        "Improve an attack",
+        "Reduce incoming damage",
+        "Move characters",
+        "Manipulate enemies",
+        "Search",
+        "Generate resources",
+        "Interact with alien technology",
+        "Alter the environment"
+      ]
+    },
+    "encounter_types": [
+      "Hostile",
+      "Event",
+      "Discovery",
+      "Hazard",
+      "Omen",
+      "Clue"
+    ],
+    "exploration": {
+      "contents": [
+        "Corridors",
+        "Chambers",
+        "Caves",
+        "Ruins",
+        "Dead ends",
+        "Large open spaces",
+        "Hidden passages",
+        "Locked areas",
+        "Objective rooms",
+        "Enemy nests"
+      ],
+      "candidate_generation": [
+        "Modular tiles",
+        "Room cards",
+        "Hex tiles",
+        "Square grid",
+        "Scenario-specific maps"
+      ],
+      "prototype_recommendation": "Modular room/terrain tiles"
+    },
+    "enemy_activation": [
+      "Detect",
+      "Move",
+      "Act"
+    ],
+    "enemy_profiles": {
+      "Small Spider": [
+        "Avoids players",
+        "Moves toward corpses",
+        "Attacks when threatened",
+        "Attempts to flee when injured"
+      ],
+      "Large Spider": [
+        "Hunts players",
+        "Pursues injured targets",
+        "Feeds on corpses",
+        "May retreat after feeding"
+      ],
+      "Alpha Spider": [
+        "Aggressive",
+        "Pursues anything nearby",
+        "Attacks players and other creatures",
+        "Does not retreat"
+      ]
+    },
+    "spider_ecosystem": {
+      "corpse_rule": "Killed Spider places a Spider Corpse token; corpse is an interactable environmental object.",
+      "feeding": "A spider consuming a corpse becomes Fed.",
+      "feeding_examples": {
+        "Small Spider": "Fed → +1 Health",
+        "Large Spider": "Fed → begins Regeneration"
+      },
+      "pupation": "Qualifying fed spider that consumes enough corpses and escapes danger may become an immobile Chrysalis; destroy it to prevent transformation; otherwise it hatches.",
+      "development_tree": [
+        "Small Spider",
+        "Fed Small Spider",
+        "Chrysalis",
+        "Large Spider",
+        "Fed Large Spider",
+        "Chrysalis",
+        "Alpha Spider"
+      ]
+    },
+    "end_turn_checks": [
+      "Temporary effects",
+      "Status conditions",
+      "Enemy corpses",
+      "Spider feeding",
+      "Environmental effects",
+      "Noise",
+      "Threat",
+      "Scenario objectives",
+      "Advance Turn Counter"
+    ],
+    "retreat": {
+      "principle": "Retreat is not necessarily failure.",
+      "benefits": [
+        "Keep salvage",
+        "Preserve knowledge",
+        "Heal",
+        "Upgrade",
+        "Reorganize decks",
+        "Prepare"
+      ],
+      "consequences": [
+        "Enemies continue evolving",
+        "Objectives remain incomplete",
+        "Threat increases",
+        "Ship may become less secure",
+        "Certain enemies may relocate",
+        "Scenario clocks continue"
+      ],
+      "mechanic": "Push Your Luck"
+    },
+    "incapacitation": {
+      "at_zero_health": "Incapacitated",
+      "effects": [
+        "Cannot normally perform actions",
+        "Drops or exposes certain equipment",
+        "May require assistance",
+        "Can potentially be stabilized"
+      ],
+      "all_incapacitated": "Expedition defeated",
+      "permanent_death": "Possible later scenario/campaign mechanic; not initial prototype"
+    },
+    "deck_building": {
+      "deck_represents": [
+        "Training",
+        "Equipment",
+        "Instincts",
+        "Personal abilities",
+        "Supplies",
+        "Tactical knowledge"
+      ],
+      "security_starter_deck": [
+        {
+          "card": "Sidearm",
+          "qty": 2
+        },
+        {
+          "card": "Move",
+          "qty": 2
+        },
+        {
+          "card": "Take Cover",
+          "qty": 2
+        },
+        {
+          "card": "Reload",
+          "qty": 2
+        },
+        {
+          "card": "Suppressive Fire",
+          "qty": 1
+        },
+        {
+          "card": "Security Training",
+          "qty": 1
+        }
+      ],
+      "acquisition": [
+        "Searching",
+        "Salvage",
+        "Completing objectives",
+        "Discovering technology",
+        "Trading at ship",
+        "Research",
+        "Character progression"
+      ],
+      "ship_modification": [
+        "Add cards",
+        "Remove weak cards",
+        "Upgrade cards",
+        "Equip permanent items"
+      ],
+      "categories": [
+        "Action",
+        "Weapon",
+        "Equipment",
+        "Consumable",
+        "Skill",
+        "Tactic",
+        "Technology",
+        "Knowledge",
+        "Trauma",
+        "Corruption"
+      ]
+    },
+    "resources": {
+      "primary": [
+        "Action",
+        "Ammunition",
+        "Scrap",
+        "Health"
+      ],
+      "later_candidates": [
+        "Stress",
+        "Sanity",
+        "Power",
+        "Alien Energy"
+      ]
+    },
+    "threat": {
+      "scope": "Global",
+      "meaning": "Attention attracted and activity of hostile planetary ecosystem",
+      "increases": [
+        "Loud weapons",
+        "Killing enemies",
+        "Triggering alarms",
+        "Spending too much time underground",
+        "Certain encounters",
+        "Advancing scenario clocks",
+        "Discovering major artifacts"
+      ],
+      "effects": [
+        "Additional enemies",
+        "Stronger enemies",
+        "New enemy behaviors",
+        "Environmental hazards",
+        "Spider evolution",
+        "Men of Leng activity"
+      ]
+    },
+    "crashed_ship": {
+      "role": "Persistent headquarters",
+      "modules": [
+        "Bridge",
+        "Armory",
+        "Med Bay",
+        "Engineering",
+        "Laboratory",
+        "Crew Quarters",
+        "Cargo Bay",
+        "Communications"
+      ],
+      "ship_threat_thresholds": [
+        "Minor disturbances",
+        "Equipment malfunction",
+        "Cargo loss",
+        "Unknown presence detected",
+        "Crew member threatened",
+        "Ship infestation",
+        "Critical ship event"
+      ]
+    },
+    "key_items": [
+      {
+        "name": "Ancient Power Cell",
+        "effect": "Allows activation of ancient machinery"
+      },
+      {
+        "name": "Phase Cutter",
+        "effect": "Opens sealed passages"
+      },
+      {
+        "name": "Translation Device",
+        "effect": "Allows interaction with previously incomprehensible technology"
+      },
+      {
+        "name": "Gate Device",
+        "effect": "Activates ancient transportation structures"
+      },
+      {
+        "name": "Pyramid Key",
+        "effect": "Unlocks deeper sections of the Black Pyramid"
+      }
+    ],
+    "world_progression": {
+      "regions": [
+        "Deeper caves",
+        "Ancient ruins",
+        "Men of Leng territory",
+        "Alien structures",
+        "Hazardous regions",
+        "Gate complexes",
+        "Black Pyramid"
+      ],
+      "loop": [
+        "Explore",
+        "Discover",
+        "Acquire Tool",
+        "Unlock Region",
+        "Discover New Threat",
+        "Repeat"
+      ]
+    },
+    "black_pyramid": {
+      "initial_appearance": "Massive ancient communication structure",
+      "roles": [
+        "Major story location",
+        "Endgame dungeon",
+        "Source of ancient technology",
+        "Source of clues",
+        "Major enemy stronghold",
+        "Potential communication device",
+        "Potential gateway"
+      ],
+      "true_purpose": "Campaign-level mystery"
+    },
+    "information_system": {
+      "clue_types": [
+        "Ancient symbols",
+        "Logs",
+        "Maps",
+        "Corpse remains",
+        "Alien recordings",
+        "Men of Leng writings",
+        "Biological samples",
+        "Ship fragments",
+        "Coordinates"
+      ],
+      "principle": "Narrative emerges through play rather than a large initial lore dump."
+    },
+    "men_of_leng": {
+      "identity": "Intelligent inhabitants/servants associated with deeper mystery",
+      "contrast": {
+        "spiders": [
+          "Instinct",
+          "Biology",
+          "Hunger"
+        ],
+        "men_of_leng": [
+          "Intelligence",
+          "Cult",
+          "Knowledge",
+          "Manipulation"
+        ]
+      },
+      "candidate_mechanics": [
+        "Ambushes",
+        "Traps",
+        "Ranged attacks",
+        "Theft",
+        "Technology",
+        "Rituals",
+        "Manipulation of other creatures",
+        "Retreat",
+        "Reinforcement"
+      ],
+      "pyramid_relationship": "Unknown"
+    },
+    "initial_enemy_classes": [
+      {
+        "name": "Small Spider",
+        "role": "Weak swarm creature"
+      },
+      {
+        "name": "Large Spider",
+        "role": "Predator"
+      },
+      {
+        "name": "Alpha Spider",
+        "role": "Elite predator"
+      },
+      {
+        "name": "Brood Mother",
+        "role": "Spawner / encounter controller"
+      },
+      {
+        "name": "Men of Leng Servant",
+        "role": "Intelligent humanoid enemy"
+      }
+    ],
+    "enemy_difficulty_philosophy": [
+      "Better AI",
+      "Environmental interaction",
+      "New behaviors",
+      "Synergies",
+      "Reinforcements",
+      "Evolution",
+      "Status effects",
+      "Objectives",
+      "Player resource pressure"
+    ],
+    "prototype_win_condition": [
+      "Reach designated ancient structure",
+      "Obtain required artifact",
+      "Activate extraction objective",
+      "Successfully return to ship"
+    ],
+    "prototype_loss_conditions": [
+      "All active crew incapacitated",
+      "Scenario-specific objective becomes impossible",
+      "Critical ship/system condition reaches failure state"
+    ],
+    "campaign_loss_candidates": [
+      "Ship destroyed",
+      "Entire crew lost",
+      "Planetary Threat reaches maximum",
+      "Specific ancient entity awakened"
+    ],
+    "prototype_priorities": [
+      "Is the basic action system fun?",
+      "Is the deck-building satisfying?",
+      "Is the Spider Ecosystem interesting?",
+      "Is retreat difficult to resist?"
+    ],
+    "design_target": [
+      "Explore",
+      "Discover",
+      "Fight",
+      "Salvage",
+      "Grow Stronger",
+      "Become Overconfident",
+      "Encounter Something Horrifying",
+      "Adapt",
+      "Learn",
+      "Push Deeper"
+    ],
+    "open_design_questions": [
+      "Exact deck size",
+      "Exact card acquisition economy",
+      "Exact health/damage scale",
+      "Exact dungeon-generation system",
+      "Exact Threat implementation",
+      "Whether ammunition is represented by cards or counters",
+      "Whether crew members can permanently die",
+      "Exact Stress/Sanity system",
+      "Exact ship-infiltration rules",
+      "Exact Black Pyramid function",
+      "Full campaign structure",
+      "Multiplayer scaling",
+      "Men of Leng faction structure",
+      "Final victory conditions"
+    ],
+    "next_prototype_targets": {
+      "character_sheet": [
+        "Health",
+        "Actions",
+        "Movement",
+        "Defense",
+        "Accuracy",
+        "Carry capacity",
+        "Special ability"
+      ],
+      "card_anatomy": [
+        "Cost",
+        "Type",
+        "Range",
+        "Damage",
+        "Keywords",
+        "Rarity",
+        "Upgrade level"
+      ],
+      "starting_decks": [
+        "Captain",
+        "Security",
+        "Engineer",
+        "Medic",
+        "Scout"
+      ],
+      "enemy_stat_blocks": [
+        "Small Spider",
+        "Large Spider",
+        "Alpha Spider",
+        "Brood Mother",
+        "Men of Leng"
+      ],
+      "resource_economy": [
+        "Ammo",
+        "Scrap",
+        "Actions",
+        "Health",
+        "Threat"
+      ],
+      "first_scenario": {
+        "id": "scenario-01",
+        "name": "The Cave",
+        "objective": "Explore the cave system, recover useful salvage, discover evidence of the ancient civilization, and return to the crashed ship alive.",
+        "teaches": [
+          "Movement",
+          "Combat",
+          "Searching",
+          "Loot",
+          "Noise",
+          "Corpses",
+          "Spider feeding",
+          "Retreat",
+          "Deck-building",
+          "Ship recovery"
+        ],
+        "target_minutes": {
+          "min": 30,
+          "max": 60
+        }
+      }
+    }
+  },
+  "source_transcription": {
+    "note": "Verbatim parsed-text preservation of the uploaded 31-page GDD. This is the lossless fallback if any semantic detail has not yet been promoted into structured_extensions.",
+    "text": "<PARSED TEXT FOR PAGE: 1 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 1\nWRETCHED DEMESNE:\nPLATEAU OF LENG\nGame Design Document — Prototype v0.1\nCooperative Sci-Fi Cosmic Horror Deck-Building Dungeon Crawler\nPlayers: 1–4 Primary Mode: Cooperative Secondary Mode: Solo\nPrototype Design Document\n<PARSED TEXT FOR PAGE: 2 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 2\nWRETCHED DEMESNE: PLATEAU OF LENG\nGame Design Document — Prototype v0.1\nGenre: Cooperative Sci-Fi Cosmic Horror Deck-Building Dungeon Crawler\nPlayers: 1–4\nPrimary Mode: Cooperative\nSecondary Mode: Solo\nSetting: Sci-Fi Cosmic Horror / Survival Horror\nCore Inspirations: Cloudy Mountain, Vampire Survivors, Diablo, Alien, Lovecraftian Horror, Stargate\n1. GAME OVERVIEW\n1.1 High Concept\nWretched Demesne: Plateau of Leng is a cooperative deck-building dungeon-crawler in which players\ncontrol members of a stranded salvage crew exploring an alien world.\nAfter an emergency landing destroys or disables their freighter, the crew discovers a massive black\npyramid broadcasting a mysterious beam of light into the sky. Their communications are dead, and the\nplanet appears otherwise lifeless.\nThe crew initially believes the pyramid may provide a means of contacting the outside world.\nInstead, their exploration reveals an ancient world inhabited by hostile creatures, remnants of previous\nexpeditions, impossible technology, and intelligent beings connected to something far older than\nhumanity.\nPlayers must:\n• Explore the alien world.\n• Search caves, ruins, and ancient structures.\n• Fight hostile creatures.\n• Salvage weapons, equipment, and alien technology.\n• Develop their crew and decks.\n• Manage ammunition, health, fear, and other resources.\n• Discover ancient keys and technologies that unlock new areas.\n• Return to the crashed ship to recover, upgrade, and prepare.\n• Uncover the mystery of the Black Pyramid.\n• Ultimately determine whether escape is possible—and whether escape is even desirable.\n<PARSED TEXT FOR PAGE: 3 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 3\n2. DESIGN PILLARS\nThe game should consistently reinforce five primary design pillars.\n2.1 Explore the Unknown\nPlayers should frequently encounter things they do not fully understand.\nThe game should reward curiosity while making curiosity dangerous.\n2.2 Scarcity Creates Decisions\nResources should be limited.\nPlayers should constantly decide between:\n\"Can we afford to use this now?\"\nand:\n\"Can we afford not to?\"\nImportant resources include:\n• Ammunition\n• Medical supplies\n• Equipment durability\n• Actions\n• Crew health\n• Time/Threat\n• Information\n2.3 The Planet Reacts to You\nThe environment should not feel static.\nCreatures move, hunt, reproduce, evolve, and respond to player actions.\nThe spider ecosystem is the first major implementation of this philosophy.\n2.4 Violence Has Consequences\nKilling an enemy should not always mean the threat is permanently reduced.\n<PARSED TEXT FOR PAGE: 4 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 4\nFor example:\nSpider killed → Corpse remains → Other spiders feed → Spider evolves\nThe players may therefore create future threats through their own actions.\n2.5 Knowledge Is Progression\nThe crew should gradually learn what the planet is, what the Pyramid does, and what happened to\nprevious visitors.\nSome discoveries should provide immediate gameplay benefits.\nOthers should simply make the situation more terrifying.\n3. GAME STRUCTURE\nThe game is divided into two major phases.\n3.1 Ship Phase\nThe players return to the crashed ship.\nThey can:\n• Heal crew.\n• Manage injuries.\n• Modify decks.\n• Equip weapons.\n• Research artifacts.\n• Repair ship systems.\n• Select crew.\n• Prepare supplies.\n• Choose their next destination.\n• Review discovered information.\nThe ship is the crew's primary base of operations.\n4. EXPEDITION PHASE\nAn expedition is a series of dungeon turns.\n<PARSED TEXT FOR PAGE: 5 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 5\nPlayers:\n1. Enter an unexplored location.\n2. Move through the environment.\n3. Explore rooms.\n4. Encounter enemies and hazards.\n5. Search for salvage.\n6. Acquire cards and resources.\n7. Discover clues and key items.\n8. Manage evolving threats.\n9. Decide whether to continue or return.\nThe expedition ends when:\n• The players successfully reach their objective and extract.\n• The players voluntarily retreat.\n• All crew members are incapacitated.\n• A scenario-specific defeat condition occurs.\n5. CORE TURN STRUCTURE\nEach Expedition Turn consists of five phases:\nPHASE 1 — READY\nPHASE 2 — CREW ACTION\nPHASE 3 — ENCOUNTER / ENVIRONMENT\nPHASE 4 — ENEMY\nPHASE 5 — END OF TURN\nThe following section defines the initial prototype rules.\n6. PHASE 1 — READY\nAt the beginning of the turn:\n6.1 Ready Crew\nExhausted characters and equipment that recover at the beginning of a turn are readied.\n<PARSED TEXT FOR PAGE: 6 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 6\n6.2 Draw Cards\nEach player draws up to their current hand size.\nPrototype Hand Size: 5 cards\nIf the player's deck contains fewer cards than required, shuffle the discard pile to create a new deck.\nIf the player cannot draw enough cards because their deck is exhausted and their discard pile is empty,\nthey simply draw what is available.\n6.3 Resolve Start-of-Turn Effects\nResolve effects such as:\n• Bleeding\n• Poison\n• Burning\n• Fear\n• Infection\n• Environmental hazards\n• Scenario effects\n• Active enemy effects\n7. PHASE 2 — CREW ACTION\nThis is the primary player-controlled phase.\nPlayers may perform actions in any order.\nPrototype Action Economy\nEach crew member receives:\n3 Actions per turn\nAn action can be spent to:\n• Move\n• Attack\n• Search\n• Interact\n• Use certain equipment\n<PARSED TEXT FOR PAGE: 7 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 7\n• Assist another crew member\n• Recover\n• Perform a scenario-specific action\nSome cards may provide additional actions.\n8. PLAYER TURN ORDER\nThe players collectively decide the order in which crew members act.\nThere is no fixed initiative order during the Crew Action Phase.\nThis is intentional.\nThe cooperative gameplay should encourage discussion:\n\"You move first.\"\n\"I'll suppress the spider.\"\n\"Medic, get behind us.\"\n\"Don't kill that one yet—we need to search the room.\"\nThis makes positioning and coordination important.\n9. MOVEMENT\nMoving from one space to an adjacent space costs:\n1 Action\nPlayers may normally move horizontally or vertically between connected spaces.\nCertain terrain may modify movement.\nExamples:\n• Rubble\n• Narrow passages\n• Vertical terrain\n• Water\n• Toxic areas\n<PARSED TEXT FOR PAGE: 8 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 8\n• Locked doors\n• Collapsed tunnels\nMovement restrictions can later be bypassed with equipment.\n10. ATTACK\nAttacking normally costs:\n1 Action\nThe player plays an appropriate weapon or attack card.\nThe attack resolves:\n1. Choose target.\n2. Determine range.\n3. Calculate attack value.\n4. Apply enemy defenses/resistances.\n5. Deal damage.\n6. Resolve special effects.\n7. Check for death.\nWeapons may require ammunition.\n11. NOISE\nCombat generates Noise.\nNoise is a major environmental mechanic.\nDifferent weapons create different amounts of Noise.\nWeapon Noise\nKnife 0\nPistol 1\nRifle 2\nShotgun 3\nHeavy Weapon 4\nGrenade 5\nAlien Weapon Variable\n<PARSED TEXT FOR PAGE: 9 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 9\nNoise may:\n• Attract nearby enemies.\n• Increase enemy aggression.\n• Trigger special encounters.\n• Reveal hidden enemies.\n• Advance a scenario Threat track.\nThe purpose is not to prevent combat.\nIt creates a choice:\n\"We can kill this thing—but what else will hear us?\"\n12. SEARCH\nSearching costs:\n1 Action\nA player may search an eligible location.\nSearching can reveal:\n• Scrap\n• Ammunition\n• Medical supplies\n• Weapons\n• Equipment\n• Ancient technology\n• Clues\n• Key items\n• Corpses/remains\n• Traps\n• Hidden enemies\nSome locations can only be searched once.\n13. INTERACT\nInteracting costs:\n<PARSED TEXT FOR PAGE: 10 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 10\n1 Action\nExamples:\n• Open a door.\n• Activate an ancient device.\n• Use a key.\n• Operate machinery.\n• Examine a corpse.\n• Activate a terminal.\n• Repair an object.\n• Open a Stargate-like structure.\n• Investigate a clue.\nSome interactions require specific equipment or knowledge.\n14. ASSIST\nA crew member may assist another crew member.\nCost: 1 Action\nExamples:\n• Help an injured character move.\n• Stabilize a dying crew member.\n• Provide cover.\n• Transfer equipment.\n• Give another character a temporary bonus.\nCertain crew roles will specialize in assistance.\nThe Captain and Medic are expected to have particularly strong support abilities.\n15. RECOVER\nA crew member may spend:\n1 Action\nto perform a limited recovery action.\n<PARSED TEXT FOR PAGE: 11 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 11\nPossible effects:\n• Remove a minor temporary condition.\n• Recover from suppression.\n• Regain a small amount of stamina.\n• Prepare defensive equipment.\nFull healing generally requires the Medic or Ship Phase.\n16. CARD PLAY\nCards are the primary means by which characters exceed their normal capabilities.\nA card may:\n• Modify an action.\n• Create an additional action.\n• Improve an attack.\n• Reduce incoming damage.\n• Move characters.\n• Manipulate enemies.\n• Search.\n• Generate resources.\n• Interact with alien technology.\n• Alter the environment.\nCards are generally played during the appropriate timing window.\n17. PHASE 3 — ENCOUNTER / ENVIRONMENT\nAfter all players have completed their desired actions, the environment responds.\nThe scenario may reveal or resolve an encounter.\nPossible encounter types include:\nHOSTILE\nEnemy appears.\nEVENT\nA narrative or mechanical event occurs.\n<PARSED TEXT FOR PAGE: 12 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 12\nDISCOVERY\nPlayers find something interesting.\nHAZARD\nThe environment creates danger.\nOMEN\nSomething strange happens that may not have an immediate mechanical consequence.\nCLUE\nPlayers obtain information regarding the planet's mystery.\n18. EXPLORATION\nThe dungeon is initially obscured.\nPlayers reveal new areas as they explore.\nThe dungeon can contain:\n• Corridors\n• Chambers\n• Caves\n• Ruins\n• Dead ends\n• Large open spaces\n• Hidden passages\n• Locked areas\n• Objective rooms\n• Enemy nests\nThe exact dungeon-generation method remains a prototype decision.\nPotential systems include:\n1. Modular tiles.\n2. Room cards.\n3. Hex tiles.\n4. Square grid.\n<PARSED TEXT FOR PAGE: 13 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 13\n5. Scenario-specific maps.\nPrototype recommendation: modular room/terrain tiles.\n19. PHASE 4 — ENEMY PHASE\nAfter the players act, enemies activate.\nEnemies generally follow three steps:\n19.1 Detect\nDetermine which players/enemies they can perceive.\n19.2 Move\nEnemies move according to their AI behavior.\n19.3 Act\nEnemies attack, feed, spawn, retreat, or perform their special abilities.\n20. ENEMY BEHAVIOR\nEnemies should not all behave identically.\nEach creature receives a behavioral profile.\nExample:\nSMALL SPIDER\nBehavior:\n• Avoids players.\n• Moves toward corpses.\n• Attacks when threatened.\n• Attempts to flee when injured.\nLARGE SPIDER\nBehavior:\n• Hunts players.\n• Pursues injured targets.\n• Feeds on corpses.\n<PARSED TEXT FOR PAGE: 14 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 14\n• May retreat after feeding.\nALPHA SPIDER\nBehavior:\n• Aggressive.\n• Pursues anything nearby.\n• Attacks players and other creatures.\n• Does not retreat.\nThis behavioral distinction is essential.\nThe player should be able to learn:\n\"That thing isn't attacking us.\"\nwithout assuming:\n\"That thing isn't dangerous.\"\n21. SPIDER CORPSES\nWhen a Spider is killed, place a:\nSPIDER CORPSE\ntoken on its location.\nA corpse is an interactable environmental object.\nOther spiders may attempt to consume it.\nThis creates the central Spider Ecosystem mechanic.\n22. FEEDING\nWhen a spider consumes a corpse, it becomes:\nFED\nA Fed spider gains a temporary or permanent benefit depending on its species.\nExample:\n<PARSED TEXT FOR PAGE: 15 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 15\nSmall Spider\nFed → gains +1 Health\nLarge Spider\nFed → begins Regeneration\nMultiple corpses may increase the effect.\n23. PUPATION\nIf a qualifying spider consumes enough corpses and successfully escapes danger, it may enter:\nPUPATION\nReplace the spider miniature/token with a:\nCHRYSALIS\nA Chrysalis is temporarily immobile.\nIf destroyed:\nThe creature dies before transformation.\nIf left undisturbed:\nThe Chrysalis hatches.\nThe resulting creature depends on the spider's development stage.\n24. SPIDER DEVELOPMENT TREE\nInitial prototype:\nSMALL SPIDER\n|\n| consumes corpse\nv\nFED SMALL SPIDER\n|\n| escapes\nv\nCHRYSALIS\n<PARSED TEXT FOR PAGE: 16 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 16\n|\nv\nLARGE SPIDER\n|\n| consumes corpses\nv\nFED LARGE SPIDER\n|\n| escapes\nv\nCHRYSALIS\n|\nv\nALPHA SPIDER\nThis progression should be visible enough for players to understand but mysterious enough that the exact\nbiological rules can initially be discovered through gameplay.\n25. PHASE 5 — END OF TURN\nResolve end-of-turn effects.\nCheck:\n• Temporary effects.\n• Status conditions.\n• Enemy corpses.\n• Spider feeding.\n• Environmental effects.\n• Noise.\n• Threat.\n• Scenario objectives.\nThen:\nAdvance the Turn Counter.\nThe next turn begins.\n26. ENDING THE EXPEDITION\nPlayers may voluntarily choose to retreat when allowed.\n<PARSED TEXT FOR PAGE: 17 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 17\nRetreat is not necessarily failure.\nReturning to the ship allows players to:\n• Keep discovered salvage.\n• Preserve acquired knowledge.\n• Heal.\n• Upgrade.\n• Reorganize decks.\n• Prepare for another expedition.\nHowever, retreat may have consequences.\nExamples:\n• Enemies continue evolving.\n• Objectives remain incomplete.\n• Threat increases.\n• The ship may become less secure.\n• Certain enemies may relocate.\n• Scenario clocks continue.\nThis makes:\nPush Your Luck\na central mechanic.\n27. INCAPACITATION\nCrew members do not immediately die when they reach 0 Health.\nInstead they become:\nINCAPACITATED\nAn incapacitated crew member:\n• Cannot normally perform actions.\n• Drops or exposes certain equipment.\n• May require assistance.\n• Can potentially be stabilized.\n<PARSED TEXT FOR PAGE: 18 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 18\nIf all crew members are incapacitated:\nThe Expedition is defeated.\nPermanent death may exist as a scenario or campaign mechanic, but should not be part of the initial\nprototype.\n28. PLAYER DECK STRUCTURE\nEach crew member begins with a basic deck.\nThe deck represents:\n• Training\n• Equipment\n• Instincts\n• Personal abilities\n• Supplies\n• Tactical knowledge\nA starting deck should contain weak but reliable cards.\nExample:\nSECURITY STARTER DECK\n• 2× Sidearm\n• 2× Move\n• 2× Take Cover\n• 2× Reload\n• 1× Suppressive Fire\n• 1× Security Training\n29. DECK-BUILDING\nDuring expeditions players acquire new cards.\nCards may be obtained through:\n• Searching.\n• Salvage.\n• Completing objectives.\n<PARSED TEXT FOR PAGE: 19 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 19\n• Discovering technology.\n• Trading at the ship.\n• Research.\n• Character progression.\nAt the Ship, players may:\n• Add cards.\n• Remove weak cards.\n• Upgrade cards.\n• Equip permanent items.\n30. CARD CATEGORIES\nThe initial card taxonomy is:\nACTION\nBasic actions.\nWEAPON\nCombat cards.\nEQUIPMENT\nPersistent tools.\nCONSUMABLE\nSingle-use resources.\nSKILL\nCharacter abilities.\nTACTIC\nTemporary tactical effects.\nTECHNOLOGY\nAncient or alien equipment.\nKNOWLEDGE\n<PARSED TEXT FOR PAGE: 20 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 20\nInformation-based abilities.\nTRAUMA\nNegative cards.\nCORRUPTION\nPotentially powerful but dangerous cards.\n31. RESOURCES\nThe initial prototype uses four primary resources.\nACTION\nDetermines what the crew can accomplish during a turn.\nAMMUNITION\nRequired by many conventional weapons.\nSCRAP\nUsed primarily at the ship for repairs, crafting, and upgrades.\nHEALTH\nRepresents physical survivability.\nAdditional systems such as Stress, Sanity, Power, or Alien Energy remain candidates for later\ndevelopment.\n32. THREAT\nThe game has a global Threat Level.\nThreat represents how much attention the crew has attracted and how active the planet's hostile\necosystem has become.\nThreat may increase through:\n• Loud weapons.\n• Killing enemies.\n• Triggering alarms.\n• Spending too much time underground.\n<PARSED TEXT FOR PAGE: 21 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 21\n• Certain encounters.\n• Advancing scenario clocks.\n• Discovering major artifacts.\nThreat may cause:\n• Additional enemies.\n• Stronger enemies.\n• New enemy behaviors.\n• Environmental hazards.\n• Spider evolution.\n• Men of Leng activity.\n33. THE CRASHED SHIP\nThe ship is the persistent headquarters.\nIt should be represented as a physical board or player mat.\nPotential modules:\nBRIDGE — Mission selection and planetary map.\nARMORY — Weapons and combat upgrades.\nMED BAY — Healing and injury removal.\nENGINEERING — Ship repair and equipment crafting.\nLABORATORY — Research alien artifacts.\nCREW QUARTERS — Crew management.\nCARGO BAY — Resource storage.\nCOMMUNICATIONS — Attempt off-world contact.\n34. SHIP THREAT\nThe ship is not completely safe.\nWhile the crew is away, the ship may accumulate Infiltration/Threat.\n<PARSED TEXT FOR PAGE: 22 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 22\nAt certain thresholds:\n1. Minor disturbances.\n2. Equipment malfunction.\n3. Cargo loss.\n4. Unknown presence detected.\n5. Crew member threatened.\n6. Ship infestation.\n7. Critical ship event.\nThis creates a strategic tension between:\nExploring farther\nand:\nProtecting your only safe haven.\n35. KEY ITEMS AND WORLD PROGRESSION\nProgression should be partially driven by special Key Items.\nExamples:\nANCIENT POWER CELL\nAllows activation of ancient machinery.\nPHASE CUTTER\nOpens sealed passages.\nTRANSLATION DEVICE\nAllows interaction with previously incomprehensible technology.\nGATE DEVICE\nActivates ancient transportation structures.\nPYRAMID KEY\nUnlocks deeper sections of the Black Pyramid.\nKey Items are generally persistent and do not occupy normal deck space.\n<PARSED TEXT FOR PAGE: 23 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 23\n36. WORLD PROGRESSION\nThe overworld contains blocked routes.\nPlayers gradually gain the ability to access:\n• Deeper caves.\n• Ancient ruins.\n• Men of Leng territory.\n• Alien structures.\n• Hazardous regions.\n• Gate complexes.\n• The Black Pyramid.\nThe progression structure should resemble:\nExplore → Discover → Acquire Tool → Unlock Region → Discover New Threat → Repeat\n37. THE BLACK PYRAMID\nThe Black Pyramid is the ultimate known destination.\nIt should initially appear to be:\nA massive ancient communication structure.\nAs players investigate it, they discover evidence that its true function is something much stranger.\nThe Pyramid should serve as:\n• Major story location.\n• Endgame dungeon.\n• Source of ancient technology.\n• Source of clues.\n• Major enemy stronghold.\n• Potential communication device.\n• Potential gateway.\nIts true purpose should remain a campaign-level mystery.\n38. INFORMATION SYSTEM\n<PARSED TEXT FOR PAGE: 24 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 24\nThe players maintain a collection of discovered Clues.\nClues may include:\n• Ancient symbols.\n• Logs.\n• Maps.\n• Corpse remains.\n• Alien recordings.\n• Men of Leng writings.\n• Biological samples.\n• Ship fragments.\n• Coordinates.\nSeveral clues may combine into a larger discovery.\nExample:\nThree separate expeditions left records of the Pyramid.\nLater:\nTheir records all contain the same symbol.\nLater:\nThe symbol matches the technology found aboard your own ship.\nThe narrative should emerge through play rather than through a large initial lore dump.\n39. THE MEN OF LENG\nThe Men of Leng are intelligent inhabitants/servants associated with the deeper mystery.\nThey differ fundamentally from the spiders.\nSpiders represent:\nInstinct / Biology / Hunger\nMen of Leng represent:\nIntelligence / Cult / Knowledge / Manipulation\n<PARSED TEXT FOR PAGE: 25 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 25\nTheir mechanics may include:\n• Ambushes.\n• Traps.\n• Ranged attacks.\n• Theft.\n• Technology.\n• Rituals.\n• Manipulation of other creatures.\n• Retreat.\n• Reinforcement.\nTheir ultimate relationship with the Pyramid remains unknown.\n40. INITIAL ENEMY CLASSES\nThe prototype should begin with:\nSmall Spider\nWeak swarm creature.\nLarge Spider\nPredator.\nAlpha Spider\nElite predator.\nBrood Mother\nSpawner / encounter controller.\nMen of Leng Servant\nIntelligent humanoid enemy.\nThe enemy roster can later expand substantially.\n41. GAMEPLAY PHILOSOPHY FOR ENEMIES\nEnemies should not simply become:\n<PARSED TEXT FOR PAGE: 26 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 26\nMore HP + More Damage\nas the game progresses.\nDifficulty should increasingly come from:\n• Better AI.\n• Environmental interaction.\n• New behaviors.\n• Synergies.\n• Reinforcements.\n• Evolution.\n• Status effects.\n• Objectives.\n• Player resource pressure.\n42. INITIAL WIN CONDITION\nThe prototype scenario ends when the crew:\n1. Reaches the designated ancient structure.\n2. Obtains the required artifact.\n3. Activates the extraction objective.\n4. Successfully returns to the ship.\nLater campaign scenarios will replace this with more complicated objectives.\n43. INITIAL LOSS CONDITIONS\nThe expedition is lost if:\n• All active crew members become incapacitated.\n• A scenario-specific objective becomes impossible.\n• A critical ship/system condition reaches its failure state.\nCampaign-level defeat conditions may later include:\n• Ship destroyed.\n• Entire crew lost.\n• Planetary Threat reaches maximum.\n• Specific ancient entity awakened.\n<PARSED TEXT FOR PAGE: 27 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 27\n44. PROTOTYPE DESIGN PRIORITIES\nThe first physical prototype should focus on proving four things.\nPRIORITY 1 — Is the basic action system fun?\nPlayers should enjoy:\nMove → Search → Fight → Loot → Decide.\nPRIORITY 2 — Is the deck-building satisfying?\nPlayers should feel their crew becoming noticeably more capable.\nPRIORITY 3 — Is the Spider Ecosystem interesting?\nThe corpse → feeding → pupation system should create meaningful decisions.\nPRIORITY 4 — Is retreat difficult to resist?\nPlayers should frequently think:\n\"We should leave.\"\nfollowed immediately by:\n\"But there's probably something incredible just around the corner.\"\nThat emotional tension should become one of the defining characteristics of Wretched Demesne.\n45. PROTOTYPE TURN — EXAMPLE\nSecurity, Medic, and Engineer enter a cave.\nREADY\nEach player draws to five cards.\nCREW ACTION\nSecurity:\n• Moves toward a Small Spider.\n• Fires pistol.\n<PARSED TEXT FOR PAGE: 28 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 28\n• Generates Noise.\nThe spider dies.\nA Spider Corpse is placed.\nMedic:\n• Searches a nearby pile of debris.\n• Finds ammunition.\nEngineer:\n• Moves toward an ancient device.\n• Interacts with it.\nThe device requires a Key Item, so nothing happens.\nENCOUNTER\nThe Noise attracts another Small Spider from an adjacent unexplored space.\nENEMY PHASE\nThe new spider moves toward the corpse rather than the crew.\nIt consumes the corpse.\nThe spider becomes Fed.\nEND PHASE\nThreat increases.\nThe players realize:\nKilling spiders may actually be creating larger problems.\nThey now have a decision:\nSpend actions killing the Fed Spider, or continue toward the ancient device and risk allowing it to escape\nand pupate?\nThis is the type of decision the game should repeatedly create.\n46. DESIGN TARGET\n<PARSED TEXT FOR PAGE: 29 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 29\nThe ideal player experience is:\nExplore → Discover → Fight → Salvage → Grow Stronger → Become Overconfident → Encounter\nSomething Horrifying → Adapt → Learn → Push Deeper\nThe crew should begin the game believing:\n\"We're professionals. We've survived worse.\"\nBy the end of the campaign, they should understand:\nThey were never the most important thing on this planet.\n47. OPEN DESIGN QUESTIONS\nThe following should deliberately remain unresolved during v0.1:\n1. Exact deck size.\n2. Exact card acquisition economy.\n3. Exact health/damage scale.\n4. Exact dungeon-generation system.\n5. Exact Threat implementation.\n6. Whether ammunition is represented by cards or counters.\n7. Whether crew members can permanently die.\n8. Exact Stress/Sanity system.\n9. Exact ship-infiltration rules.\n10. Exact Black Pyramid function.\n11. Full campaign structure.\n12. Multiplayer scaling.\n13. Men of Leng faction structure.\n14. Final victory conditions.\nThese should be tested rather than decided purely from theory.\n48. NEXT PROTOTYPE DEVELOPMENT TARGET\nThe next design pass should define the actual numerical game engine:\nA. Character Sheet\n<PARSED TEXT FOR PAGE: 30 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 30\n• Health\n• Actions\n• Movement\n• Defense\n• Accuracy\n• Carry capacity\n• Special ability\nB. Card Anatomy\n• Cost\n• Type\n• Range\n• Damage\n• Keywords\n• Rarity\n• Upgrade level\nC. Starting Decks\n• Captain\n• Security\n• Engineer\n• Medic\n• Scout\nD. Enemy Stat Blocks\n• Small Spider\n• Large Spider\n• Alpha Spider\n• Brood Mother\n• Men of Leng\nE. Resource Economy\n• Ammo\n• Scrap\n• Actions\n• Health\n<PARSED TEXT FOR PAGE: 31 / 31>\nWretched Demesne: Plateau of Leng — GDD Prototype v0.1 Page 31\n• Threat\nF. First Playable Scenario\nScenario 01: \"The Cave\"\nObjective:\nExplore the cave system, recover useful salvage, discover evidence of the ancient civilization, and\nreturn to the crashed ship alive.\nThe scenario should teach:\n• Movement\n• Combat\n• Searching\n• Loot\n• Noise\n• Corpses\n• Spider feeding\n• Retreat\n• Deck-building\n• Ship recovery\nThis scenario should be small enough to play in approximately 30–60 minutes and serve as the foundation\nfor balancing the entire game."
+  }
+}
