@@ -253,7 +253,7 @@ For each new game or major new scenario implementation:
    Confirm authoritative, provisional, derived, and reference sources are distinguished. Look for duplicated executable facts across scenario data, DODGE, runtime defaults, or targets.
 
 4. **Check the exact DODGE version.**  
-   For G1+, validate the candidate document against the selected version's schema. For later gates, verify the corresponding core, semantic, resolver, resolved-game, runtime, and target evidence actually exists.
+   For G1+, validate the candidate document against the selected version's schema. For G2, review the candidate's DODGE §15.3 evidence check by check—including explicit PASS/N/A treatment of conditional groups—rather than accepting a single opaque "core valid" result. For later gates, verify the corresponding semantic, resolver, resolved-game, runtime, and target evidence actually exists.
 
 5. **Review executable claims, not prose intent.**  
    A scenario saying it contains combat, search, reactions, injury, or another mechanic does not prove the runtime executes it. Match claimed mechanics to DODGE bindings, resolver output, runtime behavior, and tests.
