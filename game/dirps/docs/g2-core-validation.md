@@ -16,14 +16,14 @@ The audit distinguishes **PASS** from **N/A**. N/A means the normalized feature 
 
 | Check | Applicability | Evidence | Notes |
 |---|---|---|---|
-| 15.3.1 required local/external references resolve | PASS | `test_every_applicable_15_3_rule_passes`; negative missing-archetype fixture | Local source URIs and named DODGE refs used by DIRPS resolve. DIRPS G2 has no external entity/catalog references; the external GURPS URL is a source locator, not an external DODGE entity binding. |
+| 15.3.1 required local/external references resolve | PASS | `test_every_applicable_15_3_rule_passes`; negative fixtures for missing archetype, rule `source_ref`, operand ref, and sidecar `source_ref` | The audit exhaustively checks every normative reference family actually present in DIRPS: local source URIs; all normative `source_ref` occurrences outside opaque extensions; `sidecars[*].source_ref`; object→archetype; scene instance→object; scenario→scene; action condition/procedure/effect refs; procedure/choice step refs; scenario action/turn-procedure refs; objective/end-condition predicates; and operand refs. DIRPS G2 has no external entity/catalog references; the external GURPS URL is a source locator, not an external DODGE entity binding. |
 | 15.3.2 object/archetype kinds and face slots agree | PASS | positive audit + negative face-slot fixture | Both actor objects are tokens bound to the token archetype and use its declared `front` slot. |
 | 15.3.3 collection nesting and procedure refs acyclic unless explicit repetition | PASS | positive audit + negative self-cycle fixture | DIRPS declares no collections. Procedure-to-procedure graph is acyclic. |
 | 15.3.4 coherent quantities / positive valid dimensions / supported units | N/A | audit asserts no explicit quantities or dimensions | G2 logical RPG actors have target-owned physical representation and no explicit dimensions. No collection/member/topology quantity is declared. |
 | 15.3.5 source hashes match | N/A | audit asserts no `sources.*.sha256` | No source hash is declared in this candidate. |
 | 15.3.6 scene instance and topology node IDs unique | PASS | positive audit + negative duplicate-instance fixture | Scene instance IDs are unique. No topology nodes are declared. |
 | 15.3.7 topology edges reference existing nodes | N/A | audit asserts no topology edges | DIRPS G2 declares no topology. |
-| 15.3.8 rule refs target correct definition kinds | PASS | positive audit + negative wrong-kind fixture | Action condition/procedure refs, procedure step refs, scenario action refs, and turn procedure ref are kind-checked. |
+| 15.3.8 rule refs target correct definition kinds | PASS | positive audit + wrong-kind action/procedure fixture + wrong-kind operand fixture | Type-aware checking covers condition, effect, action, procedure, phase, AI, value/resource operand, scenario, and choice-step references that are present. A reference resolving to an existing ID in the wrong definition family is rejected separately from an unresolved reference. |
 | 15.3.9 defaults satisfy types and bounds | PASS | positive audit + negative boolean-default fixture | Explicit defaults are the boolean `stunned=false` and `unconscious=false`. |
 | 15.3.10 phase transitions and scenario end-condition evaluation deterministic | N/A | audit asserts no phases and no executable `end_conditions`; negative prose-end fixture | The former prose-only end condition was removed because prose cannot count as deterministic executable evaluation. Completion intent remains preserved in the prose objective and scenario source for a later executable gate. |
 | 15.3.11 AI priorities executable or prose-only | N/A | audit asserts no AI profiles | No normalized AI profile is present at G2. |
@@ -52,6 +52,10 @@ These are neutral DODGE-core corrections. They do not add DIRPS domain semantic 
 `tests/test_dirps_g2_core.py` proves the audit rejects at least:
 
 - a missing archetype reference;
+- an unresolved rule/value `source_ref`;
+- an unresolved operand `ref` in `actor-conscious.left.ref`;
+- an operand `ref` that resolves to an existing wrong-kind definition;
+- an unresolved `sidecars[*].source_ref`;
 - an invalid face slot;
 - a procedure cycle;
 - duplicate scene instance IDs;
