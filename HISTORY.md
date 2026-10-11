@@ -499,3 +499,22 @@ PR #105 continued that audit by removing encounter-ID gameplay branching in favo
 ## Multi-game source layout
 
 Refactored authored source under `game/<game-id>/`, preserving Wretched Scenario 01 as the reference scenario, reserving Wretched Scenario 02, moving the original Fountain prototype into its own namespace, and creating a clean GURPS/DODGE incubation namespace. Added descriptor-based game/scenario discovery while leaving historical generated Beta builds untouched.
+
+
+## DIRPS onboarding reset and G0 scaffold
+
+### PR replacement for #162 — make the second game honest about its maturity
+
+**October 11, 2026.**
+
+The first DIRPS pull request was a useful stress test of the new multi-game layout, but review exposed an important process gap. The scaffold looked similar to Wretched and the repository CI was green, yet the DIRPS DODGE document itself had never been validated against the exact DODGE 0.2.1 schema. It also proposed a broad set of RPG-shaped future concepts before Scenario 01 had exercised them. The result was good architectural thinking without the evidence chain that made Wretched a real DODGE reference implementation.
+
+That failure mode drove three repository/tooling changes before DIRPS continued: DODGE gained a versioned implementation golden path; TheFountain gained `docs/ADDING_A_GAME.md`; and TheFountain CI gained generic registered-game conformance discovery. Those changes made maturity explicit rather than inferred from directory shape or an unrelated green workflow.
+
+DIRPS was then rebased from current `main` as an explicit **G0 — Scaffold**. The old reserved `game/gurps/` namespace was replaced by `game/dirps/`, keeping GURPS Lite as an external rules reference rather than the implementation identity. Scenario 01, *The Missing Courier*, preserves the useful source, compatibility audit, provisional DODGE working document, and proto sidecar from the original experiment, but it now makes no schema/core/runtime/target conformance claim.
+
+The proto sidecar was also reclassified. Dice resolution, derived values, expression graphs, lookup tables, procedure-local context, reaction timing, secret state, RPG actor/skill organization, resolution traces, and replay history are now recorded as **suspected** gaps. They follow the progression `suspected → exercised → candidate`; none is a DODGE 0.2.2 proposal until Scenario 01 actually proves the need through the shared validation/resolver/runtime path with evidence.
+
+**Milestone:** a second game can now enter TheFountain honestly at G0 without being mistaken for a conforming implementation, and the repository has a deterministic process for advancing it through G1–G7.
+
+The next DIRPS convergence inventory remains issue #163.
