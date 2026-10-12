@@ -74,19 +74,20 @@ def _source_contract(errors, owner, row, source_ref, authority):
 
 
 def _validate_authority_paths(dodge, canonical, config, errors):
+    authority = canonical.get("authority", {})
+    if authority.get("rules") != RULES_AUTHORITY_LABEL:
+        errors.append(
+            "canonical authority.rules must identify the bounded GURPS Lite June 2003 rules authority"
+        )
+
     if not config:
         return
 
-    authority = canonical.get("authority", {})
     expected_dodge = _repo_relative(config.get("dodge"))
     expected_source = _repo_relative(config.get("source"))
     sidecars = config.get("sidecars") or []
     expected_sidecar = _repo_relative(sidecars[0]) if len(sidecars) == 1 else None
 
-    if authority.get("rules") != RULES_AUTHORITY_LABEL:
-        errors.append(
-            "canonical authority.rules must identify the bounded GURPS Lite June 2003 rules authority"
-        )
     if authority.get("dodge") != expected_dodge:
         errors.append(
             "canonical authority.dodge must identify the registered DIRPS DODGE document"
