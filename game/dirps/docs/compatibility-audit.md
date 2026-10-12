@@ -49,6 +49,16 @@ The target contains no private rule literals for action/procedure identity, skil
 
 This debug CLI does not use the DODGE export-contract/target-manifest model, so no fake manifest is declared. The generic G6 manifest lifecycle remains applicable only to registered `export_contracts`. No proto status changes at G6: the five G5 concepts remain `exercised` / `not-yet-candidate`, and all untouched gaps remain `suspected`.
 
+## Phase A contextual skill-check result
+
+Gameplay roadmap Phase A extends the accepted G5/G6 success-roll path without changing DIRPS maturity. Scenario 01 now owns a provisional `roadside-tracks-tracking` context with a prototype `-2` Tracking modifier. The neutral resolver preserves that context; the runtime derives effective target from base skill plus resolved modifiers, supports supplied or deterministic seeded 3d6 evidence, and classifies critical success/failure from the declared external-rule contract.
+
+The authority split remains explicit: `gurps-lite` owns modifier/effective-skill and critical-boundary rules; `scenario-01-source` owns the provisional tutorial modifier magnitude; `dirps-proto` owns the provisional executable bridge. The result trace records all three layers.
+
+Phase A reassesses `derived_values` and `expressions` but does **not** promote either. The bounded effective-target calculation does not implement the proposed generic derived-value/dependency/recompute shape or a reusable expression graph. The five previously exercised proto concepts remain `exercised` / `not-yet-candidate`; every other proto concept remains `suspected`.
+
+Phase A does not mutate encounter/scenario state or apply investigation consequences. Those begin in roadmap Phase B.
+
 ## Non-goals for this pass
 
 - Do not encode the full GURPS ruleset.
