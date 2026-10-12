@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G2 — Core-valid.** The authored DIRPS DODGE document validates against the exact DODGE 0.2.1 schema and has complete check-by-check §15.3 core evidence in `../../docs/g2-core-validation.md`. G3 semantic validation, a neutral resolver, runtime execution, replay, and targets are not yet claimed.
+**G3 — Semantic-valid.** The candidate remains G2 core-valid and now passes the declared `dirps@0.1.0` source-stage semantic profile. The semantic-contract audit and negative evidence live in `../../docs/g3-semantic-validation.md`. A neutral resolver, resolved-game validation, runtime execution, replay, and targets are not yet claimed.
 
 ## Goal
 
