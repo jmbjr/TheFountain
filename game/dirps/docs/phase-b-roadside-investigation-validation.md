@@ -284,7 +284,7 @@ python tools/dirps_debug_target.py \
 
 Providing `--encounter` without `--action` inspects available runtime-described actions.
 
-The target does not contain Roadside/action/consequence IDs. It receives those from input/runtime data and passes the encounter record through unchanged.
+The target does not contain Roadside/action/consequence IDs. It receives those from input/runtime data and passes the encounter record through unchanged. After successful execution it asks `describe_investigation()` again using `record.state_after`, so the returned `runtime_state`, `capability.state`, and `capability.available_actions` describe one consistent post-action state. Rejected execution keeps the original pre-action state/capability.
 
 ## Deterministic, negative, and perturbation evidence
 
@@ -305,9 +305,11 @@ The target does not contain Roadside/action/consequence IDs. It receives those f
 13. changing canonical + normalized DODGE consequence data changes runtime state;
 14. no new proto concept is promoted;
 15. the target inspects and executes the same neutral state/runtime path;
-16. fake encounter results are passed through rather than recomputed in target code;
-17. target source contains no Phase B gameplay literals;
-18. the actual registered CLI executes the encounter end-to-end.
+16. successful and failed target executions refresh capability from post-action runtime state and expose no stale available action;
+17. rejected target execution keeps the unchanged pre-action capability/state;
+18. fake encounter results and post-action runtime-described capability are passed through rather than recomputed in target code;
+19. target source contains no Phase B gameplay literals;
+20. the actual registered CLI executes the encounter end-to-end.
 
 Named evidence:
 
