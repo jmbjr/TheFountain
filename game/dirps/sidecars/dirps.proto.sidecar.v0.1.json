@@ -25,7 +25,7 @@
       "demonstrated to be reusable beyond GURPS-specific terminology"
     ],
     "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented.",
-    "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. derived_values is exercised by this bounded derivation; expressions remains suspected because no reusable expression graph is implemented."
+    "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. derived_values and expressions were reassessed but remain suspected because Phase A uses a bounded DIRPS-private execution binding rather than either proposed generic proto shape."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -61,7 +61,7 @@
       "phase_a_evidence": "Phase A adds deterministic generated evidence using the runtime-owned sha256-rejection-v1 algorithm while preserving seed, algorithm id, individual die terms, and total. Supplied explicit die terms remain supported."
     },
     "derived_values": {
-      "status": "exercised",
+      "status": "suspected",
       "dodge_gap": "DODGE 0.2.1 value definitions store typed state but do not define dependency formulas for derived values.",
       "proposed_shape": {
         "id": "derived-value",
@@ -78,7 +78,7 @@
         "effective target values"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "phase_a_evidence": "Phase A derives effective target from the resolved base skill plus the sum of resolved contextual modifier amounts, with source/provenance retained for each modifier. The implementation is a bounded DIRPS runtime contract, not a reusable DODGE expression graph."
+      "phase_a_evidence": "Reassessed but not promoted: Phase A computes one effective target inside the bounded attempt-skill execution binding. It does not implement the proposed generic derived-value contract, dependency graph, or recomputation model."
     },
     "expressions": {
       "status": "suspected",
