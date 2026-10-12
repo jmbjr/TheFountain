@@ -48,16 +48,16 @@ class DirpsRuntimeTests(unittest.TestCase):
             "action_ref": "attempt-skill",
             "procedure_ref": "success-roll",
         })
-        self.assertEqual(result["result_scope"], "binary-success-and-margin-only")
+        self.assertEqual(result["result_scope"], "success-failure-margin-and-critical-classification")
         self.assertEqual(result["target"]["skill_ref"], "tracking")
         self.assertEqual(
             result["target"]["supported_domain"],
-            {"minimum": 4, "maximum": 16},
+            {"minimum": 3, "maximum": None},
         )
         self.assertEqual(result["target"]["effective_target"], 12)
         self.assertEqual(result["random_evidence"]["terms"], [2, 3, 4])
         self.assertEqual(result["random_evidence"]["total"], 9)
-        self.assertEqual(result["outcome"], {"success": True, "margin": 3})
+        self.assertEqual(result["outcome"], {"classification": "success", "success": True, "margin": 3})
         self.assertEqual(result["trace"]["action"]["source_ref"], "gurps-lite")
         self.assertEqual(result["trace"]["procedure"]["source_ref"], "gurps-lite")
         self.assertEqual(result["trace"]["action"]["authority"], "authoritative")
@@ -70,17 +70,26 @@ class DirpsRuntimeTests(unittest.TestCase):
                 "authority": "provisional",
             },
         )
+        self.assertEqual(result["trace"]["effective_target"]["actor_ref"], "pc")
+        self.assertEqual(result["trace"]["effective_target"]["skill_ref"], "tracking")
+        self.assertEqual(result["trace"]["effective_target"]["base_value"], 12)
+        self.assertEqual(result["trace"]["effective_target"]["modifier_total"], 0)
+        self.assertEqual(result["trace"]["effective_target"]["value"], 12)
         self.assertEqual(
-            result["trace"]["effective_target"],
-            {
-                "actor_ref": "pc",
-                "skill_ref": "tracking",
-                "value": 12,
-                "source_ref": "scenario-01-source",
-                "authority": "provisional",
-                "character_provenance": "prototype_assumption",
-                "canonical_path": "player_character.skills.tracking",
-            },
+            result["trace"]["effective_target"]["target_source_ref"],
+            "scenario-01-source",
+        )
+        self.assertEqual(
+            result["trace"]["effective_target"]["target_authority"],
+            "provisional",
+        )
+        self.assertEqual(
+            result["trace"]["effective_target"]["character_provenance"],
+            "prototype_assumption",
+        )
+        self.assertEqual(
+            result["trace"]["effective_target"]["modifier_rule_source_ref"],
+            "gurps-lite",
         )
         self.assertEqual(
             set(result["trace"]["sources"]),
@@ -104,7 +113,7 @@ class DirpsRuntimeTests(unittest.TestCase):
     def test_known_failure(self):
         result = self.execute(terms=[5, 5, 5])
         self.assertEqual(result["random_evidence"]["total"], 15)
-        self.assertEqual(result["outcome"], {"success": False, "margin": -3})
+        self.assertEqual(result["outcome"], {"classification": "failure", "success": False, "margin": -3})
 
     def test_same_inputs_and_evidence_are_deterministic(self):
         first = self.execute(terms=[1, 4, 6])
@@ -133,33 +142,33 @@ class DirpsRuntimeTests(unittest.TestCase):
         self.assertFalse(changed["outcome"]["success"])
         self.assertEqual(changed["outcome"]["margin"], -1)
 
-    def test_simplified_classifier_accepts_lower_supported_boundary(self):
-        resolved = self.resolved_with_tracking(4)
+    def test_unmodified_target_three_is_supported(self):
+        resolved = copy.deepcopy(self.resolved)
+        pc = next(row for row in resolved["scene"]["instances"] if row["id"] == "pc")
+        pc["character"]["skills"]["tracking"] = 3
         result = self.execute(resolved=resolved, terms=[1, 1, 2])
-        self.assertEqual(result["target"]["effective_target"], 4)
-        self.assertEqual(result["random_evidence"]["total"], 4)
-        self.assertEqual(result["outcome"], {"success": True, "margin": 0})
+        self.assertEqual(result["target"]["effective_target"], 3)
+        self.assertEqual(result["outcome"]["classification"], "critical-success")
+        self.assertTrue(result["outcome"]["success"])
 
-    def test_simplified_classifier_accepts_upper_supported_boundary(self):
-        resolved = self.resolved_with_tracking(16)
-        result = self.execute(resolved=resolved, terms=[5, 6, 6])
-        self.assertEqual(result["target"]["effective_target"], 16)
-        self.assertEqual(result["random_evidence"]["total"], 17)
-        self.assertEqual(result["outcome"], {"success": False, "margin": -1})
-
-    def test_effective_target_below_supported_domain_fails_visibly(self):
-        resolved = self.resolved_with_tracking(3)
+    def test_unmodified_target_two_fails_visibly(self):
+        resolved = copy.deepcopy(self.resolved)
+        pc = next(row for row in resolved["scene"]["instances"] if row["id"] == "pc")
+        pc["character"]["skills"]["tracking"] = 2
         with self.assertRaisesRegex(
-            ExecutionError, r"outside supported G5 domain 4\.\.16"
+            ExecutionError, r"below minimum rollable target 3"
         ):
-            self.execute(resolved=resolved, terms=[1, 1, 2])
+            self.execute(resolved=resolved, terms=[1, 1, 1])
 
-    def test_effective_target_above_supported_domain_fails_visibly(self):
+    def test_high_unmodified_target_uses_critical_failure_rules(self):
         resolved = self.resolved_with_tracking(17)
-        with self.assertRaisesRegex(
-            ExecutionError, r"outside supported G5 domain 4\.\.16"
-        ):
-            self.execute(resolved=resolved, terms=[5, 6, 6])
+        result = self.execute(resolved=resolved, terms=[5, 6, 6])
+        self.assertEqual(result["target"]["effective_target"], 17)
+        self.assertEqual(result["random_evidence"]["total"], 17)
+        self.assertEqual(
+            result["outcome"],
+            {"classification": "failure", "success": False, "margin": 0},
+        )
 
     def test_runtime_does_not_mutate_resolved_model(self):
         resolved = copy.deepcopy(self.resolved)
