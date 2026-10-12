@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase A gameplay candidate.** The accepted resolved model remains the sole runtime input. The accepted G5/G6 `dirps-execution-result.v1` path remains unchanged for the debug CLI, while separate Phase A runtime APIs emit `dirps-execution-result.v2` for contextual checks whose modifiers come from resolved Scenario 01 source, plus deterministic generated 3d6 evidence and critical classification. `../../docs/phase-a-contextual-skill-validation.md` records the authority/version/test evidence. Roadside Tracks state/consequences are deferred to Phase B.
+**G6 — Targeted, Phase B gameplay candidate.** The accepted v1/v2 skill contracts remain intact. Roadside Tracks now has canonical encounter state/action/consequences normalized into standard DODGE scenario/runtime state and structured effects, while the runtime composes those consequences with the Phase A contextual Tracking result. `../../docs/phase-b-roadside-investigation-validation.md` records the state/authority/replay/target evidence.
 
 ## Goal
 
@@ -33,4 +33,4 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phase A can now resolve the prototype Roadside Tracking context as a real modified skill check and preserve modifier/random/critical provenance. It intentionally does **not** mutate encounter state or apply investigation consequences; those are Phase B. Social/environmental/combat/recovery/completion and immutable session history remain later roadmap work.
+Phase B can now enter the first encounter, expose its one valid investigation action, resolve the contextual Tracking check, and apply meaningful success/failure consequences to neutral runtime state. It intentionally does **not** auto-advance into Frightened Witness; social/environmental/combat/recovery/completion and immutable session history remain later roadmap work.
