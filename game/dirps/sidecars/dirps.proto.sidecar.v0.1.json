@@ -350,6 +350,12 @@
           "success",
           "failure",
           "critical-failure"
+        ],
+        "ordinary_failure": [
+          {
+            "roll": 17,
+            "minimum_effective_target": 16
+          }
         ]
       },
       "random_evidence": {
