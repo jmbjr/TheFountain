@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-import json,sys,unittest
+import copy,json,sys,unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT=Path(__file__).parents[1]
 sys.path.insert(0,str(ROOT/"tools"))
 
 from game_registry import scenario_config
-from validate_registered_dodge import discovered_dodge_scenarios,load_module
+from validate_registered_dodge import ConformanceError,discovered_dodge_scenarios,load_module,profile_modules
 
 class RegisteredConformanceTests(unittest.TestCase):
     def test_wretched_is_discovered_as_active_dodge_scenario(self):
@@ -27,6 +28,20 @@ class RegisteredConformanceTests(unittest.TestCase):
         self.assertEqual(profiles[0]["stages"],["source","resolved-game"])
         source=dodge["sources"][profiles[0]["validator_source_ref"]]
         self.assertEqual(source["kind"],"semantic_validator")
+
+    def test_semantic_validator_source_version_mismatch_fails_before_import(self):
+        cfg=scenario_config("dirps","scenario-01")
+        dodge=json.loads(cfg["dodge"].read_text())
+        profile=dodge["validation"]["required_profiles"][0]
+        source=dodge["sources"][profile["validator_source_ref"]]
+        source["version"]="9.9.9"
+        with patch("validate_registered_dodge.load_module") as mocked_load:
+            with self.assertRaisesRegex(
+                ConformanceError,
+                r"dirps@0\.1\.0: semantic validator source .* declares version '9\.9\.9'"
+            ):
+                profile_modules(dodge)
+            mocked_load.assert_not_called()
 
     def test_declared_hooks_are_importable(self):
         cfg=scenario_config("wretched-demesne","scenario-01")
