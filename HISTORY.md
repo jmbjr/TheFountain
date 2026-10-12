@@ -566,3 +566,12 @@ The G3 audit separated generic DODGE core rules from game-owned implications. DI
 The durable evidence record is `game/dirps/docs/g3-semantic-validation.md`. It also records what G3 deliberately does **not** claim: social/environmental encounter execution, active defense, damage/injury, recovery execution, deterministic scenario completion, dice terms, replay, or resolved semantics. Those remain future-gate concerns; all proto-sidecar concepts remain `suspected`.
 
 No neutral resolver, resolved-game validator, executable dice/runtime, replay machinery, target, UI, or proto promotion was added. **G4 — Resolved** is next.
+
+
+## Semantic validator version identity is enforced generically
+
+**October 11, 2026.**
+
+Independent review of DIRPS G3 exposed a reusable TheFountain orchestration gap: the generic DODGE conformance runner loaded a declared `semantic_validator` source without checking that its source `version` matched the required profile `version`. DODGE 0.2.1 §15.1 already requires version-mismatched validators to hard-fail.
+
+The generic `profile_modules()` path now rejects a source/profile version mismatch before importing the validator module. A focused regression test proves the mismatch fails before module loading, while matching profiles continue through the existing lifecycle. This fixes TheFountain #174 as part of PR #172 without adding DIRPS-specific runner logic or expanding the G3 tranche into G4.
