@@ -20,6 +20,10 @@ PROTO_SOURCE = "dirps-proto"
 CHARACTER_EXTENSION = "org.dirps.character"
 PROTO_EXTENSION = "org.dirps.proto"
 
+RULES_AUTHORITY_LABEL = "GURPS Lite, June 2003 (Third Edition-era introductory rules)"
+PC_PROVENANCE = "prototype_assumption"
+PRIMARY_ATTRIBUTES = frozenset({"st", "dx", "iq", "ht"})
+
 ACTION_PROCEDURES = {
     "attempt-skill": "success-roll",
     "attack": "attack-resolution",
@@ -79,6 +83,10 @@ def _validate_authority_paths(dodge, canonical, config, errors):
     sidecars = config.get("sidecars") or []
     expected_sidecar = _repo_relative(sidecars[0]) if len(sidecars) == 1 else None
 
+    if authority.get("rules") != RULES_AUTHORITY_LABEL:
+        errors.append(
+            "canonical authority.rules must identify the bounded GURPS Lite June 2003 rules authority"
+        )
     if authority.get("dodge") != expected_dodge:
         errors.append(
             "canonical authority.dodge must identify the registered DIRPS DODGE document"
@@ -157,6 +165,11 @@ def _validate_actor_model(dodge, canonical, errors):
         errors.append(f"canonical player character {pc_id}: missing DODGE object")
         return
 
+    if pc.get("provenance") != PC_PROVENANCE:
+        errors.append(
+            f"canonical player character {pc_id}: provenance must be {PC_PROVENANCE}"
+        )
+
     if "player-character" not in pc_object.get("tags", []):
         errors.append(f"canonical player character {pc_id}: DODGE object lacks player-character tag")
     if pc_object.get("name") != pc.get("name"):
@@ -194,7 +207,27 @@ def _validate_actor_model(dodge, canonical, errors):
 
     state = pc_instance.get("state", {})
     attributes = pc.get("attributes", {})
-    for attribute_id, canonical_value in attributes.items():
+    if not isinstance(attributes, dict):
+        errors.append("canonical player_character.attributes must be an object")
+        attributes = {}
+
+    attribute_ids = set(attributes)
+    missing_primary = sorted(PRIMARY_ATTRIBUTES - attribute_ids)
+    unexpected_primary = sorted(attribute_ids - PRIMARY_ATTRIBUTES)
+    if missing_primary:
+        errors.append(
+            f"canonical player character {pc_id}: missing primary attributes {missing_primary}"
+        )
+    if unexpected_primary:
+        errors.append(
+            f"canonical player character {pc_id}: unexpected primary attributes {unexpected_primary}; "
+            "the bounded primary build is exactly ST/DX/IQ/HT"
+        )
+
+    for attribute_id in sorted(PRIMARY_ATTRIBUTES):
+        if attribute_id not in attributes:
+            continue
+        canonical_value = attributes[attribute_id]
         definition = values.get(attribute_id)
         if not definition:
             errors.append(
