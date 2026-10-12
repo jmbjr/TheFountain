@@ -299,18 +299,43 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
             executed["runtime_state"],
             executed["execution"]["state_after"],
         )
+        self.assertEqual(
+            executed["capability"]["state"],
+            {
+                "status": "resolved",
+                "outcome": "success",
+                "information": "clear-trail",
+            },
+        )
+        self.assertEqual(executed["capability"]["available_actions"], [])
         print("PASS dirps/scenario-01: Phase B debug target consumes encounter runtime")
 
-    def test_target_passes_fake_encounter_result_through_without_recomputing(self):
+    def test_target_failure_refreshes_post_action_capability(self):
+        executed = execute_investigation_target(
+            self.resolved,
+            encounter_ref=ENCOUNTER_REF,
+            action_id=ACTION_ID,
+            actor_ref="pc",
+            dice_terms=[5, 5, 5],
+        )
+        self.assertEqual(executed["status"], "ok")
+        self.assertEqual(executed["execution"]["outcome_branch"], "failure")
+        self.assertEqual(
+            executed["capability"]["state"],
+            {
+                "status": "resolved",
+                "outcome": "failure",
+                "information": "trail-inconclusive",
+            },
+        )
+        self.assertEqual(executed["capability"]["available_actions"], [])
+
+    def test_target_passes_runtime_result_and_refreshed_capability_without_recomputing(self):
         fake_state = {
             "scenario_ref": "fake",
             "bindings": [],
             "events": [],
             "revision": "88",
-        }
-        fake_capability = {
-            "encounter": {"id": "fake-encounter"},
-            "available_actions": [{"id": "fake-action"}],
         }
         fake_record = {
             "format": "fake-encounter-result",
@@ -318,6 +343,21 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
             "state_delta": [{"fake": True}],
             "outcome_branch": "impossible-but-runtime-owned",
         }
+        described_states = []
+        pre_capability = {
+            "encounter": {"id": "fake-encounter"},
+            "state": {"phase": "pre"},
+            "available_actions": [{"id": "fake-action"}],
+        }
+        post_capability = {
+            "encounter": {"id": "fake-encounter"},
+            "state": {"phase": "post"},
+            "available_actions": [],
+        }
+
+        def fake_describe(resolved, state, encounter_ref):
+            described_states.append(state)
+            return pre_capability if len(described_states) == 1 else post_capability
 
         view = execute_investigation_target(
             self.resolved,
@@ -326,12 +366,44 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
             actor_ref="target-input-actor",
             dice_terms=[99],
             runtime_create=lambda resolved, encounter_ref: fake_state,
-            runtime_describe=lambda resolved, state, encounter_ref: fake_capability,
+            runtime_describe=fake_describe,
             runtime_execute=lambda *args, **kwargs: fake_record,
         )
         self.assertEqual(view["status"], "ok")
         self.assertIs(view["execution"], fake_record)
         self.assertEqual(view["runtime_state"], fake_record["state_after"])
+        self.assertIs(view["capability"], post_capability)
+        self.assertEqual(described_states, [fake_state, fake_record["state_after"]])
+
+    def test_rejected_target_execution_keeps_pre_action_capability_and_state(self):
+        view = execute_investigation_target(
+            self.resolved,
+            encounter_ref=ENCOUNTER_REF,
+            action_id="not-an-action",
+            actor_ref="pc",
+            dice_terms=[3, 3, 4],
+        )
+        self.assertEqual(view["status"], "error")
+        self.assertEqual(
+            self.state_values(view["runtime_state"]),
+            {
+                "roadside-tracks-status": "ready",
+                "roadside-tracks-outcome": "unresolved",
+                "roadside-tracks-information": "undiscovered",
+            },
+        )
+        self.assertEqual(
+            view["capability"]["state"],
+            {
+                "status": "ready",
+                "outcome": "unresolved",
+                "information": "undiscovered",
+            },
+        )
+        self.assertEqual(
+            [row["id"] for row in view["capability"]["available_actions"]],
+            [ACTION_ID],
+        )
 
     def test_target_source_contains_no_phase_b_gameplay_literals(self):
         source = inspect.getsource(dirps_debug_target)
@@ -374,6 +446,8 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
             self.state_values(view["runtime_state"])["roadside-tracks-status"],
             "resolved",
         )
+        self.assertEqual(view["capability"]["state"]["status"], "resolved")
+        self.assertEqual(view["capability"]["available_actions"], [])
 
 
 if __name__ == "__main__":
