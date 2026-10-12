@@ -553,3 +553,16 @@ The G2 audit found two real G1-era core gaps. The tutorial turn used unnamed leg
 The durable evidence record is `game/dirps/docs/g2-core-validation.md`. It records PASS/N/A for all twelve base checks plus the representation, target-content, invocation, and requirements/modifiers/choices/equipment conditional groups. `tests/test_dirps_g2_core.py` makes those applicability assumptions executable and includes negative fixtures for missing refs, face-slot mismatch, procedure cycles, duplicate scene IDs, wrong-kind rule refs, invalid defaults, prose-only end conditions, and duplicate choice IDs.
 
 The repository onboarding/review docs now require this check-by-check G2 evidence format, closing TheFountain issue #170's documentation gap. No DIRPS semantic profile, resolver, executable dice, replay system, target, UI, or proto promotion was added. **G3 — Semantic-valid** is next.
+
+
+## DIRPS Scenario 01 reaches G3 semantic validity
+
+**October 11, 2026.**
+
+Starting from merged PR #171 and current `main`, DIRPS Scenario 01 advanced from **G2 — Core-valid** to **G3 — Semantic-valid** at the DODGE source stage. The exact DODGE revision remains `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
+
+The G3 audit separated generic DODGE core rules from game-owned implications. DIRPS now declares `dirps@0.1.0` through the DODGE 0.2.1 validation lifecycle, backed by `tools/dirps_semantic_validation.py`. The profile validates canonical PC build consistency, explicit actor initialization, DIRPS action/procedure meaning, tutorial action-choice synchronization, concrete combat-opponent presence, target-duration duplication, source/proto provenance, and the boundary between authoritative GURPS mechanics and provisional Scenario 01 composition.
+
+The durable evidence record is `game/dirps/docs/g3-semantic-validation.md`. It also records what G3 deliberately does **not** claim: social/environmental encounter execution, active defense, damage/injury, recovery execution, deterministic scenario completion, dice terms, replay, or resolved semantics. Those remain future-gate concerns; all proto-sidecar concepts remain `suspected`.
+
+No neutral resolver, resolved-game validator, executable dice/runtime, replay machinery, target, UI, or proto promotion was added. **G4 — Resolved** is next.
