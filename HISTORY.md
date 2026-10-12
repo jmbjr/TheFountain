@@ -588,3 +588,18 @@ TheFountain now registers `tools/resolve_dirps_dodge.py` as the one DIRPS neutra
 The existing `dirps@0.1.0` profile now declares both `source` and `resolved-game` stages. Resolved-stage validation compares the exact model back to the authoritative inputs and rejects dropped or invented semantics. `tests/test_dirps_resolution.py` adds perturbation evidence for canonical PC values and encounter ordering, provenance preservation, proto preservation, and visible failure on missing required semantics.
 
 No executable dice, RNG, success/failure resolution, reaction/damage runtime, replay, divergence detection, target, or proto promotion was added. All proto entries remain `suspected`. **G5 — Executable** is next.
+
+
+## DIRPS Scenario 01 reaches bounded G5 execution
+
+**October 11, 2026.**
+
+Starting from accepted/merged G4 PR #175, DIRPS Scenario 01 advanced to **G5 — Executable** for one deliberately narrow mechanic on the pinned DODGE 0.2.1 revision `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
+
+`tools/dirps_runtime.py` now consumes only `dirps-resolved-game.v1` and executes `attempt-skill → success-roll` using an explicitly selected resolved character skill plus supplied deterministic die terms. The 3d6/sum/lte/output contract comes from the preserved DIRPS proto sidecar. A new sidecar `g5_execution_bindings.attempt-skill` declaration owns the otherwise-missing relationship between runtime `skill_ref`, the resolved character skill value, and the effective target; the runtime does not hard-code a skill target or reread authored source.
+
+`dirps-execution-result.v1` records action/procedure identity, effective target, all die terms, total, success/failure, margin, source authority, and an empty state delta. Single-record re-evaluation detects inconsistent recorded evidence without introducing a generalized session replay framework. Perturbation tests change the authoritative Tracking value through the canonical source + DODGE extension → G4 resolver path and prove the runtime follows the changed resolved value.
+
+Actual runtime evidence moves `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` from `suspected` to `exercised`. None becomes a DODGE candidate. Derived/modifier semantics and immutable replay/session history remain `suspected`.
+
+No RNG, full skill/default system, social/environmental/combat/recovery runtime, complete scenario completion, Web/CLI/PnP/TTS target, or target manifest was added. G6 remains out of scope.
