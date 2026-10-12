@@ -33,9 +33,7 @@ class DirpsSemanticValidationTests(unittest.TestCase):
         canonical = copy.deepcopy(self.canonical)
         canonical["player_character"]["attributes"]["dx"] = 12
         self.assertTrue(
-            any("attribute dx" in error and "disagrees" not in error
-                or "attribute dx" in error
-                for error in self.errors(canonical=canonical))
+            any("attribute dx" in error for error in self.errors(canonical=canonical))
         )
 
     def test_canonical_pc_skills_drift_fails(self):
@@ -44,6 +42,24 @@ class DirpsSemanticValidationTests(unittest.TestCase):
         ext["skills"]["tracking"] = 11
         self.assertTrue(
             any("skills disagree" in error for error in self.errors(dodge=dodge))
+        )
+
+    def test_canonical_pc_equipment_drift_fails(self):
+        dodge = copy.deepcopy(self.dodge)
+        ext = dodge["scenes"]["scenario-01-setup"]["instances"][0]["extensions"]["org.dirps.character"]
+        ext["equipment"] = ext["equipment"][:-1]
+        self.assertTrue(
+            any("equipment disagree" in error for error in self.errors(dodge=dodge))
+        )
+
+    def test_actor_conscious_semantic_drift_fails(self):
+        dodge = copy.deepcopy(self.dodge)
+        dodge["rules"]["conditions"]["actor-conscious"]["left"]["ref"] = "stunned"
+        self.assertTrue(
+            any(
+                "actor-conscious" in error and "unconscious value" in error
+                for error in self.errors(dodge=dodge)
+            )
         )
 
     def test_actor_missing_explicit_state_binding_fails(self):
