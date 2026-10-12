@@ -121,7 +121,7 @@ class DirpsRuntimeTests(unittest.TestCase):
         self.assertFalse(failure["outcome"]["success"])
         self.assertEqual(failure["outcome"]["margin"], -1)
 
-    def test_authoritative_skill_perturbation_flows_through_resolver_to_runtime(self):
+    def test_prototype_skill_perturbation_flows_through_resolver_to_runtime(self):
         baseline = self.execute(terms=[4, 4, 3])
         self.assertEqual(baseline["target"]["effective_target"], 12)
         self.assertTrue(baseline["outcome"]["success"])
