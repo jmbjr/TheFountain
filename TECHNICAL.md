@@ -552,3 +552,29 @@ Phase A is additive. `describe_contextual_skill()`, `execute_contextual_skill()`
 Phase A does not add state mutation. It therefore does not yet make the Roadside Tracks encounter complete: encounter state, information consequences, and progress mutation remain Phase B.
 
 Proto promotion remains conservative. `derived_values` and `expressions` were reassessed but remain `suspected`; the Phase A calculation is a bounded DIRPS-private execution binding, not either proposed generic proto contract.
+
+### DIRPS gameplay Phase B — Roadside Tracks investigation
+
+Phase B is the first state-mutating DIRPS gameplay tranche. It uses standard DODGE 0.2.1 state semantics rather than defining a private state schema:
+
+```text
+canonical Roadside encounter facts
+→ DIRPS source validation
+→ DODGE scenario-owned values / initial_state / runtime_states / set effects
+→ neutral resolver
+→ Phase A contextual skill result (v2)
+→ Phase B consequence bridge
+→ neutral runtime-state mutation
+→ dirps-encounter-result.v1
+→ debug encounter target
+```
+
+Canonical Scenario 01 owns initial state, the one investigation choice, and branch consequence values/text. DODGE normalizes those facts. The sidecar's `phase_b_encounter_bindings` only maps success/failure to ordered DODGE effect refs because procedure-local result branching remains outside first-class DODGE 0.2.1 procedure context.
+
+The resolver now preserves top-level `runtime_states` plus scenario `initial_state`. The runtime validates the DODGE state snapshot, exposes available actions from current state, composes `execute_contextual_skill()`, applies only normalized scenario-subject `set` effects, increments the neutral revision, and records exact before/after state and ordered deltas. Rejected actions do not mutate caller state.
+
+The existing G5/v1 and Phase A/v2 record contracts remain unchanged. Phase B adds `dirps-encounter-result.v1` around the nested v2 skill record. One-record encounter replay remains distinct from future append-only session history.
+
+The debug CLI adds a separate encounter interaction mode while retaining the accepted direct-skill mode. Encounter/action/consequence IDs are runtime/source data rather than target literals.
+
+No proto status advances. DODGE already supplies the state/effect vocabulary needed by this tranche.
