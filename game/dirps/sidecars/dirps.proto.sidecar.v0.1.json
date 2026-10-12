@@ -24,7 +24,7 @@
       "covered by positive, negative, and perturbation/deterministic tests as applicable",
       "demonstrated to be reusable beyond GURPS-specific terminology"
     ],
-    "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy; session history, derived values/modifiers, and broader RPG semantics remain suspected."
+    "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -289,11 +289,23 @@
       },
       "effective_target": {
         "from": "selected-skill-level",
-        "modifier_policy": "unsupported"
+        "modifier_policy": "unsupported",
+        "supported_domain": {
+          "minimum": 4,
+          "maximum": 16
+        },
+        "outside_domain": "error"
       },
       "dice_resolution_ref": "dice_resolution",
       "result_format": "dirps-execution-result.v1",
-      "state_mutation": "none"
+      "state_mutation": "none",
+      "binding_source_ref": "dirps-proto",
+      "target_provenance": {
+        "source_ref": "scenario-01-source",
+        "character_provenance": "prototype_assumption",
+        "canonical_path": "player_character.skills"
+      },
+      "result_scope": "binary-success-and-margin-only"
     }
   }
 }
