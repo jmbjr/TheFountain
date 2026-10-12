@@ -571,7 +571,98 @@ def _sources_for_execution(resolved, action, procedure, binding):
 
 
 def describe_attempt_skill(resolved):
-    """Describe the accepted executable capability without executing it."""
+    """Describe the immutable accepted G5/v1 capability for G6 consumers."""
+    binding, scenario, action, procedure = _legacy_execution_path(resolved)
+    dice = _dice_contract(resolved, binding)
+    source_info = _sources_for_execution(resolved, action, procedure, binding)
+
+    scene = _require_mapping(resolved.get("scene"), "resolved scene")
+    actors = []
+    for row in scene.get("instances", []):
+        character = row.get("character")
+        skills = character.get("skills") if isinstance(character, dict) else None
+        actors.append(
+            {
+                "id": row.get("id"),
+                "name": row.get("name"),
+                "skills": copy.deepcopy(skills) if isinstance(skills, dict) else {},
+                "character_provenance": (
+                    character.get("provenance") if isinstance(character, dict) else None
+                ),
+            }
+        )
+
+    return {
+        "mechanic": "ordinary-success-roll",
+        "semantic_path": {
+            "action_ref": binding["action_ref"],
+            "procedure_ref": binding["procedure_ref"],
+        },
+        "scenario": {
+            "id": resolved.get("scenario_id"),
+            "name": scenario.get("name"),
+        },
+        "inputs": {
+            "actor": binding["actor_input"],
+            "target": binding["target_input"],
+            "random_evidence": "dice_terms",
+        },
+        "target": {
+            "kind": binding["target_source"]["kind"],
+            "supported_domain": copy.deepcopy(
+                binding["effective_target"]["supported_domain"]
+            ),
+            "modifier_policy": binding["effective_target"]["modifier_policy"],
+            "outside_domain": binding["effective_target"]["outside_domain"],
+        },
+        "dice": {
+            "proto_ref": binding["dice_resolution_ref"],
+            "randomizer_id": dice["id"],
+            "kind": dice["kind"],
+            "count": dice["count"],
+            "sides": dice["sides"],
+            "combine": dice["combine"],
+            "comparator": copy.deepcopy(dice["comparator"]),
+        },
+        "result_format": binding["result_format"],
+        "result_scope": binding["result_scope"],
+        "state_mutation": binding["state_mutation"],
+        "actors": actors,
+        "trace": {
+            "action": {
+                "source_ref": source_info["action_ref"],
+                "authority": action.get("authority"),
+            },
+            "procedure": {
+                "source_ref": source_info["procedure_ref"],
+                "authority": procedure.get("authority"),
+            },
+            "execution_binding": {
+                "source_ref": source_info["binding_ref"],
+                "authority": source_info["binding"].get("authority"),
+            },
+            "effective_target": {
+                "source_ref": source_info["target_ref"],
+                "authority": source_info["target"].get("authority"),
+                "character_provenance": source_info["target_provenance"].get(
+                    "character_provenance"
+                ),
+                "canonical_path": source_info["target_provenance"].get(
+                    "canonical_path"
+                ),
+            },
+            "sources": {
+                source_info["action_ref"]: copy.deepcopy(source_info["action"]),
+                source_info["procedure_ref"]: copy.deepcopy(source_info["procedure"]),
+                source_info["binding_ref"]: copy.deepcopy(source_info["binding"]),
+                source_info["target_ref"]: copy.deepcopy(source_info["target"]),
+            },
+        },
+    }
+
+
+def describe_contextual_skill(resolved):
+    """Describe the Phase A/v2 contextual capability without executing it."""
     binding, scenario, action, procedure = _execution_path(resolved)
     dice = _dice_contract(resolved, binding)
     source_info = _sources_for_execution(resolved, action, procedure, binding)
@@ -632,6 +723,7 @@ def describe_attempt_skill(resolved):
             "random_evidence": copy.deepcopy(binding["random_evidence"]),
         },
         "critical_resolution": copy.deepcopy(binding["critical_resolution"]),
+        "result_format": binding["result_format"],
         "result_scope": binding["result_scope"],
         "state_mutation": binding["state_mutation"],
         "actors": actors,
