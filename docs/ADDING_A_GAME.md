@@ -98,6 +98,24 @@ CI evidence must also identify the TheFountain source revision actually validate
 
 Do not use vague labels such as "prototype" as a substitute for saying which gate is complete.
 
+
+### G2 evidence contract
+
+G2 is not satisfied by schema success or by a single opaque "core valid" label. Review the exact selected DODGE version's `DODGE_SPEC.md` §15.3 and `IMPLEMENTATION_GUIDE.md` §9 check by check.
+
+Until a reusable DODGE-owned core validator covers the selected contract, record a candidate evidence matrix with one row for every §15.3 base item and every conditional group:
+
+```text
+Check: <§15.3 item / conditional group>
+Applicability: PASS | N/A
+Evidence: <validator/test/file/fixture>
+Notes: <why N/A or what invariant is proven>
+```
+
+The G2 record must include the exact DODGE revision/version and exact TheFountain candidate SHA. It must distinguish unconditional checks from conditional groups such as representations, target content configuration, invocations, and requirements/modifiers/choices/equipment. For invariants that need behavioral proof, include negative fixtures showing invalid candidates are rejected.
+
+A `PASS ... schema` line is G1 evidence only. G2 requires complete §15.3 evidence for the candidate itself. N/A is acceptable only when the feature is genuinely absent and the evidence makes that absence auditable so later additions cannot silently reuse stale evidence.
+
 ---
 
 ## 3. Create the game namespace

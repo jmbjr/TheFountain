@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G1 — Schema-valid**.
+The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G2 — Core-valid**.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,13 +175,15 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
+G2 evidence is recorded in `game/dirps/docs/g2-core-validation.md` and exercised by `tests/test_dirps_g2_core.py`. The next gate is G3 game/application semantic validation; do not start the resolver, executable dice, or UI before that boundary is explicit.
+
 Current DIRPS maturity:
 
-- **G1 — Schema-valid**;
+- **G2 — Core-valid**;
 - the DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI;
-- G2 generic core validity is the next gate and is **not** claimed by G1;
-- proto concepts remain **suspected** gaps; none were exercised or promoted at G1;
-- the remaining convergence work is tracked in issue **#163** and should proceed through G2 → G3 → G4 → G5 → G6 using the onboarding/conformance process.
+- G2 generic core validity is supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
+- proto concepts remain **suspected** gaps; none were exercised or promoted at G2;
+- the remaining convergence work is tracked in issue **#163** and should proceed through G3 → G4 → G5 → G6 using the onboarding/conformance process.
 
 ## DODGE 0.2.1 / reference-release direction
 

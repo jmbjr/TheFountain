@@ -498,19 +498,20 @@ The workflow pins an exact DODGE source revision. Updating that pin is a deliber
 
 Conformance provenance is also explicit on the TheFountain side. Pull-request runs check out `github.event.pull_request.head.sha`, print the validated TheFountain source SHA, and assert that `git rev-parse HEAD` equals that expected identity before candidate validation begins. Push/main and manual runs validate `github.sha`. The default GitHub synthetic pull-request merge ref may still be useful for merge-compatibility testing, but it is not used as exact-head maturity evidence.
 
-## DIRPS G1 schema-valid
+## DIRPS G2 core-valid
 
-`game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** to **G1 — Schema-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
+`game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** through **G1 — Schema-valid** to **G2 — Core-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
 
 The initial scaffold contains:
 
-- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G1"`;
+- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G2"`;
 - `game/dirps/scenarios/scenario-01/scenario.json` — bounded tutorial source for *The Missing Courier*;
-- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — G1 document validated against the exact DODGE 0.2.1 schema pinned by CI; actor values declare `owner_scope: actor` and Scenario 01 persistence, while post-scenario persistence remains explicitly unresolved;
+- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — G2 document validated against the exact DODGE 0.2.1 schema and audited against every applicable §15.3 core rule; actor values declare `owner_scope: actor` and Scenario 01 persistence, while post-scenario persistence remains explicitly unresolved;
 - `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json` — suspected RPG-shaped neutral gaps retained adjacent to DODGE;
-- `game/dirps/docs/compatibility-audit.md` — bounded compatibility hypotheses for Scenario 01.
+- `game/dirps/docs/compatibility-audit.md` — bounded compatibility hypotheses for Scenario 01;
+- `game/dirps/docs/g2-core-validation.md` — auditable PASS/N/A matrix for every §15.3 base item and conditional group, backed by `tests/test_dirps_g2_core.py` negative fixtures.
 
-At G0, the generic conformance runner discovers DIRPS but intentionally skips schema/profile/resolver execution. This is a positive state, not a loophole: it prevents a familiar-looking scaffold from being confused with a conforming implementation. When DIRPS advances to G1+, the same registered scenario must begin passing the exact DODGE gates required by its declared maturity.
+At G0, the generic conformance runner discovers DIRPS but intentionally skips schema/profile/resolver execution. This is a positive state, not a loophole: it prevents a familiar-looking scaffold from being confused with a conforming implementation. DIRPS G2 evidence is candidate-specific and explicit: schema validation remains in the generic registered-game runner, while `tests/test_dirps_g2_core.py` supplies the interim complete §15.3 audit until reusable DODGE-owned core-validation tooling tracked upstream replaces candidate-level evidence. This is not a G3 semantic profile.
 
 DIRPS proto semantics use the progression:
 
