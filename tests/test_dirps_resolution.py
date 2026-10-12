@@ -124,7 +124,7 @@ class DirpsResolutionTests(unittest.TestCase):
         )
         self.assertTrue(any("proto sidecar semantics" in error for error in errors))
 
-    def test_unresolved_index_is_derived_not_promoted(self):
+    def test_unresolved_index_is_derived_and_preserves_proto_maturity(self):
         resolved = resolve()
         expected = [
             {
@@ -135,7 +135,35 @@ class DirpsResolutionTests(unittest.TestCase):
             for proto_id, spec in sorted(self.sidecar["proto_specs"].items())
         ]
         self.assertEqual(resolved["unresolved"], expected)
-        self.assertTrue(all(row["status"] == "suspected" for row in resolved["unresolved"]))
+
+        exercised = {
+            row["proto_ref"]
+            for row in resolved["unresolved"]
+            if row["status"] == "exercised"
+        }
+        self.assertEqual(
+            exercised,
+            {
+                "dice_resolution",
+                "procedure_context",
+                "actor_character_model",
+                "skill_model",
+                "resolution_trace",
+            },
+        )
+        self.assertTrue(
+            all(
+                row["status"] == "suspected"
+                for row in resolved["unresolved"]
+                if row["proto_ref"] not in exercised
+            )
+        )
+        self.assertTrue(
+            all(
+                row["candidate_for_dodge"] == "not-yet-candidate"
+                for row in resolved["unresolved"]
+            )
+        )
 
         corrupted = copy.deepcopy(resolved)
         corrupted["unresolved"][0]["status"] = "candidate"
