@@ -174,6 +174,41 @@ The runtime interprets those sidecar rows generically through `_rule_matches()`;
 
 Phase A classifies the result but does not implement critical-success or critical-failure **consequences**. Those remain unsupported until a scenario phase actually needs them.
 
+## Record versioning / compatibility
+
+The accepted G5 evidence contract remains **immutable**:
+
+`g5_execution_bindings.attempt-skill → dirps-execution-result.v1`
+
+and continues to back:
+
+```python
+execute_attempt_skill(...)
+replay_attempt_skill(...)
+describe_attempt_skill(...)
+```
+
+Phase A does not redefine that identity. Its expanded contextual contract lives separately at:
+
+`phase_a_execution_bindings.attempt-skill → dirps-execution-result.v2`
+
+and backs:
+
+```python
+execute_contextual_skill(...)
+replay_contextual_skill(...)
+describe_contextual_skill(...)
+```
+
+This separation is intentional because Phase A adds required structure that is not compatible with the accepted v1 record shape: contextual modifier evidence, expanded effective-target trace, generated-random metadata, and critical classification.
+
+Replay APIs reject the other record version explicitly:
+
+- v1 presented to the Phase A replay path is identified as a legacy G5 record;
+- v2 presented to the legacy G5 replay path is identified as a Phase A record.
+
+A version mismatch is therefore **not** reported as generic record divergence/tampering.
+
 ## Runtime APIs
 
 Existing unmodified compatibility path:
@@ -185,6 +220,7 @@ execute_attempt_skill(resolved, actor_ref=..., skill_ref=..., dice_terms=...)
 New Phase A contextual path:
 
 ```python
+describe_contextual_skill(resolved)
 execute_contextual_skill(
     resolved,
     actor_ref=...,
@@ -203,7 +239,7 @@ The contextual replay path reuses recorded supplied terms or the recorded genera
 
 ## Result evidence
 
-`dirps-execution-result.v1` now records:
+`dirps-execution-result.v2` is the Phase A contextual record identity. It records:
 
 - actor;
 - selected skill;
@@ -245,7 +281,10 @@ Phase A remains non-mutating.
 14. roll 17 uses the effective-target 16 ordinary-failure boundary;
 15. a roll 10 greater than effective target classifies critical failure;
 16. capability inspection exposes contextual checks, RNG contract, modifier policy, and critical contract;
-17. proto maturity remains conservative.
+17. proto maturity remains conservative;
+18. accepted G5 records still emit/replay as `dirps-execution-result.v1`;
+19. contextual Phase A records emit/replay as `dirps-execution-result.v2`;
+20. v1/v2 cross-replay is rejected as an explicit version-contract mismatch rather than generic divergence.
 
 The positive test emits:
 
