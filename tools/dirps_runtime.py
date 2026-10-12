@@ -879,7 +879,7 @@ def _execute_attempt_skill(
                 "authority": procedure.get("authority"),
             },
             "execution_binding": {
-                "ref": f"proto_sidecar.g5_execution_bindings.{BINDING_ID}",
+                "ref": f"proto_sidecar.phase_a_execution_bindings.{BINDING_ID}",
                 "source_ref": source_info["binding_ref"],
                 "authority": source_info["binding"].get("authority"),
             },
@@ -1005,7 +1005,7 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
                 "authority": procedure.get("authority"),
             },
             "execution_binding": {
-                "ref": f"proto_sidecar.phase_a_execution_bindings.{BINDING_ID}",
+                "ref": f"proto_sidecar.g5_execution_bindings.{BINDING_ID}",
                 "source_ref": source_info["binding_ref"],
                 "authority": source_info["binding"].get("authority"),
             },
