@@ -603,3 +603,18 @@ Starting from accepted/merged G4 PR #175, DIRPS Scenario 01 advanced to **G5 —
 Actual runtime evidence moves `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` from `suspected` to `exercised`. None becomes a DODGE candidate. Derived/modifier semantics and immutable replay/session history remain `suspected`.
 
 No RNG, full skill/default system, social/environmental/combat/recovery runtime, complete scenario completion, Web/CLI/PnP/TTS target, or target manifest was added. G6 remains out of scope.
+
+
+## DIRPS Scenario 01 reaches G6 with a thin debug target
+
+**October 11, 2026.**
+
+Starting from accepted/merged G5 PR #176, DIRPS Scenario 01 advanced to **G6 — Targeted** on the pinned DODGE 0.2.1 revision `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
+
+The first target is intentionally a Python debug CLI, `tools/dirps_debug_target.py`, because the accepted DIRPS resolver/runtime are Python while the mature Wretched Web implementation uses its own JavaScript runtime stack. Choosing the CLI avoids either duplicating gameplay rules in a browser client or introducing a new server/build bridge merely to satisfy G6.
+
+The runtime now exposes `describe_attempt_skill()` so targets can inspect the already-accepted executable capability, resolved actors/skills, dice contract, target domain, and provenance without reconstructing those semantics. The CLI calls that inspection API and `execute_attempt_skill()`, passes successful runtime result objects through unchanged, and turns runtime failures into visible error views without guessing outcomes.
+
+Target tests prove the full source → DODGE → resolver → runtime → target perturbation path, inject fake runtime results to prove no target-side recomputation, smoke-test the registered CLI entry point, expose all three G5 authority layers, and verify unsupported mechanics are absent from the target surface. The target is registered through the existing `generated_targets` map.
+
+The debug CLI does not use DODGE's export-contract/target-manifest model, so no fake manifest was introduced. No proto concept changes maturity at G6. No Web client, generated RNG, additional RPG mechanics, or G7 reference claim was added.
