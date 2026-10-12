@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded compatibility audit for DIRPS Scenario 01. The candidate has reached **G5 — Executable** for one ordinary success-roll path against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`, G3 source semantics in `g3-semantic-validation.md`, G4 neutral resolution in `g4-resolved-validation.md`, and the first bounded runtime evidence in `g5-executable-validation.md`.
+This is the bounded compatibility audit for DIRPS Scenario 01. The candidate has reached **G6 — Targeted** with one debug CLI consuming the accepted ordinary success-roll runtime against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`, G3 source semantics in `g3-semantic-validation.md`, G4 neutral resolution in `g4-resolved-validation.md`, G5 runtime evidence in `g5-executable-validation.md`, and G6 target evidence in `g6-target-validation.md`.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -40,6 +40,14 @@ The `dirps@0.1.0` profile now also runs at `resolved-game` and rejects dropped/c
 The runtime uses supplied die terms, derives the 3d6/sum/lte contract from the resolved `dice_resolution` proto semantics, and accepts only effective targets 4..16 under the explicit G5 execution binding. Outside that range it fails visibly rather than approximating success-roll edge semantics. The emitted `dirps-execution-result.v1` distinguishes authoritative GURPS action/procedure trace from the provisional `dirps-proto` binding and the provisional Scenario 01 / `prototype_assumption` skill target. It can re-evaluate a recorded result and detect divergence, including trace/provenance tampering. No RNG, modifiers, derived targets, critical-result consequences, session-history framework, or target adapter is implemented.
 
 Actual G5 evidence moves `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` to **exercised** only. They remain `not-yet-candidate`. `derived_values` and `replay_session_history` remain **suspected**, as do the other untouched proto gaps.
+
+## G6 target result
+
+`tools/dirps_debug_target.py` is the first real target consumer. It calls `describe_attempt_skill()` and `execute_attempt_skill()` from the accepted DIRPS runtime, exposes resolved actors/skills, the runtime-declared target/dice capability, the exact runtime result, and the three-layer provenance trace, and maps runtime failures to visible target errors.
+
+The target contains no private rule literals for action/procedure identity, skill values, dice shape, comparator, target-domain bounds, or source/provenance IDs. A fake-runtime regression proves that deliberately unusual runtime totals/targets/outcomes are passed through unchanged rather than recomputed in the adapter. A source perturbation test proves a changed Scenario 01 skill value flows through DODGE → resolver → runtime → target.
+
+This debug CLI does not use the DODGE export-contract/target-manifest model, so no fake manifest is declared. The generic G6 manifest lifecycle remains applicable only to registered `export_contracts`. No proto status changes at G6: the five G5 concepts remain `exercised` / `not-yet-candidate`, and all untouched gaps remain `suspected`.
 
 ## Non-goals for this pass
 

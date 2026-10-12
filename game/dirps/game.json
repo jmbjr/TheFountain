@@ -14,8 +14,11 @@
         "sidecars/dirps.proto.sidecar.v0.1.json"
       ],
       "conformance": {
-        "maturity": "G5",
+        "maturity": "G6",
         "resolver": "tools/resolve_dirps_dodge.py"
+      },
+      "generated_targets": {
+        "debug-cli": "../../tools/dirps_debug_target.py"
       }
     }
   }

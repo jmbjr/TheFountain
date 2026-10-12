@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G5 — Executable (bounded).** The accepted G4 model remains the sole runtime input. `tools/dirps_runtime.py` executes one `attempt-skill → success-roll` path using an explicit resolved character-skill target plus supplied deterministic 3d6 evidence. `../../docs/g5-executable-validation.md` records the result/trace/replay evidence. The rest of Scenario 01 and all G6 targets remain unimplemented.
+**G6 — Targeted (bounded).** The accepted G4 model remains the sole runtime input, the accepted G5 runtime remains the sole executable mechanic, and `tools/dirps_debug_target.py` provides one thin debug CLI consumer. `../../docs/g6-target-validation.md` records target, perturbation, error, provenance, and anti-hardcoding evidence. The rest of Scenario 01 remains unimplemented and G7 is not claimed.
 
 ## Goal
 
@@ -33,4 +33,4 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-The first bounded executable mechanic now shows its action/procedure, resolved skill target, supplied die terms, success/failure, margin, and source authority; re-evaluation detects inconsistent recorded results. This does **not** satisfy the remaining social/environmental/combat/recovery/completion or immutable session-history goals.
+The first target can now inspect actors/skills/capability data and execute the accepted bounded mechanic while displaying the exact runtime result and three-layer provenance trace. This does **not** satisfy the remaining social/environmental/combat/recovery/completion or immutable session-history goals.

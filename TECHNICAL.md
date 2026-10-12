@@ -499,21 +499,33 @@ The workflow pins an exact DODGE source revision. Updating that pin is a deliber
 
 Conformance provenance is also explicit on the TheFountain side. Pull-request runs check out `github.event.pull_request.head.sha`, print the validated TheFountain source SHA, and assert that `git rev-parse HEAD` equals that expected identity before candidate validation begins. Push/main and manual runs validate `github.sha`. The default GitHub synthetic pull-request merge ref may still be useful for merge-compatibility testing, but it is not used as exact-head maturity evidence.
 
-## DIRPS G5 bounded execution
+## DIRPS G6 thin target
 
-`game/dirps/` is the second independent DODGE implementation track and has advanced through **G5 — Executable** for one bounded mechanic. Its first rules stress test uses GURPS Lite as an external authoritative reference, while DIRPS remains the implementation identity.
+`game/dirps/` is the second independent DODGE implementation track and has advanced through **G6 — Targeted** with one deliberately small debug CLI target.
 
-The accepted G4 architecture remains intact: `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1`, and `dirps@0.1.0` validates source plus exact resolved-game semantics. G5 adds:
+The accepted G4/G5 boundaries remain intact:
 
-- `tools/dirps_runtime.py` — renderer-independent execution of one `attempt-skill → success-roll` path;
-- `tests/test_dirps_runtime.py` — deterministic success/failure, perturbation, malformed-evidence, action/binding, actor-availability, and replay-divergence evidence;
-- `game/dirps/docs/g5-executable-validation.md` — durable runtime/result/proto-maturity contract;
-- `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json:g5_execution_bindings.attempt-skill` — provisional semantic authority for the skill-input → resolved-skill-target binding DODGE 0.2.1 cannot express first-class.
+```text
+DODGE source
+→ dirps@0.1.0 source validation
+→ tools/resolve_dirps_dodge.py
+→ dirps-resolved-game.v1
+→ dirps@0.1.0 resolved-game validation
+→ tools/dirps_runtime.py
+→ tools/dirps_debug_target.py
+```
 
-The runtime consumes only `dirps-resolved-game.v1`. It does not reopen `scenario.json`, the DODGE source document, or the sidecar on disk. The effective target is selected from the resolved actor's `character.skills` through the declared sidecar binding; supplied die terms are evaluated under the resolved `dice_resolution` proto contract. The binding also declares the target provenance and a supported effective-target domain of 4..16. Values outside that range fail before classification, so the runtime does not silently approximate GURPS success-roll edge semantics.
+G6 adds:
 
-The bounded result format, `dirps-execution-result.v1`, preserves actor/skill inputs, action/procedure refs, effective target, individual die terms, total, success/failure, margin, and an explicit three-layer authority trace: authoritative `gurps-lite` action/procedure semantics; provisional `dirps-proto` execution-binding semantics; and provisional `scenario-01-source` target data with `prototype_assumption` character provenance. It also records the 4..16 supported target domain, binary-only result scope, and an empty state delta. `replay_attempt_skill()` deterministically re-evaluates one record and raises on divergence, including authority/provenance tampering. This is intentionally not a general session-history/replay subsystem.
+- `tools/dirps_runtime.py:describe_attempt_skill()` — target-neutral introspection of the accepted executable binding, dice contract, resolved actor/skill choices, target domain, and provenance;
+- `tools/dirps_debug_target.py` — CLI interaction/presentation adapter that calls the accepted runtime and returns debug JSON;
+- `tests/test_dirps_target.py` — real-runtime, perturbation, fake-runtime/no-recomputation, error, provenance, entry-point, and unsupported-surface evidence;
+- `game/dirps/docs/g6-target-validation.md` — durable G6 contract/evidence.
 
-G5 execution exercises—but does not promote to candidate—`dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace`. Derived targets/modifiers and immutable replay/session history remain suspected.
+The target owns only input adaptation and presentation. It does not contain private gameplay literals for the executable action/procedure, skill values, dice count/sides, comparator, target-domain bounds, actor-conscious logic, or provenance IDs. A successful target view contains the runtime execution object unchanged; runtime errors remain visible errors with no guessed outcome.
 
-The runtime is not a target. No Web/CLI/PnP/TTS adapter, target manifest, presentation layer, full combat, recovery, social/environmental subsystem, or complete scenario win/loss runtime is included.
+The debug CLI is registered through the repository's existing `generated_targets` descriptor map. It does not use the DODGE export-contract/target-manifest model, so DIRPS declares no export contract and the generic G6 manifest loop has no DIRPS manifest to validate. This is consistent with DODGE 0.2.1 Step 12/13: a first debug target may consume resolved/runtime semantics directly; export contracts/manifests are required when that target model is used.
+
+No proto status advances at G6. Target display is consumption evidence, not new semantic execution. The five G5 concepts remain `exercised` / `not-yet-candidate`; untouched gaps remain `suspected`.
+
+G6 is not G7. The target proves one real consumer of the neutral runtime boundary, but Scenario 01 still has intentionally unimplemented mechanics and has not undergone the final whole-system reference-quality gate.

@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""Bounded DIRPS G5 execution runtime.
+"""Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It currently executes exactly one path:
-
-    attempt-skill -> success-roll -> supplied 3d6 evidence
-
-It does not own canonical game data, generate randomness, or implement G6 targets.
+It executes exactly one accepted G5 path and exposes target-neutral capability
+introspection for G6 consumers. It does not own canonical game data, generate
+randomness, or implement target presentation.
 """
 from __future__ import annotations
 
@@ -225,6 +223,115 @@ def _validate_terms(terms, contract):
             )
         validated.append(value)
     return validated
+
+
+def describe_attempt_skill(resolved):
+    """Describe the accepted executable capability without executing it."""
+    binding, scenario, action, procedure = _execution_path(resolved)
+    dice = _dice_contract(resolved, binding)
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+
+    action_source_ref = action.get("source_ref")
+    procedure_source_ref = procedure.get("source_ref")
+    binding_source_ref = binding.get("binding_source_ref")
+    target_provenance = _require_mapping(
+        binding.get("target_provenance"), "attempt-skill target provenance"
+    )
+    target_source_ref = target_provenance.get("source_ref")
+
+    action_source = _require_mapping(
+        sources.get(action_source_ref), f"action source {action_source_ref}"
+    )
+    procedure_source = _require_mapping(
+        sources.get(procedure_source_ref), f"procedure source {procedure_source_ref}"
+    )
+    binding_source = _require_mapping(
+        sources.get(binding_source_ref), f"binding source {binding_source_ref}"
+    )
+    target_source = _require_mapping(
+        sources.get(target_source_ref), f"target source {target_source_ref}"
+    )
+
+    scene = _require_mapping(resolved.get("scene"), "resolved scene")
+    actors = []
+    for row in scene.get("instances", []):
+        character = row.get("character")
+        skills = character.get("skills") if isinstance(character, dict) else None
+        actors.append(
+            {
+                "id": row.get("id"),
+                "name": row.get("name"),
+                "skills": copy.deepcopy(skills) if isinstance(skills, dict) else {},
+                "character_provenance": (
+                    character.get("provenance") if isinstance(character, dict) else None
+                ),
+            }
+        )
+
+    return {
+        "mechanic": "ordinary-success-roll",
+        "semantic_path": {
+            "action_ref": binding["action_ref"],
+            "procedure_ref": binding["procedure_ref"],
+        },
+        "scenario": {
+            "id": resolved.get("scenario_id"),
+            "name": scenario.get("name"),
+        },
+        "inputs": {
+            "actor": binding["actor_input"],
+            "target": binding["target_input"],
+            "random_evidence": "dice_terms",
+        },
+        "target": {
+            "kind": binding["target_source"]["kind"],
+            "supported_domain": copy.deepcopy(
+                binding["effective_target"]["supported_domain"]
+            ),
+            "modifier_policy": binding["effective_target"]["modifier_policy"],
+            "outside_domain": binding["effective_target"]["outside_domain"],
+        },
+        "dice": {
+            "proto_ref": binding["dice_resolution_ref"],
+            "randomizer_id": dice["id"],
+            "kind": dice["kind"],
+            "count": dice["count"],
+            "sides": dice["sides"],
+            "combine": dice["combine"],
+            "comparator": copy.deepcopy(dice["comparator"]),
+        },
+        "result_scope": binding["result_scope"],
+        "state_mutation": binding["state_mutation"],
+        "actors": actors,
+        "trace": {
+            "action": {
+                "source_ref": action_source_ref,
+                "authority": action.get("authority"),
+            },
+            "procedure": {
+                "source_ref": procedure_source_ref,
+                "authority": procedure.get("authority"),
+            },
+            "execution_binding": {
+                "source_ref": binding_source_ref,
+                "authority": binding_source.get("authority"),
+            },
+            "effective_target": {
+                "source_ref": target_source_ref,
+                "authority": target_source.get("authority"),
+                "character_provenance": target_provenance.get(
+                    "character_provenance"
+                ),
+                "canonical_path": target_provenance.get("canonical_path"),
+            },
+            "sources": {
+                action_source_ref: copy.deepcopy(action_source),
+                procedure_source_ref: copy.deepcopy(procedure_source),
+                binding_source_ref: copy.deepcopy(binding_source),
+                target_source_ref: copy.deepcopy(target_source),
+            },
+        },
+    }
 
 
 def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):

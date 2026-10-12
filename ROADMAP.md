@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G5 — Executable** for one bounded success-roll mechanic.
+The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G6 — Targeted** with one debug CLI consumer of the bounded success-roll runtime.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,17 +175,18 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4 evidence remains in the existing validation documents. G5 now executes one `attempt-skill → success-roll` path from `dirps-resolved-game.v1`, with evidence in `game/dirps/docs/g5-executable-validation.md`. Additional Scenario 01 mechanics remain separate work; G6 targets/UI have not started.
+G2/G3/G4/G5 evidence remains in the existing validation documents. G6 now adds `tools/dirps_debug_target.py`, which consumes the accepted runtime without reimplementing gameplay; evidence lives in `game/dirps/docs/g6-target-validation.md`. Additional Scenario 01 mechanics remain separate work, and G7 has not started.
 
 Current DIRPS maturity:
 
-- **G5 — Executable (bounded)**;
+- **G6 — Targeted (bounded)**;
 - the DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI;
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
 - `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` are now **exercised** by the bounded runtime, but remain `not-yet-candidate`; derived targets/modifiers, session history, and untouched gaps remain **suspected**;
-- the remaining convergence work is tracked in issue **#163**; continue with additional bounded executable mechanics as needed before any G6 target work.
+- one registered debug CLI target now consumes the accepted resolved/runtime path and exposes execution/provenance evidence without owning gameplay semantics;
+- the remaining convergence work is tracked in issue **#163**; G7 requires a separate whole-system reference-quality review.
 
 ## DODGE 0.2.1 / reference-release direction
 
