@@ -42,7 +42,7 @@ G5_EXERCISED_PROTO = frozenset(
         "resolution_trace",
     }
 )
-PHASE_A_EXERCISED_PROTO = G5_EXERCISED_PROTO | frozenset({"derived_values"})
+PHASE_A_EXERCISED_PROTO = G5_EXERCISED_PROTO
 
 
 def _repo_relative(path):
@@ -149,11 +149,11 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             continue
         if spec.get("status") != "exercised":
             errors.append(
-                f"G5 exercised proto {proto_id}: status must be exercised, got {spec.get('status')}"
+                f"exercised proto {proto_id}: status must be exercised, got {spec.get('status')}"
             )
         if spec.get("candidate_for_dodge") != "not-yet-candidate":
             errors.append(
-                f"G5 exercised proto {proto_id}: must remain not-yet-candidate"
+                f"exercised proto {proto_id}: must remain not-yet-candidate"
             )
 
     dice = specs.get("dice_resolution") or {}
@@ -269,13 +269,9 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             if not procedure:
                 errors.append("G5 execution binding procedure_ref does not resolve")
 
-    if (specs.get("derived_values") or {}).get("status") != "exercised":
+    if (specs.get("derived_values") or {}).get("status") != "suspected":
         errors.append(
-            "Phase A contextual skill checks must mark derived_values exercised"
-        )
-    if (specs.get("derived_values") or {}).get("candidate_for_dodge") != "not-yet-candidate":
-        errors.append(
-            "Phase A derived_values must remain not-yet-candidate"
+            "Phase A must keep derived_values suspected; the generic proposed shape is not executed"
         )
     if (specs.get("expressions") or {}).get("status") != "suspected":
         errors.append(
