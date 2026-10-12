@@ -68,6 +68,37 @@ class DirpsResolutionTests(unittest.TestCase):
             [row["id"] for row in canonical["encounters"]],
         )
 
+    def test_scenario_assumption_perturbation_flows_into_resolved_model(self):
+        dodge = copy.deepcopy(self.dodge)
+        changed = [
+            "A changed schema-valid unresolved Scenario 01 assumption must survive neutral resolution."
+        ]
+        dodge["scenarios"]["scenario-01"]["assumptions"] = changed
+
+        resolved = resolve_documents(dodge, self.canonical, self.sidecar)
+        self.assertEqual(resolved["scenario"]["assumptions"], changed)
+        self.assertEqual(
+            resolved["scenario"]["source_ref"],
+            dodge["scenarios"]["scenario-01"]["source_ref"],
+        )
+        self.assertEqual(
+            resolved["scenario"]["authority"],
+            dodge["scenarios"]["scenario-01"]["authority"],
+        )
+        self.assertEqual(
+            resolved["scenario"]["scene_ref"],
+            dodge["scenarios"]["scenario-01"]["scene_ref"],
+        )
+
+        corrupted = copy.deepcopy(resolved)
+        corrupted["scenario"]["assumptions"] = []
+        errors = validate_resolved_semantics(
+            corrupted, dodge, self.canonical, self.sidecar
+        )
+        self.assertTrue(
+            any("scenario must preserve" in error for error in errors)
+        )
+
     def test_source_and_provenance_relationships_survive_resolution(self):
         resolved = resolve()
         self.assertEqual(resolved["sources"], self.dodge["sources"])
