@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-targeted-bounded",
+  "status": "g6-phase-a-contextual-skill-checks",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A bounded G6 targeted tutorial specification: the accepted G5 success-roll mechanic is exposed through one thin debug CLI target that consumes the neutral resolved/runtime path. The rest of Scenario 01 is not yet executable.",
+    "target": "A G6-targeted Scenario 01 with Phase A contextual skill-check runtime semantics: the accepted success-roll path now supports source-owned situational modifiers, effective-target derivation, critical classification, and deterministic generated 3d6 evidence. Encounter consequences remain later phases.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "G6 proves one real target consumes the accepted bounded runtime without owning gameplay semantics. Social/environmental/combat/recovery/completion and immutable session replay remain unsatisfied later acceptance requirements."
+    "acceptance_note": "Phase A makes ordinary skill checks RPG-usable without starting the Roadside Tracks state/consequence tranche. Social/environmental/combat/recovery/completion and immutable session replay remain later roadmap work."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -86,5 +86,23 @@
       "replay schema",
       "target presentation"
     ]
+  },
+  "contextual_checks": {
+    "roadside-tracks-tracking": {
+      "encounter_ref": "roadside-tracks",
+      "action_ref": "attempt-skill",
+      "skill_ref": "tracking",
+      "provenance": "prototype_assumption",
+      "modifiers": [
+        {
+          "id": "roadside-tracks-tutorial-difficulty",
+          "amount": -2,
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption",
+          "reason": "Scenario 01 prototype tuning for the first contextual Tracking check; this magnitude is not asserted as a GURPS rule value."
+        }
+      ]
+    }
   }
 }
