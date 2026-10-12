@@ -16,7 +16,9 @@ game/dirps/
 ├── sidecars/
 │   └── dirps.proto.sidecar.v0.1.json
 ├── docs/
-│   └── compatibility-audit.md
+│   ├── compatibility-audit.md
+│   ├── g2-core-validation.md
+│   └── g3-semantic-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -27,11 +29,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 currently reaches **G2 — Core-valid**.
+DIRPS Scenario 01 currently reaches **G3 — Semantic-valid**.
 
-The authored DODGE document validates against the exact DODGE 0.2.1 schema and now has a check-by-check §15.3 core-validation evidence record at `docs/g2-core-validation.md`, including PASS/N/A classification and negative fixtures. This does **not** yet claim G3 game semantic validation, resolution, runtime execution, replay, or target support.
+The authored DODGE document remains schema/core-valid and now declares the game-owned `dirps@0.1.0` source-stage semantic profile. `docs/g3-semantic-validation.md` records the bounded DIRPS-specific contracts, source authority, negative evidence, and deliberately deferred claims. This does **not** yet claim G4 resolution/resolved-game validation, runtime execution, replay, or target support.
 
-The generic TheFountain conformance runner now validates DIRPS by name and must report `PASS dirps/scenario-01: DODGE 0.2.1 schema`.
+The generic TheFountain conformance runner must report both `PASS dirps/scenario-01: DODGE 0.2.1 schema` and `PASS dirps/scenario-01: semantic source dirps@0.1.0`.
 
 ## Authority boundary
 
@@ -53,7 +55,7 @@ resolved game
 runtime / replay / targets
 ```
 
-The DODGE document targets DODGE 0.2.1 and is core-valid at G2. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
+The DODGE document targets DODGE 0.2.1 and is semantic-valid at the G3 source stage. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
 The proto sidecar records suspected gaps to exercise. A proto concept is not a DODGE 0.2.2 candidate until Scenario 01 actually exercises it through the neutral validation/resolver/runtime path.
 
