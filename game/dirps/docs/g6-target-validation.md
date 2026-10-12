@@ -298,4 +298,4 @@ No G7 work is included in this tranche.
 
 ## Post-G6 gameplay note
 
-This document records the accepted G6 target boundary. Gameplay roadmap Phase A later expands the runtime's effective-target/random/critical semantics while preserving the same target-separation invariant. See `phase-a-contextual-skill-validation.md` for the current runtime contract; the G6 target remains a consumer and does not own those gameplay rules.
+This document records the accepted G6 target boundary and its immutable G5/v1 runtime contract. Gameplay roadmap Phase A adds separate contextual runtime APIs and `dirps-execution-result.v2`; it does not silently change `describe_attempt_skill()`, `execute_attempt_skill()`, or the debug CLI's accepted G6 behavior. See `phase-a-contextual-skill-validation.md` for the Phase A runtime contract. Contextual target controls remain later work.
