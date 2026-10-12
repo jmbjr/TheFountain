@@ -42,6 +42,7 @@ G5_EXERCISED_PROTO = frozenset(
         "resolution_trace",
     }
 )
+PHASE_A_EXERCISED_PROTO = G5_EXERCISED_PROTO | frozenset({"derived_values"})
 
 
 def _repo_relative(path):
@@ -141,7 +142,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
         errors.append("G5 DIRPS proto sidecar must contain proto_specs")
         return
 
-    for proto_id in sorted(G5_EXERCISED_PROTO):
+    for proto_id in sorted(PHASE_A_EXERCISED_PROTO):
         spec = specs.get(proto_id)
         if not isinstance(spec, dict):
             errors.append(f"G5 exercised proto {proto_id}: missing")
@@ -195,10 +196,12 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
                 "path": "scene.instances[].character.skills",
             },
             "effective_target": {
-                "from": "selected-skill-level",
-                "modifier_policy": "unsupported",
-                "supported_domain": {"minimum": 4, "maximum": 16},
-                "outside_domain": "error",
+                "from": "selected-skill-level-plus-context-modifiers",
+                "modifier_policy": "sum-resolved-context-modifiers",
+                "minimum": 3,
+                "below_minimum": "error",
+                "rule_source_ref": "gurps-lite",
+                "rule_locator": "p. 2, Modifiers and Effective Skill",
             },
             "dice_resolution_ref": "dice_resolution",
             "result_format": "dirps-execution-result.v1",
@@ -208,8 +211,43 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
                 "source_ref": "scenario-01-source",
                 "character_provenance": "prototype_assumption",
                 "canonical_path": "player_character.skills",
+                "context_source_ref": "scenario-01-source",
+                "context_path": "contextual_checks",
             },
-            "result_scope": "binary-success-and-margin-only",
+            "result_scope": "success-failure-margin-and-critical-classification",
+            "context_input": "context_ref",
+            "context_source": {
+                "kind": "resolved-scenario-contextual-check",
+                "path": "scenario.contextual_checks",
+            },
+            "critical_resolution": {
+                "rule_source_ref": "gurps-lite",
+                "rule_locator": "p. 2, Critical Success and Failure",
+                "critical_success": [
+                    {"roll_max": 4},
+                    {"roll": 5, "minimum_effective_target": 15},
+                    {"roll": 6, "minimum_effective_target": 16},
+                ],
+                "critical_failure": [
+                    {"roll": 18},
+                    {"roll": 17, "maximum_effective_target": 15},
+                    {"roll_minus_effective_target_minimum": 10},
+                ],
+                "classifications": [
+                    "critical-success",
+                    "success",
+                    "failure",
+                    "critical-failure",
+                ],
+            },
+            "random_evidence": {
+                "supplied_terms": {"supported": True},
+                "generated": {
+                    "supported": True,
+                    "seed_required": True,
+                    "algorithm": "sha256-rejection-v1",
+                },
+            },
         }
         if binding != expected_binding:
             errors.append(
@@ -231,9 +269,17 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             if not procedure:
                 errors.append("G5 execution binding procedure_ref does not resolve")
 
-    if (specs.get("derived_values") or {}).get("status") != "suspected":
+    if (specs.get("derived_values") or {}).get("status") != "exercised":
         errors.append(
-            "G5 bounded success roll must not promote derived_values; no modifier/formula path executes yet"
+            "Phase A contextual skill checks must mark derived_values exercised"
+        )
+    if (specs.get("derived_values") or {}).get("candidate_for_dodge") != "not-yet-candidate":
+        errors.append(
+            "Phase A derived_values must remain not-yet-candidate"
+        )
+    if (specs.get("expressions") or {}).get("status") != "suspected":
+        errors.append(
+            "Phase A must not promote expressions; no reusable expression graph executes"
         )
     if (specs.get("replay_session_history") or {}).get("status") != "suspected":
         errors.append(
@@ -517,6 +563,92 @@ def _validate_scenario_duplication(dodge, canonical, errors):
     )
 
 
+def _validate_phase_a_contextual_checks(dodge, canonical, errors):
+    checks = canonical.get("contextual_checks")
+    if not isinstance(checks, dict):
+        errors.append("Phase A requires canonical contextual_checks")
+        return
+
+    check = checks.get("roadside-tracks-tracking")
+    if not isinstance(check, dict):
+        errors.append("Phase A requires contextual check roadside-tracks-tracking")
+        return
+
+    encounters = {
+        row.get("id"): row
+        for row in canonical.get("encounters", [])
+        if isinstance(row, dict) and row.get("id")
+    }
+    encounter_ref = check.get("encounter_ref")
+    if encounter_ref not in encounters:
+        errors.append(
+            "Phase A contextual check encounter_ref must resolve in canonical encounters"
+        )
+
+    if check.get("action_ref") != "attempt-skill":
+        errors.append("Phase A contextual check must use attempt-skill")
+    if "attempt-skill" not in (dodge.get("rules", {}).get("actions", {}) or {}):
+        errors.append("Phase A contextual check action_ref must resolve in DODGE actions")
+
+    pc = canonical.get("player_character") or {}
+    skills = pc.get("skills") or {}
+    skill_ref = check.get("skill_ref")
+    if skill_ref not in skills:
+        errors.append("Phase A contextual check skill_ref must resolve on the canonical PC")
+
+    if check.get("provenance") != PC_PROVENANCE:
+        errors.append(
+            f"Phase A contextual check provenance must be {PC_PROVENANCE}"
+        )
+
+    modifiers = check.get("modifiers")
+    if not isinstance(modifiers, list) or not modifiers:
+        errors.append("Phase A contextual check must declare at least one modifier")
+        return
+
+    seen = set()
+    total = 0
+    for index, modifier in enumerate(modifiers):
+        if not isinstance(modifier, dict):
+            errors.append(f"Phase A modifier {index}: must be an object")
+            continue
+        modifier_id = modifier.get("id")
+        if not isinstance(modifier_id, str) or not modifier_id:
+            errors.append(f"Phase A modifier {index}: id is required")
+        elif modifier_id in seen:
+            errors.append(f"Phase A modifier {modifier_id}: duplicate id")
+        else:
+            seen.add(modifier_id)
+
+        amount = modifier.get("amount")
+        if not isinstance(amount, int) or isinstance(amount, bool):
+            errors.append(f"Phase A modifier {modifier_id or index}: amount must be integer")
+        else:
+            total += amount
+
+        if modifier.get("source_ref") != SCENARIO_SOURCE:
+            errors.append(
+                f"Phase A modifier {modifier_id or index}: source_ref must be {SCENARIO_SOURCE}"
+            )
+        if modifier.get("authority") != "provisional":
+            errors.append(
+                f"Phase A modifier {modifier_id or index}: authority must be provisional"
+            )
+        if modifier.get("provenance") != PC_PROVENANCE:
+            errors.append(
+                f"Phase A modifier {modifier_id or index}: provenance must be {PC_PROVENANCE}"
+            )
+        if not isinstance(modifier.get("reason"), str) or not modifier.get("reason"):
+            errors.append(f"Phase A modifier {modifier_id or index}: reason is required")
+
+    base = skills.get(skill_ref)
+    if isinstance(base, int) and not isinstance(base, bool):
+        if base + total < 3:
+            errors.append(
+                "Phase A contextual check effective target must be at least 3"
+            )
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -528,6 +660,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_actor_model(dodge, canonical, errors)
     _validate_rule_meaning(dodge, errors)
     _validate_scenario_duplication(dodge, canonical, errors)
+    _validate_phase_a_contextual_checks(dodge, canonical, errors)
     return errors
 
 
@@ -647,6 +780,7 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
         "turn_procedure_ref": dodge_scenario.get("turn_procedure_ref"),
         "objectives": dodge_scenario.get("objectives", []),
         "encounters": canonical.get("encounters", []),
+        "contextual_checks": canonical.get("contextual_checks", {}),
     }
     if resolved.get("scenario") != expected_scenario:
         errors.append(
@@ -696,9 +830,9 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
     if resolved.get("proto_sidecar") != sidecar:
         errors.append("resolved game: DIRPS proto sidecar semantics were dropped or changed")
 
-    # Once G5 makes these proto contracts executable, resolved validation must
-    # continue to guard their exact authority/status boundary.
-    if (canonical.get("status") or "").startswith("g5-"):
+    # G5 and later gameplay tranches make these proto contracts executable;
+    # resolved validation must continue to guard their exact authority/status boundary.
+    if (canonical.get("status") or "").startswith(("g5-", "g6-")):
         _validate_g5_proto_semantics(sidecar, errors, dodge)
 
     expected_unresolved = _resolved_unresolved_index(sidecar)
