@@ -320,7 +320,7 @@ All remain `not-yet-candidate`.
 
 Phase A intentionally changes runtime semantics before adding presentation.
 
-The accepted G6 debug CLI remains the thin target consumer and its capability inspection automatically exposes the runtime-described contextual/RNG/critical contract.
+The accepted G6 debug CLI remains the thin target consumer of the immutable G5/v1 capability; contextual Phase A/v2 target presentation is intentionally deferred.
 
 This tranche does **not** add target controls for choosing contextual checks or generated RNG. Player-facing encounter interaction belongs to the later gameplay/target phases.
 
