@@ -21,7 +21,7 @@ The intended path includes:
 
 ## Source-of-truth rules
 
-- `scenario.json` owns scenario fiction, encounter order, the prototype character build, and tutorial acceptance criteria.
+- `scenario.json` owns scenario fiction, encounter order, the prototype character build, and tutorial acceptance criteria. At G3, encounter ordering is canonical-source-only and is not yet normalized into DODGE; a future G4 resolver must preserve or explicitly expose that order rather than invent or reorder it.
 - `../../dodge/dirps-scenario-01.dodge.v0.2.1.json` owns everything already expressible in DODGE 0.2.1.
 - `../../sidecars/dirps.proto.sidecar.v0.1.json` owns explicit proto semantics that DODGE 0.2.1 cannot yet express.
 - The external GURPS Lite rules reference remains authoritative for GURPS mechanics.
