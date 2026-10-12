@@ -157,6 +157,7 @@ def resolve_documents(dodge, canonical, sidecar, config=None):
         "objects": copy.deepcopy(dodge.get("objects", {})),
         "sidecars": copy.deepcopy(dodge.get("sidecars", [])),
         "extensions": copy.deepcopy(dodge.get("extensions", {})),
+        "runtime_states": copy.deepcopy(dodge.get("runtime_states", {})),
         "scenario": {
             "name": scenario.get("name"),
             "description": scenario.get("description"),
@@ -171,6 +172,7 @@ def resolve_documents(dodge, canonical, sidecar, config=None):
             "action_refs": copy.deepcopy(scenario.get("action_refs", [])),
             "turn_procedure_ref": scenario.get("turn_procedure_ref"),
             "objectives": copy.deepcopy(scenario.get("objectives", [])),
+            "initial_state": copy.deepcopy(scenario.get("initial_state", [])),
             # List order is canonical Scenario 01 encounter order.
             "encounters": copy.deepcopy(canonical.get("encounters", [])),
             # Contextual checks are provisional Scenario 01 gameplay facts.
