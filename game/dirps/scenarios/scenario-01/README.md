@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G4 — Resolved.** The candidate retains G3 source validation, resolves once through `tools/resolve_dirps_dodge.py` into `dirps-resolved-game.v1`, and validates that exact model through the `dirps@0.1.0` `resolved-game` stage. Evidence lives in `../../docs/g4-resolved-validation.md`. Runtime execution, replay, and targets are not yet claimed.
+**G5 — Executable (bounded).** The accepted G4 model remains the sole runtime input. `tools/dirps_runtime.py` executes one `attempt-skill → success-roll` path using an explicit resolved character-skill target plus supplied deterministic 3d6 evidence. `../../docs/g5-executable-validation.md` records the result/trace/replay evidence. The rest of Scenario 01 and all G6 targets remain unimplemented.
 
 ## Goal
 
@@ -33,4 +33,4 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-When DIRPS advances to the executable gates, a first runtime is not accepted merely because narration works. It should be able to show which rule/procedure was used, preserve random outcomes, detect state divergence, and fail visibly when a required rule is unavailable or unresolved.
+The first bounded executable mechanic now shows its action/procedure, resolved skill target, supplied die terms, success/failure, margin, and source authority; re-evaluation detects inconsistent recorded results. This does **not** satisfy the remaining social/environmental/combat/recovery/completion or immutable session-history goals.
