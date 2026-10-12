@@ -53,11 +53,24 @@ def _execution_binding(resolved):
         "path": "scene.instances[].character.skills",
     }:
         raise ExecutionError("attempt-skill target source is unsupported or malformed")
-    if binding.get("effective_target") != {
+    effective = binding.get("effective_target")
+    if effective != {
         "from": "selected-skill-level",
         "modifier_policy": "unsupported",
+        "supported_domain": {"minimum": 4, "maximum": 16},
+        "outside_domain": "error",
     }:
         raise ExecutionError("attempt-skill effective-target binding is unsupported or malformed")
+    if binding.get("binding_source_ref") != "dirps-proto":
+        raise ExecutionError("attempt-skill binding provenance source is unsupported or malformed")
+    if binding.get("target_provenance") != {
+        "source_ref": "scenario-01-source",
+        "character_provenance": "prototype_assumption",
+        "canonical_path": "player_character.skills",
+    }:
+        raise ExecutionError("attempt-skill target provenance is unsupported or malformed")
+    if binding.get("result_scope") != "binary-success-and-margin-only":
+        raise ExecutionError("attempt-skill result scope is unsupported or malformed")
     if binding.get("result_format") != "dirps-execution-result.v1":
         raise ExecutionError("attempt-skill result format is unsupported")
     if binding.get("state_mutation") != "none":
@@ -157,6 +170,17 @@ def _effective_target(actor, skill_ref, binding):
         raise ExecutionError(
             f"resolved skill target must be an integer: {skill_ref}={target!r}"
         )
+    domain = _require_mapping(
+        effective.get("supported_domain"), "attempt-skill supported target domain"
+    )
+    minimum = domain.get("minimum")
+    maximum = domain.get("maximum")
+    if not isinstance(minimum, int) or not isinstance(maximum, int) or minimum > maximum:
+        raise ExecutionError("attempt-skill supported target domain is malformed")
+    if target < minimum or target > maximum:
+        raise ExecutionError(
+            f"resolved skill target {target} is outside supported G5 domain {minimum}..{maximum}"
+        )
     return target
 
 
@@ -220,6 +244,11 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
 
     action_source_ref = action.get("source_ref")
     procedure_source_ref = procedure.get("source_ref")
+    binding_source_ref = binding.get("binding_source_ref")
+    target_provenance = _require_mapping(
+        binding.get("target_provenance"), "attempt-skill target provenance"
+    )
+    target_source_ref = target_provenance.get("source_ref")
     sources = _require_mapping(resolved.get("sources"), "resolved sources")
     action_source = _require_mapping(
         sources.get(action_source_ref), f"action source {action_source_ref}"
@@ -227,6 +256,20 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
     procedure_source = _require_mapping(
         sources.get(procedure_source_ref), f"procedure source {procedure_source_ref}"
     )
+    binding_source = _require_mapping(
+        sources.get(binding_source_ref), f"binding source {binding_source_ref}"
+    )
+    target_source = _require_mapping(
+        sources.get(target_source_ref), f"target source {target_source_ref}"
+    )
+    character = _require_mapping(
+        actor.get("character"), f"actor {actor_ref} resolved character"
+    )
+    character_provenance = character.get("provenance")
+    if character_provenance != target_provenance.get("character_provenance"):
+        raise ExecutionError(
+            "resolved character provenance disagrees with the G5 target provenance binding"
+        )
 
     # No modifier/default/derived-stat machinery is claimed here. The effective
     # target is the exact selected skill level already carried by G4.
@@ -271,9 +314,27 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
                 "source_ref": procedure_source_ref,
                 "authority": procedure.get("authority"),
             },
+            "execution_binding": {
+                "ref": f"proto_sidecar.g5_execution_bindings.{BINDING_ID}",
+                "source_ref": binding_source_ref,
+                "authority": binding_source.get("authority"),
+            },
+            "effective_target": {
+                "actor_ref": actor_ref,
+                "skill_ref": skill_ref,
+                "value": effective_target,
+                "source_ref": target_source_ref,
+                "authority": target_source.get("authority"),
+                "character_provenance": character_provenance,
+                "canonical_path": (
+                    f"{target_provenance.get('canonical_path')}.{skill_ref}"
+                ),
+            },
             "sources": {
                 action_source_ref: copy.deepcopy(action_source),
                 procedure_source_ref: copy.deepcopy(procedure_source),
+                binding_source_ref: copy.deepcopy(binding_source),
+                target_source_ref: copy.deepcopy(target_source),
             },
         },
         "state_delta": [],
