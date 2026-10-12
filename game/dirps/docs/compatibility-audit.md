@@ -25,7 +25,7 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 
 The `dirps@0.1.0` source profile enforces only DIRPS-specific implications that DODGE core cannot know: registered authority/provenance alignment, canonical PC build consistency, explicit actor-state initialization, bounded action/procedure meaning, tutorial action-choice completeness, concrete combat-opponent presence, target-duration consistency, and the explicit proto-sidecar bridge.
 
-The profile deliberately does **not** claim that prose encounter purposes, social/reaction resolution, environmental consequences, active defense, damage/injury, recovery, scenario completion, dice terms, or replay are executable. Those remain later-gate concerns, and every proto-sidecar entry remains `suspected`.
+The profile deliberately did **not** claim at G3 that prose encounter purposes, social/reaction resolution, environmental consequences, active defense, damage/injury, recovery, scenario completion, dice terms, or replay were executable. At that gate every proto-sidecar entry remained `suspected`; the G5 section below records the small subset now exercised.
 
 ## G4 resolution result
 
