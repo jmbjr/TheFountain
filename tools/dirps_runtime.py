@@ -124,47 +124,61 @@ def _execution_binding(resolved):
 
 
 def _legacy_g5_binding(resolved):
-    """Return the immutable accepted G5/v1 execution binding."""
+    """Return and validate the immutable accepted G5/v1 execution binding."""
     sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
     bindings = _require_mapping(
-        sidecar.get("g5_execution_bindings"),
-        "resolved g5_execution_bindings",
+        sidecar.get("g5_execution_bindings"), "resolved g5_execution_bindings"
     )
     binding = _require_mapping(
-        bindings.get(BINDING_ID), f"legacy G5 execution binding {BINDING_ID}"
+        bindings.get(BINDING_ID), f"G5 execution binding {BINDING_ID}"
     )
-    expected = {
-        "action_ref": "attempt-skill",
-        "procedure_ref": "success-roll",
-        "actor_input": "actor_ref",
-        "target_input": "skill_ref",
-        "target_source": {
-            "kind": "resolved-character-skill",
-            "path": "scene.instances[].character.skills",
-        },
-        "effective_target": {
-            "from": "selected-skill-level",
-            "modifier_policy": "unsupported",
-            "supported_domain": {"minimum": 4, "maximum": 16},
-            "outside_domain": "error",
-        },
-        "dice_resolution_ref": "dice_resolution",
-        "result_format": "dirps-execution-result.v1",
-        "state_mutation": "none",
-        "binding_source_ref": "dirps-proto",
-        "target_provenance": {
-            "source_ref": "scenario-01-source",
-            "character_provenance": "prototype_assumption",
-            "canonical_path": "player_character.skills",
-        },
-        "result_scope": "binary-success-and-margin-only",
-    }
-    if binding != expected:
+    if (
+        binding.get("actor_input") != "actor_ref"
+        or binding.get("target_input") != "skill_ref"
+    ):
         raise ExecutionError(
-            "legacy G5 attempt-skill binding no longer matches dirps-execution-result.v1"
+            "attempt-skill runtime input binding is unsupported or malformed"
         )
+    if not binding.get("action_ref") or not binding.get("procedure_ref"):
+        raise ExecutionError("attempt-skill action/procedure binding is incomplete")
+    if binding.get("dice_resolution_ref") != "dice_resolution":
+        raise ExecutionError(
+            "attempt-skill dice-resolution binding is unsupported or malformed"
+        )
+    if binding.get("target_source") != {
+        "kind": "resolved-character-skill",
+        "path": "scene.instances[].character.skills",
+    }:
+        raise ExecutionError("attempt-skill target source is unsupported or malformed")
+    effective = binding.get("effective_target")
+    if effective != {
+        "from": "selected-skill-level",
+        "modifier_policy": "unsupported",
+        "supported_domain": {"minimum": 4, "maximum": 16},
+        "outside_domain": "error",
+    }:
+        raise ExecutionError(
+            "attempt-skill effective-target binding is unsupported or malformed"
+        )
+    if binding.get("binding_source_ref") != "dirps-proto":
+        raise ExecutionError(
+            "attempt-skill binding provenance source is unsupported or malformed"
+        )
+    if binding.get("target_provenance") != {
+        "source_ref": "scenario-01-source",
+        "character_provenance": "prototype_assumption",
+        "canonical_path": "player_character.skills",
+    }:
+        raise ExecutionError(
+            "attempt-skill target provenance is unsupported or malformed"
+        )
+    if binding.get("result_scope") != "binary-success-and-margin-only":
+        raise ExecutionError("attempt-skill result scope is unsupported or malformed")
+    if binding.get("result_format") != "dirps-execution-result.v1":
+        raise ExecutionError("attempt-skill result format is unsupported")
+    if binding.get("state_mutation") != "none":
+        raise ExecutionError("bounded G5 attempt-skill must not declare state mutation")
     return binding
-
 
 def _dice_contract(resolved, binding):
     sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
