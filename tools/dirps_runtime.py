@@ -276,6 +276,7 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
     return {
         "format": binding["result_format"],
         "mechanic": "ordinary-success-roll",
+        "result_scope": binding["result_scope"],
         "input": {
             "actor_ref": actor_ref,
             "skill_ref": skill_ref,
@@ -289,6 +290,9 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
             "skill_ref": skill_ref,
             "effective_target": effective_target,
             "modifier_policy": binding["effective_target"]["modifier_policy"],
+            "supported_domain": copy.deepcopy(
+                binding["effective_target"]["supported_domain"]
+            ),
         },
         "random_evidence": {
             "kind": "supplied-dice-terms",
