@@ -7,6 +7,7 @@ implements source-stage G3 only; resolved-game validation belongs to G4.
 """
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
@@ -406,3 +407,190 @@ def validate_source_context(context):
         context["scenario_source"],
         context.get("config"),
     )
+
+def _resolved_unresolved_index(sidecar):
+    return [
+        {
+            "proto_ref": proto_id,
+            "status": spec.get("status"),
+            "candidate_for_dodge": spec.get("candidate_for_dodge"),
+        }
+        for proto_id, spec in sorted((sidecar.get("proto_specs") or {}).items())
+    ]
+
+
+def _expected_resolved_instance(dodge, canonical, instance):
+    object_ref = instance.get("object_ref")
+    obj = dodge.get("objects", {}).get(object_ref, {})
+    archetype = dodge.get("archetypes", {}).get(obj.get("archetype_ref"), {})
+    row = {
+        "id": instance.get("id"),
+        "object_ref": object_ref,
+        "kind": obj.get("kind"),
+        "name": obj.get("name"),
+        "tags": obj.get("tags", []),
+        "faces": obj.get("faces", []),
+        "component": archetype.get("component"),
+        "state": instance.get("state", {}),
+        "extensions": instance.get("extensions", {}),
+    }
+    pc = canonical.get("player_character") or {}
+    if instance.get("id") == pc.get("id"):
+        row["character"] = {
+            "provenance": pc.get("provenance"),
+            "primary_attributes": pc.get("attributes", {}),
+            "skills": pc.get("skills", {}),
+            "equipment": pc.get("equipment", []),
+        }
+    return row
+
+
+def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
+    """Validate the exact DIRPS G4 target-neutral model against authoritative inputs."""
+    errors = []
+    if not isinstance(resolved, dict):
+        return ["resolved game must be an object"]
+    if resolved.get("format") != "dirps-resolved-game.v1":
+        return ["resolved game: unexpected format"]
+
+    expected_identity = {
+        "dodge_version": dodge.get("dodge_version"),
+        "document_id": dodge.get("document_id"),
+        "game_id": dodge.get("game_id"),
+        "scenario_id": "scenario-01",
+    }
+    for field, expected in expected_identity.items():
+        if resolved.get(field) != expected:
+            errors.append(
+                f"resolved game: {field} must be {expected!r}, got {resolved.get(field)!r}"
+            )
+
+    if resolved.get("sources") != dodge.get("sources"):
+        errors.append("resolved game: sources must preserve the DODGE source declarations exactly")
+    for field, default in (
+        ("game_profile", {}),
+        ("archetypes", {}),
+        ("objects", {}),
+        ("sidecars", []),
+        ("extensions", {}),
+    ):
+        if resolved.get(field) != dodge.get(field, default):
+            errors.append(
+                f"resolved game: DODGE {field} changed or disappeared during resolution"
+            )
+
+    canonical_source = resolved.get("canonical_source") or {}
+    expected_canonical_source = {
+        "source_ref": SCENARIO_SOURCE,
+        "schema_version": canonical.get("schema_version"),
+        "dataset_id": canonical.get("dataset_id"),
+        "status": canonical.get("status"),
+        "authority": canonical.get("authority"),
+        "implementation_boundary": canonical.get("implementation_boundary"),
+    }
+    if canonical_source != expected_canonical_source:
+        errors.append("resolved game: canonical_source does not match Scenario 01 authority/provenance")
+
+    dodge_scenario = dodge.get("scenarios", {}).get("scenario-01") or {}
+    tutorial = canonical.get("tutorial") or {}
+    expected_scenario = {
+        "name": dodge_scenario.get("name"),
+        "description": dodge_scenario.get("description"),
+        "players": dodge_scenario.get("players"),
+        "source_ref": dodge_scenario.get("source_ref"),
+        "authority": dodge_scenario.get("authority"),
+        "assumptions": dodge_scenario.get("assumptions", []),
+        "scene_ref": dodge_scenario.get("scene_ref"),
+        "premise": tutorial.get("premise"),
+        "design_goal": tutorial.get("design_goal"),
+        "target_duration_minutes": tutorial.get("target_minutes"),
+        "action_refs": dodge_scenario.get("action_refs", []),
+        "turn_procedure_ref": dodge_scenario.get("turn_procedure_ref"),
+        "objectives": dodge_scenario.get("objectives", []),
+        "encounters": canonical.get("encounters", []),
+    }
+    if resolved.get("scenario") != expected_scenario:
+        errors.append(
+            "resolved game: scenario must preserve DODGE bindings and canonical fiction/order/duration"
+        )
+
+    if resolved.get("rules") != dodge.get("rules"):
+        errors.append("resolved game: normalized DODGE rules were dropped, changed, or invented")
+
+    scene_ref = dodge_scenario.get("scene_ref")
+    source_scene = dodge.get("scenes", {}).get(scene_ref) or {}
+    resolved_scene = resolved.get("scene") or {}
+    if resolved_scene.get("id") != scene_ref:
+        errors.append(f"resolved game: scene id must be {scene_ref}")
+    if resolved_scene.get("name") != source_scene.get("name"):
+        errors.append("resolved game: scene name changed during resolution")
+    if resolved_scene.get("source_ref") != source_scene.get("source_ref"):
+        errors.append("resolved game: scene source_ref changed during resolution")
+
+    expected_instances = [
+        _expected_resolved_instance(dodge, canonical, instance)
+        for instance in source_scene.get("instances", [])
+    ]
+    if resolved_scene.get("instances") != expected_instances:
+        errors.append(
+            "resolved game: selected scene instances are incomplete, reordered, or inconsistent"
+        )
+
+    pc_id = (canonical.get("player_character") or {}).get("id")
+    resolved_pc = next(
+        (row for row in resolved_scene.get("instances", []) if row.get("id") == pc_id),
+        None,
+    )
+    if not resolved_pc:
+        errors.append("resolved game: canonical player character is missing from the scene")
+    else:
+        character = resolved_pc.get("character") or {}
+        if character.get("primary_attributes") != (canonical.get("player_character") or {}).get("attributes"):
+            errors.append("resolved game: canonical primary PC build did not survive resolution")
+        state = resolved_pc.get("state") or {}
+        for attribute_id, value in character.get("primary_attributes", {}).items():
+            if state.get(attribute_id) != value:
+                errors.append(
+                    f"resolved game: PC primary attribute {attribute_id} disagrees with resolved actor state"
+                )
+
+    if resolved.get("proto_sidecar") != sidecar:
+        errors.append("resolved game: DIRPS proto sidecar semantics were dropped or changed")
+
+    expected_unresolved = _resolved_unresolved_index(sidecar)
+    if resolved.get("unresolved") != expected_unresolved:
+        errors.append("resolved game: unresolved proto index must be derived exactly from the sidecar")
+
+    forbidden = {"runtime", "replay", "target_manifest", "execution_results"}
+    present = sorted(forbidden.intersection(resolved))
+    if present:
+        errors.append(f"resolved game: G5/G6 material is out of scope at G4: {present}")
+
+    return errors
+
+
+def validate_resolved_context(context):
+    """Generic TheFountain resolved-game conformance hook."""
+    sidecars = (context.get("config") or {}).get("sidecars") or []
+    if len(sidecars) != 1 or not sidecars[0].is_file():
+        return ["DIRPS resolved validation requires exactly one registered proto sidecar"]
+    sidecar = json.loads(sidecars[0].read_text())
+    return validate_resolved_semantics(
+        context["resolved"],
+        context["dodge"],
+        context["scenario_source"],
+        sidecar,
+    )
+
+
+def require_source_semantics(dodge, canonical, config=None):
+    errors = validate_source_semantics(dodge, canonical, config)
+    if errors:
+        raise ValueError("DIRPS source semantic validation failed:\n" + "\n".join(errors))
+
+
+def require_resolved_semantics(resolved, dodge, canonical, sidecar):
+    errors = validate_resolved_semantics(resolved, dodge, canonical, sidecar)
+    if errors:
+        raise ValueError("DIRPS resolved semantic validation failed:\n" + "\n".join(errors))
+

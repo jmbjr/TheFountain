@@ -499,26 +499,36 @@ The workflow pins an exact DODGE source revision. Updating that pin is a deliber
 
 Conformance provenance is also explicit on the TheFountain side. Pull-request runs check out `github.event.pull_request.head.sha`, print the validated TheFountain source SHA, and assert that `git rev-parse HEAD` equals that expected identity before candidate validation begins. Push/main and manual runs validate `github.sha`. The default GitHub synthetic pull-request merge ref may still be useful for merge-compatibility testing, but it is not used as exact-head maturity evidence.
 
-## DIRPS G3 semantic-valid
+## DIRPS G4 resolved
 
-`game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** through **G1 — Schema-valid**, **G2 — Core-valid**, and now **G3 — Semantic-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
+`game/dirps/` is the second independent DODGE implementation track and has advanced through **G4 — Resolved**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but DIRPS remains the implementation identity.
 
-The current bounded source stack contains:
+The bounded G4 architecture contains:
 
-- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G3"` and intentionally no resolver;
+- `game/dirps/game.json` — Scenario 01 registration with `conformance.maturity: "G4"` and repository-local resolver `tools/resolve_dirps_dodge.py`;
 - `game/dirps/scenarios/scenario-01/scenario.json` — canonical/provisional tutorial source for *The Missing Courier*;
-- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — exact-schema/core-valid DODGE source declaring the required `dirps@0.1.0` semantic profile at the `source` stage only;
-- `tools/dirps_semantic_validation.py` — game-owned semantic validation for DIRPS cross-source/domain contracts;
-- `tests/test_dirps_validation.py` — positive source validation plus focused negative contradictions;
-- `game/dirps/docs/g2-core-validation.md` — retained G2 §15.3 evidence;
-- `game/dirps/docs/g3-semantic-validation.md` — G3 semantic-contract ownership/evidence and deferred-claim record;
-- `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json` — suspected RPG-shaped neutral gaps retained adjacent to DODGE.
+- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — exact-schema/core-valid DODGE source declaring `dirps@0.1.0` at both `source` and `resolved-game`;
+- `tools/dirps_semantic_validation.py` — game-owned source and resolved-stage semantic validation;
+- `tools/resolve_dirps_dodge.py` — one target-neutral resolver producing `dirps-resolved-game.v1`;
+- `tests/test_dirps_validation.py` — retained G3 source-stage evidence;
+- `tests/test_dirps_resolution.py` — G4 positive, perturbation, provenance, proto-preservation, and negative evidence;
+- `game/dirps/docs/g4-resolved-validation.md` — durable resolved-model contract/evidence;
+- the existing G2/G3 evidence and proto sidecar.
 
-The generic conformance runner discovers the profile from the DODGE `validation.required_profiles` declaration and imports the semantic-validator source. At G3 it executes `validate_source_context(context)` after exact schema validation and must report a named `PASS dirps/scenario-01: semantic source dirps@0.1.0`. No DIRPS-specific branch was added to the generic runner.
+The generic conformance runner executes the standard lifecycle without DIRPS-specific branching:
 
-The profile validates only contracts DODGE core cannot infer: registered source/proto provenance alignment, canonical PC build duplication, explicit DIRPS actor initialization, bounded rule/action meaning, tutorial choice/action synchronization, combat encounter realization, target-duration agreement, and DIRPS authority separation. The profile does not claim that prose procedures or encounter purposes are executable.
+```text
+DODGE schema
+→ dirps@0.1.0 source
+→ DIRPS neutral resolver
+→ dirps@0.1.0 resolved-game
+```
 
-G4 remains a separate architecture boundary. DIRPS has no `conformance.resolver`, no `resolved-game` profile stage, and no resolved model. When G4 starts, it must consume the G3-valid source without weakening or reinterpreting these contracts.
+`dirps-resolved-game.v1` is intentionally game-owned because DODGE 0.2.1 specifies the G4 resolution/validation lifecycle but not one universal resolved-game JSON schema. The model preserves source declarations, game profile, archetypes, objects, DODGE sidecar/extension registrations, normalized rules, and the selected DODGE scenario's traceability/binding fields (`source_ref`, `authority`, `assumptions`, `scene_ref`); resolves the selected scene into concrete instances; derives the canonical PC build/target duration from Scenario 01; preserves canonical encounter list order; and carries the current proto sidecar plus a derived unresolved index. Keeping the neutral object/archetype tables ensures resolved `object_ref` / `archetype_ref` relationships remain unambiguous.
+
+Resolved-stage validation compares the exact resolved output back to the authoritative DODGE/scenario/sidecar inputs. It rejects dropped or invented rules, incomplete/reordered selected scene content, stale canonical PC build values, changed authority/provenance, altered encounter composition/order, or missing/changed proto material.
+
+The resolver is not a runtime. It emits no random results, success/failure decisions, replay, target manifest, target presentation, or other G5/G6 material.
 
 DIRPS proto semantics continue to use:
 
@@ -526,4 +536,4 @@ DIRPS proto semantics continue to use:
 suspected → exercised → candidate
 ```
 
-G3 semantic validation does not by itself exercise a proto concept through resolution/runtime behavior. All current proto-sidecar entries therefore remain `suspected`.
+Merely carrying a proto specification through the resolver does not exercise its behavior. All current proto-sidecar entries remain `suspected`; G5 runtime evidence is required before any promotion.

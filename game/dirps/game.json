@@ -14,7 +14,8 @@
         "sidecars/dirps.proto.sidecar.v0.1.json"
       ],
       "conformance": {
-        "maturity": "G3"
+        "maturity": "G4",
+        "resolver": "tools/resolve_dirps_dodge.py"
       }
     }
   }

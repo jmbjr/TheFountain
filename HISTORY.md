@@ -575,3 +575,16 @@ No neutral resolver, resolved-game validator, executable dice/runtime, replay ma
 Independent review of DIRPS G3 exposed a reusable TheFountain orchestration gap: the generic DODGE conformance runner loaded a declared `semantic_validator` source without checking that its source `version` matched the required profile `version`. DODGE 0.2.1 §15.1 already requires version-mismatched validators to hard-fail.
 
 The generic `profile_modules()` path now rejects a source/profile version mismatch before importing the validator module. A focused regression test proves the mismatch fails before module loading, while matching profiles continue through the existing lifecycle. This fixes TheFountain #174 as part of PR #172 without adding DIRPS-specific runner logic or expanding the G3 tranche into G4.
+
+
+## DIRPS Scenario 01 reaches G4 neutral resolution
+
+**October 11, 2026.**
+
+Starting from accepted/merged G3 PR #172, DIRPS Scenario 01 advanced to **G4 — Resolved** on the same pinned DODGE 0.2.1 revision, `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
+
+TheFountain now registers `tools/resolve_dirps_dodge.py` as the one DIRPS neutral resolver. It consumes the already G3-valid DODGE/scenario/sidecar sources and produces `dirps-resolved-game.v1`: source/provenance metadata, canonical scenario identity and ordered encounters, concrete selected scene instances, the canonical PC ST/DX/IQ/HT build plus additional actor state, skills/equipment, normalized rules/actions/procedures, target duration, and preserved proto material.
+
+The existing `dirps@0.1.0` profile now declares both `source` and `resolved-game` stages. Resolved-stage validation compares the exact model back to the authoritative inputs and rejects dropped or invented semantics. `tests/test_dirps_resolution.py` adds perturbation evidence for canonical PC values and encounter ordering, provenance preservation, proto preservation, and visible failure on missing required semantics.
+
+No executable dice, RNG, success/failure resolution, reaction/damage runtime, replay, divergence detection, target, or proto promotion was added. All proto entries remain `suspected`. **G5 — Executable** is next.

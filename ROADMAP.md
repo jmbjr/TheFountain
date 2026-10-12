@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G3 — Semantic-valid**.
+The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G4 — Resolved**.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,16 +175,17 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2 evidence remains in `game/dirps/docs/g2-core-validation.md`. G3 source-stage contracts are recorded in `game/dirps/docs/g3-semantic-validation.md` and enforced by `tools/dirps_semantic_validation.py`. The next gate is G4 — one neutral resolver plus resolved-game validation; do not start executable dice/runtime or UI while implementing that gate.
+G2 evidence remains in `game/dirps/docs/g2-core-validation.md`; G3 source contracts remain in `game/dirps/docs/g3-semantic-validation.md`. G4 now resolves once through `tools/resolve_dirps_dodge.py` into `dirps-resolved-game.v1`, with resolved-stage evidence in `game/dirps/docs/g4-resolved-validation.md`. The next gate is G5 — executable behavior from that resolved model; do not add targets/UI while establishing the first runtime mechanic.
 
 Current DIRPS maturity:
 
-- **G3 — Semantic-valid**;
+- **G4 — Resolved**;
 - the DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI;
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
-- the declared `dirps@0.1.0` source-stage semantic profile enforces bounded DIRPS-specific authority, duplication, actor-model, rule-meaning, and scenario-completeness contracts;
-- proto concepts remain **suspected** gaps; none were exercised or promoted by G3 semantic validation;
-- the remaining convergence work is tracked in issue **#163** and should proceed through G4 → G5 → G6 using the onboarding/conformance process.
+- the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
+- one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
+- proto concepts remain **suspected** gaps; resolver preservation alone does not count as runtime exercise or promotion;
+- the remaining convergence work is tracked in issue **#163** and should proceed through G5 → G6 using the onboarding/conformance process.
 
 ## DODGE 0.2.1 / reference-release direction
 

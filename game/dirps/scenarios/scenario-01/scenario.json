@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g3-semantic-valid",
+  "status": "g4-resolved",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A bounded G3 semantic-valid tutorial scenario specification with source-stage DIRPS semantic validation. It does not yet claim a neutral resolved model or executable runtime.",
+    "target": "A bounded G4 resolved tutorial specification with source-stage validation, one target-neutral resolver, and resolved-game semantic validation. It does not claim executable runtime behavior.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "These are intended acceptance requirements for later G5 execution, not claims satisfied by the G3 semantic-valid candidate."
+    "acceptance_note": "These are intended acceptance requirements for later G5 execution, not claims satisfied by the G4 resolved candidate."
   },
   "tutorial": {
     "title": "The Missing Courier",
