@@ -25,7 +25,8 @@
       "demonstrated to be reusable beyond GURPS-specific terminology"
     ],
     "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented.",
-    "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. The accepted G5 g5_execution_bindings.attempt-skill contract remains unchanged and continues to emit dirps-execution-result.v1. The expanded Phase A contract lives separately under phase_a_execution_bindings.attempt-skill and emits dirps-execution-result.v2, so legacy records remain reproducible and cannot be confused with v2. derived_values and expressions remain suspected because Phase A uses a bounded DIRPS-private execution binding rather than either proposed generic proto shape."
+    "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. The accepted G5 g5_execution_bindings.attempt-skill contract remains unchanged and continues to emit dirps-execution-result.v1. The expanded Phase A contract lives separately under phase_a_execution_bindings.attempt-skill and emits dirps-execution-result.v2, so legacy records remain reproducible and cannot be confused with v2. derived_values and expressions remain suspected because Phase A uses a bounded DIRPS-private execution binding rather than either proposed generic proto shape.",
+    "phase_b_note": "Phase B composes the accepted Phase A contextual skill result with standard DODGE 0.2.1 scenario runtime-state bindings and structured set effects. The sidecar only bridges the skill outcome branch to ordered DODGE effect refs and one encounter-result evidence record. No new proto concept is promoted; replay_session_history remains suspected because this is still one encounter record, not an append-only session."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -148,7 +149,8 @@
       ],
       "candidate_for_dodge": "not-yet-candidate",
       "g5_evidence": "G5 requires named actor/skill/random-evidence inputs and emits named target/result outputs for success-roll; this remains a DIRPS-private runtime shape.",
-      "phase_a_evidence": "Phase A adds context_ref plus resolved modifier inputs and exposes base target, modifier total, effective target, critical classification, and random-evidence provenance."
+      "phase_a_evidence": "Phase A adds context_ref plus resolved modifier inputs and exposes base target, modifier total, effective target, critical classification, and random-evidence provenance.",
+      "phase_b_evidence": "Phase B carries encounter_ref/action_id/runtime state plus the nested Phase A skill result through one investigation procedure and emits explicit before/after state evidence."
     },
     "reaction_timing": {
       "status": "suspected",
@@ -255,7 +257,8 @@
       ],
       "candidate_for_dodge": "not-yet-candidate",
       "g5_evidence": "G5 emits a structured execution record linking action, procedure, target, die evidence, result/margin, and source authority.",
-      "phase_a_evidence": "Phase A adds modifier-by-modifier provenance, effective-target derivation trace, critical classification source trace, and generated-random seed/algorithm evidence."
+      "phase_a_evidence": "Phase A adds modifier-by-modifier provenance, effective-target derivation trace, critical classification source trace, and generated-random seed/algorithm evidence.",
+      "phase_b_evidence": "Phase B records the selected encounter action, nested v2 skill resolution, ordered DODGE consequence effect refs, exact state delta, and before/after neutral runtime state."
     },
     "replay_session_history": {
       "status": "suspected",
@@ -279,7 +282,8 @@
         "deterministic reproduction",
         "state-divergence detection"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "phase_b_evidence": "Reassessed but not promoted: Phase B deterministically re-evaluates one stateful encounter record. It still does not define an immutable append-only multi-step session history."
     }
   },
   "g5_execution_bindings": {
@@ -399,6 +403,42 @@
           "algorithm": "sha256-rejection-v1"
         }
       }
+    }
+  },
+  "phase_b_encounter_bindings": {
+    "roadside-tracks": {
+      "encounter_ref": "roadside-tracks",
+      "action_id": "investigate-tracks",
+      "actor_ref": "pc",
+      "action_ref": "attempt-skill",
+      "context_ref": "roadside-tracks-tracking",
+      "runtime_state_ref": "scenario-01-initial",
+      "required_state": [
+        {
+          "ref": "roadside-tracks-status",
+          "value": "ready"
+        }
+      ],
+      "consequences": {
+        "success": {
+          "effect_refs": [
+            "roadside-tracks-set-status-resolved",
+            "roadside-tracks-set-outcome-success",
+            "roadside-tracks-set-information-clear-trail"
+          ]
+        },
+        "failure": {
+          "effect_refs": [
+            "roadside-tracks-set-status-resolved",
+            "roadside-tracks-set-outcome-failure",
+            "roadside-tracks-set-information-trail-inconclusive"
+          ]
+        }
+      },
+      "skill_result_format": "dirps-execution-result.v2",
+      "result_format": "dirps-encounter-result.v1",
+      "binding_source_ref": "dirps-proto",
+      "consequence_source_ref": "scenario-01-source"
     }
   }
 }
