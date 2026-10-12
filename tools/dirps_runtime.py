@@ -42,6 +42,12 @@ def _execution_binding(resolved):
     binding = _require_mapping(
         bindings.get(BINDING_ID), f"G5 execution binding {BINDING_ID}"
     )
+    if binding.get("actor_input") != "actor_ref" or binding.get("target_input") != "skill_ref":
+        raise ExecutionError("attempt-skill runtime input binding is unsupported or malformed")
+    if not binding.get("action_ref") or not binding.get("procedure_ref"):
+        raise ExecutionError("attempt-skill action/procedure binding is incomplete")
+    if binding.get("dice_resolution_ref") != "dice_resolution":
+        raise ExecutionError("attempt-skill dice-resolution binding is unsupported or malformed")
     if binding.get("target_source") != {
         "kind": "resolved-character-skill",
         "path": "scene.instances[].character.skills",
@@ -236,10 +242,10 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
             "procedure_ref": procedure_ref,
         },
         "target": {
-            "kind": "resolved-character-skill",
+            "kind": binding["target_source"]["kind"],
             "skill_ref": skill_ref,
             "effective_target": effective_target,
-            "modifier_path": "unsupported-in-g5-bounded-slice",
+            "modifier_policy": binding["effective_target"]["modifier_policy"],
         },
         "random_evidence": {
             "kind": "supplied-dice-terms",
