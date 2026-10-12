@@ -37,7 +37,7 @@ The `dirps@0.1.0` profile now also runs at `resolved-game` and rejects dropped/c
 
 `tools/dirps_runtime.py` consumes only `dirps-resolved-game.v1` and executes the bounded `attempt-skill → success-roll` path. The selected skill target comes from resolved character semantics through the explicit sidecar `g5_execution_bindings.attempt-skill` declaration; the runtime does not hard-code a skill value or reread canonical source.
 
-The runtime uses supplied die terms, derives the 3d6/sum/lte contract from the resolved `dice_resolution` proto semantics, emits `dirps-execution-result.v1`, and can re-evaluate a recorded result to detect divergence. No RNG, modifiers, derived targets, session-history framework, or target adapter is implemented.
+The runtime uses supplied die terms, derives the 3d6/sum/lte contract from the resolved `dice_resolution` proto semantics, and accepts only effective targets 4..16 under the explicit G5 execution binding. Outside that range it fails visibly rather than approximating success-roll edge semantics. The emitted `dirps-execution-result.v1` distinguishes authoritative GURPS action/procedure trace from the provisional `dirps-proto` binding and the provisional Scenario 01 / `prototype_assumption` skill target. It can re-evaluate a recorded result and detect divergence, including trace/provenance tampering. No RNG, modifiers, derived targets, critical-result consequences, session-history framework, or target adapter is implemented.
 
 Actual G5 evidence moves `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` to **exercised** only. They remain `not-yet-candidate`. `derived_values` and `replay_session_history` remain **suspected**, as do the other untouched proto gaps.
 
