@@ -36,6 +36,46 @@ class DirpsSemanticValidationTests(unittest.TestCase):
             any("attribute dx" in error for error in self.errors(canonical=canonical))
         )
 
+    def test_canonical_rules_authority_drift_fails(self):
+        canonical = copy.deepcopy(self.canonical)
+        canonical["authority"]["rules"] = "Different rules authority"
+        self.assertTrue(
+            any(
+                "authority.rules" in error
+                for error in self.errors(canonical=canonical)
+            )
+        )
+
+    def test_canonical_pc_provenance_drift_fails(self):
+        canonical = copy.deepcopy(self.canonical)
+        canonical["player_character"]["provenance"] = "authoritative"
+        self.assertTrue(
+            any(
+                "provenance must be prototype_assumption" in error
+                for error in self.errors(canonical=canonical)
+            )
+        )
+
+    def test_canonical_primary_attribute_missing_fails(self):
+        canonical = copy.deepcopy(self.canonical)
+        del canonical["player_character"]["attributes"]["dx"]
+        self.assertTrue(
+            any(
+                "missing primary attributes" in error and "dx" in error
+                for error in self.errors(canonical=canonical)
+            )
+        )
+
+    def test_canonical_primary_attribute_addition_fails(self):
+        canonical = copy.deepcopy(self.canonical)
+        canonical["player_character"]["attributes"]["hit-points"] = 10
+        self.assertTrue(
+            any(
+                "unexpected primary attributes" in error and "hit-points" in error
+                for error in self.errors(canonical=canonical)
+            )
+        )
+
     def test_canonical_pc_skills_drift_fails(self):
         dodge = copy.deepcopy(self.dodge)
         ext = dodge["scenes"]["scenario-01-setup"]["instances"][0]["extensions"]["org.dirps.character"]
