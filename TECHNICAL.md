@@ -489,6 +489,7 @@ Scenario 02 is a sibling of Scenario 01 rather than a rewrite of it. New unrelat
 Repository-specific executable hooks are deliberately narrow:
 
 - semantic validator modules expose `validate_source_context(context)` and `validate_resolved_context(context)`;
+- each required semantic profile version must match the referenced `semantic_validator` source version before the module is imported; a mismatch is a hard conformance failure;
 - resolver modules expose `resolve_context(context, export_contract_path=None)`;
 - `game.json` declares the resolver path and implementation maturity, but contains no shell commands.
 
