@@ -21,7 +21,8 @@ game/dirps/
 │   ├── g3-semantic-validation.md
 │   ├── g4-resolved-validation.md
 │   ├── g5-executable-validation.md
-│   └── g6-target-validation.md
+│   ├── g6-target-validation.md
+│   └── phase-a-contextual-skill-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -32,11 +33,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 currently reaches **G6 — Targeted**, bounded to one debug CLI target over the accepted ordinary success-roll runtime.
+DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase A — contextual skill checks**.
 
-The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces the accepted `dirps-resolved-game.v1`; `tools/dirps_runtime.py` executes the accepted bounded success-roll mechanic; and `tools/dirps_debug_target.py` is the first real target consumer. `docs/g6-target-validation.md` records the target-boundary evidence. Full Scenario 01 execution and G7 reference quality are not claimed.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1`; `tools/dirps_runtime.py` now executes both the accepted unmodified compatibility path and a contextual skill-check path driven by resolved Scenario 01 modifiers; and `tools/dirps_debug_target.py` remains the first target consumer. `docs/phase-a-contextual-skill-validation.md` records the current gameplay evidence. Phase B encounter consequences and G7 reference quality are not claimed.
 
-The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests provide both the named G5 executable evidence and a named G6 target-consumption PASS line.
+The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6 evidence and add a named Phase A contextual-skill PASS line.
 
 ## Authority boundary
 
@@ -60,7 +61,7 @@ runtime / replay / targets
 
 The DODGE document targets DODGE 0.2.1 and remains resolved through the accepted G4 boundary. G5 adds a renderer-independent execution layer that consumes only `dirps-resolved-game.v1`; G6 adds a debug CLI that consumes the runtime rather than rereading or reinterpreting authored source. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
-The proto sidecar now records G5 runtime evidence. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` are `exercised` by the bounded success-roll path, but remain `not-yet-candidate`. Derived targets/modifiers and immutable replay/session history remain `suspected`.
+The proto sidecar records execution evidence without speculative promotion. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` remain `exercised` / `not-yet-candidate`. Phase A reassesses `derived_values` and `expressions` but keeps both `suspected`: the runtime performs one bounded effective-target calculation rather than implementing either proposed generic proto shape.
 
 ## Scenario 01
 
