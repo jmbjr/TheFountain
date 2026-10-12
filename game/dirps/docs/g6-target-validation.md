@@ -295,3 +295,7 @@ G6 proves one target consumes the accepted resolved/runtime semantics.
 G7 still requires a whole-system reference-quality assessment. Scenario 01 still has intentionally unimplemented mechanics and does not yet execute all of its broader tutorial claims.
 
 No G7 work is included in this tranche.
+
+## Post-G6 gameplay note
+
+This document records the accepted G6 target boundary. Gameplay roadmap Phase A later expands the runtime's effective-target/random/critical semantics while preserving the same target-separation invariant. See `phase-a-contextual-skill-validation.md` for the current runtime contract; the G6 target remains a consumer and does not own those gameplay rules.
