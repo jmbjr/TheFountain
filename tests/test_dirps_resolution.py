@@ -119,6 +119,14 @@ class DirpsResolutionTests(unittest.TestCase):
         with self.assertRaisesRegex(ResolutionError, "action attack"):
             resolve_documents(dodge, self.canonical, self.sidecar)
 
+    def test_resolved_object_table_drop_is_rejected(self):
+        resolved = resolve()
+        del resolved["objects"]["tutorial-pc"]
+        errors = validate_resolved_semantics(
+            resolved, self.dodge, self.canonical, self.sidecar
+        )
+        self.assertTrue(any("DODGE objects" in error for error in errors))
+
     def test_resolved_rule_drop_is_rejected(self):
         resolved = resolve()
         del resolved["rules"]["actions"]["attack"]
