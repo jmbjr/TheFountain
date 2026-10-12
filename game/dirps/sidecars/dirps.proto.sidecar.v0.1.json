@@ -23,11 +23,12 @@
       "implemented through shared resolver/runtime rather than target-specific code",
       "covered by positive, negative, and perturbation/deterministic tests as applicable",
       "demonstrated to be reusable beyond GURPS-specific terminology"
-    ]
+    ],
+    "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy; session history, derived values/modifiers, and broader RPG semantics remain suspected."
   },
   "proto_specs": {
     "dice_resolution": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 has randomizer objects but no first-class executable roll/resolution primitive that records rolled terms and a deterministic outcome.",
       "proposed_shape": {
         "id": "success-roll-3d6",
@@ -54,7 +55,8 @@
         "active defense rolls",
         "HT recovery checks"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "g5_evidence": "G5 executes the proposed 3d6 dice-pool/lte success-roll contract from the resolved sidecar using supplied deterministic die terms."
     },
     "derived_values": {
       "status": "suspected",
@@ -124,7 +126,7 @@
       "candidate_for_dodge": "not-yet-candidate"
     },
     "procedure_context": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 ordered procedures lack named local variables/outputs that later steps can reference.",
       "proposed_shape": {
         "inputs": [
@@ -141,7 +143,8 @@
       "dirps_evidence": [
         "base target -> modifiers -> effective target -> roll -> margin -> consequence"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "g5_evidence": "G5 requires named actor/skill/random-evidence inputs and emits named target/result outputs for success-roll; this remains a DIRPS-private runtime shape."
     },
     "reaction_timing": {
       "status": "suspected",
@@ -181,7 +184,7 @@
       "candidate_for_dodge": "not-yet-candidate"
     },
     "actor_character_model": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE actors can be objects with state, but RPG character structure is currently ad hoc instance state/extensions.",
       "proposed_shape": {
         "actor_ref": "instance-or-object",
@@ -204,10 +207,11 @@
       "dirps_evidence": [
         "player characters and NPCs"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "g5_evidence": "G5 runtime selects the resolved actor and reads its resolved character skill bindings; no generic DODGE character model is claimed."
     },
     "skill_model": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 has no reusable semantic model for learned skills, defaults, governing attributes, or resolved levels.",
       "proposed_shape": {
         "id": "skill-definition",
@@ -226,10 +230,11 @@
         "Broadsword",
         "Area Knowledge"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "g5_evidence": "G5 executes one explicitly resolved skill level as the target; governing attributes, defaults, and a full generic skill model remain unimplemented."
     },
     "resolution_trace": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 describes rules but not a standard evidence record showing which rules, modifiers, random terms, and state changes produced a result.",
       "proposed_shape": {
         "action_ref": "semantic-action",
@@ -244,7 +249,8 @@
       "dirps_evidence": [
         "teaching mode and rule-reference explanations"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "g5_evidence": "G5 emits a structured execution record linking action, procedure, target, die evidence, result/margin, and source authority."
     },
     "replay_session_history": {
       "status": "suspected",
