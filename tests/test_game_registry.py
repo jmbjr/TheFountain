@@ -15,12 +15,12 @@ class GameRegistryTests(unittest.TestCase):
         self.assertIn("dirps",games)
         self.assertNotIn("gurps",games)
 
-    def test_dirps_scenario_01_is_explicit_g2_core_candidate(self):
+    def test_dirps_scenario_01_is_explicit_g3_semantic_candidate(self):
         cfg=scenario_config("dirps","scenario-01")
         self.assertEqual(cfg["status"],"incubating")
         self.assertTrue(cfg["dodge"].is_file())
         self.assertTrue(cfg["source"].is_file())
-        self.assertEqual(cfg["conformance"]["maturity"],"G2")
+        self.assertEqual(cfg["conformance"]["maturity"],"G3")
         self.assertIsNone(cfg["conformance"]["resolver"])
 
     def test_wretched_scenario_01_paths_exist(self):
