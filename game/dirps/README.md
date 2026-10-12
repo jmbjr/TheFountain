@@ -35,7 +35,7 @@ game/dirps/
 
 DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase A — contextual skill checks**.
 
-The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1`; `tools/dirps_runtime.py` now executes both the accepted unmodified compatibility path and a contextual skill-check path driven by resolved Scenario 01 modifiers; and `tools/dirps_debug_target.py` remains the first target consumer. `docs/phase-a-contextual-skill-validation.md` records the current gameplay evidence. Phase B encounter consequences and G7 reference quality are not claimed.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1`; `tools/dirps_runtime.py` preserves the accepted G5/G6 v1 API and adds separate Phase A contextual v2 APIs driven by resolved Scenario 01 modifiers; and `tools/dirps_debug_target.py` remains the accepted v1 target consumer. `docs/phase-a-contextual-skill-validation.md` records the current gameplay evidence. Phase B encounter consequences and G7 reference quality are not claimed.
 
 The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6 evidence and add a named Phase A contextual-skill PASS line.
 
