@@ -112,6 +112,12 @@ class DirpsRuntimeTests(unittest.TestCase):
         with self.assertRaisesRegex(ExecutionError, "action is not available"):
             self.execute(resolved=resolved)
 
+    def test_execution_binding_drift_fails(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["proto_sidecar"]["g5_execution_bindings"]["attempt-skill"]["target_input"] = "attribute_ref"
+        with self.assertRaisesRegex(ExecutionError, "runtime input binding"):
+            self.execute(resolved=resolved)
+
     def test_wrong_procedure_binding_fails(self):
         resolved = copy.deepcopy(self.resolved)
         resolved["rules"]["actions"]["attempt-skill"]["procedure_ref"] = "recovery-check"
