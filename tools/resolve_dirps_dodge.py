@@ -173,6 +173,8 @@ def resolve_documents(dodge, canonical, sidecar, config=None):
             "objectives": copy.deepcopy(scenario.get("objectives", [])),
             # List order is canonical Scenario 01 encounter order.
             "encounters": copy.deepcopy(canonical.get("encounters", [])),
+            # Contextual checks are provisional Scenario 01 gameplay facts.
+            "contextual_checks": copy.deepcopy(canonical.get("contextual_checks", {})),
         },
         "scene": {
             "id": scene_ref,
