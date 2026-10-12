@@ -140,11 +140,12 @@ This is **single-record re-evaluation**, not an immutable session/replay-history
 7. wrong die count fails;
 8. out-of-range die terms fail;
 9. unavailable action fails;
-10. wrong/missing action→procedure binding fails;
-11. missing selected skill target fails;
-12. unconscious actor cannot execute `attempt-skill`;
-13. malformed executable dice semantics fail visibly;
-14. record replay succeeds when consistent and detects tampered result evidence.
+10. drift in the declared G5 execution binding fails;
+11. wrong/missing action→procedure binding fails;
+12. missing selected skill target fails;
+13. unconscious actor cannot execute `attempt-skill`;
+14. malformed executable dice semantics fail visibly;
+15. record replay succeeds when consistent and detects tampered result evidence.
 
 The positive test emits a named CI evidence line:
 
