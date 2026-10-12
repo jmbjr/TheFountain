@@ -181,11 +181,49 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             "G5 dice_resolution outputs must include rolled_terms/total/success/margin"
         )
 
-    bindings = sidecar.get("g5_execution_bindings")
-    if not isinstance(bindings, dict):
-        errors.append("G5 DIRPS sidecar must declare g5_execution_bindings")
+    legacy_bindings = sidecar.get("g5_execution_bindings")
+    expected_legacy_binding = {
+        "action_ref": "attempt-skill",
+        "procedure_ref": "success-roll",
+        "actor_input": "actor_ref",
+        "target_input": "skill_ref",
+        "target_source": {
+            "kind": "resolved-character-skill",
+            "path": "scene.instances[].character.skills",
+        },
+        "effective_target": {
+            "from": "selected-skill-level",
+            "modifier_policy": "unsupported",
+            "supported_domain": {"minimum": 4, "maximum": 16},
+            "outside_domain": "error",
+        },
+        "dice_resolution_ref": "dice_resolution",
+        "result_format": "dirps-execution-result.v1",
+        "state_mutation": "none",
+        "binding_source_ref": "dirps-proto",
+        "target_provenance": {
+            "source_ref": "scenario-01-source",
+            "character_provenance": "prototype_assumption",
+            "canonical_path": "player_character.skills",
+        },
+        "result_scope": "binary-success-and-margin-only",
+    }
+    if not isinstance(legacy_bindings, dict):
+        errors.append("G5 DIRPS sidecar must preserve g5_execution_bindings")
+        legacy_binding = None
     else:
-        binding = bindings.get("attempt-skill")
+        legacy_binding = legacy_bindings.get("attempt-skill")
+        if legacy_binding != expected_legacy_binding:
+            errors.append(
+                "Phase A must preserve the accepted G5 dirps-execution-result.v1 binding exactly"
+            )
+
+    phase_bindings = sidecar.get("phase_a_execution_bindings")
+    if not isinstance(phase_bindings, dict):
+        errors.append("Phase A DIRPS sidecar must declare phase_a_execution_bindings")
+        binding = None
+    else:
+        binding = phase_bindings.get("attempt-skill")
         expected_binding = {
             "action_ref": "attempt-skill",
             "procedure_ref": "success-roll",
@@ -254,58 +292,28 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
         }
         if binding != expected_binding:
             errors.append(
-                "G5 attempt-skill execution binding must match the bounded declared contract"
+                "Phase A attempt-skill execution binding must match the declared v2 contract"
             )
-        legacy_bindings = sidecar.get("g5_legacy_execution_bindings")
-        if not isinstance(legacy_bindings, dict):
-            errors.append("Phase A must preserve g5_legacy_execution_bindings")
-        else:
-            legacy_binding = legacy_bindings.get("attempt-skill")
-            expected_legacy_binding = {
-                "action_ref": "attempt-skill",
-                "procedure_ref": "success-roll",
-                "actor_input": "actor_ref",
-                "target_input": "skill_ref",
-                "target_source": {
-                    "kind": "resolved-character-skill",
-                    "path": "scene.instances[].character.skills",
-                },
-                "effective_target": {
-                    "from": "selected-skill-level",
-                    "modifier_policy": "unsupported",
-                    "supported_domain": {"minimum": 4, "maximum": 16},
-                    "outside_domain": "error",
-                },
-                "dice_resolution_ref": "dice_resolution",
-                "result_format": "dirps-execution-result.v1",
-                "state_mutation": "none",
-                "binding_source_ref": "dirps-proto",
-                "target_provenance": {
-                    "source_ref": "scenario-01-source",
-                    "character_provenance": "prototype_assumption",
-                    "canonical_path": "player_character.skills",
-                },
-                "result_scope": "binary-success-and-margin-only",
-            }
-            if legacy_binding != expected_legacy_binding:
-                errors.append(
-                    "Phase A must preserve the accepted G5 dirps-execution-result.v1 binding exactly"
-                )
-        if dodge and isinstance(binding, dict):
+
+    for label, candidate in (
+        ("G5", legacy_binding),
+        ("Phase A", binding),
+    ):
+        if dodge and isinstance(candidate, dict):
             action = (dodge.get("rules", {}).get("actions", {}) or {}).get(
-                binding.get("action_ref")
+                candidate.get("action_ref")
             )
             procedure = (dodge.get("rules", {}).get("procedures", {}) or {}).get(
-                binding.get("procedure_ref")
+                candidate.get("procedure_ref")
             )
             if not action:
-                errors.append("G5 execution binding action_ref does not resolve")
-            elif action.get("procedure_ref") != binding.get("procedure_ref"):
+                errors.append(f"{label} execution binding action_ref does not resolve")
+            elif action.get("procedure_ref") != candidate.get("procedure_ref"):
                 errors.append(
-                    "G5 execution binding disagrees with the DODGE action procedure_ref"
+                    f"{label} execution binding disagrees with the DODGE action procedure_ref"
                 )
             if not procedure:
-                errors.append("G5 execution binding procedure_ref does not resolve")
+                errors.append(f"{label} execution binding procedure_ref does not resolve")
 
     if (specs.get("derived_values") or {}).get("status") != "suspected":
         errors.append(
