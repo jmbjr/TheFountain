@@ -635,3 +635,18 @@ Independent review caught that the initial Phase A candidate had expanded the ac
 Phase A reassessed `derived_values` and `expressions` but kept both `suspected`: the bounded effective-target calculation does not implement either proposed generic proto shape. No new proto concept becomes a DODGE candidate.
 
 This tranche remains non-mutating. Roadside Tracks encounter state, information consequences, and scenario progress are intentionally deferred to Phase B. No G7 work was added.
+
+
+## DIRPS gameplay Phase B makes Roadside Tracks stateful
+
+**October 12, 2026.**
+
+After accepted/merged Phase A PR #179, DIRPS began Phase B from fresh post-merge `main`. Phase B makes the Roadside Tracks investigation the first end-to-end stateful encounter while formal maturity remains G6.
+
+The implementation intentionally uses standard DODGE 0.2.1 semantics wherever possible. Scenario 01 now owns the provisional initial Roadside state, one investigation choice, and success/failure consequence facts. The DODGE document normalizes those facts into scenario-owned enum values, `scenario.initial_state`, `runtime_states.scenario-01-initial`, and structured `set` effects. DIRPS source validation derives the expected normalization from canonical Scenario 01, preventing copied consequence values from becoming a shadow authority.
+
+The sidecar adds only a Phase B encounter bridge that maps the accepted Phase A v2 success Boolean to ordered DODGE effect refs. The runtime validates/copies neutral state, executes the contextual Tracking check, applies those effects, increments the state revision, and emits `dirps-encounter-result.v1` with the complete nested skill result, canonical consequence, before/after state, state delta, and source trace. A deterministic encounter replay path detects tampering without claiming full session history.
+
+The debug CLI gains a separate encounter mode that consumes the same stateful runtime APIs. Its legacy G5/G6 direct-skill behavior remains intact, and the target contains no Roadside/action/consequence literals.
+
+No proto concept changes maturity: state and effects were already first-class DODGE 0.2.1 semantics, public information does not exercise hidden-state policy, and one stateful encounter record is still not append-only session replay. Phase C social interaction remains the next gameplay tranche; no G7 work was added.
