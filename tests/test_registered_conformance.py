@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import copy,json,sys,unittest
+import json,sys,unittest
 from unittest.mock import patch
 from pathlib import Path
 
