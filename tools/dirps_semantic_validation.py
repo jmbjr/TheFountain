@@ -204,7 +204,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
                 "rule_locator": "p. 2, Modifiers and Effective Skill",
             },
             "dice_resolution_ref": "dice_resolution",
-            "result_format": "dirps-execution-result.v1",
+            "result_format": "dirps-execution-result.v2",
             "state_mutation": "none",
             "binding_source_ref": "dirps-proto",
             "target_provenance": {
@@ -256,6 +256,41 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             errors.append(
                 "G5 attempt-skill execution binding must match the bounded declared contract"
             )
+        legacy_bindings = sidecar.get("g5_legacy_execution_bindings")
+        if not isinstance(legacy_bindings, dict):
+            errors.append("Phase A must preserve g5_legacy_execution_bindings")
+        else:
+            legacy_binding = legacy_bindings.get("attempt-skill")
+            expected_legacy_binding = {
+                "action_ref": "attempt-skill",
+                "procedure_ref": "success-roll",
+                "actor_input": "actor_ref",
+                "target_input": "skill_ref",
+                "target_source": {
+                    "kind": "resolved-character-skill",
+                    "path": "scene.instances[].character.skills",
+                },
+                "effective_target": {
+                    "from": "selected-skill-level",
+                    "modifier_policy": "unsupported",
+                    "supported_domain": {"minimum": 4, "maximum": 16},
+                    "outside_domain": "error",
+                },
+                "dice_resolution_ref": "dice_resolution",
+                "result_format": "dirps-execution-result.v1",
+                "state_mutation": "none",
+                "binding_source_ref": "dirps-proto",
+                "target_provenance": {
+                    "source_ref": "scenario-01-source",
+                    "character_provenance": "prototype_assumption",
+                    "canonical_path": "player_character.skills",
+                },
+                "result_scope": "binary-success-and-margin-only",
+            }
+            if legacy_binding != expected_legacy_binding:
+                errors.append(
+                    "Phase A must preserve the accepted G5 dirps-execution-result.v1 binding exactly"
+                )
         if dodge and isinstance(binding, dict):
             action = (dodge.get("rules", {}).get("actions", {}) or {}).get(
                 binding.get("action_ref")
