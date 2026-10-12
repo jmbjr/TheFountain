@@ -630,6 +630,8 @@ Scenario 01 now owns a provisional Roadside Tracks Tracking context with a proto
 
 The neutral resolver carries `contextual_checks` unchanged into `dirps-resolved-game.v1`. `execute_contextual_skill()` derives base target, modifier total, and effective target from resolved semantics, then accepts either explicit dice terms or deterministic generated evidence. Generated 3d6 uses a recorded `sha256-rejection-v1` seed path and preserves seed, algorithm id, individual terms, total, target, outcome, margin, critical classification, modifier provenance, and rule/source trace. One-record contextual re-evaluation detects evidence divergence.
 
+Independent review caught that the initial Phase A candidate had expanded the accepted `dirps-execution-result.v1` shape in place. The fix preserves the G5 binding and v1 API unchanged, adds a separate `phase_a_execution_bindings.attempt-skill` contract, and versions contextual records as `dirps-execution-result.v2`. Legacy v1 and Phase A v2 replay now identify cross-version inputs explicitly instead of treating them as tampering/divergence.
+
 Phase A reassessed `derived_values` and `expressions` but kept both `suspected`: the bounded effective-target calculation does not implement either proposed generic proto shape. No new proto concept becomes a DODGE candidate.
 
 This tranche remains non-mutating. Roadside Tracks encounter state, information consequences, and scenario progress are intentionally deferred to Phase B. No G7 work was added.
