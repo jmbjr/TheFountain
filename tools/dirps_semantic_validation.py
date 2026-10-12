@@ -467,6 +467,17 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
 
     if resolved.get("sources") != dodge.get("sources"):
         errors.append("resolved game: sources must preserve the DODGE source declarations exactly")
+    for field, default in (
+        ("game_profile", {}),
+        ("archetypes", {}),
+        ("objects", {}),
+        ("sidecars", []),
+        ("extensions", {}),
+    ):
+        if resolved.get(field) != dodge.get(field, default):
+            errors.append(
+                f"resolved game: DODGE {field} changed or disappeared during resolution"
+            )
 
     canonical_source = resolved.get("canonical_source") or {}
     expected_canonical_source = {
