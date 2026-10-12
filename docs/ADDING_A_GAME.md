@@ -383,7 +383,7 @@ def resolve_context(context, export_contract_path=None):
     ...
 ```
 
-Game/application semantic validators are **not** listed again in `game.json`. Declare them in the DODGE document using `validation.required_profiles` and a `semantic_validator` source. The referenced validator module must expose the TheFountain hooks:
+Game/application semantic validators are **not** listed again in `game.json`. Declare them in the DODGE document using `validation.required_profiles` and a `semantic_validator` source. The required profile version must exactly match the referenced semantic-validator source `version`; the generic conformance runner hard-fails a mismatch before importing or invoking the validator. The referenced validator module must expose the TheFountain hooks:
 
 ```python
 def validate_source_context(context):
