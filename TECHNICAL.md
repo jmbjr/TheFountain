@@ -498,25 +498,31 @@ The workflow pins an exact DODGE source revision. Updating that pin is a deliber
 
 Conformance provenance is also explicit on the TheFountain side. Pull-request runs check out `github.event.pull_request.head.sha`, print the validated TheFountain source SHA, and assert that `git rev-parse HEAD` equals that expected identity before candidate validation begins. Push/main and manual runs validate `github.sha`. The default GitHub synthetic pull-request merge ref may still be useful for merge-compatibility testing, but it is not used as exact-head maturity evidence.
 
-## DIRPS G2 core-valid
+## DIRPS G3 semantic-valid
 
-`game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** through **G1 — Schema-valid** to **G2 — Core-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
+`game/dirps/` is the second independent DODGE implementation track and has advanced from **G0 — Scaffold** through **G1 — Schema-valid**, **G2 — Core-valid**, and now **G3 — Semantic-valid**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but the repository implementation identity is DIRPS.
 
-The initial scaffold contains:
+The current bounded source stack contains:
 
-- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G2"`;
-- `game/dirps/scenarios/scenario-01/scenario.json` — bounded tutorial source for *The Missing Courier*;
-- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — G2 document validated against the exact DODGE 0.2.1 schema and audited against every applicable §15.3 core rule; actor values declare `owner_scope: actor` and Scenario 01 persistence, while post-scenario persistence remains explicitly unresolved;
-- `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json` — suspected RPG-shaped neutral gaps retained adjacent to DODGE;
-- `game/dirps/docs/compatibility-audit.md` — bounded compatibility hypotheses for Scenario 01;
-- `game/dirps/docs/g2-core-validation.md` — auditable PASS/N/A matrix for every §15.3 base item and conditional group, backed by `tests/test_dirps_g2_core.py` negative fixtures.
+- `game/dirps/game.json` — game/scenario registration with `conformance.maturity: "G3"` and intentionally no resolver;
+- `game/dirps/scenarios/scenario-01/scenario.json` — canonical/provisional tutorial source for *The Missing Courier*;
+- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — exact-schema/core-valid DODGE source declaring the required `dirps@0.1.0` semantic profile at the `source` stage only;
+- `tools/dirps_semantic_validation.py` — game-owned semantic validation for DIRPS cross-source/domain contracts;
+- `tests/test_dirps_validation.py` — positive source validation plus focused negative contradictions;
+- `game/dirps/docs/g2-core-validation.md` — retained G2 §15.3 evidence;
+- `game/dirps/docs/g3-semantic-validation.md` — G3 semantic-contract ownership/evidence and deferred-claim record;
+- `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json` — suspected RPG-shaped neutral gaps retained adjacent to DODGE.
 
-At G0, the generic conformance runner discovers DIRPS but intentionally skips schema/profile/resolver execution. This is a positive state, not a loophole: it prevents a familiar-looking scaffold from being confused with a conforming implementation. DIRPS G2 evidence is candidate-specific and explicit: schema validation remains in the generic registered-game runner, while `tests/test_dirps_g2_core.py` supplies the interim complete §15.3 audit until reusable DODGE-owned core-validation tooling tracked upstream replaces candidate-level evidence. This is not a G3 semantic profile.
+The generic conformance runner discovers the profile from the DODGE `validation.required_profiles` declaration and imports the semantic-validator source. At G3 it executes `validate_source_context(context)` after exact schema validation and must report a named `PASS dirps/scenario-01: semantic source dirps@0.1.0`. No DIRPS-specific branch was added to the generic runner.
 
-DIRPS proto semantics use the progression:
+The profile validates only contracts DODGE core cannot infer: registered source/proto provenance alignment, canonical PC build duplication, explicit DIRPS actor initialization, bounded rule/action meaning, tutorial choice/action synchronization, combat encounter realization, target-duration agreement, and DIRPS authority separation. The profile does not claim that prose procedures or encounter purposes are executable.
+
+G4 remains a separate architecture boundary. DIRPS has no `conformance.resolver`, no `resolved-game` profile stage, and no resolved model. When G4 starts, it must consume the G3-valid source without weakening or reinterpreting these contracts.
+
+DIRPS proto semantics continue to use:
 
 ```text
 suspected → exercised → candidate
 ```
 
-A suspected gap does not become a DODGE proposal merely because the external ruleset appears to need it. Scenario 01 must first exercise the concept through target-neutral validation/resolution/runtime behavior with appropriate deterministic, negative, and perturbation evidence. This is the practical acceptance test for the new `docs/ADDING_A_GAME.md` process and generic conformance discovery introduced after the original DIRPS scaffold review.
+G3 semantic validation does not by itself exercise a proto concept through resolution/runtime behavior. All current proto-sidecar entries therefore remain `suspected`.
