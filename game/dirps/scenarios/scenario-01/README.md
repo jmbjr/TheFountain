@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase A gameplay candidate.** The accepted resolved model remains the sole runtime input. The success-roll runtime now supports contextual checks whose modifiers come from resolved Scenario 01 source, plus deterministic generated 3d6 evidence and critical classification. `../../docs/phase-a-contextual-skill-validation.md` records the authority and test evidence. The debug CLI remains the accepted target, while Roadside Tracks state/consequences are deferred to Phase B.
+**G6 — Targeted, Phase A gameplay candidate.** The accepted resolved model remains the sole runtime input. The accepted G5/G6 `dirps-execution-result.v1` path remains unchanged for the debug CLI, while separate Phase A runtime APIs emit `dirps-execution-result.v2` for contextual checks whose modifiers come from resolved Scenario 01 source, plus deterministic generated 3d6 evidence and critical classification. `../../docs/phase-a-contextual-skill-validation.md` records the authority/version/test evidence. Roadside Tracks state/consequences are deferred to Phase B.
 
 ## Goal
 
