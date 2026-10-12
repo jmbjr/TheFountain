@@ -249,9 +249,9 @@ class DirpsPhaseAContextualSkillTests(unittest.TestCase):
             "gurps-lite",
         )
 
-    def test_proto_maturity_promotes_only_derived_values(self):
+    def test_proto_maturity_remains_conservative(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
-        self.assertEqual(specs["derived_values"]["status"], "exercised")
+        self.assertEqual(specs["derived_values"]["status"], "suspected")
         self.assertEqual(
             specs["derived_values"]["candidate_for_dodge"],
             "not-yet-candidate",
