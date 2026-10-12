@@ -170,6 +170,14 @@ def _validate_actor_model(dodge, canonical, errors):
         for value_id, definition in values.items()
         if definition.get("owner_scope") == "actor"
     }
+    for value_id in sorted(actor_values):
+        _source_contract(
+            errors,
+            f"value {value_id}",
+            values[value_id],
+            RULES_SOURCE,
+            "authoritative",
+        )
 
     # DIRPS Scenario 01 requires explicit initial bindings for every declared
     # actor-scoped value so tutorial actors do not depend on hidden runtime defaults.
@@ -197,13 +205,6 @@ def _validate_actor_model(dodge, canonical, errors):
             errors.append(
                 f"canonical player attribute {attribute_id}: DODGE value must be actor-owned"
             )
-        _source_contract(
-            errors,
-            f"value {attribute_id}",
-            definition,
-            RULES_SOURCE,
-            "authoritative",
-        )
         if state.get(attribute_id) != canonical_value:
             errors.append(
                 f"canonical player attribute {attribute_id}: scenario value {canonical_value} "
