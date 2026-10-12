@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded compatibility audit for DIRPS Scenario 01. The DODGE document has reached **G2 — Core-valid** against TheFountain CI's pinned DODGE 0.2.1 contract. The complete §15.3 PASS/N/A evidence matrix is `g2-core-validation.md`; domain classifications remain working hypotheses until G3 semantic validation and later executable Scenario 01 evidence confirm them.
+This is the bounded compatibility audit for DIRPS Scenario 01. The DODGE document has reached **G3 — Semantic-valid** at the source stage against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`; the game-owned semantic-contract audit and negative evidence are in `g3-semantic-validation.md`. Executable claims and proto-gap promotion still require later resolver/runtime evidence.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -20,6 +20,12 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 | Skills/defaults/governing attributes | Gap | Proto sidecar: `skill_model` | Suspected; exercise first |
 | Rules-resolution evidence | Gap | Proto sidecar: `resolution_trace` | Suspected; exercise first |
 | Immutable replay/session history | Gap | Proto sidecar: `replay_session_history` | Suspected; exercise first |
+
+## G3 semantic-validation result
+
+The `dirps@0.1.0` source profile enforces only DIRPS-specific implications that DODGE core cannot know: registered authority/provenance alignment, canonical PC build consistency, explicit actor-state initialization, bounded action/procedure meaning, tutorial action-choice completeness, concrete combat-opponent presence, target-duration consistency, and the explicit proto-sidecar bridge.
+
+The profile deliberately does **not** claim that prose encounter purposes, social/reaction resolution, environmental consequences, active defense, damage/injury, recovery, scenario completion, dice terms, or replay are executable. Those remain later-gate concerns, and every proto-sidecar entry remains `suspected`.
 
 ## Non-goals for this pass
 
