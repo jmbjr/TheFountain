@@ -49,7 +49,7 @@ class DirpsTargetTests(unittest.TestCase):
         )
         self.assertEqual(
             capability["target"]["supported_domain"],
-            {"minimum": 4, "maximum": 16},
+            {"minimum": 3, "maximum": None},
         )
         self.assertEqual(capability["dice"]["count"], 3)
         self.assertEqual(capability["dice"]["sides"], 6)
@@ -69,7 +69,7 @@ class DirpsTargetTests(unittest.TestCase):
         self.assertEqual(result["target"]["effective_target"], 12)
         self.assertEqual(result["random_evidence"]["terms"], [2, 3, 4])
         self.assertEqual(result["random_evidence"]["total"], 9)
-        self.assertEqual(result["outcome"], {"success": True, "margin": 3})
+        self.assertEqual(result["outcome"], {"classification": "success", "success": True, "margin": 3})
         self.assertEqual(result["state_delta"], [])
         print("PASS dirps/scenario-01: debug-cli target consumes DIRPS runtime")
 
@@ -87,9 +87,9 @@ class DirpsTargetTests(unittest.TestCase):
             dice_terms=[4, 4, 3],
         )
         self.assertEqual(baseline["execution"]["target"]["effective_target"], 12)
-        self.assertEqual(baseline["execution"]["outcome"], {"success": True, "margin": 1})
+        self.assertEqual(baseline["execution"]["outcome"], {"classification": "success", "success": True, "margin": 1})
         self.assertEqual(changed["execution"]["target"]["effective_target"], 10)
-        self.assertEqual(changed["execution"]["outcome"], {"success": False, "margin": -1})
+        self.assertEqual(changed["execution"]["outcome"], {"classification": "failure", "success": False, "margin": -1})
 
     def test_adapter_passes_runtime_result_through_without_recomputing(self):
         fake_result = {
@@ -133,16 +133,19 @@ class DirpsTargetTests(unittest.TestCase):
         self.assertIs(view["capability"], fake_capability)
         self.assertEqual(view["scenario"], fake_capability["scenario"])
 
-    def test_out_of_domain_runtime_error_is_visible_not_guessed(self):
+    def test_below_minimum_runtime_error_is_visible_not_guessed(self):
+        resolved = copy.deepcopy(self.resolved)
+        pc = next(row for row in resolved["scene"]["instances"] if row["id"] == "pc")
+        pc["character"]["skills"]["tracking"] = 2
         view = execute_target(
-            self.resolved_with_tracking(17),
+            resolved,
             actor_ref="pc",
             skill_ref="tracking",
-            dice_terms=[5, 6, 6],
+            dice_terms=[1, 1, 1],
         )
         self.assertEqual(view["status"], "error")
         self.assertNotIn("execution", view)
-        self.assertIn("outside supported G5 domain", view["error"]["message"])
+        self.assertIn("below minimum rollable target 3", view["error"]["message"])
 
     def test_malformed_dice_runtime_error_is_visible_not_guessed(self):
         view = execute_target(
@@ -198,7 +201,7 @@ class DirpsTargetTests(unittest.TestCase):
         view = json.loads(proc.stdout)
         self.assertEqual(view["status"], "ok")
         self.assertEqual(view["execution"]["random_evidence"]["total"], 9)
-        self.assertEqual(view["execution"]["outcome"], {"success": True, "margin": 3})
+        self.assertEqual(view["execution"]["outcome"], {"classification": "success", "success": True, "margin": 3})
 
     def test_target_exposes_all_three_authority_layers_from_runtime(self):
         view = execute_target(
@@ -210,7 +213,7 @@ class DirpsTargetTests(unittest.TestCase):
         trace = view["execution"]["trace"]
         self.assertEqual(trace["action"]["authority"], "authoritative")
         self.assertEqual(trace["execution_binding"]["authority"], "provisional")
-        self.assertEqual(trace["effective_target"]["authority"], "provisional")
+        self.assertEqual(trace["effective_target"]["target_authority"], "provisional")
         self.assertEqual(
             trace["effective_target"]["character_provenance"],
             "prototype_assumption",
