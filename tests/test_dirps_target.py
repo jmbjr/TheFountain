@@ -3,6 +3,7 @@ import copy
 import inspect
 import json
 import sys
+import subprocess
 import unittest
 from pathlib import Path
 
@@ -175,6 +176,29 @@ class DirpsTargetTests(unittest.TestCase):
         self.assertEqual(view["status"], "error")
         self.assertNotIn("execution", view)
         self.assertIn("actor is not available", view["error"]["message"])
+
+    def test_registered_cli_entry_point_executes(self):
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "dirps_debug_target.py"),
+                "--actor",
+                "pc",
+                "--skill",
+                "tracking",
+                "--dice",
+                "2",
+                "3",
+                "4",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        view = json.loads(proc.stdout)
+        self.assertEqual(view["status"], "ok")
+        self.assertEqual(view["execution"]["random_evidence"]["total"], 9)
+        self.assertEqual(view["execution"]["outcome"], {"success": True, "margin": 3})
 
     def test_target_exposes_all_three_authority_layers_from_runtime(self):
         view = execute_target(
