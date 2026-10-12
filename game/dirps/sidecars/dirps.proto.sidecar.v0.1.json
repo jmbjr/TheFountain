@@ -24,7 +24,8 @@
       "covered by positive, negative, and perturbation/deterministic tests as applicable",
       "demonstrated to be reusable beyond GURPS-specific terminology"
     ],
-    "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented."
+    "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented.",
+    "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. derived_values is exercised by this bounded derivation; expressions remains suspected because no reusable expression graph is implemented."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -56,10 +57,11 @@
         "HT recovery checks"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "g5_evidence": "G5 executes the proposed 3d6 dice-pool/lte success-roll contract from the resolved sidecar using supplied deterministic die terms."
+      "g5_evidence": "G5 executes the proposed 3d6 dice-pool/lte success-roll contract from the resolved sidecar using supplied deterministic die terms.",
+      "phase_a_evidence": "Phase A adds deterministic generated evidence using the runtime-owned sha256-rejection-v1 algorithm while preserving seed, algorithm id, individual die terms, and total. Supplied explicit die terms remain supported."
     },
     "derived_values": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 value definitions store typed state but do not define dependency formulas for derived values.",
       "proposed_shape": {
         "id": "derived-value",
@@ -75,7 +77,8 @@
         "Dodge",
         "effective target values"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "phase_a_evidence": "Phase A derives effective target from the resolved base skill plus the sum of resolved contextual modifier amounts, with source/provenance retained for each modifier. The implementation is a bounded DIRPS runtime contract, not a reusable DODGE expression graph."
     },
     "expressions": {
       "status": "suspected",
@@ -144,7 +147,8 @@
         "base target -> modifiers -> effective target -> roll -> margin -> consequence"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "g5_evidence": "G5 requires named actor/skill/random-evidence inputs and emits named target/result outputs for success-roll; this remains a DIRPS-private runtime shape."
+      "g5_evidence": "G5 requires named actor/skill/random-evidence inputs and emits named target/result outputs for success-roll; this remains a DIRPS-private runtime shape.",
+      "phase_a_evidence": "Phase A adds context_ref plus resolved modifier inputs and exposes base target, modifier total, effective target, critical classification, and random-evidence provenance."
     },
     "reaction_timing": {
       "status": "suspected",
@@ -250,7 +254,8 @@
         "teaching mode and rule-reference explanations"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "g5_evidence": "G5 emits a structured execution record linking action, procedure, target, die evidence, result/margin, and source authority."
+      "g5_evidence": "G5 emits a structured execution record linking action, procedure, target, die evidence, result/margin, and source authority.",
+      "phase_a_evidence": "Phase A adds modifier-by-modifier provenance, effective-target derivation trace, critical classification source trace, and generated-random seed/algorithm evidence."
     },
     "replay_session_history": {
       "status": "suspected",
@@ -288,13 +293,12 @@
         "path": "scene.instances[].character.skills"
       },
       "effective_target": {
-        "from": "selected-skill-level",
-        "modifier_policy": "unsupported",
-        "supported_domain": {
-          "minimum": 4,
-          "maximum": 16
-        },
-        "outside_domain": "error"
+        "from": "selected-skill-level-plus-context-modifiers",
+        "modifier_policy": "sum-resolved-context-modifiers",
+        "minimum": 3,
+        "below_minimum": "error",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 2, Modifiers and Effective Skill"
       },
       "dice_resolution_ref": "dice_resolution",
       "result_format": "dirps-execution-result.v1",
@@ -303,9 +307,61 @@
       "target_provenance": {
         "source_ref": "scenario-01-source",
         "character_provenance": "prototype_assumption",
-        "canonical_path": "player_character.skills"
+        "canonical_path": "player_character.skills",
+        "context_source_ref": "scenario-01-source",
+        "context_path": "contextual_checks"
       },
-      "result_scope": "binary-success-and-margin-only"
+      "result_scope": "success-failure-margin-and-critical-classification",
+      "context_input": "context_ref",
+      "context_source": {
+        "kind": "resolved-scenario-contextual-check",
+        "path": "scenario.contextual_checks"
+      },
+      "critical_resolution": {
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 2, Critical Success and Failure",
+        "critical_success": [
+          {
+            "roll_max": 4
+          },
+          {
+            "roll": 5,
+            "minimum_effective_target": 15
+          },
+          {
+            "roll": 6,
+            "minimum_effective_target": 16
+          }
+        ],
+        "critical_failure": [
+          {
+            "roll": 18
+          },
+          {
+            "roll": 17,
+            "maximum_effective_target": 15
+          },
+          {
+            "roll_minus_effective_target_minimum": 10
+          }
+        ],
+        "classifications": [
+          "critical-success",
+          "success",
+          "failure",
+          "critical-failure"
+        ]
+      },
+      "random_evidence": {
+        "supplied_terms": {
+          "supported": true
+        },
+        "generated": {
+          "supported": true,
+          "seed_required": true,
+          "algorithm": "sha256-rejection-v1"
+        }
+      }
     }
   }
 }
