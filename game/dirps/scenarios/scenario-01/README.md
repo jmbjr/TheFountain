@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted (bounded).** The accepted G4 model remains the sole runtime input, the accepted G5 runtime remains the sole executable mechanic, and `tools/dirps_debug_target.py` provides one thin debug CLI consumer. `../../docs/g6-target-validation.md` records target, perturbation, error, provenance, and anti-hardcoding evidence. The rest of Scenario 01 remains unimplemented and G7 is not claimed.
+**G6 — Targeted, Phase A gameplay candidate.** The accepted resolved model remains the sole runtime input. The accepted G5/G6 `dirps-execution-result.v1` path remains unchanged for the debug CLI, while separate Phase A runtime APIs emit `dirps-execution-result.v2` for contextual checks whose modifiers come from resolved Scenario 01 source, plus deterministic generated 3d6 evidence and critical classification. `../../docs/phase-a-contextual-skill-validation.md` records the authority/version/test evidence. Roadside Tracks state/consequences are deferred to Phase B.
 
 ## Goal
 
@@ -33,4 +33,4 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-The first target can now inspect actors/skills/capability data and execute the accepted bounded mechanic while displaying the exact runtime result and three-layer provenance trace. This does **not** satisfy the remaining social/environmental/combat/recovery/completion or immutable session-history goals.
+Phase A can now resolve the prototype Roadside Tracking context as a real modified skill check and preserve modifier/random/critical provenance. It intentionally does **not** mutate encounter state or apply investigation consequences; those are Phase B. Social/environmental/combat/recovery/completion and immutable session history remain later roadmap work.

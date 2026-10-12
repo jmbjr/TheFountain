@@ -295,3 +295,7 @@ G6 proves one target consumes the accepted resolved/runtime semantics.
 G7 still requires a whole-system reference-quality assessment. Scenario 01 still has intentionally unimplemented mechanics and does not yet execute all of its broader tutorial claims.
 
 No G7 work is included in this tranche.
+
+## Post-G6 gameplay note
+
+This document records the accepted G6 target boundary and its immutable G5/v1 runtime contract. Gameplay roadmap Phase A adds separate contextual runtime APIs and `dirps-execution-result.v2`; it does not silently change `describe_attempt_skill()`, `execute_attempt_skill()`, or the debug CLI's accepted G6 behavior. See `phase-a-contextual-skill-validation.md` for the Phase A runtime contract. Contextual target controls remain later work.

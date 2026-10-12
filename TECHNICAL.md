@@ -529,3 +529,26 @@ The debug CLI is registered through the repository's existing `generated_targets
 No proto status advances at G6. Target display is consumption evidence, not new semantic execution. The five G5 concepts remain `exercised` / `not-yet-candidate`; untouched gaps remain `suspected`.
 
 G6 is not G7. The target proves one real consumer of the neutral runtime boundary, but Scenario 01 still has intentionally unimplemented mechanics and has not undergone the final whole-system reference-quality gate.
+
+### DIRPS gameplay Phase A — contextual skill checks
+
+Issue #178 now drives post-G6 gameplay convergence. Phase A keeps the G6 architecture but extends `tools/dirps_runtime.py` before adding new presentation:
+
+```text
+canonical Scenario 01 contextual check
+→ source semantic validation
+→ neutral resolver
+→ resolved contextual check
+→ DIRPS runtime
+→ result evidence
+```
+
+Scenario 01 owns the provisional Roadside Tracks context and its prototype modifier magnitude. The external `gurps-lite` source remains authoritative for effective-skill modifier semantics and critical-result boundaries. The DIRPS sidecar declares the executable bridge and stable source locators. Runtime code interprets that declaration rather than keeping a second threshold table.
+
+The accepted G5/G6 API remains version-stable: `describe_attempt_skill()`, `execute_attempt_skill()`, and `replay_attempt_skill()` continue to use the immutable `g5_execution_bindings.attempt-skill` contract and `dirps-execution-result.v1`.
+
+Phase A is additive. `describe_contextual_skill()`, `execute_contextual_skill()`, and `replay_contextual_skill()` consume separate `phase_a_execution_bindings.attempt-skill` semantics and emit `dirps-execution-result.v2`. The contextual runtime selects the skill and modifier rows from the resolved context, derives base/modifier/effective target evidence, accepts either explicit die terms or a recorded deterministic seed, classifies critical results, and emits the expanded v2 trace. Generated dice use the runtime-owned `sha256-rejection-v1` algorithm and preserve algorithm id, seed, individual terms, and total. Cross-version replay fails with an explicit contract-version error rather than generic divergence.
+
+Phase A does not add state mutation. It therefore does not yet make the Roadside Tracks encounter complete: encounter state, information consequences, and progress mutation remain Phase B.
+
+Proto promotion remains conservative. `derived_values` and `expressions` were reassessed but remain `suspected`; the Phase A calculation is a bounded DIRPS-private execution binding, not either proposed generic proto contract.

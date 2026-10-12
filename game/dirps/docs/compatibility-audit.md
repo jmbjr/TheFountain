@@ -18,7 +18,7 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 | GM-only/hidden visibility | Gap | Proto sidecar: `visibility_and_secret_state` | Suspected; exercise first |
 | RPG character organization | Partially expressible | DODGE actor state + resolved character structure consumed by G5 runtime | **Exercised**; not candidate |
 | Skills/defaults/governing attributes | Gap | G5 executes one explicit resolved skill level only; defaults/governing-attribute derivation remain absent | **Exercised** narrowly; not candidate |
-| Rules-resolution evidence | Gap | `dirps-execution-result.v1` traces action/procedure/target/dice/result/source | **Exercised**; not candidate |
+| Rules-resolution evidence | Gap | accepted G5 `dirps-execution-result.v1` plus contextual Phase A `dirps-execution-result.v2` traces | **Exercised**; not candidate |
 | Immutable replay/session history | Gap | Proto sidecar: `replay_session_history` | Suspected; exercise first |
 
 ## G3 semantic-validation result
@@ -48,6 +48,18 @@ Actual G5 evidence moves `dice_resolution`, `procedure_context`, `actor_characte
 The target contains no private rule literals for action/procedure identity, skill values, dice shape, comparator, target-domain bounds, or source/provenance IDs. A fake-runtime regression proves that deliberately unusual runtime totals/targets/outcomes are passed through unchanged rather than recomputed in the adapter. A source perturbation test proves a changed Scenario 01 skill value flows through DODGE → resolver → runtime → target.
 
 This debug CLI does not use the DODGE export-contract/target-manifest model, so no fake manifest is declared. The generic G6 manifest lifecycle remains applicable only to registered `export_contracts`. No proto status changes at G6: the five G5 concepts remain `exercised` / `not-yet-candidate`, and all untouched gaps remain `suspected`.
+
+## Phase A contextual skill-check result
+
+Gameplay roadmap Phase A extends the accepted G5/G6 success-roll path without changing DIRPS maturity. Scenario 01 now owns a provisional `roadside-tracks-tracking` context with a prototype `-2` Tracking modifier. The neutral resolver preserves that context; the runtime derives effective target from base skill plus resolved modifiers, supports supplied or deterministic seeded 3d6 evidence, and classifies critical success/failure from the declared external-rule contract.
+
+The authority split remains explicit: `gurps-lite` owns modifier/effective-skill and critical-boundary rules; `scenario-01-source` owns the provisional tutorial modifier magnitude; `dirps-proto` owns the provisional executable bridge. The result trace records all three layers.
+
+Record identity is versioned rather than redefined in place. The accepted G5 `g5_execution_bindings.attempt-skill` contract remains unchanged and continues to emit `dirps-execution-result.v1`. Phase A uses separate `phase_a_execution_bindings.attempt-skill` and emits `dirps-execution-result.v2`. Legacy v1 replay and contextual v2 replay explicitly reject the other version as a contract mismatch rather than generic divergence.
+
+Phase A reassesses `derived_values` and `expressions` but does **not** promote either. The bounded effective-target calculation does not implement the proposed generic derived-value/dependency/recompute shape or a reusable expression graph. The five previously exercised proto concepts remain `exercised` / `not-yet-candidate`; every other proto concept remains `suspected`.
+
+Phase A does not mutate encounter/scenario state or apply investigation consequences. Those begin in roadmap Phase B.
 
 ## Non-goals for this pass
 

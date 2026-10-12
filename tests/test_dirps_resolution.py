@@ -99,6 +99,26 @@ class DirpsResolutionTests(unittest.TestCase):
             any("scenario must preserve" in error for error in errors)
         )
 
+    def test_contextual_check_perturbation_flows_into_resolved_model(self):
+        canonical = copy.deepcopy(self.canonical)
+        canonical["contextual_checks"]["roadside-tracks-tracking"]["modifiers"][0]["amount"] = -1
+        resolved = resolve_documents(self.dodge, canonical, self.sidecar, self.cfg)
+        self.assertEqual(
+            resolved["scenario"]["contextual_checks"],
+            canonical["contextual_checks"],
+        )
+        self.assertEqual(
+            resolved["scenario"]["contextual_checks"]["roadside-tracks-tracking"]["modifiers"][0]["amount"],
+            -1,
+        )
+
+        corrupted = copy.deepcopy(resolved)
+        corrupted["scenario"]["contextual_checks"]["roadside-tracks-tracking"]["modifiers"][0]["amount"] = -9
+        errors = validate_resolved_semantics(
+            corrupted, self.dodge, canonical, self.sidecar
+        )
+        self.assertTrue(any("scenario must preserve" in error for error in errors))
+
     def test_source_and_provenance_relationships_survive_resolution(self):
         resolved = resolve()
         self.assertEqual(resolved["sources"], self.dodge["sources"])
