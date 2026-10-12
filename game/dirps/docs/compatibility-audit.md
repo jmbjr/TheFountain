@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded compatibility audit for DIRPS Scenario 01. The DODGE document has reached **G3 — Semantic-valid** at the source stage against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`; the game-owned semantic-contract audit and negative evidence are in `g3-semantic-validation.md`. Executable claims and proto-gap promotion still require later resolver/runtime evidence.
+This is the bounded compatibility audit for DIRPS Scenario 01. The candidate has reached **G4 — Resolved** against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`, G3 source semantics in `g3-semantic-validation.md`, and the G4 neutral resolver/resolved-game contract in `g4-resolved-validation.md`. Executable claims and proto-gap promotion still require G5+ runtime evidence.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -26,6 +26,12 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 The `dirps@0.1.0` source profile enforces only DIRPS-specific implications that DODGE core cannot know: registered authority/provenance alignment, canonical PC build consistency, explicit actor-state initialization, bounded action/procedure meaning, tutorial action-choice completeness, concrete combat-opponent presence, target-duration consistency, and the explicit proto-sidecar bridge.
 
 The profile deliberately does **not** claim that prose encounter purposes, social/reaction resolution, environmental consequences, active defense, damage/injury, recovery, scenario completion, dice terms, or replay are executable. Those remain later-gate concerns, and every proto-sidecar entry remains `suspected`.
+
+## G4 resolution result
+
+`tools/resolve_dirps_dodge.py` now resolves the G3-valid source once into `dirps-resolved-game.v1`. The model preserves DODGE sources/rules, resolves the selected scene into concrete instances, derives the canonical PC build and target duration from Scenario 01, preserves canonical encounter order, and carries the entire proto sidecar plus a derived unresolved index.
+
+The `dirps@0.1.0` profile now also runs at `resolved-game` and rejects dropped/changed rules, incomplete scene realization, stale PC build facts, reordered/changed scenario semantics, lost provenance, or missing/altered proto material. No proto entry is promoted: all remain `suspected` because no runtime behavior consumes them yet.
 
 ## Non-goals for this pass
 
