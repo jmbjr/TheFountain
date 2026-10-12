@@ -26,7 +26,7 @@ DODGE 0.2.1 does not define one universal resolved-game JSON schema. Its G4 cont
 | `canonical_source` | Scenario source identity, authority, and implementation boundary copied from `scenario.json` |
 | `sources` | Exact DODGE source declarations |
 | `game_profile`, `archetypes`, `objects`, `sidecars`, `extensions` | Exact neutral DODGE tables/registrations retained so resolved references and bindings stay unambiguous |
-| `scenario` | DODGE scenario bindings plus canonical premise, design goal, target duration, and ordered canonical encounters |
+| `scenario` | DODGE scenario bindings plus its `source_ref`, `authority`, `assumptions`, explicit `scene_ref`, and canonical premise/design goal/target duration/ordered encounters |
 | `scene.instances` | Selected DODGE scene instances resolved with object/archetype metadata, state, and extensions |
 | PC `character` | Canonical prototype provenance, exact ST/DX/IQ/HT primary build, skills, and equipment |
 | `rules` | Exact normalized DODGE rules used by later execution |
@@ -41,7 +41,7 @@ Resolved-stage validation proves that resolution did not drop, weaken, duplicate
 
 | Contract | Authoritative input | Resolved evidence |
 |---|---|---|
-| Scenario identity | DODGE `scenario-01` + canonical dataset | Resolved IDs and `canonical_source.dataset_id` |
+| Scenario identity / traceability | DODGE `scenario-01` + canonical dataset | Resolved IDs, `canonical_source.dataset_id`, and exact DODGE scenario `source_ref`, `authority`, `assumptions`, and `scene_ref` |
 | Source/provenance | DODGE `sources` + canonical `authority` / implementation boundary | Exact equality in resolved `sources` and `canonical_source` |
 | Canonical PC identity/build | `scenario.json.player_character` | PC resolved instance carries canonical provenance, exact ST/DX/IQ/HT primary attributes, skills, equipment; actor state must agree with the primary values |
 | Additional actor state | DODGE scene instance state | Preserved separately in each resolved scene instance; HP/Fatigue/status are not reclassified as canonical primary attributes |
@@ -61,12 +61,13 @@ It proves:
 2. changing canonical DX, with the corresponding G3-valid DODGE actor state change, changes both the resolved canonical PC build and actor state;
 3. removing a required canonical primary attribute fails before a stale value can survive into resolution;
 4. changing canonical encounter order changes resolved encounter order exactly;
-5. source declarations, canonical authority, implementation boundary, and PC provenance survive resolution;
-6. deleting a proto semantic from the resolved model fails resolved-stage validation;
-7. the unresolved index is derived exactly from the sidecar and cannot silently promote a status;
-8. deleting a required DIRPS action causes visible pre-resolution failure;
-9. dropping a DODGE object definition referenced by the resolved scene fails resolved-stage validation;
-10. dropping a normalized rule from an otherwise produced resolved model fails resolved-stage validation.
+5. changing a schema-valid DODGE scenario assumption changes the resolved scenario assumption exactly; dropping it from the resolved model fails validation;
+6. source declarations, canonical authority, implementation boundary, scenario provenance/binding, and PC provenance survive resolution;
+7. deleting a proto semantic from the resolved model fails resolved-stage validation;
+8. the unresolved index is derived exactly from the sidecar and cannot silently promote a status;
+9. deleting a required DIRPS action causes visible pre-resolution failure;
+10. dropping a DODGE object definition referenced by the resolved scene fails resolved-stage validation;
+11. dropping a normalized rule from an otherwise produced resolved model fails resolved-stage validation.
 
 These tests complement the retained G3 source semantic tests. They do not claim runtime execution.
 
