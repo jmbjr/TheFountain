@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G3 — Semantic-valid.** The candidate remains G2 core-valid and now passes the declared `dirps@0.1.0` source-stage semantic profile. The semantic-contract audit and negative evidence live in `../../docs/g3-semantic-validation.md`. A neutral resolver, resolved-game validation, runtime execution, replay, and targets are not yet claimed.
+**G4 — Resolved.** The candidate retains G3 source validation, resolves once through `tools/resolve_dirps_dodge.py` into `dirps-resolved-game.v1`, and validates that exact model through the `dirps@0.1.0` `resolved-game` stage. Evidence lives in `../../docs/g4-resolved-validation.md`. Runtime execution, replay, and targets are not yet claimed.
 
 ## Goal
 
@@ -21,7 +21,7 @@ The intended path includes:
 
 ## Source-of-truth rules
 
-- `scenario.json` owns scenario fiction, encounter order, the prototype character build, and tutorial acceptance criteria. At G3, encounter ordering is canonical-source-only and is not yet normalized into DODGE; a future G4 resolver must preserve or explicitly expose that order rather than invent or reorder it.
+- `scenario.json` owns scenario fiction, encounter order, the prototype character build, and tutorial acceptance criteria. Encounter ordering remains canonical in `scenario.json`; the G4 resolver now exposes it directly as the ordered `scenario.encounters` list in `dirps-resolved-game.v1` rather than inventing or reordering it.
 - `../../dodge/dirps-scenario-01.dodge.v0.2.1.json` owns everything already expressible in DODGE 0.2.1.
 - `../../sidecars/dirps.proto.sidecar.v0.1.json` owns explicit proto semantics that DODGE 0.2.1 cannot yet express.
 - The external GURPS Lite rules reference remains authoritative for GURPS mechanics.
