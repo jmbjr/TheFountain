@@ -164,6 +164,15 @@ def execute_investigation_target(
     view["status"] = "ok"
     view["execution"] = record
     view["runtime_state"] = record["state_after"]
+    # Keep target capability in lockstep with the post-action runtime state.
+    # Availability/state semantics remain runtime-owned: the target asks the
+    # runtime description path again rather than reconstructing them here.
+    view["capability"] = runtime_describe(
+        resolved,
+        view["runtime_state"],
+        encounter_ref=encounter_ref,
+    )
+    view["encounter"] = view["capability"]["encounter"]
     return view
 
 
