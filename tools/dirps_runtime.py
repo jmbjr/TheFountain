@@ -13,10 +13,7 @@ from __future__ import annotations
 import copy
 
 
-RESULT_FORMAT = "dirps-execution-result.v1"
-ACTION_REF = "attempt-skill"
-PROCEDURE_REF = "success-roll"
-DICE_PROTO_REF = "dice_resolution"
+BINDING_ID = "attempt-skill"
 
 
 class ExecutionError(ValueError):
@@ -37,14 +34,40 @@ def _actor(resolved, actor_ref):
     raise ExecutionError(f"actor is not available in resolved scene: {actor_ref}")
 
 
-def _dice_contract(resolved):
+def _execution_binding(resolved):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    bindings = _require_mapping(
+        sidecar.get("g5_execution_bindings"), "resolved g5_execution_bindings"
+    )
+    binding = _require_mapping(
+        bindings.get(BINDING_ID), f"G5 execution binding {BINDING_ID}"
+    )
+    if binding.get("target_source") != {
+        "kind": "resolved-character-skill",
+        "path": "scene.instances[].character.skills",
+    }:
+        raise ExecutionError("attempt-skill target source is unsupported or malformed")
+    if binding.get("effective_target") != {
+        "from": "selected-skill-level",
+        "modifier_policy": "unsupported",
+    }:
+        raise ExecutionError("attempt-skill effective-target binding is unsupported or malformed")
+    if binding.get("result_format") != "dirps-execution-result.v1":
+        raise ExecutionError("attempt-skill result format is unsupported")
+    if binding.get("state_mutation") != "none":
+        raise ExecutionError("bounded G5 attempt-skill must not declare state mutation")
+    return binding
+
+
+def _dice_contract(resolved, binding):
     sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
     specs = _require_mapping(sidecar.get("proto_specs"), "resolved proto_specs")
-    spec = _require_mapping(specs.get(DICE_PROTO_REF), "dice_resolution proto contract")
+    proto_ref = binding.get("dice_resolution_ref")
+    spec = _require_mapping(specs.get(proto_ref), f"{proto_ref} proto contract")
     if spec.get("status") != "exercised":
-        raise ExecutionError("dice_resolution proto contract must be exercised for G5 execution")
+        raise ExecutionError(f"{proto_ref} proto contract must be exercised for G5 execution")
 
-    shape = _require_mapping(spec.get("proposed_shape"), "dice_resolution proposed_shape")
+    shape = _require_mapping(spec.get("proposed_shape"), f"{proto_ref} proposed_shape")
     randomizer = _require_mapping(shape.get("randomizer"), "dice_resolution randomizer")
     comparator = _require_mapping(shape.get("comparator"), "dice_resolution comparator")
 
@@ -81,25 +104,38 @@ def _execution_path(resolved):
     if resolved.get("format") != "dirps-resolved-game.v1":
         raise ExecutionError("DIRPS G5 runtime requires dirps-resolved-game.v1")
 
+    binding = _execution_binding(resolved)
+    action_ref = binding.get("action_ref")
+    procedure_ref = binding.get("procedure_ref")
+
     scenario = _require_mapping(resolved.get("scenario"), "resolved scenario")
-    if ACTION_REF not in (scenario.get("action_refs") or []):
-        raise ExecutionError(f"action is not available in resolved scenario: {ACTION_REF}")
+    if action_ref not in (scenario.get("action_refs") or []):
+        raise ExecutionError(f"action is not available in resolved scenario: {action_ref}")
 
     rules = _require_mapping(resolved.get("rules"), "resolved rules")
     actions = _require_mapping(rules.get("actions"), "resolved actions")
     procedures = _require_mapping(rules.get("procedures"), "resolved procedures")
-    action = _require_mapping(actions.get(ACTION_REF), f"resolved action {ACTION_REF}")
-    if action.get("procedure_ref") != PROCEDURE_REF:
+    action = _require_mapping(actions.get(action_ref), f"resolved action {action_ref}")
+    if action.get("procedure_ref") != procedure_ref:
         raise ExecutionError(
-            f"{ACTION_REF} must resolve procedure {PROCEDURE_REF}, got {action.get('procedure_ref')!r}"
+            f"{action_ref} must resolve procedure {procedure_ref}, got {action.get('procedure_ref')!r}"
         )
     procedure = _require_mapping(
-        procedures.get(PROCEDURE_REF), f"resolved procedure {PROCEDURE_REF}"
+        procedures.get(procedure_ref), f"resolved procedure {procedure_ref}"
     )
-    return scenario, action, procedure
+    return binding, scenario, action, procedure
 
 
-def _effective_target(actor, skill_ref):
+def _effective_target(actor, skill_ref, binding):
+    target_source = binding.get("target_source") or {}
+    effective = binding.get("effective_target") or {}
+    if target_source.get("kind") != "resolved-character-skill":
+        raise ExecutionError("runtime does not support this target source kind")
+    if effective.get("from") != "selected-skill-level":
+        raise ExecutionError("runtime does not support this effective-target source")
+    if effective.get("modifier_policy") != "unsupported":
+        raise ExecutionError("modifier/default execution is outside the bounded G5 slice")
+
     character = _require_mapping(
         actor.get("character"), f"actor {actor.get('id')} resolved character"
     )
@@ -118,10 +154,10 @@ def _effective_target(actor, skill_ref):
     return target
 
 
-def _require_actor_available(resolved, actor):
+def _require_actor_available(resolved, actor, action_ref):
     state = _require_mapping(actor.get("state"), f"actor {actor.get('id')} state")
     rules = _require_mapping(resolved.get("rules"), "resolved rules")
-    action = rules["actions"][ACTION_REF]
+    action = rules["actions"][action_ref]
     condition_refs = action.get("condition_refs") or []
     if condition_refs != ["actor-conscious"]:
         raise ExecutionError(
@@ -139,7 +175,7 @@ def _require_actor_available(resolved, actor):
     ):
         raise ExecutionError("actor-conscious semantics are unsupported or malformed")
     if state.get("unconscious") is not False:
-        raise ExecutionError(f"action {ACTION_REF} is unavailable: actor is unconscious")
+        raise ExecutionError(f"action {action_ref} is unavailable: actor is unconscious")
 
 
 def _validate_terms(terms, contract):
@@ -163,11 +199,13 @@ def _validate_terms(terms, contract):
 
 def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
     """Execute the bounded G5 attempt-skill path from one resolved model."""
-    _, action, procedure = _execution_path(resolved)
+    binding, _, action, procedure = _execution_path(resolved)
+    action_ref = binding["action_ref"]
+    procedure_ref = binding["procedure_ref"]
     actor = _actor(resolved, actor_ref)
-    _require_actor_available(resolved, actor)
-    effective_target = _effective_target(actor, skill_ref)
-    dice = _dice_contract(resolved)
+    _require_actor_available(resolved, actor, action_ref)
+    effective_target = _effective_target(actor, skill_ref, binding)
+    dice = _dice_contract(resolved, binding)
     terms = _validate_terms(dice_terms, dice)
 
     total = sum(terms)
@@ -187,15 +225,15 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
     # No modifier/default/derived-stat machinery is claimed here. The effective
     # target is the exact selected skill level already carried by G4.
     return {
-        "format": RESULT_FORMAT,
+        "format": binding["result_format"],
         "mechanic": "ordinary-success-roll",
         "input": {
             "actor_ref": actor_ref,
             "skill_ref": skill_ref,
         },
         "semantic_path": {
-            "action_ref": ACTION_REF,
-            "procedure_ref": PROCEDURE_REF,
+            "action_ref": action_ref,
+            "procedure_ref": procedure_ref,
         },
         "target": {
             "kind": "resolved-character-skill",
@@ -205,7 +243,7 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
         },
         "random_evidence": {
             "kind": "supplied-dice-terms",
-            "proto_ref": DICE_PROTO_REF,
+            "proto_ref": binding["dice_resolution_ref"],
             "randomizer_id": dice["id"],
             "dice_kind": dice["kind"],
             "sides": dice["sides"],
@@ -218,12 +256,12 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
         },
         "trace": {
             "action": {
-                "ref": ACTION_REF,
+                "ref": action_ref,
                 "source_ref": action_source_ref,
                 "authority": action.get("authority"),
             },
             "procedure": {
-                "ref": PROCEDURE_REF,
+                "ref": procedure_ref,
                 "source_ref": procedure_source_ref,
                 "authority": procedure.get("authority"),
             },
@@ -238,7 +276,8 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
 
 def replay_attempt_skill(resolved, record):
     """Re-evaluate one execution record and fail on any divergence."""
-    if not isinstance(record, dict) or record.get("format") != RESULT_FORMAT:
+    binding = _execution_binding(resolved)
+    if not isinstance(record, dict) or record.get("format") != binding["result_format"]:
         raise ExecutionError("record is not a DIRPS G5 execution result")
     inputs = _require_mapping(record.get("input"), "record input")
     evidence = _require_mapping(record.get("random_evidence"), "record random_evidence")
