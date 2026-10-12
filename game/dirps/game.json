@@ -14,7 +14,7 @@
         "sidecars/dirps.proto.sidecar.v0.1.json"
       ],
       "conformance": {
-        "maturity": "G2"
+        "maturity": "G3"
       }
     }
   }
