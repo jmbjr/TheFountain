@@ -390,26 +390,48 @@ def _random_terms(*, dice_terms, random_seed, contract, binding):
     return terms, {"kind": "supplied-dice-terms"}
 
 
+def _rule_matches(rule, total, effective_target):
+    if "roll_max" in rule and not total <= rule["roll_max"]:
+        return False
+    if "roll" in rule and total != rule["roll"]:
+        return False
+    if (
+        "minimum_effective_target" in rule
+        and effective_target < rule["minimum_effective_target"]
+    ):
+        return False
+    if (
+        "maximum_effective_target" in rule
+        and effective_target > rule["maximum_effective_target"]
+    ):
+        return False
+    if (
+        "roll_minus_effective_target_minimum" in rule
+        and total - effective_target < rule["roll_minus_effective_target_minimum"]
+    ):
+        return False
+    return True
+
+
 def _critical_classification(total, effective_target, binding):
     contract = _require_mapping(
         binding.get("critical_resolution"), "critical-resolution binding"
     )
 
-    critical_success = (
-        total <= 4
-        or (total == 5 and effective_target >= 15)
-        or (total == 6 and effective_target >= 16)
-    )
-    if critical_success:
-        return "critical-success", True
+    critical_success = contract.get("critical_success")
+    critical_failure = contract.get("critical_failure")
+    ordinary_failure = contract.get("ordinary_failure")
+    if not isinstance(critical_success, list) or not isinstance(critical_failure, list):
+        raise ExecutionError("critical-resolution rules are malformed")
+    if not isinstance(ordinary_failure, list):
+        raise ExecutionError("ordinary-failure critical boundary is malformed")
 
-    critical_failure = (
-        total == 18
-        or (total == 17 and effective_target <= 15)
-        or (total - effective_target >= 10)
-    )
-    if critical_failure:
+    if any(_rule_matches(rule, total, effective_target) for rule in critical_success):
+        return "critical-success", True
+    if any(_rule_matches(rule, total, effective_target) for rule in critical_failure):
         return "critical-failure", False
+    if any(_rule_matches(rule, total, effective_target) for rule in ordinary_failure):
+        return "failure", False
 
     success = total <= effective_target
     return ("success" if success else "failure"), success
