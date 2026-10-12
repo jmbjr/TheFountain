@@ -105,6 +105,14 @@ def profile_modules(dodge: dict):
             raise ConformanceError(
                 f"{profile['profile_id']}: {source_ref} must have kind semantic_validator"
             )
+        required_version=profile["version"]
+        source_version=source.get("version")
+        if source_version!=required_version:
+            raise ConformanceError(
+                f"{profile['profile_id']}@{required_version}: semantic validator source "
+                f"{source_ref} declares version {source_version!r}; required profile/source "
+                "versions must match"
+            )
         path=repo_uri_path(source["uri"],profile["profile_id"])
         modules.append((profile,load_module(path,profile["profile_id"])))
     return modules

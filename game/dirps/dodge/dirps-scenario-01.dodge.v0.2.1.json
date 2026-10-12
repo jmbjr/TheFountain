@@ -3,7 +3,7 @@
   "document_id": "dirps.scenario-01-v0.2.1",
   "game_id": "dirps",
   "title": "DIRPS — Scenario 01",
-  "description": "G2 core-validation candidate for the first DIRPS RPG tutorial scenario. The document is schema-valid and is audited check-by-check against every applicable DODGE 0.2.1 section 15.3 core requirement; game semantic validation, resolution, execution, replay, and targets remain later gates.",
+  "description": "G3 semantic-validation candidate for the first DIRPS RPG tutorial scenario. The document remains schema/core-valid and now declares a game-owned source-stage semantic profile for bounded DIRPS cross-source/domain contracts; resolution, execution, replay, and targets remain later gates.",
   "sources": {
     "gurps-lite": {
       "kind": "rules",
@@ -25,6 +25,13 @@
       "uri": "game/dirps/scenarios/scenario-01/scenario.json",
       "version": "prototype-v0.1",
       "authority": "provisional"
+    },
+    "dirps-semantic-validator": {
+      "kind": "semantic_validator",
+      "uri": "tools/dirps_semantic_validation.py",
+      "version": "0.1.0",
+      "authority": "authoritative",
+      "description": "DIRPS-owned source-stage semantic validation for bounded Scenario 01 cross-source and domain contracts."
     }
   },
   "sidecars": [
@@ -424,21 +431,39 @@
       "source_ref": "scenario-01-source",
       "authority": "provisional",
       "assumptions": [
-        "The prose objective preserves intended tutorial completion semantics, but no executable scenario end condition is declared at G2; deterministic completion semantics remain a later executable-design task."
+        "The prose objective preserves intended tutorial completion semantics, but no executable scenario end condition is declared at G3; deterministic completion semantics remain a later executable-design task."
       ]
     }
   },
   "metadata": {
-    "status": "core-valid-g2",
+    "status": "semantic-valid-g3",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "G2 — Core-valid only; G3 game semantic validation and later gates are not claimed."
+    "conformance_claim": "G3 — Semantic-valid source stage only; G4 resolution/resolved-game validation and later gates are not claimed."
   },
   "extensions": {
     "org.dirps.proto": {
       "sidecar_ref": "dirps-proto",
       "rule": "DODGE 0.2.1 remains the base contract. Proto semantics must not be hidden in target code."
     }
+  },
+  "validation": {
+    "core_profile": {
+      "profile_id": "dodge-core",
+      "version": "0.2.1"
+    },
+    "required_profiles": [
+      {
+        "profile_id": "dirps",
+        "version": "0.1.0",
+        "kind": "game",
+        "stages": [
+          "source"
+        ],
+        "validator_source_ref": "dirps-semantic-validator",
+        "description": "Checks DIRPS Scenario 01 source authority, actor-build consistency, normalized rule meaning, and bounded scenario completeness."
+      }
+    ]
   }
 }
