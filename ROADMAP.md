@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G4 — Resolved**.
+The `game/dirps/` namespace has advanced Scenario 01, *The Missing Courier*, to **G5 — Executable** for one bounded success-roll mechanic.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,17 +175,17 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2 evidence remains in `game/dirps/docs/g2-core-validation.md`; G3 source contracts remain in `game/dirps/docs/g3-semantic-validation.md`. G4 now resolves once through `tools/resolve_dirps_dodge.py` into `dirps-resolved-game.v1`, with resolved-stage evidence in `game/dirps/docs/g4-resolved-validation.md`. The next gate is G5 — executable behavior from that resolved model; do not add targets/UI while establishing the first runtime mechanic.
+G2/G3/G4 evidence remains in the existing validation documents. G5 now executes one `attempt-skill → success-roll` path from `dirps-resolved-game.v1`, with evidence in `game/dirps/docs/g5-executable-validation.md`. Additional Scenario 01 mechanics remain separate work; G6 targets/UI have not started.
 
 Current DIRPS maturity:
 
-- **G4 — Resolved**;
+- **G5 — Executable (bounded)**;
 - the DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI;
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
-- proto concepts remain **suspected** gaps; resolver preservation alone does not count as runtime exercise or promotion;
-- the remaining convergence work is tracked in issue **#163** and should proceed through G5 → G6 using the onboarding/conformance process.
+- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` are now **exercised** by the bounded runtime, but remain `not-yet-candidate`; derived targets/modifiers, session history, and untouched gaps remain **suspected**;
+- the remaining convergence work is tracked in issue **#163**; continue with additional bounded executable mechanics as needed before any G6 target work.
 
 ## DODGE 0.2.1 / reference-release direction
 
