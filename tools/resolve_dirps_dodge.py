@@ -152,6 +152,11 @@ def resolve_documents(dodge, canonical, sidecar, config=None):
             ),
         },
         "sources": copy.deepcopy(dodge.get("sources", {})),
+        "game_profile": copy.deepcopy(dodge.get("game_profile", {})),
+        "archetypes": copy.deepcopy(dodge.get("archetypes", {})),
+        "objects": copy.deepcopy(dodge.get("objects", {})),
+        "sidecars": copy.deepcopy(dodge.get("sidecars", [])),
+        "extensions": copy.deepcopy(dodge.get("extensions", {})),
         "scenario": {
             "name": scenario.get("name"),
             "description": scenario.get("description"),
