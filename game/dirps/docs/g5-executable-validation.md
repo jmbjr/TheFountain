@@ -31,16 +31,28 @@ The runtime does not execute social/reaction resolution, environmental consequen
 
 The runtime consumes only the accepted G4 resolved model. It does not reread `scenario.json`, the authored DODGE file, or the sidecar from disk.
 
-The executable authority chain is:
+The executable authority chain intentionally contains three different authority layers:
 
 ```text
-canonical Scenario 01 PC skill value
-→ G3-validated DODGE character extension
+GURPS Lite success-roll rule
+  source_ref: gurps-lite
+  authority: authoritative
+
+DIRPS G5 skill→target execution binding
+  source_ref: dirps-proto
+  authority: provisional
+
+Scenario 01 PC skill value
+  source_ref: scenario-01-source
+  authority: provisional
+  character provenance: prototype_assumption
+
 → G4 resolved PC character.skills
-→ DIRPS proto-sidecar G5 execution binding
 → DIRPS runtime
 → structured result evidence
 ```
+
+The result trace preserves all three layers so a downstream consumer cannot mistake the whole execution path for externally authoritative rules data.
 
 A G5-specific sidecar declaration, `g5_execution_bindings.attempt-skill`, owns the otherwise-missing relationship that DODGE 0.2.1 cannot express first-class:
 
@@ -50,9 +62,14 @@ A G5-specific sidecar declaration, `g5_execution_bindings.attempt-skill`, owns t
 - runtime target input: `skill_ref`;
 - target source: the selected resolved character skill level;
 - effective-target policy: the selected skill level directly;
+- supported effective-target domain: 4 through 16 inclusive;
+- out-of-domain policy: fail visibly;
 - modifier policy: unsupported in this bounded slice;
+- binding source: `dirps-proto` / provisional;
+- target provenance: `scenario-01-source` / provisional / `prototype_assumption`;
 - dice contract: `dice_resolution`;
 - result format: `dirps-execution-result.v1`;
+- result scope: binary success/failure plus margin only;
 - state mutation: none.
 
 This prevents `tools/dirps_runtime.py` from silently inventing the skill → effective-target binding.
@@ -68,8 +85,9 @@ This prevents `tools/dirps_runtime.py` from silently inventing the skill → eff
 5. the actor present in the resolved scene;
 6. the accepted `actor-conscious` condition to allow the action;
 7. an explicit resolved character skill value for `skill_ref`;
-8. the exercised `dice_resolution` contract;
-9. supplied ordered die terms satisfying that contract.
+8. that effective target lies within the declared G5 supported domain 4..16;
+9. the exercised `dice_resolution` contract;
+10. supplied ordered die terms satisfying that contract.
 
 No uncontrolled RNG is used.
 
@@ -89,12 +107,15 @@ The executable `dice_resolution` proto contract remains:
 For the bounded success roll:
 
 ```text
+accepted effective-target domain = 4..16 inclusive
 total = sum(three supplied d6 terms)
 success = total <= effective_target
 margin = effective_target - total
 ```
 
-The runtime derives the count/sides/comparator contract from the resolved sidecar. The DIRPS semantic profile guards the exact G5 executable proto contract and refuses drift.
+The 4..16 domain is part of the executable sidecar binding, not a hidden Python assumption. Outside that range the runtime raises an error rather than approximating GURPS edge semantics. This keeps G5 limited to a binary success/failure classifier: critical-result classification/consequences, modifiers, defaults, and derived targets remain unimplemented.
+
+Within 4..16, the simplified comparison is sufficient for the claimed binary result: low automatic-success rolls remain `<= target`, while 17/18 remain above the maximum accepted target. The runtime derives the count/sides/comparator/domain contract from the resolved sidecar. The DIRPS semantic profile guards the exact G5 executable proto contract and refuses drift.
 
 ## Structured result / trace
 
@@ -108,9 +129,14 @@ The runtime derives the count/sides/comparator contract from the resolved sideca
 - die total;
 - success/failure;
 - margin;
-- action source ref + authority;
-- procedure source ref + authority;
-- referenced source identity/provenance;
+- action source ref + authoritative rule authority;
+- procedure source ref + authoritative rule authority;
+- execution-binding source ref `dirps-proto` + provisional authority;
+- effective-target source ref `scenario-01-source` + provisional authority;
+- effective-target character provenance `prototype_assumption`;
+- canonical target path for the selected skill;
+- the supported 4..16 target domain and binary-only result scope;
+- referenced source identity/provenance for all three source layers;
 - empty `state_delta` for this non-mutating mechanic.
 
 The result does not copy external rules prose. Stable semantic/source identities are sufficient traceability.
@@ -135,17 +161,22 @@ This is **single-record re-evaluation**, not an immutable session/replay-history
 2. known failure: Tracking 12 + dice `[5,5,5]` → total 15, failure, margin -3;
 3. identical inputs/evidence produce byte-equivalent Python structured results;
 4. changed die evidence changes total/outcome appropriately;
-5. authoritative skill-value perturbation is made through the proper source + DODGE extension → G4 resolver path and changes runtime outcome;
-6. the runtime does not mutate the resolved model;
-7. wrong die count fails;
-8. out-of-range die terms fail;
-9. unavailable action fails;
-10. drift in the declared G5 execution binding fails;
-11. wrong/missing action→procedure binding fails;
-12. missing selected skill target fails;
-13. unconscious actor cannot execute `attempt-skill`;
-14. malformed executable dice semantics fail visibly;
-15. record replay succeeds when consistent and detects tampered result evidence.
+5. prototype-assumption skill-value perturbation is made through the proper scenario source + DODGE extension → G4 resolver path and changes runtime outcome;
+6. the result explicitly distinguishes authoritative rule trace, provisional proto-binding trace, and provisional/prototype target provenance;
+7. the lower supported target boundary 4 executes correctly;
+8. the upper supported target boundary 16 executes correctly and a roll of 17 fails;
+9. effective target 3 fails visibly before classification;
+10. effective target 17 fails visibly before classification;
+11. the runtime does not mutate the resolved model;
+12. wrong die count fails;
+13. out-of-range die terms fail;
+14. unavailable action fails;
+15. drift in the declared G5 execution binding fails;
+16. wrong/missing action→procedure binding fails;
+17. missing selected skill target fails;
+18. unconscious actor cannot execute `attempt-skill`;
+19. malformed executable dice semantics fail visibly;
+20. record replay succeeds when consistent and detects tampered result evidence, including tampered authority/provenance fields.
 
 The positive test emits a named CI evidence line:
 
