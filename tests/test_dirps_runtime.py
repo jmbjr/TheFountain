@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+import copy
+import json
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from dirps_runtime import ExecutionError, execute_attempt_skill, replay_attempt_skill
+from game_registry import scenario_config
+from resolve_dirps_dodge import resolve, resolve_documents
+
+
+class DirpsRuntimeTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.cfg = scenario_config("dirps", "scenario-01")
+        cls.dodge = json.loads(cls.cfg["dodge"].read_text())
+        cls.canonical = json.loads(cls.cfg["source"].read_text())
+        cls.sidecar = json.loads(cls.cfg["sidecars"][0].read_text())
+        cls.resolved = resolve()
+
+    def execute(self, resolved=None, terms=None, skill_ref="tracking"):
+        return execute_attempt_skill(
+            resolved if resolved is not None else self.resolved,
+            actor_ref="pc",
+            skill_ref=skill_ref,
+            dice_terms=[2, 3, 4] if terms is None else terms,
+        )
+
+    def test_known_success_preserves_structured_evidence(self):
+        result = self.execute()
+        self.assertEqual(result["semantic_path"], {
+            "action_ref": "attempt-skill",
+            "procedure_ref": "success-roll",
+        })
+        self.assertEqual(result["target"]["skill_ref"], "tracking")
+        self.assertEqual(result["target"]["effective_target"], 12)
+        self.assertEqual(result["random_evidence"]["terms"], [2, 3, 4])
+        self.assertEqual(result["random_evidence"]["total"], 9)
+        self.assertEqual(result["outcome"], {"success": True, "margin": 3})
+        self.assertEqual(result["trace"]["action"]["source_ref"], "gurps-lite")
+        self.assertEqual(result["trace"]["procedure"]["source_ref"], "gurps-lite")
+        self.assertEqual(
+            result["trace"]["sources"]["gurps-lite"]["authority"],
+            "authoritative",
+        )
+        self.assertEqual(result["state_delta"], [])
+        print("PASS dirps/scenario-01: executable attempt-skill -> success-roll")
+
+    def test_known_failure(self):
+        result = self.execute(terms=[5, 5, 5])
+        self.assertEqual(result["random_evidence"]["total"], 15)
+        self.assertEqual(result["outcome"], {"success": False, "margin": -3})
+
+    def test_same_inputs_and_evidence_are_deterministic(self):
+        first = self.execute(terms=[1, 4, 6])
+        second = self.execute(terms=[1, 4, 6])
+        self.assertEqual(first, second)
+
+    def test_die_evidence_perturbation_changes_result(self):
+        success = self.execute(terms=[4, 4, 4])
+        failure = self.execute(terms=[4, 4, 5])
+        self.assertEqual(success["random_evidence"]["total"], 12)
+        self.assertTrue(success["outcome"]["success"])
+        self.assertEqual(success["outcome"]["margin"], 0)
+        self.assertEqual(failure["random_evidence"]["total"], 13)
+        self.assertFalse(failure["outcome"]["success"])
+        self.assertEqual(failure["outcome"]["margin"], -1)
+
+    def test_authoritative_skill_perturbation_flows_through_resolver_to_runtime(self):
+        baseline = self.execute(terms=[4, 4, 3])
+        self.assertEqual(baseline["target"]["effective_target"], 12)
+        self.assertTrue(baseline["outcome"]["success"])
+        self.assertEqual(baseline["outcome"]["margin"], 1)
+
+        dodge = copy.deepcopy(self.dodge)
+        canonical = copy.deepcopy(self.canonical)
+        canonical["player_character"]["skills"]["tracking"] = 10
+        pc = next(
+            row
+            for row in dodge["scenes"]["scenario-01-setup"]["instances"]
+            if row["id"] == "pc"
+        )
+        pc["extensions"]["org.dirps.character"]["skills"]["tracking"] = 10
+
+        changed_resolved = resolve_documents(dodge, canonical, self.sidecar, self.cfg)
+        changed = self.execute(resolved=changed_resolved, terms=[4, 4, 3])
+        self.assertEqual(changed["target"]["effective_target"], 10)
+        self.assertFalse(changed["outcome"]["success"])
+        self.assertEqual(changed["outcome"]["margin"], -1)
+
+    def test_runtime_does_not_mutate_resolved_model(self):
+        resolved = copy.deepcopy(self.resolved)
+        before = copy.deepcopy(resolved)
+        self.execute(resolved=resolved)
+        self.assertEqual(resolved, before)
+
+    def test_wrong_number_of_dice_fails(self):
+        with self.assertRaisesRegex(ExecutionError, "exactly 3 terms"):
+            self.execute(terms=[3, 4])
+
+    def test_out_of_range_die_fails(self):
+        with self.assertRaisesRegex(ExecutionError, "outside 1..6"):
+            self.execute(terms=[2, 3, 7])
+
+    def test_unavailable_action_fails(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["scenario"]["action_refs"].remove("attempt-skill")
+        with self.assertRaisesRegex(ExecutionError, "action is not available"):
+            self.execute(resolved=resolved)
+
+    def test_wrong_procedure_binding_fails(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["rules"]["actions"]["attempt-skill"]["procedure_ref"] = "recovery-check"
+        with self.assertRaisesRegex(ExecutionError, "must resolve procedure success-roll"):
+            self.execute(resolved=resolved)
+
+    def test_missing_required_skill_target_fails(self):
+        resolved = copy.deepcopy(self.resolved)
+        pc = next(row for row in resolved["scene"]["instances"] if row["id"] == "pc")
+        del pc["character"]["skills"]["tracking"]
+        with self.assertRaisesRegex(ExecutionError, "required resolved skill target is missing"):
+            self.execute(resolved=resolved)
+
+    def test_unconscious_actor_cannot_attempt_skill(self):
+        resolved = copy.deepcopy(self.resolved)
+        pc = next(row for row in resolved["scene"]["instances"] if row["id"] == "pc")
+        pc["state"]["unconscious"] = True
+        with self.assertRaisesRegex(ExecutionError, "actor is unconscious"):
+            self.execute(resolved=resolved)
+
+    def test_malformed_executable_dice_contract_fails(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["proto_sidecar"]["proto_specs"]["dice_resolution"]["proposed_shape"]["randomizer"]["sides"] = 8
+        with self.assertRaisesRegex(ExecutionError, "outside 1..8|dice_resolution"):
+            # Terms remain legal for d8, so contract validation proceeds; the
+            # runtime result would expose d8 if it accepted unvalidated drift.
+            # Force an unsupported combine to prove executable authority fails.
+            resolved["proto_sidecar"]["proto_specs"]["dice_resolution"]["proposed_shape"]["randomizer"]["combine"] = "max"
+            self.execute(resolved=resolved)
+
+    def test_record_replay_matches_and_detects_divergence(self):
+        record = self.execute(terms=[2, 5, 5])
+        self.assertEqual(replay_attempt_skill(self.resolved, record), record)
+
+        tampered = copy.deepcopy(record)
+        tampered["outcome"]["margin"] = 99
+        with self.assertRaisesRegex(ExecutionError, "divergence"):
+            replay_attempt_skill(self.resolved, tampered)
+
+
+if __name__ == "__main__":
+    unittest.main()
