@@ -25,6 +25,7 @@ DODGE 0.2.1 does not define one universal resolved-game JSON schema. Its G4 cont
 | `format`, DODGE/document/game/scenario IDs | Resolver identity derived from the selected DODGE candidate |
 | `canonical_source` | Scenario source identity, authority, and implementation boundary copied from `scenario.json` |
 | `sources` | Exact DODGE source declarations |
+| `game_profile`, `archetypes`, `objects`, `sidecars`, `extensions` | Exact neutral DODGE tables/registrations retained so resolved references and bindings stay unambiguous |
 | `scenario` | DODGE scenario bindings plus canonical premise, design goal, target duration, and ordered canonical encounters |
 | `scene.instances` | Selected DODGE scene instances resolved with object/archetype metadata, state, and extensions |
 | PC `character` | Canonical prototype provenance, exact ST/DX/IQ/HT primary build, skills, and equipment |
@@ -64,7 +65,8 @@ It proves:
 6. deleting a proto semantic from the resolved model fails resolved-stage validation;
 7. the unresolved index is derived exactly from the sidecar and cannot silently promote a status;
 8. deleting a required DIRPS action causes visible pre-resolution failure;
-9. dropping a normalized rule from an otherwise produced resolved model fails resolved-stage validation.
+9. dropping a DODGE object definition referenced by the resolved scene fails resolved-stage validation;
+10. dropping a normalized rule from an otherwise produced resolved model fails resolved-stage validation.
 
 These tests complement the retained G3 source semantic tests. They do not claim runtime execution.
 
