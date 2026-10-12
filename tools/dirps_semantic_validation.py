@@ -315,6 +315,63 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             if not procedure:
                 errors.append(f"{label} execution binding procedure_ref does not resolve")
 
+    phase_b_bindings = sidecar.get("phase_b_encounter_bindings")
+    expected_phase_b_binding = {
+        "encounter_ref": "roadside-tracks",
+        "action_id": "investigate-tracks",
+        "actor_ref": "pc",
+        "action_ref": "attempt-skill",
+        "context_ref": "roadside-tracks-tracking",
+        "runtime_state_ref": "scenario-01-initial",
+        "required_state": [
+            {"ref": "roadside-tracks-status", "value": "ready"},
+        ],
+        "consequences": {
+            "success": {
+                "effect_refs": [
+                    "roadside-tracks-set-status-resolved",
+                    "roadside-tracks-set-outcome-success",
+                    "roadside-tracks-set-information-clear-trail",
+                ],
+            },
+            "failure": {
+                "effect_refs": [
+                    "roadside-tracks-set-status-resolved",
+                    "roadside-tracks-set-outcome-failure",
+                    "roadside-tracks-set-information-trail-inconclusive",
+                ],
+            },
+        },
+        "skill_result_format": "dirps-execution-result.v2",
+        "result_format": "dirps-encounter-result.v1",
+        "binding_source_ref": "dirps-proto",
+        "consequence_source_ref": "scenario-01-source",
+    }
+    if not isinstance(phase_b_bindings, dict):
+        errors.append("Phase B DIRPS sidecar must declare phase_b_encounter_bindings")
+    else:
+        phase_b = phase_b_bindings.get("roadside-tracks")
+        if phase_b != expected_phase_b_binding:
+            errors.append(
+                "Phase B roadside-tracks encounter binding must match the declared state/consequence bridge"
+            )
+        elif dodge:
+            effects = dodge.get("rules", {}).get("effects", {}) or {}
+            for branch in ("success", "failure"):
+                for effect_ref in phase_b["consequences"][branch]["effect_refs"]:
+                    if effect_ref not in effects:
+                        errors.append(
+                            f"Phase B consequence effect_ref does not resolve: {effect_ref}"
+                        )
+            if phase_b.get("runtime_state_ref") not in (dodge.get("runtime_states") or {}):
+                errors.append(
+                    "Phase B runtime_state_ref must resolve in DODGE runtime_states"
+                )
+
+    if (specs.get("replay_session_history") or {}).get("status") != "suspected":
+        errors.append(
+            "Phase B one-encounter replay must not promote replay_session_history"
+        )
     if (specs.get("derived_values") or {}).get("status") != "suspected":
         errors.append(
             "Phase A must keep derived_values suspected; the generic proposed shape is not executed"
@@ -322,10 +379,6 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
     if (specs.get("expressions") or {}).get("status") != "suspected":
         errors.append(
             "Phase A must not promote expressions; no reusable expression graph executes"
-        )
-    if (specs.get("replay_session_history") or {}).get("status") != "suspected":
-        errors.append(
-            "G5 bounded record re-evaluation must not promote replay_session_history"
         )
 
 
@@ -691,6 +744,211 @@ def _validate_phase_a_contextual_checks(dodge, canonical, errors):
             )
 
 
+def _validate_phase_b_investigation_contract(dodge, canonical, errors):
+    encounters = {
+        row.get("id"): row
+        for row in canonical.get("encounters", [])
+        if isinstance(row, dict) and row.get("id")
+    }
+    encounter = encounters.get("roadside-tracks")
+    if not isinstance(encounter, dict):
+        errors.append("Phase B requires canonical roadside-tracks encounter")
+        return
+
+    state_contract = encounter.get("state_contract")
+    if not isinstance(state_contract, dict):
+        errors.append("Phase B roadside-tracks requires state_contract")
+        return
+    refs = state_contract.get("refs")
+    initial = state_contract.get("initial")
+    if not isinstance(refs, dict) or set(refs) != {"status", "outcome", "information"}:
+        errors.append(
+            "Phase B roadside-tracks state_contract.refs must define status/outcome/information"
+        )
+        return
+    if not isinstance(initial, dict) or set(initial) != set(refs):
+        errors.append(
+            "Phase B roadside-tracks state_contract.initial must define status/outcome/information"
+        )
+        return
+
+    actions = encounter.get("actions")
+    if not isinstance(actions, list) or len(actions) != 1:
+        errors.append("Phase B roadside-tracks must expose exactly one investigation action")
+        return
+    action = actions[0]
+    if not isinstance(action, dict):
+        errors.append("Phase B roadside-tracks action must be an object")
+        return
+    if action.get("id") != "investigate-tracks":
+        errors.append("Phase B roadside-tracks action id must be investigate-tracks")
+    if action.get("actor_ref") != "pc":
+        errors.append("Phase B roadside-tracks investigation actor_ref must be pc")
+    if action.get("action_ref") != "attempt-skill":
+        errors.append("Phase B roadside-tracks investigation must bind attempt-skill")
+    if action.get("context_ref") != "roadside-tracks-tracking":
+        errors.append(
+            "Phase B roadside-tracks investigation must bind roadside-tracks-tracking"
+        )
+    if action.get("source_ref") != SCENARIO_SOURCE:
+        errors.append(
+            f"Phase B roadside-tracks action source_ref must be {SCENARIO_SOURCE}"
+        )
+    if action.get("authority") != "provisional":
+        errors.append("Phase B roadside-tracks action authority must be provisional")
+    if action.get("provenance") != PC_PROVENANCE:
+        errors.append(
+            f"Phase B roadside-tracks action provenance must be {PC_PROVENANCE}"
+        )
+
+    contextual = (canonical.get("contextual_checks") or {}).get(
+        action.get("context_ref")
+    )
+    if not isinstance(contextual, dict):
+        errors.append(
+            "Phase B roadside-tracks action context_ref must resolve in canonical contextual_checks"
+        )
+    else:
+        if contextual.get("encounter_ref") != encounter.get("id"):
+            errors.append(
+                "Phase B roadside-tracks contextual check must point back to the encounter"
+            )
+        if contextual.get("action_ref") != action.get("action_ref"):
+            errors.append(
+                "Phase B roadside-tracks action/context action_ref must agree"
+            )
+
+    consequences = action.get("consequences")
+    if not isinstance(consequences, dict) or set(consequences) != {"success", "failure"}:
+        errors.append(
+            "Phase B roadside-tracks action must define success and failure consequences"
+        )
+        return
+    for branch in ("success", "failure"):
+        row = consequences.get(branch)
+        if not isinstance(row, dict):
+            errors.append(f"Phase B roadside-tracks {branch} consequence must be an object")
+            continue
+        if set(row) != {"status", "outcome", "information", "information_text"}:
+            errors.append(
+                f"Phase B roadside-tracks {branch} consequence must define status/outcome/information/information_text"
+            )
+        if not isinstance(row.get("information_text"), str) or not row.get(
+            "information_text"
+        ):
+            errors.append(
+                f"Phase B roadside-tracks {branch} information_text is required"
+            )
+
+    success = consequences.get("success") or {}
+    failure = consequences.get("failure") or {}
+    if success.get("status") != failure.get("status"):
+        errors.append(
+            "Phase B uses one shared encounter-resolution status; success/failure status must agree"
+        )
+
+    values = dodge.get("rules", {}).get("values", {}) or {}
+    ordered_by_role = {
+        "status": [initial.get("status"), success.get("status"), failure.get("status")],
+        "outcome": [initial.get("outcome"), success.get("outcome"), failure.get("outcome")],
+        "information": [
+            initial.get("information"),
+            success.get("information"),
+            failure.get("information"),
+        ],
+    }
+    for role, value_ref in refs.items():
+        if not isinstance(value_ref, str) or not value_ref:
+            errors.append(f"Phase B state ref {role} must be a non-empty id")
+            continue
+        definition = values.get(value_ref)
+        if not isinstance(definition, dict):
+            errors.append(f"Phase B state ref {value_ref} must resolve in DODGE rules.values")
+            continue
+        expected_values = []
+        for item in ordered_by_role[role]:
+            if item not in expected_values:
+                expected_values.append(item)
+        expected_definition = {
+            "name": definition.get("name"),
+            "type": "enum",
+            "owner_scope": "scenario",
+            "persistence_scope": "scenario",
+            "default": initial.get(role),
+            "enum_values": expected_values,
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        }
+        if definition != expected_definition:
+            errors.append(
+                f"Phase B DODGE value {value_ref} must normalize canonical {role} state exactly"
+            )
+
+    scenario = (dodge.get("scenarios") or {}).get("scenario-01") or {}
+    initial_bindings = [
+        {
+            "ref": refs[role],
+            "subject": {"relative": "scenario"},
+            "value": initial[role],
+            "authority": "provisional",
+        }
+        for role in ("status", "outcome", "information")
+    ]
+    if scenario.get("initial_state") != initial_bindings:
+        errors.append(
+            "Phase B DODGE scenario initial_state must normalize canonical Roadside state exactly"
+        )
+
+    runtime_state = (dodge.get("runtime_states") or {}).get("scenario-01-initial")
+    expected_runtime_state = {
+        "scenario_ref": "scenario-01",
+        "bindings": initial_bindings,
+        "events": [],
+        "revision": "0",
+    }
+    if runtime_state != expected_runtime_state:
+        errors.append(
+            "Phase B DODGE runtime_states.scenario-01-initial must match scenario initial_state"
+        )
+
+    effects = dodge.get("rules", {}).get("effects", {}) or {}
+    effect_expectations = {
+        "roadside-tracks-set-status-resolved": (
+            refs["status"],
+            success.get("status"),
+        ),
+        "roadside-tracks-set-outcome-success": (
+            refs["outcome"],
+            success.get("outcome"),
+        ),
+        "roadside-tracks-set-information-clear-trail": (
+            refs["information"],
+            success.get("information"),
+        ),
+        "roadside-tracks-set-outcome-failure": (
+            refs["outcome"],
+            failure.get("outcome"),
+        ),
+        "roadside-tracks-set-information-trail-inconclusive": (
+            refs["information"],
+            failure.get("information"),
+        ),
+    }
+    for effect_id, (target_ref, value) in effect_expectations.items():
+        expected_effect = {
+            "op": "set",
+            "target_ref": target_ref,
+            "subject": {"relative": "scenario"},
+            "value": value,
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        }
+        if effects.get(effect_id) != expected_effect:
+            errors.append(
+                f"Phase B DODGE effect {effect_id} must normalize canonical consequence exactly"
+            )
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -703,6 +961,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_rule_meaning(dodge, errors)
     _validate_scenario_duplication(dodge, canonical, errors)
     _validate_phase_a_contextual_checks(dodge, canonical, errors)
+    _validate_phase_b_investigation_contract(dodge, canonical, errors)
     return errors
 
 
@@ -787,6 +1046,7 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
         ("objects", {}),
         ("sidecars", []),
         ("extensions", {}),
+        ("runtime_states", {}),
     ):
         if resolved.get(field) != dodge.get(field, default):
             errors.append(
@@ -821,6 +1081,7 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
         "action_refs": dodge_scenario.get("action_refs", []),
         "turn_procedure_ref": dodge_scenario.get("turn_procedure_ref"),
         "objectives": dodge_scenario.get("objectives", []),
+        "initial_state": dodge_scenario.get("initial_state", []),
         "encounters": canonical.get("encounters", []),
         "contextual_checks": canonical.get("contextual_checks", {}),
     }
