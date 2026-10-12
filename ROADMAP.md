@@ -175,7 +175,7 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4/G5/G6 evidence remains in the existing validation documents. Gameplay Phase A now adds source-owned situational modifiers, effective-target derivation, deterministic generated 3d6 evidence, and critical classification; evidence lives in `game/dirps/docs/phase-a-contextual-skill-validation.md`. Phase B — Roadside Tracks encounter state/consequences — is next after Phase A acceptance. G7 has not started.
+G2/G3/G4/G5/G6 evidence remains in the existing validation documents. Gameplay Phase A now adds source-owned situational modifiers, effective-target derivation, deterministic generated 3d6 evidence, and critical classification under a separate `dirps-execution-result.v2` contract while preserving accepted G5/G6 v1 behavior; evidence lives in `game/dirps/docs/phase-a-contextual-skill-validation.md`. Phase B — Roadside Tracks encounter state/consequences — is next after Phase A acceptance. G7 has not started.
 
 Current DIRPS maturity:
 
