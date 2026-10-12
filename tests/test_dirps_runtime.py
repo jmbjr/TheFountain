@@ -135,11 +135,10 @@ class DirpsRuntimeTests(unittest.TestCase):
     def test_malformed_executable_dice_contract_fails(self):
         resolved = copy.deepcopy(self.resolved)
         resolved["proto_sidecar"]["proto_specs"]["dice_resolution"]["proposed_shape"]["randomizer"]["sides"] = 8
-        with self.assertRaisesRegex(ExecutionError, "outside 1..8|dice_resolution"):
-            # Terms remain legal for d8, so contract validation proceeds; the
-            # runtime result would expose d8 if it accepted unvalidated drift.
-            # Force an unsupported combine to prove executable authority fails.
-            resolved["proto_sidecar"]["proto_specs"]["dice_resolution"]["proposed_shape"]["randomizer"]["combine"] = "max"
+        # Force an unsupported combine to prove the runtime refuses drift in
+        # executable proto authority rather than inventing behavior.
+        resolved["proto_sidecar"]["proto_specs"]["dice_resolution"]["proposed_shape"]["randomizer"]["combine"] = "max"
+        with self.assertRaisesRegex(ExecutionError, "combine=sum"):
             self.execute(resolved=resolved)
 
     def test_record_replay_matches_and_detects_divergence(self):
