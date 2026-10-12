@@ -30,6 +30,18 @@ class DirpsRuntimeTests(unittest.TestCase):
             dice_terms=[2, 3, 4] if terms is None else terms,
         )
 
+    def resolved_with_tracking(self, level):
+        dodge = copy.deepcopy(self.dodge)
+        canonical = copy.deepcopy(self.canonical)
+        canonical["player_character"]["skills"]["tracking"] = level
+        pc = next(
+            row
+            for row in dodge["scenes"]["scenario-01-setup"]["instances"]
+            if row["id"] == "pc"
+        )
+        pc["extensions"]["org.dirps.character"]["skills"]["tracking"] = level
+        return resolve_documents(dodge, canonical, self.sidecar, self.cfg)
+
     def test_known_success_preserves_structured_evidence(self):
         result = self.execute()
         self.assertEqual(result["semantic_path"], {
@@ -43,9 +55,43 @@ class DirpsRuntimeTests(unittest.TestCase):
         self.assertEqual(result["outcome"], {"success": True, "margin": 3})
         self.assertEqual(result["trace"]["action"]["source_ref"], "gurps-lite")
         self.assertEqual(result["trace"]["procedure"]["source_ref"], "gurps-lite")
+        self.assertEqual(result["trace"]["action"]["authority"], "authoritative")
+        self.assertEqual(result["trace"]["procedure"]["authority"], "authoritative")
+        self.assertEqual(
+            result["trace"]["execution_binding"],
+            {
+                "ref": "proto_sidecar.g5_execution_bindings.attempt-skill",
+                "source_ref": "dirps-proto",
+                "authority": "provisional",
+            },
+        )
+        self.assertEqual(
+            result["trace"]["effective_target"],
+            {
+                "actor_ref": "pc",
+                "skill_ref": "tracking",
+                "value": 12,
+                "source_ref": "scenario-01-source",
+                "authority": "provisional",
+                "character_provenance": "prototype_assumption",
+                "canonical_path": "player_character.skills.tracking",
+            },
+        )
+        self.assertEqual(
+            set(result["trace"]["sources"]),
+            {"gurps-lite", "dirps-proto", "scenario-01-source"},
+        )
         self.assertEqual(
             result["trace"]["sources"]["gurps-lite"]["authority"],
             "authoritative",
+        )
+        self.assertEqual(
+            result["trace"]["sources"]["dirps-proto"]["authority"],
+            "provisional",
+        )
+        self.assertEqual(
+            result["trace"]["sources"]["scenario-01-source"]["authority"],
+            "provisional",
         )
         self.assertEqual(result["state_delta"], [])
         print("PASS dirps/scenario-01: executable attempt-skill -> success-roll")
@@ -76,21 +122,39 @@ class DirpsRuntimeTests(unittest.TestCase):
         self.assertTrue(baseline["outcome"]["success"])
         self.assertEqual(baseline["outcome"]["margin"], 1)
 
-        dodge = copy.deepcopy(self.dodge)
-        canonical = copy.deepcopy(self.canonical)
-        canonical["player_character"]["skills"]["tracking"] = 10
-        pc = next(
-            row
-            for row in dodge["scenes"]["scenario-01-setup"]["instances"]
-            if row["id"] == "pc"
-        )
-        pc["extensions"]["org.dirps.character"]["skills"]["tracking"] = 10
-
-        changed_resolved = resolve_documents(dodge, canonical, self.sidecar, self.cfg)
+        changed_resolved = self.resolved_with_tracking(10)
         changed = self.execute(resolved=changed_resolved, terms=[4, 4, 3])
         self.assertEqual(changed["target"]["effective_target"], 10)
         self.assertFalse(changed["outcome"]["success"])
         self.assertEqual(changed["outcome"]["margin"], -1)
+
+    def test_simplified_classifier_accepts_lower_supported_boundary(self):
+        resolved = self.resolved_with_tracking(4)
+        result = self.execute(resolved=resolved, terms=[1, 1, 2])
+        self.assertEqual(result["target"]["effective_target"], 4)
+        self.assertEqual(result["random_evidence"]["total"], 4)
+        self.assertEqual(result["outcome"], {"success": True, "margin": 0})
+
+    def test_simplified_classifier_accepts_upper_supported_boundary(self):
+        resolved = self.resolved_with_tracking(16)
+        result = self.execute(resolved=resolved, terms=[5, 6, 6])
+        self.assertEqual(result["target"]["effective_target"], 16)
+        self.assertEqual(result["random_evidence"]["total"], 17)
+        self.assertEqual(result["outcome"], {"success": False, "margin": -1})
+
+    def test_effective_target_below_supported_domain_fails_visibly(self):
+        resolved = self.resolved_with_tracking(3)
+        with self.assertRaisesRegex(
+            ExecutionError, r"outside supported G5 domain 4\.\.16"
+        ):
+            self.execute(resolved=resolved, terms=[1, 1, 2])
+
+    def test_effective_target_above_supported_domain_fails_visibly(self):
+        resolved = self.resolved_with_tracking(17)
+        with self.assertRaisesRegex(
+            ExecutionError, r"outside supported G5 domain 4\.\.16"
+        ):
+            self.execute(resolved=resolved, terms=[5, 6, 6])
 
     def test_runtime_does_not_mutate_resolved_model(self):
         resolved = copy.deepcopy(self.resolved)
@@ -153,6 +217,18 @@ class DirpsRuntimeTests(unittest.TestCase):
 
         tampered = copy.deepcopy(record)
         tampered["outcome"]["margin"] = 99
+        with self.assertRaisesRegex(ExecutionError, "divergence"):
+            replay_attempt_skill(self.resolved, tampered)
+
+    def test_record_replay_detects_authority_trace_tampering(self):
+        record = self.execute(terms=[2, 5, 5])
+        tampered = copy.deepcopy(record)
+        tampered["trace"]["execution_binding"]["authority"] = "authoritative"
+        with self.assertRaisesRegex(ExecutionError, "divergence"):
+            replay_attempt_skill(self.resolved, tampered)
+
+        tampered = copy.deepcopy(record)
+        tampered["trace"]["effective_target"]["character_provenance"] = "authoritative"
         with self.assertRaisesRegex(ExecutionError, "divergence"):
             replay_attempt_skill(self.resolved, tampered)
 
