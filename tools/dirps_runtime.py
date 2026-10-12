@@ -38,7 +38,8 @@ def _actor(resolved, actor_ref):
 def _execution_binding(resolved):
     sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
     bindings = _require_mapping(
-        sidecar.get("g5_execution_bindings"), "resolved g5_execution_bindings"
+        sidecar.get("phase_a_execution_bindings"),
+        "resolved phase_a_execution_bindings"
     )
     binding = _require_mapping(
         bindings.get(BINDING_ID), f"execution binding {BINDING_ID}"
@@ -126,8 +127,8 @@ def _legacy_g5_binding(resolved):
     """Return the immutable accepted G5/v1 execution binding."""
     sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
     bindings = _require_mapping(
-        sidecar.get("g5_legacy_execution_bindings"),
-        "resolved g5_legacy_execution_bindings",
+        sidecar.get("g5_execution_bindings"),
+        "resolved g5_execution_bindings",
     )
     binding = _require_mapping(
         bindings.get(BINDING_ID), f"legacy G5 execution binding {BINDING_ID}"
@@ -898,7 +899,7 @@ def execute_attempt_skill(resolved, *, actor_ref, skill_ref, dice_terms):
                 "authority": procedure.get("authority"),
             },
             "execution_binding": {
-                "ref": f"proto_sidecar.g5_legacy_execution_bindings.{BINDING_ID}",
+                "ref": f"proto_sidecar.g5_execution_bindings.{BINDING_ID}",
                 "source_ref": source_info["binding_ref"],
                 "authority": source_info["binding"].get("authority"),
             },
