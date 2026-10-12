@@ -131,7 +131,7 @@ def _registered_sidecar(config):
     return json.loads(sidecars[0].read_text())
 
 
-def _validate_g5_proto_semantics(sidecar, errors):
+def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
     if not isinstance(sidecar, dict):
         errors.append("G5 requires the registered DIRPS proto sidecar")
         return
@@ -179,6 +179,48 @@ def _validate_g5_proto_semantics(sidecar, errors):
         errors.append(
             "G5 dice_resolution outputs must include rolled_terms/total/success/margin"
         )
+
+    bindings = sidecar.get("g5_execution_bindings")
+    if not isinstance(bindings, dict):
+        errors.append("G5 DIRPS sidecar must declare g5_execution_bindings")
+    else:
+        binding = bindings.get("attempt-skill")
+        expected_binding = {
+            "action_ref": "attempt-skill",
+            "procedure_ref": "success-roll",
+            "actor_input": "actor_ref",
+            "target_input": "skill_ref",
+            "target_source": {
+                "kind": "resolved-character-skill",
+                "path": "scene.instances[].character.skills",
+            },
+            "effective_target": {
+                "from": "selected-skill-level",
+                "modifier_policy": "unsupported",
+            },
+            "dice_resolution_ref": "dice_resolution",
+            "result_format": "dirps-execution-result.v1",
+            "state_mutation": "none",
+        }
+        if binding != expected_binding:
+            errors.append(
+                "G5 attempt-skill execution binding must match the bounded declared contract"
+            )
+        if dodge and isinstance(binding, dict):
+            action = (dodge.get("rules", {}).get("actions", {}) or {}).get(
+                binding.get("action_ref")
+            )
+            procedure = (dodge.get("rules", {}).get("procedures", {}) or {}).get(
+                binding.get("procedure_ref")
+            )
+            if not action:
+                errors.append("G5 execution binding action_ref does not resolve")
+            elif action.get("procedure_ref") != binding.get("procedure_ref"):
+                errors.append(
+                    "G5 execution binding disagrees with the DODGE action procedure_ref"
+                )
+            if not procedure:
+                errors.append("G5 execution binding procedure_ref does not resolve")
 
     if (specs.get("derived_values") or {}).get("status") != "suspected":
         errors.append(
@@ -492,6 +534,7 @@ def validate_source_context(context):
         _validate_g5_proto_semantics(
             _registered_sidecar(context.get("config")),
             errors,
+            context["dodge"],
         )
     return errors
 
@@ -647,7 +690,7 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
     # Once G5 makes these proto contracts executable, resolved validation must
     # continue to guard their exact authority/status boundary.
     if (canonical.get("status") or "").startswith("g5-"):
-        _validate_g5_proto_semantics(sidecar, errors)
+        _validate_g5_proto_semantics(sidecar, errors, dodge)
 
     expected_unresolved = _resolved_unresolved_index(sidecar)
     if resolved.get("unresolved") != expected_unresolved:
