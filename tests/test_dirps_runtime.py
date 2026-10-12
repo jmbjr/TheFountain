@@ -34,6 +34,9 @@ class DirpsRuntimeTests(unittest.TestCase):
         dodge = copy.deepcopy(self.dodge)
         canonical = copy.deepcopy(self.canonical)
         canonical["player_character"]["skills"]["tracking"] = level
+        # Keep the Phase A contextual source valid while this helper exercises
+        # the immutable legacy G5/v1 unmodified skill path.
+        canonical["contextual_checks"]["roadside-tracks-tracking"]["modifiers"][0]["amount"] = 0
         pc = next(
             row
             for row in dodge["scenes"]["scenario-01-setup"]["instances"]
