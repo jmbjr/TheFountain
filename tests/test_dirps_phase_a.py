@@ -10,8 +10,10 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 from dirps_runtime import (
     ExecutionError,
-    describe_attempt_skill,
+    describe_contextual_skill,
+    execute_attempt_skill,
     execute_contextual_skill,
+    replay_attempt_skill,
     replay_contextual_skill,
 )
 from game_registry import scenario_config
@@ -230,7 +232,7 @@ class DirpsPhaseAContextualSkillTests(unittest.TestCase):
         self.assertEqual(result["outcome"]["classification"], "critical-failure")
 
     def test_capability_exposes_context_rng_and_critical_contract(self):
-        capability = describe_attempt_skill(self.resolved)
+        capability = describe_contextual_skill(self.resolved)
         self.assertIn(CONTEXT_REF, capability["contextual_checks"])
         self.assertEqual(
             capability["target"]["modifier_policy"],
@@ -247,6 +249,63 @@ class DirpsPhaseAContextualSkillTests(unittest.TestCase):
         self.assertEqual(
             capability["critical_resolution"]["rule_source_ref"],
             "gurps-lite",
+        )
+
+    def test_record_versions_are_explicit_and_not_confused(self):
+        legacy = execute_attempt_skill(
+            self.resolved,
+            actor_ref="pc",
+            skill_ref="tracking",
+            dice_terms=[2, 3, 4],
+        )
+        current = self.execute(terms=[2, 3, 4])
+
+        self.assertEqual(legacy["format"], "dirps-execution-result.v1")
+        self.assertEqual(
+            legacy["result_scope"],
+            "binary-success-and-margin-only",
+        )
+        self.assertNotIn("classification", legacy["outcome"])
+
+        self.assertEqual(current["format"], "dirps-execution-result.v2")
+        self.assertEqual(
+            current["result_scope"],
+            "success-failure-margin-and-critical-classification",
+        )
+        self.assertIn("classification", current["outcome"])
+
+        self.assertEqual(replay_attempt_skill(self.resolved, legacy), legacy)
+        self.assertEqual(replay_contextual_skill(self.resolved, current), current)
+
+        with self.assertRaisesRegex(
+            ExecutionError,
+            r"v1 is a legacy G5 record, not a Phase A/v2 record",
+        ):
+            replay_contextual_skill(self.resolved, legacy)
+
+        with self.assertRaisesRegex(
+            ExecutionError,
+            r"v2 is a Phase A record, not a legacy G5/v1 record",
+        ):
+            replay_attempt_skill(self.resolved, current)
+
+    def test_accepted_g5_binding_remains_v1_and_phase_a_binding_is_v2(self):
+        sidecar = self.resolved["proto_sidecar"]
+        legacy = sidecar["g5_execution_bindings"]["attempt-skill"]
+        current = sidecar["phase_a_execution_bindings"]["attempt-skill"]
+
+        self.assertEqual(legacy["result_format"], "dirps-execution-result.v1")
+        self.assertEqual(
+            legacy["effective_target"]["supported_domain"],
+            {"minimum": 4, "maximum": 16},
+        )
+        self.assertEqual(legacy["effective_target"]["modifier_policy"], "unsupported")
+
+        self.assertEqual(current["result_format"], "dirps-execution-result.v2")
+        self.assertEqual(current["effective_target"]["minimum"], 3)
+        self.assertEqual(
+            current["effective_target"]["modifier_policy"],
+            "sum-resolved-context-modifiers",
         )
 
     def test_proto_maturity_remains_conservative(self):
