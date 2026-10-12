@@ -499,41 +499,21 @@ The workflow pins an exact DODGE source revision. Updating that pin is a deliber
 
 Conformance provenance is also explicit on the TheFountain side. Pull-request runs check out `github.event.pull_request.head.sha`, print the validated TheFountain source SHA, and assert that `git rev-parse HEAD` equals that expected identity before candidate validation begins. Push/main and manual runs validate `github.sha`. The default GitHub synthetic pull-request merge ref may still be useful for merge-compatibility testing, but it is not used as exact-head maturity evidence.
 
-## DIRPS G4 resolved
+## DIRPS G5 bounded execution
 
-`game/dirps/` is the second independent DODGE implementation track and has advanced through **G4 — Resolved**. Its first rules stress test uses GURPS Lite as an external authoritative reference, but DIRPS remains the implementation identity.
+`game/dirps/` is the second independent DODGE implementation track and has advanced through **G5 — Executable** for one bounded mechanic. Its first rules stress test uses GURPS Lite as an external authoritative reference, while DIRPS remains the implementation identity.
 
-The bounded G4 architecture contains:
+The accepted G4 architecture remains intact: `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1`, and `dirps@0.1.0` validates source plus exact resolved-game semantics. G5 adds:
 
-- `game/dirps/game.json` — Scenario 01 registration with `conformance.maturity: "G4"` and repository-local resolver `tools/resolve_dirps_dodge.py`;
-- `game/dirps/scenarios/scenario-01/scenario.json` — canonical/provisional tutorial source for *The Missing Courier*;
-- `game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json` — exact-schema/core-valid DODGE source declaring `dirps@0.1.0` at both `source` and `resolved-game`;
-- `tools/dirps_semantic_validation.py` — game-owned source and resolved-stage semantic validation;
-- `tools/resolve_dirps_dodge.py` — one target-neutral resolver producing `dirps-resolved-game.v1`;
-- `tests/test_dirps_validation.py` — retained G3 source-stage evidence;
-- `tests/test_dirps_resolution.py` — G4 positive, perturbation, provenance, proto-preservation, and negative evidence;
-- `game/dirps/docs/g4-resolved-validation.md` — durable resolved-model contract/evidence;
-- the existing G2/G3 evidence and proto sidecar.
+- `tools/dirps_runtime.py` — renderer-independent execution of one `attempt-skill → success-roll` path;
+- `tests/test_dirps_runtime.py` — deterministic success/failure, perturbation, malformed-evidence, action/binding, actor-availability, and replay-divergence evidence;
+- `game/dirps/docs/g5-executable-validation.md` — durable runtime/result/proto-maturity contract;
+- `game/dirps/sidecars/dirps.proto.sidecar.v0.1.json:g5_execution_bindings.attempt-skill` — provisional semantic authority for the skill-input → resolved-skill-target binding DODGE 0.2.1 cannot express first-class.
 
-The generic conformance runner executes the standard lifecycle without DIRPS-specific branching:
+The runtime consumes only `dirps-resolved-game.v1`. It does not reopen `scenario.json`, the DODGE source document, or the sidecar on disk. The effective target is selected from the resolved actor's `character.skills` through the declared sidecar binding; supplied die terms are evaluated under the resolved `dice_resolution` proto contract. The binding also declares the target provenance and a supported effective-target domain of 4..16. Values outside that range fail before classification, so the runtime does not silently approximate GURPS success-roll edge semantics.
 
-```text
-DODGE schema
-→ dirps@0.1.0 source
-→ DIRPS neutral resolver
-→ dirps@0.1.0 resolved-game
-```
+The bounded result format, `dirps-execution-result.v1`, preserves actor/skill inputs, action/procedure refs, effective target, individual die terms, total, success/failure, margin, and an explicit three-layer authority trace: authoritative `gurps-lite` action/procedure semantics; provisional `dirps-proto` execution-binding semantics; and provisional `scenario-01-source` target data with `prototype_assumption` character provenance. It also records the 4..16 supported target domain, binary-only result scope, and an empty state delta. `replay_attempt_skill()` deterministically re-evaluates one record and raises on divergence, including authority/provenance tampering. This is intentionally not a general session-history/replay subsystem.
 
-`dirps-resolved-game.v1` is intentionally game-owned because DODGE 0.2.1 specifies the G4 resolution/validation lifecycle but not one universal resolved-game JSON schema. The model preserves source declarations, game profile, archetypes, objects, DODGE sidecar/extension registrations, normalized rules, and the selected DODGE scenario's traceability/binding fields (`source_ref`, `authority`, `assumptions`, `scene_ref`); resolves the selected scene into concrete instances; derives the canonical PC build/target duration from Scenario 01; preserves canonical encounter list order; and carries the current proto sidecar plus a derived unresolved index. Keeping the neutral object/archetype tables ensures resolved `object_ref` / `archetype_ref` relationships remain unambiguous.
+G5 execution exercises—but does not promote to candidate—`dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace`. Derived targets/modifiers and immutable replay/session history remain suspected.
 
-Resolved-stage validation compares the exact resolved output back to the authoritative DODGE/scenario/sidecar inputs. It rejects dropped or invented rules, incomplete/reordered selected scene content, stale canonical PC build values, changed authority/provenance, altered encounter composition/order, or missing/changed proto material.
-
-The resolver is not a runtime. It emits no random results, success/failure decisions, replay, target manifest, target presentation, or other G5/G6 material.
-
-DIRPS proto semantics continue to use:
-
-```text
-suspected → exercised → candidate
-```
-
-Merely carrying a proto specification through the resolver does not exercise its behavior. All current proto-sidecar entries remain `suspected`; G5 runtime evidence is required before any promotion.
+The runtime is not a target. No Web/CLI/PnP/TTS adapter, target manifest, presentation layer, full combat, recovery, social/environmental subsystem, or complete scenario win/loss runtime is included.

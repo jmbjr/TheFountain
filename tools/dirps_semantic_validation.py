@@ -2,8 +2,10 @@
 """DIRPS-owned semantic validation profile for Scenario 01.
 
 DODGE core validates neutral structure. This module validates bounded DIRPS
-cross-source/domain contracts that generic DODGE cannot infer. It intentionally
-implements source-stage G3 only; resolved-game validation belongs to G4.
+cross-source/domain contracts that generic DODGE cannot infer across the
+source/resolved lifecycle. G5 also makes a small subset of proto semantics
+executable, so those exercised contracts are validated here rather than hidden
+inside the runtime.
 """
 from __future__ import annotations
 
@@ -30,6 +32,16 @@ ACTION_PROCEDURES = {
     "attack": "attack-resolution",
     "recover": "recovery-check",
 }
+
+G5_EXERCISED_PROTO = frozenset(
+    {
+        "dice_resolution",
+        "procedure_context",
+        "actor_character_model",
+        "skill_model",
+        "resolution_trace",
+    }
+)
 
 
 def _repo_relative(path):
@@ -107,6 +119,125 @@ def _validate_authority_paths(dodge, canonical, config, errors):
     if expected_sidecar and sources.get(PROTO_SOURCE, {}).get("uri") != expected_sidecar:
         errors.append(
             "DODGE dirps-proto URI must identify the registered DIRPS proto sidecar"
+        )
+
+
+def _registered_sidecar(config):
+    if not config:
+        return None
+    sidecars = config.get("sidecars") or []
+    if len(sidecars) != 1 or not sidecars[0].is_file():
+        return None
+    return json.loads(sidecars[0].read_text())
+
+
+def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
+    if not isinstance(sidecar, dict):
+        errors.append("G5 requires the registered DIRPS proto sidecar")
+        return
+
+    specs = sidecar.get("proto_specs")
+    if not isinstance(specs, dict):
+        errors.append("G5 DIRPS proto sidecar must contain proto_specs")
+        return
+
+    for proto_id in sorted(G5_EXERCISED_PROTO):
+        spec = specs.get(proto_id)
+        if not isinstance(spec, dict):
+            errors.append(f"G5 exercised proto {proto_id}: missing")
+            continue
+        if spec.get("status") != "exercised":
+            errors.append(
+                f"G5 exercised proto {proto_id}: status must be exercised, got {spec.get('status')}"
+            )
+        if spec.get("candidate_for_dodge") != "not-yet-candidate":
+            errors.append(
+                f"G5 exercised proto {proto_id}: must remain not-yet-candidate"
+            )
+
+    dice = specs.get("dice_resolution") or {}
+    shape = dice.get("proposed_shape") or {}
+    randomizer = shape.get("randomizer") or {}
+    comparator = shape.get("comparator") or {}
+    if shape.get("id") != "success-roll-3d6":
+        errors.append("G5 dice_resolution id must be success-roll-3d6")
+    if randomizer != {
+        "kind": "dice-pool",
+        "count": 3,
+        "sides": 6,
+        "combine": "sum",
+    }:
+        errors.append(
+            "G5 dice_resolution randomizer must remain the declared 3d6 sum contract"
+        )
+    if comparator != {"op": "lte", "target_ref": "effective-target"}:
+        errors.append(
+            "G5 dice_resolution comparator must remain lte effective-target"
+        )
+    required_outputs = {"rolled_terms", "total", "success", "margin"}
+    if not required_outputs.issubset(set(shape.get("outputs") or [])):
+        errors.append(
+            "G5 dice_resolution outputs must include rolled_terms/total/success/margin"
+        )
+
+    bindings = sidecar.get("g5_execution_bindings")
+    if not isinstance(bindings, dict):
+        errors.append("G5 DIRPS sidecar must declare g5_execution_bindings")
+    else:
+        binding = bindings.get("attempt-skill")
+        expected_binding = {
+            "action_ref": "attempt-skill",
+            "procedure_ref": "success-roll",
+            "actor_input": "actor_ref",
+            "target_input": "skill_ref",
+            "target_source": {
+                "kind": "resolved-character-skill",
+                "path": "scene.instances[].character.skills",
+            },
+            "effective_target": {
+                "from": "selected-skill-level",
+                "modifier_policy": "unsupported",
+                "supported_domain": {"minimum": 4, "maximum": 16},
+                "outside_domain": "error",
+            },
+            "dice_resolution_ref": "dice_resolution",
+            "result_format": "dirps-execution-result.v1",
+            "state_mutation": "none",
+            "binding_source_ref": "dirps-proto",
+            "target_provenance": {
+                "source_ref": "scenario-01-source",
+                "character_provenance": "prototype_assumption",
+                "canonical_path": "player_character.skills",
+            },
+            "result_scope": "binary-success-and-margin-only",
+        }
+        if binding != expected_binding:
+            errors.append(
+                "G5 attempt-skill execution binding must match the bounded declared contract"
+            )
+        if dodge and isinstance(binding, dict):
+            action = (dodge.get("rules", {}).get("actions", {}) or {}).get(
+                binding.get("action_ref")
+            )
+            procedure = (dodge.get("rules", {}).get("procedures", {}) or {}).get(
+                binding.get("procedure_ref")
+            )
+            if not action:
+                errors.append("G5 execution binding action_ref does not resolve")
+            elif action.get("procedure_ref") != binding.get("procedure_ref"):
+                errors.append(
+                    "G5 execution binding disagrees with the DODGE action procedure_ref"
+                )
+            if not procedure:
+                errors.append("G5 execution binding procedure_ref does not resolve")
+
+    if (specs.get("derived_values") or {}).get("status") != "suspected":
+        errors.append(
+            "G5 bounded success roll must not promote derived_values; no modifier/formula path executes yet"
+        )
+    if (specs.get("replay_session_history") or {}).get("status") != "suspected":
+        errors.append(
+            "G5 bounded record re-evaluation must not promote replay_session_history"
         )
 
 
@@ -402,11 +533,19 @@ def validate_source_semantics(dodge, canonical, config=None):
 
 def validate_source_context(context):
     """Generic TheFountain source-stage conformance hook."""
-    return validate_source_semantics(
+    errors = validate_source_semantics(
         context["dodge"],
         context["scenario_source"],
         context.get("config"),
     )
+    maturity = ((context.get("config") or {}).get("conformance") or {}).get("maturity")
+    if maturity in {"G5", "G6", "G7"}:
+        _validate_g5_proto_semantics(
+            _registered_sidecar(context.get("config")),
+            errors,
+            context["dodge"],
+        )
+    return errors
 
 def _resolved_unresolved_index(sidecar):
     return [
@@ -556,6 +695,11 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
 
     if resolved.get("proto_sidecar") != sidecar:
         errors.append("resolved game: DIRPS proto sidecar semantics were dropped or changed")
+
+    # Once G5 makes these proto contracts executable, resolved validation must
+    # continue to guard their exact authority/status boundary.
+    if (canonical.get("status") or "").startswith("g5-"):
+        _validate_g5_proto_semantics(sidecar, errors, dodge)
 
     expected_unresolved = _resolved_unresolved_index(sidecar)
     if resolved.get("unresolved") != expected_unresolved:
