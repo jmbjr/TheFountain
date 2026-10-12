@@ -197,10 +197,19 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             "effective_target": {
                 "from": "selected-skill-level",
                 "modifier_policy": "unsupported",
+                "supported_domain": {"minimum": 4, "maximum": 16},
+                "outside_domain": "error",
             },
             "dice_resolution_ref": "dice_resolution",
             "result_format": "dirps-execution-result.v1",
             "state_mutation": "none",
+            "binding_source_ref": "dirps-proto",
+            "target_provenance": {
+                "source_ref": "scenario-01-source",
+                "character_provenance": "prototype_assumption",
+                "canonical_path": "player_character.skills",
+            },
+            "result_scope": "binary-success-and-margin-only",
         }
         if binding != expected_binding:
             errors.append(
