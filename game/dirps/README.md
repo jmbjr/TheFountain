@@ -19,7 +19,8 @@ game/dirps/
 │   ├── compatibility-audit.md
 │   ├── g2-core-validation.md
 │   ├── g3-semantic-validation.md
-│   └── g4-resolved-validation.md
+│   ├── g4-resolved-validation.md
+│   └── g5-executable-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -30,11 +31,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 currently reaches **G4 — Resolved**.
+DIRPS Scenario 01 currently reaches **G5 — Executable**, bounded to one ordinary success-roll mechanic.
 
-The authored DODGE document remains schema/core-valid and now declares `dirps@0.1.0` at both `source` and `resolved-game` stages. `tools/resolve_dirps_dodge.py` produces one target-neutral `dirps-resolved-game.v1` model, and `docs/g4-resolved-validation.md` records its preservation/perturbation evidence. This does **not** yet claim G5 runtime execution, replay, or target support.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` still produces the accepted `dirps-resolved-game.v1`; `tools/dirps_runtime.py` now consumes that model to execute exactly `attempt-skill → success-roll` from an explicit resolved skill target and supplied 3d6 evidence. `docs/g5-executable-validation.md` records the runtime/result/replay evidence. Full Scenario 01 execution and G6 targets are not claimed.
 
-The generic TheFountain conformance runner must report the DIRPS DODGE schema PASS, `semantic source dirps@0.1.0`, `neutral resolver`, and `semantic resolved-game dirps@0.1.0`.
+The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines, while discovered Python tests provide named G5 execution evidence for `attempt-skill → success-roll`.
 
 ## Authority boundary
 
@@ -56,9 +57,9 @@ resolved game
 runtime / replay / targets
 ```
 
-The DODGE document targets DODGE 0.2.1 and is resolved at G4: source semantics pass, one neutral resolver produces `dirps-resolved-game.v1`, and the exact output passes the declared resolved-game profile. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
+The DODGE document targets DODGE 0.2.1 and remains resolved through the accepted G4 boundary. G5 adds a renderer-independent execution layer that consumes only `dirps-resolved-game.v1`; the runtime never rereads authored source files. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
-The proto sidecar records suspected gaps to exercise. A proto concept is not a DODGE 0.2.2 candidate until Scenario 01 actually exercises it through the neutral validation/resolver/runtime path.
+The proto sidecar now records G5 runtime evidence. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` are `exercised` by the bounded success-roll path, but remain `not-yet-candidate`. Derived targets/modifiers and immutable replay/session history remain `suspected`.
 
 ## Scenario 01
 
