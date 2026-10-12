@@ -276,5 +276,24 @@
       ],
       "candidate_for_dodge": "not-yet-candidate"
     }
+  },
+  "g5_execution_bindings": {
+    "attempt-skill": {
+      "action_ref": "attempt-skill",
+      "procedure_ref": "success-roll",
+      "actor_input": "actor_ref",
+      "target_input": "skill_ref",
+      "target_source": {
+        "kind": "resolved-character-skill",
+        "path": "scene.instances[].character.skills"
+      },
+      "effective_target": {
+        "from": "selected-skill-level",
+        "modifier_policy": "unsupported"
+      },
+      "dice_resolution_ref": "dice_resolution",
+      "result_format": "dirps-execution-result.v1",
+      "state_mutation": "none"
+    }
   }
 }
