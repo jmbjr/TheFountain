@@ -233,6 +233,9 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
                     {"roll": 17, "maximum_effective_target": 15},
                     {"roll_minus_effective_target_minimum": 10},
                 ],
+                "ordinary_failure": [
+                    {"roll": 17, "minimum_effective_target": 16},
+                ],
                 "classifications": [
                     "critical-success",
                     "success",
