@@ -48,7 +48,12 @@ class DirpsRuntimeTests(unittest.TestCase):
             "action_ref": "attempt-skill",
             "procedure_ref": "success-roll",
         })
+        self.assertEqual(result["result_scope"], "binary-success-and-margin-only")
         self.assertEqual(result["target"]["skill_ref"], "tracking")
+        self.assertEqual(
+            result["target"]["supported_domain"],
+            {"minimum": 4, "maximum": 16},
+        )
         self.assertEqual(result["target"]["effective_target"], 12)
         self.assertEqual(result["random_evidence"]["terms"], [2, 3, 4])
         self.assertEqual(result["random_evidence"]["total"], 9)
