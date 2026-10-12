@@ -618,3 +618,18 @@ The runtime now exposes `describe_attempt_skill()` so targets can inspect the al
 Target tests prove the full source → DODGE → resolver → runtime → target perturbation path, inject fake runtime results to prove no target-side recomputation, smoke-test the registered CLI entry point, expose all three G5 authority layers, and verify unsupported mechanics are absent from the target surface. The target is registered through the existing `generated_targets` map.
 
 The debug CLI does not use DODGE's export-contract/target-manifest model, so no fake manifest was introduced. No proto concept changes maturity at G6. No Web client, generated RNG, additional RPG mechanics, or G7 reference claim was added.
+
+
+## DIRPS gameplay Phase A adds contextual skill checks
+
+**October 12, 2026.**
+
+After accepted/merged G6 PR #177, DIRPS began the gameplay roadmap in issue #178 without changing its G6 maturity label. Phase A extends the existing `attempt-skill → success-roll` runtime into a contextual RPG skill check.
+
+Scenario 01 now owns a provisional Roadside Tracks Tracking context with a prototype `-2` situational modifier. That magnitude is explicitly scenario tuning, not a GURPS rule value. The external GURPS Lite source remains authoritative for applying modifiers to effective skill, the minimum rollable effective skill, and the supported critical-success/failure boundaries. The DIRPS sidecar preserves the provisional executable bridge and source locators; the runtime interprets the declared critical table instead of duplicating those thresholds in code.
+
+The neutral resolver carries `contextual_checks` unchanged into `dirps-resolved-game.v1`. `execute_contextual_skill()` derives base target, modifier total, and effective target from resolved semantics, then accepts either explicit dice terms or deterministic generated evidence. Generated 3d6 uses a recorded `sha256-rejection-v1` seed path and preserves seed, algorithm id, individual terms, total, target, outcome, margin, critical classification, modifier provenance, and rule/source trace. One-record contextual re-evaluation detects evidence divergence.
+
+Phase A reassessed `derived_values` and `expressions` but kept both `suspected`: the bounded effective-target calculation does not implement either proposed generic proto shape. No new proto concept becomes a DODGE candidate.
+
+This tranche remains non-mutating. Roadside Tracks encounter state, information consequences, and scenario progress are intentionally deferred to Phase B. No G7 work was added.
