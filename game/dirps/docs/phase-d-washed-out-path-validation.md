@@ -79,6 +79,19 @@ Baseline:
 
 `dirps-environment-encounter-result.v1` wraps that roll with the canonical consequence and exact before/after state plus ordered state delta.
 
+Phase D also enforces its declared executable reuse/effective-target bridge **before** rolling. Runtime validation requires exactly:
+
+- `dice_resolution_ref = dice_resolution`;
+- effective-target source = selected attribute plus context modifiers;
+- modifier policy = sum resolved context modifiers;
+- minimum effective target = 3;
+- below-minimum policy = error;
+- rule source = `gurps-lite`;
+- rule locator = `p. 2, Success Rolls; Modifiers and Effective Skill`;
+- the previously pinned Phase A critical/random reuse refs.
+
+A drifted resolved binding therefore fails before any environmental roll can emit misleading random-evidence or rule-provenance claims.
+
 ## Replay and evidence
 
 `replay_environment_challenge()` re-executes from recorded state and supplied terms/seed and requires exact whole-record equality.
@@ -97,6 +110,8 @@ Baseline:
 - normalized canonical + DODGE + sidecar consequence perturbation reaching runtime state;
 - target-source binding drift;
 - inherited critical/random binding drift;
+- dice-resolution reuse binding drift;
+- effective-target source/policy/minimum/below-minimum/rule-source/rule-locator drift;
 - `attempt-attribute` authority drift;
 - conservative proto status;
 - generic target dispatch;
