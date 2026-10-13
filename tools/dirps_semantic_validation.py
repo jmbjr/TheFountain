@@ -688,6 +688,13 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
             "rule_source_ref": RULES_SOURCE,
             "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
             "result_format": "dirps-damage-result.v1",
+            "critical_attack_total_three": {
+                "attack_total": 3,
+                "resolution": "automatic-maximum-profile-damage",
+                "damage_random_evidence": "none",
+                "rule_source_ref": RULES_SOURCE,
+                "rule_locator": "Rolling to Attack / Critical Hits",
+            },
         },
         "injury_state": {
             "hit_points_ref": "hit-points",
