@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phase A is accepted; Phase B now makes Roadside Tracks the first stateful playable encounter.
+The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A and B are accepted; Phase C now adds the Frightened Witness social/reaction encounter.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,7 +175,7 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4/G5/G6 and Phase A evidence remains in the existing validation documents. Gameplay Phase B now adds canonical Roadside encounter state/action/consequences normalized into standard DODGE runtime state/effects, a stateful runtime composition around the Phase A v2 check, one-encounter deterministic replay, and a thin debug target mode; evidence lives in `game/dirps/docs/phase-b-roadside-investigation-validation.md`. Phase C — Frightened Witness social encounter — is next after Phase B acceptance. G7 has not started.
+G2/G3/G4/G5/G6 and Phase A/B evidence remains in the existing validation documents. Gameplay Phase C adds an authoritative higher-is-better GURPS reaction roll, canonical social modifiers/information consequences, an exercised target-neutral reaction lookup table, neutral witness state/effects, deterministic social replay, and runtime-dispatched debug-target support; evidence lives in `game/dirps/docs/phase-c-frightened-witness-validation.md`. Phase D — Washed-Out Path environmental challenge — is next after Phase C acceptance. G7 has not started.
 
 Current DIRPS maturity:
 
@@ -184,7 +184,7 @@ Current DIRPS maturity:
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
-- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` remain **exercised** / `not-yet-candidate`; Phase B uses standard DODGE state/effects and promotes no new proto concept; `replay_session_history`, `visibility_and_secret_state`, `derived_values`, and `expressions` remain **suspected**;
+- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, and Phase C `lookup_tables` are **exercised** / `not-yet-candidate`; `reaction_timing`, `replay_session_history`, `visibility_and_secret_state`, `derived_values`, and `expressions` remain **suspected**;
 - one registered debug CLI target now consumes the accepted resolved/runtime path and exposes execution/provenance evidence without owning gameplay semantics;
 - gameplay convergence is tracked in issue **#178** and maturity/conformance in **#163**; G7 requires a separate whole-system reference-quality review after the playable roadmap is complete enough to support it.
 

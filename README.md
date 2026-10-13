@@ -54,6 +54,6 @@ Current namespaces:
 
 - `game/the-fountain/` — original Fountain prototype;
 - `game/wretched-demesne/` — Wretched Demesne, with preserved Scenario 01 and a reserved Scenario 02 sibling;
-- `game/dirps/` — G6 targeted implementation of the GURPS-inspired DIRPS RPG/DODGE experiment; Phase A provides contextual skill checks and Phase B makes Roadside Tracks the first stateful playable encounter using neutral DODGE runtime state/effects and the same debug target boundary. Full Scenario 01 execution and G7 remain pending.
+- `game/dirps/` — G6 targeted implementation of the GURPS-inspired DIRPS RPG/DODGE experiment; Phase A provides contextual skills, Phase B makes Roadside Tracks stateful, and Phase C adds a distinct Frightened Witness reaction-roll/social path with neutral state and the same runtime-owned debug target boundary. Full Scenario 01 execution and G7 remain pending.
 
 Wretched Scenario 01 remains the current DODGE 0.2.1 reference implementation. Generated historical Beta trees under `wretched-demesne/beta/web/<sha>/` remain immutable deployment evidence and are intentionally not reorganized with authored source.

@@ -17,6 +17,8 @@ import hashlib
 BINDING_ID = "attempt-skill"
 RNG_ALGORITHM = "sha256-rejection-v1"
 PHASE_B_RESULT_FORMAT = "dirps-encounter-result.v1"
+PHASE_C_REACTION_FORMAT = "dirps-reaction-result.v1"
+PHASE_C_RESULT_FORMAT = "dirps-social-encounter-result.v1"
 
 
 class ExecutionError(ValueError):
@@ -1501,3 +1503,477 @@ def replay_investigation(resolved, record):
     if recomputed != record:
         raise ExecutionError("encounter record divergence detected")
     return recomputed
+
+
+def _phase_c_binding(resolved, encounter_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    bindings = _require_mapping(
+        sidecar.get("phase_c_social_bindings"),
+        "resolved phase_c_social_bindings",
+    )
+    binding = _require_mapping(
+        bindings.get(encounter_ref), f"Phase C social binding {encounter_ref}"
+    )
+    if binding.get("encounter_ref") != encounter_ref:
+        raise ExecutionError("Phase C social binding identity is malformed")
+    if binding.get("procedure_ref") != "reaction-roll":
+        raise ExecutionError("Phase C social binding must use reaction-roll")
+    if binding.get("reaction_result_format") != PHASE_C_REACTION_FORMAT:
+        raise ExecutionError("Phase C reaction-result format is unsupported")
+    if binding.get("result_format") != PHASE_C_RESULT_FORMAT:
+        raise ExecutionError("Phase C social encounter result format is unsupported")
+    if binding.get("binding_source_ref") != "dirps-proto":
+        raise ExecutionError("Phase C social binding source is malformed")
+    if binding.get("consequence_source_ref") != "scenario-01-source":
+        raise ExecutionError("Phase C social consequence source is malformed")
+    if not isinstance(binding.get("required_state"), list):
+        raise ExecutionError("Phase C required_state must be a list")
+
+    modifier_source = _require_mapping(
+        binding.get("modifier_source"), "Phase C reaction-modifier source binding"
+    )
+    if modifier_source != {
+        "kind": "encounter-action-reaction-modifiers",
+        "path": "scenario.encounters[].actions[].reaction_modifiers",
+    }:
+        raise ExecutionError(
+            "Phase C reaction-modifier source binding is unsupported or malformed"
+        )
+
+    random_evidence = _require_mapping(
+        binding.get("random_evidence"), "Phase C random-evidence binding"
+    )
+    randomizer = _require_mapping(
+        random_evidence.get("randomizer"), "Phase C randomizer"
+    )
+    if randomizer != {
+        "kind": "dice-pool",
+        "count": 3,
+        "sides": 6,
+        "combine": "sum",
+    }:
+        raise ExecutionError("Phase C reaction roll requires the declared 3d6 sum randomizer")
+    generated = _require_mapping(
+        random_evidence.get("generated"), "Phase C generated random-evidence binding"
+    )
+    if (
+        random_evidence.get("supplied_terms") != {"supported": True}
+        or generated.get("supported") is not True
+        or generated.get("seed_required") is not True
+        or generated.get("algorithm") != RNG_ALGORITHM
+    ):
+        raise ExecutionError("Phase C random-evidence binding is malformed")
+
+    consequences = _require_mapping(
+        binding.get("consequences"), "Phase C consequence bindings"
+    )
+    expected_categories = {
+        "disastrous",
+        "very-bad",
+        "bad",
+        "poor",
+        "neutral",
+        "good",
+        "very-good",
+        "excellent",
+    }
+    if set(consequences) != expected_categories:
+        raise ExecutionError("Phase C must bind every declared reaction category")
+    for category, row in consequences.items():
+        effect_refs = (row or {}).get("effect_refs")
+        if not isinstance(effect_refs, list) or not effect_refs:
+            raise ExecutionError(
+                f"Phase C {category} consequence must declare ordered effect_refs"
+            )
+    return binding
+
+
+def _phase_c_lookup_table(resolved, table_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    tables = _require_mapping(
+        sidecar.get("phase_c_lookup_tables"),
+        "resolved phase_c_lookup_tables",
+    )
+    table = _require_mapping(tables.get(table_ref), f"Phase C lookup table {table_ref}")
+    if table.get("source_ref") != "gurps-lite":
+        raise ExecutionError("Phase C reaction table must use gurps-lite authority")
+    if table.get("authority") != "authoritative":
+        raise ExecutionError("Phase C reaction table must remain authoritative")
+    if table.get("rule_locator") != "p. 3, Reaction Table":
+        raise ExecutionError("Phase C reaction table source locator is unsupported")
+    rows = table.get("rows")
+    if not isinstance(rows, list) or not rows:
+        raise ExecutionError("Phase C reaction table rows are required")
+    return table
+
+
+def _phase_c_reaction_modifiers(action):
+    modifiers = action.get("reaction_modifiers")
+    if not isinstance(modifiers, list) or not modifiers:
+        raise ExecutionError("Phase C social action requires reaction modifiers")
+    rows = []
+    seen = set()
+    for index, modifier in enumerate(modifiers):
+        row = _require_mapping(modifier, f"reaction modifier {index}")
+        modifier_id = row.get("id")
+        if not isinstance(modifier_id, str) or not modifier_id:
+            raise ExecutionError(f"reaction modifier {index} requires id")
+        if modifier_id in seen:
+            raise ExecutionError(f"duplicate reaction modifier id: {modifier_id}")
+        seen.add(modifier_id)
+        amount = row.get("amount")
+        if not isinstance(amount, int) or isinstance(amount, bool):
+            raise ExecutionError(f"reaction modifier {modifier_id} amount must be integer")
+        if row.get("source_ref") != "scenario-01-source":
+            raise ExecutionError(
+                f"reaction modifier {modifier_id} must come from scenario-01-source"
+            )
+        if row.get("authority") != "provisional":
+            raise ExecutionError(
+                f"reaction modifier {modifier_id} must remain provisional"
+            )
+        if row.get("provenance") != "prototype_assumption":
+            raise ExecutionError(
+                f"reaction modifier {modifier_id} provenance is unsupported"
+            )
+        if row.get("rule_source_ref") != "gurps-lite":
+            raise ExecutionError(
+                f"reaction modifier {modifier_id} rule authority must be gurps-lite"
+            )
+        if row.get("rule_locator") != "p. 3, Reaction Modifiers":
+            raise ExecutionError(
+                f"reaction modifier {modifier_id} source locator is unsupported"
+            )
+        rows.append(copy.deepcopy(row))
+    return rows
+
+
+def _lookup_reaction_category(table, modified_total):
+    matches = []
+    for row in table.get("rows", []):
+        when = _require_mapping(row.get("when"), "reaction lookup range")
+        minimum = when.get("min")
+        maximum = when.get("max")
+        if minimum is not None and modified_total < minimum:
+            continue
+        if maximum is not None and modified_total > maximum:
+            continue
+        matches.append(row)
+    if len(matches) != 1:
+        raise ExecutionError(
+            f"reaction lookup must match exactly one row for {modified_total}, got {len(matches)}"
+        )
+    return matches[0]
+
+
+def _phase_c_ready(resolved, state, binding):
+    index = validate_runtime_state(resolved, state)
+    for requirement in binding.get("required_state", []):
+        row = _require_mapping(requirement, "Phase C state requirement")
+        if _state_value(index, row.get("ref")) != row.get("value"):
+            return False
+    return True
+
+
+def create_social_runtime_state(resolved, *, encounter_ref="frightened-witness"):
+    """Create the bounded neutral runtime snapshot used by Phase C."""
+    binding = _phase_c_binding(resolved, encounter_ref)
+    states = _require_mapping(resolved.get("runtime_states"), "resolved runtime_states")
+    source = _require_mapping(
+        states.get(binding.get("runtime_state_ref")),
+        f"runtime state {binding.get('runtime_state_ref')}",
+    )
+    state = copy.deepcopy(source)
+    validate_runtime_state(resolved, state)
+    return state
+
+
+def describe_social_interaction(resolved, state, *, encounter_ref):
+    """Describe the Phase C witness interaction from neutral runtime state."""
+    binding = _phase_c_binding(resolved, encounter_ref)
+    encounter = _encounter(resolved, encounter_ref)
+    action = _encounter_action(encounter, binding.get("action_id"))
+    ready = _phase_c_ready(resolved, state, binding)
+
+    state_contract = _require_mapping(
+        encounter.get("state_contract"), f"encounter {encounter_ref} state_contract"
+    )
+    refs = _require_mapping(
+        state_contract.get("refs"), f"encounter {encounter_ref} state refs"
+    )
+    index = validate_runtime_state(resolved, state)
+    current_state = {role: _state_value(index, ref) for role, ref in refs.items()}
+    table = _phase_c_lookup_table(resolved, binding.get("lookup_table_ref"))
+
+    procedure = _require_mapping(
+        (resolved.get("rules") or {}).get("procedures", {}).get(binding["procedure_ref"]),
+        f"resolved procedure {binding['procedure_ref']}",
+    )
+
+    return {
+        "encounter": {
+            "id": encounter_ref,
+            "type": encounter.get("type"),
+            "purpose": encounter.get("purpose"),
+        },
+        "runtime_state_revision": state.get("revision"),
+        "state": current_state,
+        "available_actions": [
+            {
+                "id": action.get("id"),
+                "label": action.get("label"),
+                "actor_ref": action.get("actor_ref"),
+                "procedure_ref": action.get("procedure_ref"),
+                "reaction_modifiers": copy.deepcopy(action.get("reaction_modifiers", [])),
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            }
+        ]
+        if ready
+        else [],
+        "reaction_capability": {
+            "procedure_ref": binding["procedure_ref"],
+            "procedure_source_ref": procedure.get("source_ref"),
+            "procedure_authority": procedure.get("authority"),
+            "random_evidence": copy.deepcopy(binding["random_evidence"]),
+            "lookup_table_ref": binding["lookup_table_ref"],
+            "lookup_table": copy.deepcopy(table),
+            "reaction_result_format": binding["reaction_result_format"],
+        },
+        "result_format": binding["result_format"],
+    }
+
+
+def _execute_reaction_roll(
+    resolved,
+    *,
+    encounter_ref,
+    action,
+    actor_ref,
+    binding,
+    dice_terms=None,
+    random_seed=None,
+):
+    modifiers = _phase_c_reaction_modifiers(action)
+    randomizer = binding["random_evidence"]["randomizer"]
+    contract = {
+        "count": randomizer["count"],
+        "sides": randomizer["sides"],
+    }
+    terms, evidence_kind = _random_terms(
+        dice_terms=dice_terms,
+        random_seed=random_seed,
+        contract=contract,
+        binding=binding,
+    )
+    raw_total = sum(terms)
+    modifier_total = sum(row["amount"] for row in modifiers)
+    modified_total = raw_total + modifier_total
+    table = _phase_c_lookup_table(resolved, binding["lookup_table_ref"])
+    matched = _lookup_reaction_category(table, modified_total)
+    category = matched.get("value")
+
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    rule_source = _require_mapping(sources.get("gurps-lite"), "gurps-lite source")
+    scenario_source = _require_mapping(
+        sources.get("scenario-01-source"), "scenario-01 source"
+    )
+    bridge_source = _require_mapping(
+        sources.get(binding["binding_source_ref"]), "Phase C binding source"
+    )
+
+    return {
+        "format": binding["reaction_result_format"],
+        "mechanic": "reaction-roll",
+        "input": {
+            "encounter_ref": encounter_ref,
+            "action_id": action.get("id"),
+            "actor_ref": actor_ref,
+        },
+        "procedure_ref": binding["procedure_ref"],
+        "modifiers": modifiers,
+        "modifier_total": modifier_total,
+        "random_evidence": {
+            **evidence_kind,
+            "dice_kind": randomizer["kind"],
+            "sides": randomizer["sides"],
+            "terms": terms,
+            "raw_total": raw_total,
+        },
+        "modified_total": modified_total,
+        "reaction": category,
+        "lookup": {
+            "table_ref": binding["lookup_table_ref"],
+            "matched_row": copy.deepcopy(matched),
+        },
+        "trace": {
+            "procedure": {
+                "ref": binding["procedure_ref"],
+                "source_ref": "gurps-lite",
+                "authority": rule_source.get("authority"),
+                "rule_locator": "p. 3, Reaction Rolls / Reaction Table",
+            },
+            "reaction_modifiers": {
+                "rule_source_ref": "gurps-lite",
+                "rule_authority": rule_source.get("authority"),
+                "rule_locator": "p. 3, Reaction Modifiers",
+                "scenario_source_ref": "scenario-01-source",
+                "scenario_authority": scenario_source.get("authority"),
+            },
+            "lookup_table": {
+                "source_ref": table.get("source_ref"),
+                "authority": table.get("authority"),
+                "rule_locator": table.get("rule_locator"),
+            },
+            "execution_binding": {
+                "ref": f"proto_sidecar.phase_c_social_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": bridge_source.get("authority"),
+            },
+        },
+    }
+
+
+def execute_social_interaction(
+    resolved,
+    state,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    dice_terms=None,
+    random_seed=None,
+):
+    """Execute one bounded Phase C social/reaction encounter."""
+    binding = _phase_c_binding(resolved, encounter_ref)
+    encounter = _encounter(resolved, encounter_ref)
+    action = _encounter_action(encounter, action_id)
+
+    if action_id != binding.get("action_id"):
+        raise ExecutionError(
+            f"action is not bound for Phase C encounter {encounter_ref}: {action_id}"
+        )
+    if actor_ref != binding.get("actor_ref") or actor_ref != action.get("actor_ref"):
+        raise ExecutionError(
+            f"actor {actor_ref} is not eligible for social action {action_id}"
+        )
+    if action.get("procedure_ref") != binding.get("procedure_ref"):
+        raise ExecutionError("social action disagrees with Phase C procedure_ref")
+
+    before = copy.deepcopy(state)
+    if not _phase_c_ready(resolved, before, binding):
+        raise ExecutionError(
+            f"social action {action_id} is unavailable in current runtime state"
+        )
+
+    reaction_resolution = _execute_reaction_roll(
+        resolved,
+        encounter_ref=encounter_ref,
+        action=action,
+        actor_ref=actor_ref,
+        binding=binding,
+        dice_terms=dice_terms,
+        random_seed=random_seed,
+    )
+    category = reaction_resolution["reaction"]
+    consequence = _require_mapping(
+        (action.get("consequences") or {}).get(category),
+        f"social consequence {category}",
+    )
+    effect_refs = binding["consequences"][category]["effect_refs"]
+
+    after = copy.deepcopy(before)
+    state_index = validate_runtime_state(resolved, after)
+    delta = [
+        _apply_set_effect(resolved, after, state_index, effect_ref)
+        for effect_ref in effect_refs
+    ]
+    after["revision"] = str(int(after["revision"]) + 1)
+    validate_runtime_state(resolved, after)
+
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    bridge_source = _require_mapping(
+        sources.get(binding["binding_source_ref"]), "Phase C binding source"
+    )
+    consequence_source = _require_mapping(
+        sources.get(binding["consequence_source_ref"]),
+        "Phase C consequence source",
+    )
+
+    return {
+        "format": binding["result_format"],
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "reaction_resolution": reaction_resolution,
+        "reaction": category,
+        "consequence": copy.deepcopy(consequence),
+        "state_before": before,
+        "state_after": after,
+        "state_delta": delta,
+        "trace": {
+            "encounter_action": {
+                "encounter_ref": encounter_ref,
+                "action_id": action_id,
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            },
+            "execution_binding": {
+                "ref": f"proto_sidecar.phase_c_social_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": bridge_source.get("authority"),
+            },
+            "consequence_source": {
+                "source_ref": binding["consequence_source_ref"],
+                "authority": consequence_source.get("authority"),
+                "effect_refs": copy.deepcopy(effect_refs),
+            },
+            "nested_reaction_result_format": binding["reaction_result_format"],
+        },
+    }
+
+
+def replay_social_interaction(resolved, record):
+    """Deterministically re-evaluate one Phase C social encounter record."""
+    if not isinstance(record, dict):
+        raise ExecutionError("social encounter record must be an object")
+    if record.get("format") != PHASE_C_RESULT_FORMAT:
+        raise ExecutionError(
+            f"unsupported Phase C social record format: {record.get('format')!r}"
+        )
+    reaction = _require_mapping(
+        record.get("reaction_resolution"), "social record reaction_resolution"
+    )
+    evidence = _require_mapping(
+        reaction.get("random_evidence"), "social record random_evidence"
+    )
+    kwargs = {
+        "resolved": resolved,
+        "state": copy.deepcopy(record.get("state_before")),
+        "encounter_ref": record.get("encounter_ref"),
+        "action_id": record.get("action_id"),
+        "actor_ref": record.get("actor_ref"),
+    }
+    if evidence.get("kind") == "generated-seeded-dice-terms":
+        kwargs["random_seed"] = evidence.get("seed")
+    elif evidence.get("kind") == "supplied-dice-terms":
+        kwargs["dice_terms"] = evidence.get("terms")
+    else:
+        raise ExecutionError("social record random evidence kind is unsupported")
+
+    recomputed = execute_social_interaction(**kwargs)
+    if recomputed != record:
+        raise ExecutionError("social encounter record divergence detected")
+    return recomputed
+
+
+def encounter_runtime_kind(resolved, encounter_ref):
+    """Return the runtime-owned interaction kind for a supported encounter."""
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    if encounter_ref in (sidecar.get("phase_b_encounter_bindings") or {}):
+        return "investigation"
+    if encounter_ref in (sidecar.get("phase_c_social_bindings") or {}):
+        return "social"
+    raise ExecutionError(f"encounter has no supported runtime binding: {encounter_ref}")

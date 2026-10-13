@@ -43,6 +43,7 @@ G5_EXERCISED_PROTO = frozenset(
     }
 )
 PHASE_A_EXERCISED_PROTO = G5_EXERCISED_PROTO
+PHASE_C_EXERCISED_PROTO = PHASE_A_EXERCISED_PROTO | frozenset({"lookup_tables"})
 
 
 def _repo_relative(path):
@@ -132,7 +133,7 @@ def _registered_sidecar(config):
     return json.loads(sidecars[0].read_text())
 
 
-def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
+def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
     if not isinstance(sidecar, dict):
         errors.append("G5 requires the registered DIRPS proto sidecar")
         return
@@ -142,7 +143,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
         errors.append("G5 DIRPS proto sidecar must contain proto_specs")
         return
 
-    for proto_id in sorted(PHASE_A_EXERCISED_PROTO):
+    for proto_id in sorted(PHASE_C_EXERCISED_PROTO):
         spec = specs.get(proto_id)
         if not isinstance(spec, dict):
             errors.append(f"G5 exercised proto {proto_id}: missing")
@@ -366,6 +367,142 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             if phase_b.get("runtime_state_ref") not in (dodge.get("runtime_states") or {}):
                 errors.append(
                     "Phase B runtime_state_ref must resolve in DODGE runtime_states"
+                )
+
+    lookup_spec = specs.get("lookup_tables") or {}
+    if lookup_spec.get("status") != "exercised":
+        errors.append("Phase C must mark lookup_tables exercised")
+    if lookup_spec.get("candidate_for_dodge") != "not-yet-candidate":
+        errors.append("Phase C lookup_tables must remain not-yet-candidate")
+
+    reaction_timing = specs.get("reaction_timing") or {}
+    if reaction_timing.get("status") != "suspected":
+        errors.append(
+            "Phase C reaction roll must not promote reaction_timing; no interrupt window executes"
+        )
+
+    expected_lookup = {
+        "key_ref": "modified-reaction-total",
+        "rows": [
+            {"when": {"min": None, "max": 0}, "value": "disastrous"},
+            {"when": {"min": 1, "max": 3}, "value": "very-bad"},
+            {"when": {"min": 4, "max": 6}, "value": "bad"},
+            {"when": {"min": 7, "max": 9}, "value": "poor"},
+            {"when": {"min": 10, "max": 12}, "value": "neutral"},
+            {"when": {"min": 13, "max": 15}, "value": "good"},
+            {"when": {"min": 16, "max": 18}, "value": "very-good"},
+            {"when": {"min": 19, "max": None}, "value": "excellent"},
+        ],
+        "fallback": "error",
+        "source_ref": RULES_SOURCE,
+        "authority": "authoritative",
+        "rule_locator": "p. 3, Reaction Table",
+    }
+    lookups = sidecar.get("phase_c_lookup_tables")
+    if not isinstance(lookups, dict) or lookups.get("gurps-lite-reaction-table") != expected_lookup:
+        errors.append(
+            "Phase C must preserve the authoritative GURPS Lite Reaction Table lookup exactly"
+        )
+
+    reaction_order = [
+        "disastrous",
+        "very-bad",
+        "bad",
+        "poor",
+        "neutral",
+        "good",
+        "very-good",
+        "excellent",
+    ]
+    canonical_consequences = {}
+    if isinstance(canonical, dict):
+        witness = next(
+            (
+                row
+                for row in canonical.get("encounters", [])
+                if isinstance(row, dict) and row.get("id") == "frightened-witness"
+            ),
+            None,
+        )
+        if isinstance(witness, dict):
+            actions = witness.get("actions") or []
+            if len(actions) == 1 and isinstance(actions[0], dict):
+                canonical_consequences = actions[0].get("consequences") or {}
+
+    expected_consequences = {}
+    for reaction in reaction_order:
+        information = (canonical_consequences.get(reaction) or {}).get("information")
+        if not isinstance(information, str) or not information:
+            errors.append(
+                f"Phase C canonical consequence information is required for {reaction}"
+            )
+            information = "missing"
+        expected_consequences[reaction] = {
+            "effect_refs": [
+                "frightened-witness-set-status-resolved",
+                f"frightened-witness-set-reaction-{reaction}",
+                f"frightened-witness-set-information-{information}",
+            ]
+        }
+    expected_social_binding = {
+        "encounter_ref": "frightened-witness",
+        "action_id": "reassure-and-question",
+        "actor_ref": "pc",
+        "procedure_ref": "reaction-roll",
+        "runtime_state_ref": "scenario-01-frightened-witness-initial",
+        "required_state": [
+            {"ref": "frightened-witness-status", "value": "ready"},
+        ],
+        "modifier_source": {
+            "kind": "encounter-action-reaction-modifiers",
+            "path": "scenario.encounters[].actions[].reaction_modifiers",
+        },
+        "random_evidence": {
+            "randomizer": {
+                "kind": "dice-pool",
+                "count": 3,
+                "sides": 6,
+                "combine": "sum",
+            },
+            "supplied_terms": {"supported": True},
+            "generated": {
+                "supported": True,
+                "seed_required": True,
+                "algorithm": "sha256-rejection-v1",
+            },
+        },
+        "lookup_table_ref": "gurps-lite-reaction-table",
+        "consequences": expected_consequences,
+        "reaction_result_format": "dirps-reaction-result.v1",
+        "result_format": "dirps-social-encounter-result.v1",
+        "binding_source_ref": PROTO_SOURCE,
+        "consequence_source_ref": SCENARIO_SOURCE,
+    }
+    social_bindings = sidecar.get("phase_c_social_bindings")
+    if not isinstance(social_bindings, dict):
+        errors.append("Phase C DIRPS sidecar must declare phase_c_social_bindings")
+    else:
+        social = social_bindings.get("frightened-witness")
+        if social != expected_social_binding:
+            errors.append(
+                "Phase C frightened-witness social binding must match the declared reaction contract"
+            )
+        elif dodge:
+            procedure = (dodge.get("rules", {}).get("procedures", {}) or {}).get(
+                social["procedure_ref"]
+            )
+            if not isinstance(procedure, dict):
+                errors.append("Phase C procedure_ref must resolve in DODGE procedures")
+            effects = dodge.get("rules", {}).get("effects", {}) or {}
+            for consequence in social["consequences"].values():
+                for effect_ref in consequence["effect_refs"]:
+                    if effect_ref not in effects:
+                        errors.append(
+                            f"Phase C consequence effect_ref does not resolve: {effect_ref}"
+                        )
+            if social["runtime_state_ref"] not in (dodge.get("runtime_states") or {}):
+                errors.append(
+                    "Phase C runtime_state_ref must resolve in DODGE runtime_states"
                 )
 
     if (specs.get("replay_session_history") or {}).get("status") != "suspected":
@@ -949,6 +1086,240 @@ def _validate_phase_b_investigation_contract(dodge, canonical, errors):
             )
 
 
+def _validate_phase_c_social_contract(dodge, canonical, errors):
+    encounters = {
+        row.get("id"): row
+        for row in canonical.get("encounters", [])
+        if isinstance(row, dict) and row.get("id")
+    }
+    encounter = encounters.get("frightened-witness")
+    if not isinstance(encounter, dict):
+        errors.append("Phase C requires canonical frightened-witness encounter")
+        return
+
+    state_contract = encounter.get("state_contract")
+    if not isinstance(state_contract, dict):
+        errors.append("Phase C frightened-witness requires state_contract")
+        return
+    refs = state_contract.get("refs")
+    initial = state_contract.get("initial")
+    if not isinstance(refs, dict) or set(refs) != {"status", "reaction", "information"}:
+        errors.append(
+            "Phase C frightened-witness state_contract.refs must define status/reaction/information"
+        )
+        return
+    if not isinstance(initial, dict) or set(initial) != set(refs):
+        errors.append(
+            "Phase C frightened-witness state_contract.initial must define status/reaction/information"
+        )
+        return
+
+    actions = encounter.get("actions")
+    if not isinstance(actions, list) or len(actions) != 1:
+        errors.append("Phase C frightened-witness must expose exactly one social action")
+        return
+    action = actions[0]
+    if not isinstance(action, dict):
+        errors.append("Phase C frightened-witness action must be an object")
+        return
+    if action.get("id") != "reassure-and-question":
+        errors.append("Phase C frightened-witness action id must be reassure-and-question")
+    if action.get("actor_ref") != "pc":
+        errors.append("Phase C frightened-witness actor_ref must be pc")
+    if action.get("procedure_ref") != "reaction-roll":
+        errors.append("Phase C frightened-witness must bind reaction-roll")
+    if action.get("source_ref") != SCENARIO_SOURCE:
+        errors.append(
+            f"Phase C frightened-witness action source_ref must be {SCENARIO_SOURCE}"
+        )
+    if action.get("authority") != "provisional":
+        errors.append("Phase C frightened-witness action authority must be provisional")
+    if action.get("provenance") != PC_PROVENANCE:
+        errors.append(
+            f"Phase C frightened-witness action provenance must be {PC_PROVENANCE}"
+        )
+
+    modifiers = action.get("reaction_modifiers")
+    if not isinstance(modifiers, list) or len(modifiers) != 1:
+        errors.append(
+            "Phase C frightened-witness must declare exactly one bounded reaction modifier"
+        )
+    else:
+        modifier = modifiers[0]
+        if not isinstance(modifier, dict):
+            errors.append("Phase C reaction modifier must be an object")
+        else:
+            expected_keys = {
+                "id",
+                "amount",
+                "source_ref",
+                "authority",
+                "provenance",
+                "rule_source_ref",
+                "rule_locator",
+                "reason",
+            }
+            if set(modifier) != expected_keys:
+                errors.append(
+                    "Phase C reassuring approach modifier must preserve the bounded declared shape"
+                )
+            if modifier.get("id") != "reassuring-approach":
+                errors.append("Phase C reaction modifier id must be reassuring-approach")
+            amount = modifier.get("amount")
+            if not isinstance(amount, int) or isinstance(amount, bool):
+                errors.append("Phase C reaction modifier amount must be integer")
+            if modifier.get("source_ref") != SCENARIO_SOURCE:
+                errors.append(
+                    f"Phase C reaction modifier source_ref must be {SCENARIO_SOURCE}"
+                )
+            if modifier.get("authority") != "provisional":
+                errors.append("Phase C reaction modifier authority must remain provisional")
+            if modifier.get("provenance") != PC_PROVENANCE:
+                errors.append(
+                    f"Phase C reaction modifier provenance must be {PC_PROVENANCE}"
+                )
+            if modifier.get("rule_source_ref") != RULES_SOURCE:
+                errors.append(
+                    f"Phase C reaction modifier rule_source_ref must be {RULES_SOURCE}"
+                )
+            if modifier.get("rule_locator") != "p. 3, Reaction Modifiers":
+                errors.append("Phase C reaction modifier rule locator is unsupported")
+            if not isinstance(modifier.get("reason"), str) or not modifier.get("reason"):
+                errors.append("Phase C reassuring approach modifier reason is required")
+
+    procedure = (dodge.get("rules", {}).get("procedures", {}) or {}).get("reaction-roll")
+    if not isinstance(procedure, dict):
+        errors.append("Phase C requires DODGE reaction-roll procedure")
+    else:
+        if procedure.get("source_ref") != RULES_SOURCE:
+            errors.append("Phase C reaction-roll procedure must use gurps-lite source")
+        if procedure.get("authority") != "authoritative":
+            errors.append("Phase C reaction-roll procedure must remain authoritative")
+        if not isinstance(procedure.get("steps"), list) or not procedure.get("steps"):
+            errors.append("Phase C reaction-roll procedure must preserve executable intent")
+
+    reaction_order = [
+        "disastrous",
+        "very-bad",
+        "bad",
+        "poor",
+        "neutral",
+        "good",
+        "very-good",
+        "excellent",
+    ]
+    consequences = action.get("consequences")
+    if not isinstance(consequences, dict) or list(consequences) != reaction_order:
+        errors.append(
+            "Phase C frightened-witness consequences must preserve Reaction Table order"
+        )
+        return
+    for reaction in reaction_order:
+        row = consequences.get(reaction)
+        if not isinstance(row, dict):
+            errors.append(f"Phase C {reaction} consequence must be an object")
+            continue
+        if set(row) != {"status", "reaction", "information", "information_text"}:
+            errors.append(
+                f"Phase C {reaction} consequence must define status/reaction/information/information_text"
+            )
+        if row.get("reaction") != reaction:
+            errors.append(f"Phase C {reaction} consequence must preserve its reaction id")
+        if row.get("status") != "resolved":
+            errors.append(f"Phase C {reaction} consequence status must be resolved")
+        if not isinstance(row.get("information_text"), str) or not row.get(
+            "information_text"
+        ):
+            errors.append(f"Phase C {reaction} information_text is required")
+
+    values = dodge.get("rules", {}).get("values", {}) or {}
+    ordered_by_role = {
+        "status": [initial.get("status")]
+        + [consequences[r].get("status") for r in reaction_order],
+        "reaction": [initial.get("reaction")]
+        + [consequences[r].get("reaction") for r in reaction_order],
+        "information": [initial.get("information")]
+        + [consequences[r].get("information") for r in reaction_order],
+    }
+    for role, value_ref in refs.items():
+        definition = values.get(value_ref)
+        if not isinstance(definition, dict):
+            errors.append(f"Phase C state ref {value_ref} must resolve in DODGE rules.values")
+            continue
+        enum_values = []
+        for item in ordered_by_role[role]:
+            if item not in enum_values:
+                enum_values.append(item)
+        expected_definition = {
+            "name": definition.get("name"),
+            "type": "enum",
+            "owner_scope": "scenario",
+            "persistence_scope": "scenario",
+            "default": initial.get(role),
+            "enum_values": enum_values,
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        }
+        if definition != expected_definition:
+            errors.append(
+                f"Phase C DODGE value {value_ref} must normalize canonical {role} state exactly"
+            )
+
+    initial_bindings = [
+        {
+            "ref": refs[role],
+            "subject": {"relative": "scenario"},
+            "value": initial[role],
+            "authority": "provisional",
+        }
+        for role in ("status", "reaction", "information")
+    ]
+    runtime_state = (dodge.get("runtime_states") or {}).get(
+        "scenario-01-frightened-witness-initial"
+    )
+    expected_runtime_state = {
+        "scenario_ref": "scenario-01",
+        "bindings": initial_bindings,
+        "events": [],
+        "revision": "0",
+    }
+    if runtime_state != expected_runtime_state:
+        errors.append(
+            "Phase C witness runtime state must normalize canonical initial state exactly"
+        )
+
+    effects = dodge.get("rules", {}).get("effects", {}) or {}
+    expected_effects = {
+        "frightened-witness-set-status-resolved": (
+            refs["status"],
+            "resolved",
+        )
+    }
+    for reaction in reaction_order:
+        expected_effects[f"frightened-witness-set-reaction-{reaction}"] = (
+            refs["reaction"],
+            reaction,
+        )
+    for information in ("no-useful-account", "partial-account", "useful-lead"):
+        expected_effects[f"frightened-witness-set-information-{information}"] = (
+            refs["information"],
+            information,
+        )
+    for effect_id, (target_ref, value) in expected_effects.items():
+        expected_effect = {
+            "op": "set",
+            "target_ref": target_ref,
+            "subject": {"relative": "scenario"},
+            "value": value,
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        }
+        if effects.get(effect_id) != expected_effect:
+            errors.append(
+                f"Phase C DODGE effect {effect_id} must normalize canonical witness consequence exactly"
+            )
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -962,6 +1333,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_scenario_duplication(dodge, canonical, errors)
     _validate_phase_a_contextual_checks(dodge, canonical, errors)
     _validate_phase_b_investigation_contract(dodge, canonical, errors)
+    _validate_phase_c_social_contract(dodge, canonical, errors)
     return errors
 
 
@@ -978,6 +1350,7 @@ def validate_source_context(context):
             _registered_sidecar(context.get("config")),
             errors,
             context["dodge"],
+            context["scenario_source"],
         )
     return errors
 
@@ -1136,7 +1509,7 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
     # G5 and later gameplay tranches make these proto contracts executable;
     # resolved validation must continue to guard their exact authority/status boundary.
     if (canonical.get("status") or "").startswith(("g5-", "g6-")):
-        _validate_g5_proto_semantics(sidecar, errors, dodge)
+        _validate_g5_proto_semantics(sidecar, errors, dodge, canonical)
 
     expected_unresolved = _resolved_unresolved_index(sidecar)
     if resolved.get("unresolved") != expected_unresolved:

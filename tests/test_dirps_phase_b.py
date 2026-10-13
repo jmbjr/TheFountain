@@ -268,6 +268,7 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
                 "actor_character_model",
                 "skill_model",
                 "resolution_trace",
+                "lookup_tables",
             },
         )
         self.assertEqual(specs["replay_session_history"]["status"], "suspected")

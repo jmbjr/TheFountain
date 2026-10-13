@@ -578,3 +578,28 @@ The existing G5/v1 and Phase A/v2 record contracts remain unchanged. Phase B add
 The debug CLI adds a separate encounter interaction mode while retaining the accepted direct-skill mode. Encounter/action/consequence IDs are runtime/source data rather than target literals.
 
 No proto status advances. DODGE already supplies the state/effect vocabulary needed by this tranche.
+
+### DIRPS gameplay Phase C — Frightened Witness social encounter
+
+Phase C adds a second stateful encounter with a different resolution model:
+
+```text
+canonical witness action/modifier/consequences
+→ DODGE reaction-roll procedure + witness values/effects/runtime snapshot
+→ neutral resolver
+→ Phase C reaction-roll binding + lookup table
+→ 3d6 + reaction modifiers
+→ authoritative Reaction Table lookup
+→ canonical information consequence
+→ neutral runtime-state mutation
+→ dirps-social-encounter-result.v1
+→ runtime-dispatched debug target
+```
+
+GURPS Lite remains authoritative for the reaction-roll procedure and table. Scenario 01 owns the provisional action, its +1 good-approach assumption, and the story information mapping. The semantic profile allows the canonical modifier amount to perturb while enforcing its source/provenance/rule authority, so runtime behavior follows the source rather than a validator constant.
+
+The DODGE document uses first-class values/effects for witness state but keeps `scenario-01-initial` unchanged. A separate `scenario-01-frightened-witness-initial` runtime snapshot prevents later gameplay expansion from silently changing accepted Phase B `dirps-encounter-result.v1` before/after state evidence. Phase G remains responsible for whole-scenario progression/state unification.
+
+The runtime adds `dirps-reaction-result.v1` and `dirps-social-encounter-result.v1`. Reaction results preserve terms, raw total, modifier rows/total, modified total, matched lookup row, category, and rule/source trace. Social encounter results preserve the nested reaction record plus canonical consequence and exact state delta. The target asks the runtime which encounter kind it supports and dispatches to investigation or social adapters without hard-coded encounter ids.
+
+Phase C promotes exactly one proto concept: `lookup_tables` becomes `exercised` / `not-yet-candidate`. Its bounded range-table representation is resolver-preserved, runtime-executed, and covered by perturbation/negative evidence. `reaction_timing` remains `suspected` because no interrupt or defensive response window executes here.

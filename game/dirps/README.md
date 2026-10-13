@@ -23,7 +23,8 @@ game/dirps/
 │   ├── g5-executable-validation.md
 │   ├── g6-target-validation.md
 │   ├── phase-a-contextual-skill-validation.md
-│   └── phase-b-roadside-investigation-validation.md
+│   ├── phase-b-roadside-investigation-validation.md
+│   └── phase-c-frightened-witness-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -34,11 +35,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase B — Roadside Tracks investigation**.
+DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase C — Frightened Witness social encounter**.
 
-The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1` and now preserves standard DODGE runtime-state snapshots; `tools/dirps_runtime.py` preserves the accepted v1/v2 skill APIs and adds a stateful Roadside investigation composition; and `tools/dirps_debug_target.py` adds a thin encounter mode over that runtime. `docs/phase-b-roadside-investigation-validation.md` records the current gameplay evidence. Phase C and later scenario mechanics remain unimplemented; G7 is not claimed.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1` and preserves standard DODGE runtime-state snapshots; `tools/dirps_runtime.py` preserves the accepted skill/investigation contracts and adds an authoritative reaction-roll + lookup-table social path; and `tools/dirps_debug_target.py` dispatches both accepted encounter kinds through runtime-owned semantics. `docs/phase-c-frightened-witness-validation.md` records the current gameplay evidence. Phase D and later scenario mechanics remain unimplemented; G7 is not claimed.
 
-The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6/Phase A evidence and add named Phase B encounter/runtime-target PASS lines.
+The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6/Phase A/Phase B evidence and add named Phase C social/runtime-target PASS lines.
 
 ## Authority boundary
 
@@ -62,7 +63,7 @@ runtime / replay / targets
 
 The DODGE document targets DODGE 0.2.1 and remains resolved through the accepted G4 boundary. G5 adds a renderer-independent execution layer that consumes only `dirps-resolved-game.v1`; G6 adds a debug CLI that consumes the runtime rather than rereading or reinterpreting authored source. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
-The proto sidecar records execution evidence without speculative promotion. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, and `resolution_trace` remain `exercised` / `not-yet-candidate`. Phase B uses standard DODGE values, scenario/runtime state, and effects; it therefore promotes no additional proto concept. `replay_session_history`, `visibility_and_secret_state`, `derived_values`, and `expressions` remain `suspected`.
+The proto sidecar records execution evidence without speculative promotion. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, and now `lookup_tables` are `exercised` / `not-yet-candidate`. Phase C uses the reaction table as the first concrete range-lookup need. `reaction_timing` remains `suspected` because an NPC reaction roll is not an interrupt window; `replay_session_history`, `visibility_and_secret_state`, `derived_values`, and `expressions` also remain `suspected`.
 
 ## Scenario 01
 

@@ -12,10 +12,14 @@ import json
 from dirps_runtime import (
     ExecutionError,
     create_runtime_state,
+    create_social_runtime_state,
     describe_attempt_skill,
     describe_investigation,
+    describe_social_interaction,
+    encounter_runtime_kind,
     execute_attempt_skill,
     execute_investigation,
+    execute_social_interaction,
 )
 from resolve_dirps_dodge import resolve
 
@@ -24,6 +28,7 @@ TARGET_ID = "dirps-debug-cli"
 TARGET_FORMAT = "dirps-debug-cli-target.v1"
 TARGET_KIND = "debug-cli"
 ENCOUNTER_TARGET_FORMAT = "dirps-debug-encounter-target.v1"
+SOCIAL_TARGET_FORMAT = "dirps-debug-social-target.v1"
 
 
 def inspect_target(resolved, *, runtime_describe=describe_attempt_skill):
@@ -176,6 +181,172 @@ def execute_investigation_target(
     return view
 
 
+def inspect_social_target(
+    resolved,
+    *,
+    encounter_ref,
+    state=None,
+    runtime_create=create_social_runtime_state,
+    runtime_describe=describe_social_interaction,
+):
+    """Present one runtime-described social encounter without owning gameplay."""
+    runtime_state = (
+        runtime_create(resolved, encounter_ref=encounter_ref)
+        if state is None
+        else state
+    )
+    capability = runtime_describe(
+        resolved,
+        runtime_state,
+        encounter_ref=encounter_ref,
+    )
+    return {
+        "target": {
+            "id": TARGET_ID,
+            "format": SOCIAL_TARGET_FORMAT,
+            "kind": TARGET_KIND,
+        },
+        "status": "ready",
+        "encounter": capability["encounter"],
+        "runtime_state": runtime_state,
+        "capability": capability,
+    }
+
+
+def execute_social_target(
+    resolved,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    dice_terms=None,
+    random_seed=None,
+    state=None,
+    runtime_create=create_social_runtime_state,
+    runtime_describe=describe_social_interaction,
+    runtime_execute=execute_social_interaction,
+):
+    """Pass one target selection to the Phase C runtime and return its record."""
+    view = inspect_social_target(
+        resolved,
+        encounter_ref=encounter_ref,
+        state=state,
+        runtime_create=runtime_create,
+        runtime_describe=runtime_describe,
+    )
+    view["selection"] = {
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "dice_terms": (
+            list(dice_terms) if isinstance(dice_terms, (list, tuple)) else dice_terms
+        ),
+        "random_seed": random_seed,
+    }
+    try:
+        record = runtime_execute(
+            resolved,
+            view["runtime_state"],
+            encounter_ref=encounter_ref,
+            action_id=action_id,
+            actor_ref=actor_ref,
+            dice_terms=dice_terms,
+            random_seed=random_seed,
+        )
+    except ExecutionError as exc:
+        view["status"] = "error"
+        view["error"] = {
+            "type": type(exc).__name__,
+            "message": str(exc),
+        }
+        return view
+
+    view["status"] = "ok"
+    view["execution"] = record
+    view["runtime_state"] = record["state_after"]
+    view["capability"] = runtime_describe(
+        resolved,
+        view["runtime_state"],
+        encounter_ref=encounter_ref,
+    )
+    view["encounter"] = view["capability"]["encounter"]
+    return view
+
+
+def inspect_encounter_target(resolved, *, encounter_ref, state=None):
+    """Dispatch encounter inspection by runtime-owned encounter kind."""
+    kind = encounter_runtime_kind(resolved, encounter_ref)
+    if kind == "investigation":
+        return inspect_investigation_target(
+            resolved, encounter_ref=encounter_ref, state=state
+        )
+    if kind == "social":
+        return inspect_social_target(
+            resolved, encounter_ref=encounter_ref, state=state
+        )
+    raise ExecutionError(f"unsupported encounter runtime kind: {kind}")
+
+
+def execute_encounter_target(
+    resolved,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    dice_terms=None,
+    random_seed=None,
+    state=None,
+):
+    """Dispatch encounter execution by runtime-owned encounter kind."""
+    kind = encounter_runtime_kind(resolved, encounter_ref)
+    if kind == "investigation":
+        return execute_investigation_target(
+            resolved,
+            encounter_ref=encounter_ref,
+            action_id=action_id,
+            actor_ref=actor_ref,
+            dice_terms=dice_terms,
+            random_seed=random_seed,
+            state=state,
+        )
+    if kind == "social":
+        return execute_social_target(
+            resolved,
+            encounter_ref=encounter_ref,
+            action_id=action_id,
+            actor_ref=actor_ref,
+            dice_terms=dice_terms,
+            random_seed=random_seed,
+            state=state,
+        )
+    raise ExecutionError(f"unsupported encounter runtime kind: {kind}")
+
+
+def _encounter_input_error_view(resolved, encounter_ref, message):
+    try:
+        view = inspect_encounter_target(resolved, encounter_ref=encounter_ref)
+    except ExecutionError as exc:
+        return {
+            "target": {
+                "id": TARGET_ID,
+                "format": ENCOUNTER_TARGET_FORMAT,
+                "kind": TARGET_KIND,
+            },
+            "status": "error",
+            "encounter": {"id": encounter_ref},
+            "error": {
+                "type": type(exc).__name__,
+                "message": str(exc),
+            },
+        }
+    view["status"] = "error"
+    view["error"] = {
+        "type": "TargetInputError",
+        "message": message,
+    }
+    return view
+
+
 def _investigation_input_error_view(resolved, encounter_ref, message):
     view = inspect_investigation_target(resolved, encounter_ref=encounter_ref)
     view["status"] = "error"
@@ -217,30 +388,30 @@ def main():
 
     if args.encounter is not None:
         if args.skill is not None:
-            view = _investigation_input_error_view(
+            view = _encounter_input_error_view(
                 resolved,
                 args.encounter,
                 "--skill belongs to the legacy direct-skill mode",
             )
         elif args.action is None:
-            view = inspect_investigation_target(
+            view = inspect_encounter_target(
                 resolved,
                 encounter_ref=args.encounter,
             )
         elif args.actor is None:
-            view = _investigation_input_error_view(
+            view = _encounter_input_error_view(
                 resolved,
                 args.encounter,
                 "encounter execution requires --actor",
             )
         elif (args.dice is None) == (args.seed is None):
-            view = _investigation_input_error_view(
+            view = _encounter_input_error_view(
                 resolved,
                 args.encounter,
                 "encounter execution requires exactly one of --dice or --seed",
             )
         else:
-            view = execute_investigation_target(
+            view = execute_encounter_target(
                 resolved,
                 encounter_ref=args.encounter,
                 action_id=args.action,
