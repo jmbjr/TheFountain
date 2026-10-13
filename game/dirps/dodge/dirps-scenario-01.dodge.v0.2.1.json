@@ -3,7 +3,7 @@
   "document_id": "dirps.scenario-01-v0.2.1",
   "game_id": "dirps",
   "title": "DIRPS — Scenario 01",
-  "description": "G6-targeted DIRPS Scenario 01 with Phase E bounded combat: one attack, one active-defense reaction, one broadsword damage/injury path, and persistent bandit HP/stun/consciousness-check state.",
+  "description": "G6-targeted DIRPS Scenario 01 with Phase F post-combat recovery/consciousness semantics. The accepted combat state now feeds bounded next-turn HT consciousness and physical-stun recovery checks; long-term unconscious recovery/healing and whole-scenario progression remain later work.",
   "sources": {
     "gurps-lite": {
       "kind": "rules",
@@ -634,6 +634,36 @@
         "value": "detour-required",
         "source_ref": "scenario-01-source",
         "authority": "provisional"
+      },
+      "phase-f-bandit-set-unconscious": {
+        "op": "set",
+        "target_ref": "unconscious",
+        "subject": {
+          "instance_ref": "bandit-scout"
+        },
+        "value": true,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
+      },
+      "phase-f-bandit-clear-consciousness-check-required": {
+        "op": "set",
+        "target_ref": "consciousness-check-required",
+        "subject": {
+          "instance_ref": "bandit-scout"
+        },
+        "value": false,
+        "source_ref": "dirps-proto",
+        "authority": "provisional"
+      },
+      "phase-f-bandit-clear-stunned": {
+        "op": "set",
+        "target_ref": "stunned",
+        "subject": {
+          "instance_ref": "bandit-scout"
+        },
+        "value": false,
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
       }
     },
     "actions": {
@@ -867,11 +897,11 @@
     }
   },
   "metadata": {
-    "status": "targeted-g6-phase-e-bounded-combat",
+    "status": "targeted-g6-phase-f-recovery-consciousness",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "G6 — Targeted, Phase E gameplay candidate: bounded attack -> Dodge -> damage -> injury -> state-change execution. Phase F owns recovery/consciousness rolls; broader combat and G7 are not claimed."
+    "conformance_claim": "G6 — Targeted, Phase F gameplay candidate: Phase E combat consequences persist into bounded next-turn HT consciousness/stun-recovery resolution over the same neutral combat state. Phase G progression, long-term healing, session history, Web presentation, and G7 are not claimed."
   },
   "extensions": {
     "org.dirps.proto": {
