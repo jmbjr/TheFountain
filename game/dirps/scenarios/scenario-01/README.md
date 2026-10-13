@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase B gameplay candidate.** The accepted v1/v2 skill contracts remain intact. Roadside Tracks now has canonical encounter state/action/consequences normalized into standard DODGE scenario/runtime state and structured effects, while the runtime composes those consequences with the Phase A contextual Tracking result. `../../docs/phase-b-roadside-investigation-validation.md` records the state/authority/replay/target evidence.
+**G6 — Targeted, Phase C gameplay candidate.** The accepted skill and Roadside encounter contracts remain intact. Frightened Witness now executes through an authoritative GURPS Lite reaction roll/table, a canonical reassuring-approach modifier and information mapping, neutral DODGE witness state/effects, deterministic replay evidence, and the same thin target boundary. `../../docs/phase-c-frightened-witness-validation.md` records the social authority/lookup/state/replay evidence.
 
 ## Goal
 
@@ -33,4 +33,4 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phase B can now enter the first encounter, expose its one valid investigation action, resolve the contextual Tracking check, and apply meaningful success/failure consequences to neutral runtime state. It intentionally does **not** auto-advance into Frightened Witness; social/environmental/combat/recovery/completion and immutable session history remain later roadmap work.
+Phase B is accepted as the first stateful encounter. Phase C now resolves Frightened Witness through a materially different social/reaction path and records useful/partial/no-useful information outcomes in neutral state. It intentionally does **not** auto-advance into Washed-Out Path; environmental/combat/recovery/completion and immutable session history remain later roadmap work.
