@@ -255,3 +255,6 @@ tune the source
 ```
 
 The roadmap should change whenever playtesting, a second game, or better implementation evidence shows that it should.
+
+
+DIRPS gameplay roadmap #178: Phase D now adds the Washed-Out Path environmental challenge as the current G6 gameplay candidate. Phase E bounded combat remains next after independent Phase D acceptance.
