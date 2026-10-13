@@ -558,29 +558,35 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
     phase_e_expressions = sidecar.get("phase_e_expressions")
     expected_phase_e_expressions = {
         "bandit-dodge-target": {
-            "op": "subtract",
+            "op": "add",
             "args": [
                 {
-                    "op": "floor",
-                    "arg": {
-                        "op": "divide",
-                        "args": [
-                            {
-                                "op": "add",
+                    "op": "subtract",
+                    "args": [
+                        {
+                            "op": "floor",
+                            "arg": {
+                                "op": "divide",
                                 "args": [
-                                    {"ref": "defender.dx"},
-                                    {"ref": "defender.ht"},
+                                    {
+                                        "op": "add",
+                                        "args": [
+                                            {"ref": "defender.dx"},
+                                            {"ref": "defender.ht"},
+                                        ],
+                                    },
+                                    {"literal": 4},
                                 ],
                             },
-                            {"literal": 4},
-                        ],
-                    },
+                        },
+                        {"ref": "defender.encumbrance_penalty"},
+                    ],
                 },
-                {"ref": "defender.encumbrance_penalty"},
+                {"ref": "defender.passive_defense"},
             ],
             "source_ref": RULES_SOURCE,
             "authority": "authoritative",
-            "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge",
+            "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge; Defense/Passive Defense",
         },
         "cutting-injury": {
             "op": "add",
@@ -613,6 +619,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
                 "defender.dx",
                 "defender.ht",
                 "defender.encumbrance_penalty",
+                "defender.passive_defense",
             ],
             "recompute": "on-dependency-change",
         },
@@ -654,6 +661,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
         "weapon_ref": "broadsword",
         "attack_mode": "swing-cut",
         "runtime_state_ref": "scenario-01-bandit-scout-initial",
+        "required_revision": "0",
         "attack_random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
         "attack_critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
         "reaction_window": {
