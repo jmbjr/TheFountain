@@ -217,6 +217,28 @@ class DirpsPhaseCFrightenedWitnessTests(unittest.TestCase):
         ):
             resolve_documents(self.dodge, canonical, self.sidecar, self.cfg)
 
+    def test_modifier_source_binding_drift_is_rejected_at_runtime(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["proto_sidecar"]["phase_c_social_bindings"][ENCOUNTER_REF][
+            "modifier_source"
+        ]["path"] = "scenario.invalid[].modifiers"
+
+        state = create_social_runtime_state(
+            self.resolved, encounter_ref=ENCOUNTER_REF
+        )
+        with self.assertRaisesRegex(
+            ExecutionError,
+            "reaction-modifier source binding is unsupported or malformed",
+        ):
+            execute_social_interaction(
+                resolved,
+                state,
+                encounter_ref=ENCOUNTER_REF,
+                action_id=ACTION_ID,
+                actor_ref="pc",
+                dice_terms=[4, 4, 4],
+            )
+
     def test_authoritative_lookup_table_drift_is_rejected(self):
         sidecar = copy.deepcopy(self.sidecar)
         sidecar["phase_c_lookup_tables"]["gurps-lite-reaction-table"]["rows"][4][
