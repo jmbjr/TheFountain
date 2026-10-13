@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A and B are accepted; Phase C now adds the Frightened Witness social/reaction encounter.
+The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A, B, and C are accepted; Phase D now adds the Washed-Out Path environmental challenge.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,7 +175,7 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4/G5/G6 and Phase A/B evidence remains in the existing validation documents. Gameplay Phase C adds an authoritative higher-is-better GURPS reaction roll, canonical social modifiers/information consequences, an exercised target-neutral reaction lookup table, neutral witness state/effects, deterministic social replay, and runtime-dispatched debug-target support; evidence lives in `game/dirps/docs/phase-c-frightened-witness-validation.md`. Phase D — Washed-Out Path environmental challenge — is next after Phase C acceptance. G7 has not started.
+G2/G3/G4/G5/G6 and Phase A/B/C evidence remains in the existing validation documents. Gameplay Phase D adds a distinct authoritative `attempt-attribute → success-roll` DX check, canonical obstacle modifier/consequences, neutral Washed-Out Path state/effects, deterministic replay, and runtime-dispatched environmental target support; evidence lives in `game/dirps/docs/phase-d-washed-out-path-validation.md`. Phase E — bounded combat vertical slice — is next after Phase D acceptance. G7 has not started.
 
 Current DIRPS maturity:
 
@@ -255,3 +255,6 @@ tune the source
 ```
 
 The roadmap should change whenever playtesting, a second game, or better implementation evidence shows that it should.
+
+
+DIRPS gameplay roadmap #178: Phase D now adds the Washed-Out Path environmental challenge as the current G6 gameplay candidate. Phase E bounded combat remains next after independent Phase D acceptance.

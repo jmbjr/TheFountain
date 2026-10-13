@@ -603,3 +603,22 @@ The DODGE document uses first-class values/effects for witness state but keeps `
 The runtime adds `dirps-reaction-result.v1` and `dirps-social-encounter-result.v1`. Reaction results preserve terms, raw total, modifier rows/total, modified total, matched lookup row, category, and rule/source trace. Social encounter results preserve the nested reaction record plus canonical consequence and exact state delta. The target asks the runtime which encounter kind it supports and dispatches to investigation or social adapters without hard-coded encounter ids.
 
 Phase C promotes exactly one proto concept: `lookup_tables` becomes `exercised` / `not-yet-candidate`. Its bounded range-table representation is resolver-preserved, runtime-executed, and covered by perturbation/negative evidence. `reaction_timing` remains `suspected` because no interrupt or defensive response window executes here.
+
+
+### DIRPS gameplay Phase D — Washed-Out Path environmental challenge
+
+Phase D adds a bounded attribute-based environmental path without changing accepted G5/Phase A/B/C contracts. Canonical Scenario 01 selects DX and owns the provisional obstacle modifier/consequences; the resolved character supplies the canonical DX value; GURPS Lite supplies success-roll/modifier/critical semantics; DODGE owns neutral state/effects; the sidecar only bridges those pieces into executable context.
+
+```text
+canonical DX + environmental context
+→ authoritative `attempt-attribute → success-roll`
+→ resolved primary attribute + source modifier
+→ accepted 3d6 success/critical machinery
+→ dirps-attribute-result.v1
+→ ordered DODGE consequence effects
+→ neutral environmental state
+→ dirps-environment-encounter-result.v1
+→ runtime-dispatched debug target
+```
+
+Success persists `crossed`; failure persists `detour-required`. Both are neutral scenario state intended for later progression rather than presentation-only flags. Phase D does not advance encounter order itself. No new proto concept is promoted.

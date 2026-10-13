@@ -24,7 +24,8 @@ game/dirps/
 │   ├── g6-target-validation.md
 │   ├── phase-a-contextual-skill-validation.md
 │   ├── phase-b-roadside-investigation-validation.md
-│   └── phase-c-frightened-witness-validation.md
+│   ├── phase-c-frightened-witness-validation.md
+│   └── phase-d-washed-out-path-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -35,11 +36,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase C — Frightened Witness social encounter**.
+DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase D — Washed-Out Path environmental challenge**.
 
-The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1` and preserves standard DODGE runtime-state snapshots; `tools/dirps_runtime.py` preserves the accepted skill/investigation contracts and adds an authoritative reaction-roll + lookup-table social path; and `tools/dirps_debug_target.py` dispatches both accepted encounter kinds through runtime-owned semantics. `docs/phase-c-frightened-witness-validation.md` records the current gameplay evidence. Phase D and later scenario mechanics remain unimplemented; G7 is not claimed.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1` and preserves standard DODGE runtime-state snapshots; `tools/dirps_runtime.py` preserves the accepted skill/investigation/social contracts and adds a distinct `attempt-attribute → success-roll` environmental path; and `tools/dirps_debug_target.py` dispatches investigation, social, and environmental encounters through runtime-owned semantics. `docs/phase-d-washed-out-path-validation.md` records the current gameplay evidence. Phase E combat and later mechanics remain unimplemented; G7 is not claimed.
 
-The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6/Phase A/Phase B evidence and add named Phase C social/runtime-target PASS lines.
+The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6/Phase A/Phase B/Phase C evidence and add named Phase D environmental/runtime-target PASS lines.
 
 ## Authority boundary
 
@@ -70,3 +71,6 @@ The proto sidecar records execution evidence without speculative promotion. `dic
 **The Missing Courier** is deliberately small. It is intended to exercise ordinary success rolls, a social interaction, an environmental challenge, one bounded combat exchange, state changes, rule-source traceability, and deterministic replay.
 
 Scenario fiction and character values are DIRPS prototype assumptions. GURPS mechanics remain external authoritative rules and are not reproduced verbatim here.
+
+
+Phase D evidence: `docs/phase-d-washed-out-path-validation.md`. The environmental path uses resolved DX + canonical context, standard DODGE state/effects, and the existing runtime/target boundary. Combat and G7 remain later work.

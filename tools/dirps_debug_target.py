@@ -13,13 +13,16 @@ from dirps_runtime import (
     ExecutionError,
     create_runtime_state,
     create_social_runtime_state,
+    create_environment_runtime_state,
     describe_attempt_skill,
     describe_investigation,
     describe_social_interaction,
+    describe_environment_challenge,
     encounter_runtime_kind,
     execute_attempt_skill,
     execute_investigation,
     execute_social_interaction,
+    execute_environment_challenge,
 )
 from resolve_dirps_dodge import resolve
 
@@ -29,6 +32,7 @@ TARGET_FORMAT = "dirps-debug-cli-target.v1"
 TARGET_KIND = "debug-cli"
 ENCOUNTER_TARGET_FORMAT = "dirps-debug-encounter-target.v1"
 SOCIAL_TARGET_FORMAT = "dirps-debug-social-target.v1"
+ENVIRONMENT_TARGET_FORMAT = "dirps-debug-environment-target.v1"
 
 
 def inspect_target(resolved, *, runtime_describe=describe_attempt_skill):
@@ -273,6 +277,56 @@ def execute_social_target(
     return view
 
 
+def inspect_environment_target(
+    resolved, *, encounter_ref, state=None,
+    runtime_create=create_environment_runtime_state,
+    runtime_describe=describe_environment_challenge,
+):
+    runtime_state = runtime_create(resolved, encounter_ref=encounter_ref) if state is None else state
+    capability = runtime_describe(resolved, runtime_state, encounter_ref=encounter_ref)
+    return {
+        "target": {"id": TARGET_ID, "format": ENVIRONMENT_TARGET_FORMAT, "kind": TARGET_KIND},
+        "status": "ready",
+        "encounter": capability["encounter"],
+        "runtime_state": runtime_state,
+        "capability": capability,
+    }
+
+
+def execute_environment_target(
+    resolved, *, encounter_ref, action_id, actor_ref,
+    dice_terms=None, random_seed=None, state=None,
+    runtime_create=create_environment_runtime_state,
+    runtime_describe=describe_environment_challenge,
+    runtime_execute=execute_environment_challenge,
+):
+    view = inspect_environment_target(
+        resolved, encounter_ref=encounter_ref, state=state,
+        runtime_create=runtime_create, runtime_describe=runtime_describe,
+    )
+    view["selection"] = {
+        "encounter_ref": encounter_ref, "action_id": action_id, "actor_ref": actor_ref,
+        "dice_terms": list(dice_terms) if isinstance(dice_terms, (list, tuple)) else dice_terms,
+        "random_seed": random_seed,
+    }
+    try:
+        record = runtime_execute(
+            resolved, view["runtime_state"], encounter_ref=encounter_ref,
+            action_id=action_id, actor_ref=actor_ref,
+            dice_terms=dice_terms, random_seed=random_seed,
+        )
+    except ExecutionError as exc:
+        view["status"] = "error"
+        view["error"] = {"type": type(exc).__name__, "message": str(exc)}
+        return view
+    view["status"] = "ok"
+    view["execution"] = record
+    view["runtime_state"] = record["state_after"]
+    view["capability"] = runtime_describe(resolved, view["runtime_state"], encounter_ref=encounter_ref)
+    view["encounter"] = view["capability"]["encounter"]
+    return view
+
+
 def inspect_encounter_target(resolved, *, encounter_ref, state=None):
     """Dispatch encounter inspection by runtime-owned encounter kind."""
     kind = encounter_runtime_kind(resolved, encounter_ref)
@@ -282,6 +336,10 @@ def inspect_encounter_target(resolved, *, encounter_ref, state=None):
         )
     if kind == "social":
         return inspect_social_target(
+            resolved, encounter_ref=encounter_ref, state=state
+        )
+    if kind == "environment":
+        return inspect_environment_target(
             resolved, encounter_ref=encounter_ref, state=state
         )
     raise ExecutionError(f"unsupported encounter runtime kind: {kind}")
@@ -311,6 +369,16 @@ def execute_encounter_target(
         )
     if kind == "social":
         return execute_social_target(
+            resolved,
+            encounter_ref=encounter_ref,
+            action_id=action_id,
+            actor_ref=actor_ref,
+            dice_terms=dice_terms,
+            random_seed=random_seed,
+            state=state,
+        )
+    if kind == "environment":
+        return execute_environment_target(
             resolved,
             encounter_ref=encounter_ref,
             action_id=action_id,

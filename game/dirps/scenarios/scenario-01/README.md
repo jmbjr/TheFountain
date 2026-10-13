@@ -33,4 +33,9 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phase B is accepted as the first stateful encounter. Phase C now resolves Frightened Witness through a materially different social/reaction path and records useful/partial/no-useful information outcomes in neutral state. It intentionally does **not** auto-advance into Washed-Out Path; environmental/combat/recovery/completion and immutable session history remain later roadmap work.
+Phases B and C are accepted stateful encounters. Phase D now resolves Washed-Out Path through a distinct DX attribute check and persists `crossed` or `detour-required` in neutral state. It intentionally does **not** auto-advance into combat; combat/recovery/completion and immutable session history remain later roadmap work.
+
+
+## Phase D — Washed-Out Path
+
+The environmental encounter now executes one bounded `attempt-attribute → success-roll` DX crossing check. Success records `crossed`; failure records `detour-required` in neutral runtime state. The check reuses accepted success-roll/random/critical semantics and remains separate from later automatic encounter progression. Evidence: `../../docs/phase-d-washed-out-path-validation.md`.

@@ -29,6 +29,7 @@ PRIMARY_ATTRIBUTES = frozenset({"st", "dx", "iq", "ht"})
 
 ACTION_PROCEDURES = {
     "attempt-skill": "success-roll",
+    "attempt-attribute": "success-roll",
     "attack": "attack-resolution",
     "recover": "recovery-check",
 }
@@ -504,6 +505,55 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
                 errors.append(
                     "Phase C runtime_state_ref must resolve in DODGE runtime_states"
                 )
+
+    phase_d_bindings = sidecar.get("phase_d_environment_bindings")
+    canonical_d = {}
+    if isinstance(canonical, dict):
+        env = next((row for row in canonical.get("encounters", []) if isinstance(row, dict) and row.get("id") == "washed-out-path"), None)
+        if isinstance(env, dict) and len(env.get("actions") or []) == 1:
+            canonical_d = env["actions"][0].get("consequences") or {}
+    expected_phase_d = {
+        "encounter_ref":"washed-out-path",
+        "action_id":"cross-washed-out-path",
+        "actor_ref":"pc",
+        "action_ref":"attempt-attribute",
+        "procedure_ref":"success-roll",
+        "context_ref":"washed-out-path-dx",
+        "target_source":{"kind":"resolved-character-primary-attribute","path":"scene.instances[].character.primary_attributes"},
+        "runtime_state_ref":"scenario-01-washed-out-path-initial",
+        "required_state":[{"ref":"washed-out-path-status","value":"ready"}],
+        "consequences":{
+            "success":{"effect_refs":["washed-out-path-set-status-resolved","washed-out-path-set-outcome-success",f"washed-out-path-set-progress-{(canonical_d.get('success') or {}).get('progress')}"]},
+            "failure":{"effect_refs":["washed-out-path-set-status-resolved","washed-out-path-set-outcome-failure",f"washed-out-path-set-progress-{(canonical_d.get('failure') or {}).get('progress')}"]},
+        },
+        "effective_target":{
+            "from":"selected-attribute-level-plus-context-modifiers",
+            "modifier_policy":"sum-resolved-context-modifiers",
+            "minimum":3,
+            "below_minimum":"error",
+            "rule_source_ref":RULES_SOURCE,
+            "rule_locator":"p. 2, Success Rolls; Modifiers and Effective Skill",
+        },
+        "dice_resolution_ref":"dice_resolution",
+        "critical_resolution_ref":"phase_a_execution_bindings.attempt-skill.critical_resolution",
+        "random_evidence_ref":"phase_a_execution_bindings.attempt-skill.random_evidence",
+        "attribute_result_format":"dirps-attribute-result.v1",
+        "result_format":"dirps-environment-encounter-result.v1",
+        "binding_source_ref":PROTO_SOURCE,
+        "target_source_ref":SCENARIO_SOURCE,
+        "consequence_source_ref":SCENARIO_SOURCE,
+    }
+    if not isinstance(phase_d_bindings, dict) or phase_d_bindings.get("washed-out-path") != expected_phase_d:
+        errors.append("Phase D washed-out-path environment binding must match the declared attribute/consequence contract")
+    elif dodge:
+        phase_d = phase_d_bindings["washed-out-path"]
+        if phase_d["runtime_state_ref"] not in (dodge.get("runtime_states") or {}):
+            errors.append("Phase D runtime_state_ref must resolve in DODGE runtime_states")
+        effects = dodge.get("rules", {}).get("effects", {}) or {}
+        for consequence in phase_d["consequences"].values():
+            for effect_ref in consequence["effect_refs"]:
+                if effect_ref not in effects:
+                    errors.append(f"Phase D consequence effect_ref does not resolve: {effect_ref}")
 
     if (specs.get("replay_session_history") or {}).get("status") != "suspected":
         errors.append(
@@ -1320,6 +1370,118 @@ def _validate_phase_c_social_contract(dodge, canonical, errors):
             )
 
 
+def _validate_phase_d_environment_contract(dodge, canonical, errors):
+    encounters = {row.get("id"): row for row in canonical.get("encounters", []) if isinstance(row, dict)}
+    encounter = encounters.get("washed-out-path")
+    if not isinstance(encounter, dict):
+        errors.append("Phase D requires canonical washed-out-path encounter")
+        return
+    state = encounter.get("state_contract") or {}
+    refs = state.get("refs") or {}
+    initial = state.get("initial") or {}
+    if set(refs) != {"status", "outcome", "progress"} or set(initial) != set(refs):
+        errors.append("Phase D washed-out-path state contract must define status/outcome/progress")
+        return
+    actions = encounter.get("actions") or []
+    if len(actions) != 1 or not isinstance(actions[0], dict):
+        errors.append("Phase D washed-out-path must expose exactly one environmental action")
+        return
+    action = actions[0]
+    expected_identity = {
+        "id": "cross-washed-out-path", "actor_ref": "pc", "action_ref": "attempt-attribute",
+        "context_ref": "washed-out-path-dx", "source_ref": SCENARIO_SOURCE,
+        "authority": "provisional", "provenance": PC_PROVENANCE,
+    }
+    for field, expected in expected_identity.items():
+        if action.get(field) != expected:
+            errors.append(f"Phase D washed-out-path action {field} must be {expected!r}")
+    check = (canonical.get("contextual_checks") or {}).get(action.get("context_ref"))
+    if not isinstance(check, dict):
+        errors.append("Phase D environmental context_ref must resolve")
+        return
+    if check.get("encounter_ref") != "washed-out-path" or check.get("action_ref") != "attempt-attribute":
+        errors.append("Phase D environmental contextual check identity is malformed")
+    dodge_action = (dodge.get("rules", {}).get("actions", {}) or {}).get("attempt-attribute")
+    expected_dodge_action = {
+        "name": "Attempt attribute",
+        "condition_refs": ["actor-conscious"],
+        "procedure_ref": "success-roll",
+        "source_ref": RULES_SOURCE,
+        "authority": "authoritative",
+    }
+    if dodge_action != expected_dodge_action:
+        errors.append(
+            "Phase D DODGE attempt-attribute action must preserve the authoritative success-roll binding"
+        )
+    attribute_ref = check.get("attribute_ref")
+    attributes = (canonical.get("player_character") or {}).get("attributes") or {}
+    if attribute_ref not in attributes:
+        errors.append("Phase D attribute_ref must resolve on canonical PC attributes")
+    if check.get("provenance") != PC_PROVENANCE:
+        errors.append("Phase D contextual check provenance must remain prototype_assumption")
+    modifiers = check.get("modifiers")
+    if not isinstance(modifiers, list) or not modifiers:
+        errors.append("Phase D environmental check requires at least one modifier")
+    else:
+        for row in modifiers:
+            if row.get("source_ref") != SCENARIO_SOURCE or row.get("authority") != "provisional" or row.get("provenance") != PC_PROVENANCE:
+                errors.append("Phase D environmental modifier authority/provenance is malformed")
+            if not isinstance(row.get("amount"), int) or isinstance(row.get("amount"), bool):
+                errors.append("Phase D environmental modifier amount must be integer")
+            if not isinstance(row.get("reason"), str) or not row.get("reason"):
+                errors.append("Phase D environmental modifier reason is required")
+    consequences = action.get("consequences") or {}
+    if set(consequences) != {"success", "failure"}:
+        errors.append("Phase D must define success and failure consequences")
+        return
+    values = dodge.get("rules", {}).get("values", {}) or {}
+    ordered = {
+        "status": [initial.get("status"), consequences["success"].get("status"), consequences["failure"].get("status")],
+        "outcome": [initial.get("outcome"), consequences["success"].get("outcome"), consequences["failure"].get("outcome")],
+        "progress": [initial.get("progress"), consequences["success"].get("progress"), consequences["failure"].get("progress")],
+    }
+    for role, ref in refs.items():
+        unique = []
+        for value in ordered[role]:
+            if value not in unique: unique.append(value)
+        definition = values.get(ref) or {}
+        if (
+            definition.get("type") != "enum"
+            or definition.get("owner_scope") != "scenario"
+            or definition.get("persistence_scope") != "scenario"
+            or definition.get("default") != initial.get(role)
+            or definition.get("enum_values") != unique
+            or definition.get("source_ref") != SCENARIO_SOURCE
+            or definition.get("authority") != "provisional"
+        ):
+            errors.append(f"Phase D DODGE value {ref} must normalize canonical {role} state exactly")
+    runtime = (dodge.get("runtime_states") or {}).get("scenario-01-washed-out-path-initial") or {}
+    expected_bindings = [
+        {"ref": refs[role], "subject": {"relative": "scenario"}, "value": initial[role], "authority": "provisional"}
+        for role in ("status","outcome","progress")
+    ]
+    if runtime != {"scenario_ref":"scenario-01","bindings":expected_bindings,"events":[],"revision":"0"}:
+        errors.append("Phase D initial runtime state must normalize canonical environmental state exactly")
+    expected_effects = {
+        "washed-out-path-set-status-resolved": (refs["status"], consequences["success"].get("status")),
+        "washed-out-path-set-outcome-success": (refs["outcome"], consequences["success"].get("outcome")),
+        f"washed-out-path-set-progress-{consequences['success'].get('progress')}": (
+            refs["progress"],
+            consequences["success"].get("progress"),
+        ),
+        "washed-out-path-set-outcome-failure": (refs["outcome"], consequences["failure"].get("outcome")),
+        f"washed-out-path-set-progress-{consequences['failure'].get('progress')}": (
+            refs["progress"],
+            consequences["failure"].get("progress"),
+        ),
+    }
+    effects = dodge.get("rules", {}).get("effects", {}) or {}
+    for effect_id, (target_ref, value) in expected_effects.items():
+        expected = {"op":"set","target_ref":target_ref,"subject":{"relative":"scenario"},"value":value,"source_ref":SCENARIO_SOURCE,"authority":"provisional"}
+        if effects.get(effect_id) != expected:
+            errors.append(f"Phase D DODGE effect {effect_id} must normalize canonical consequence exactly")
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -1334,6 +1496,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_phase_a_contextual_checks(dodge, canonical, errors)
     _validate_phase_b_investigation_contract(dodge, canonical, errors)
     _validate_phase_c_social_contract(dodge, canonical, errors)
+    _validate_phase_d_environment_contract(dodge, canonical, errors)
     return errors
 
 

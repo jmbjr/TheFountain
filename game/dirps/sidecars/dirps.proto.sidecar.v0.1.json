@@ -27,7 +27,8 @@
     "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented.",
     "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. The accepted G5 g5_execution_bindings.attempt-skill contract remains unchanged and continues to emit dirps-execution-result.v1. The expanded Phase A contract lives separately under phase_a_execution_bindings.attempt-skill and emits dirps-execution-result.v2, so legacy records remain reproducible and cannot be confused with v2. derived_values and expressions remain suspected because Phase A uses a bounded DIRPS-private execution binding rather than either proposed generic proto shape.",
     "phase_b_note": "Phase B composes the accepted Phase A contextual skill result with standard DODGE 0.2.1 scenario runtime-state bindings and structured set effects. The sidecar only bridges the skill outcome branch to ordered DODGE effect refs and one encounter-result evidence record. No new proto concept is promoted; replay_session_history remains suspected because this is still one encounter record, not an append-only session.",
-    "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window."
+    "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window.",
+    "phase_d_note": "Phase D reuses the accepted success-roll/dice/procedure-context machinery for a canonical DX-based environmental check and standard DODGE runtime state/effects for consequences. No new proto concept is promoted."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -154,7 +155,8 @@
       "g5_evidence": "G5 requires named actor/skill/random-evidence inputs and emits named target/result outputs for success-roll; this remains a DIRPS-private runtime shape.",
       "phase_a_evidence": "Phase A adds context_ref plus resolved modifier inputs and exposes base target, modifier total, effective target, critical classification, and random-evidence provenance.",
       "phase_b_evidence": "Phase B carries encounter_ref/action_id/runtime state plus the nested Phase A skill result through one investigation procedure and emits explicit before/after state evidence.",
-      "phase_c_evidence": "Phase C carries encounter/action identity, resolved reaction modifiers, random evidence, modified total, lookup-table classification, and scenario consequence state through one social procedure."
+      "phase_c_evidence": "Phase C carries encounter/action identity, resolved reaction modifiers, random evidence, modified total, lookup-table classification, and scenario consequence state through one social procedure.",
+      "phase_d_evidence": "Phase D carries an attribute-target context (DX), source-owned environmental modifier, runtime state, and ordered success/failure effects through one bounded procedure."
     },
     "reaction_timing": {
       "status": "suspected",
@@ -264,7 +266,8 @@
       "g5_evidence": "G5 emits a structured execution record linking action, procedure, target, die evidence, result/margin, and source authority.",
       "phase_a_evidence": "Phase A adds modifier-by-modifier provenance, effective-target derivation trace, critical classification source trace, and generated-random seed/algorithm evidence.",
       "phase_b_evidence": "Phase B records the selected encounter action, nested v2 skill resolution, ordered DODGE consequence effect refs, exact state delta, and before/after neutral runtime state.",
-      "phase_c_evidence": "Phase C preserves reaction modifier provenance, 3d6 terms, raw/modified totals, reaction-table source/row, consequence effects, and before/after neutral state."
+      "phase_c_evidence": "Phase C preserves reaction modifier provenance, 3d6 terms, raw/modified totals, reaction-table source/row, consequence effects, and before/after neutral state.",
+      "phase_d_evidence": "Phase D records attribute target provenance, modifiers, dice evidence, success classification, ordered DODGE effects, and exact before/after environmental state."
     },
     "replay_session_history": {
       "status": "suspected",
@@ -609,6 +612,59 @@
       "reaction_result_format": "dirps-reaction-result.v1",
       "result_format": "dirps-social-encounter-result.v1",
       "binding_source_ref": "dirps-proto",
+      "consequence_source_ref": "scenario-01-source"
+    }
+  },
+  "phase_d_environment_bindings": {
+    "washed-out-path": {
+      "encounter_ref": "washed-out-path",
+      "action_id": "cross-washed-out-path",
+      "actor_ref": "pc",
+      "action_ref": "attempt-attribute",
+      "procedure_ref": "success-roll",
+      "context_ref": "washed-out-path-dx",
+      "target_source": {
+        "kind": "resolved-character-primary-attribute",
+        "path": "scene.instances[].character.primary_attributes"
+      },
+      "runtime_state_ref": "scenario-01-washed-out-path-initial",
+      "required_state": [
+        {
+          "ref": "washed-out-path-status",
+          "value": "ready"
+        }
+      ],
+      "consequences": {
+        "success": {
+          "effect_refs": [
+            "washed-out-path-set-status-resolved",
+            "washed-out-path-set-outcome-success",
+            "washed-out-path-set-progress-crossed"
+          ]
+        },
+        "failure": {
+          "effect_refs": [
+            "washed-out-path-set-status-resolved",
+            "washed-out-path-set-outcome-failure",
+            "washed-out-path-set-progress-detour-required"
+          ]
+        }
+      },
+      "effective_target": {
+        "from": "selected-attribute-level-plus-context-modifiers",
+        "modifier_policy": "sum-resolved-context-modifiers",
+        "minimum": 3,
+        "below_minimum": "error",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 2, Success Rolls; Modifiers and Effective Skill"
+      },
+      "dice_resolution_ref": "dice_resolution",
+      "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
+      "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+      "attribute_result_format": "dirps-attribute-result.v1",
+      "result_format": "dirps-environment-encounter-result.v1",
+      "binding_source_ref": "dirps-proto",
+      "target_source_ref": "scenario-01-source",
       "consequence_source_ref": "scenario-01-source"
     }
   }

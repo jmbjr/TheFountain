@@ -2,9 +2,9 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path, Phase A contextual checks, and
-Phase B's first stateful investigation encounter using neutral DODGE runtime
-state/effects.
+It executes the accepted success-roll path plus the bounded Phase A-D
+investigation, social, and environmental gameplay slices over neutral resolved
+semantics and DODGE runtime state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
@@ -19,6 +19,8 @@ RNG_ALGORITHM = "sha256-rejection-v1"
 PHASE_B_RESULT_FORMAT = "dirps-encounter-result.v1"
 PHASE_C_REACTION_FORMAT = "dirps-reaction-result.v1"
 PHASE_C_RESULT_FORMAT = "dirps-social-encounter-result.v1"
+PHASE_D_ATTRIBUTE_RESULT_FORMAT = "dirps-attribute-result.v1"
+PHASE_D_RESULT_FORMAT = "dirps-environment-encounter-result.v1"
 
 
 class ExecutionError(ValueError):
@@ -1976,4 +1978,359 @@ def encounter_runtime_kind(resolved, encounter_ref):
         return "investigation"
     if encounter_ref in (sidecar.get("phase_c_social_bindings") or {}):
         return "social"
+    if encounter_ref in (sidecar.get("phase_d_environment_bindings") or {}):
+        return "environment"
     raise ExecutionError(f"encounter has no supported runtime binding: {encounter_ref}")
+
+
+def _phase_d_binding(resolved, encounter_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    bindings = _require_mapping(
+        sidecar.get("phase_d_environment_bindings"),
+        "resolved phase_d_environment_bindings",
+    )
+    binding = _require_mapping(
+        bindings.get(encounter_ref), f"Phase D environment binding {encounter_ref}"
+    )
+    expected_target_source = {
+        "kind": "resolved-character-primary-attribute",
+        "path": "scene.instances[].character.primary_attributes",
+    }
+    if binding.get("encounter_ref") != encounter_ref:
+        raise ExecutionError("Phase D environment binding identity is malformed")
+    if binding.get("action_ref") != "attempt-attribute" or binding.get("procedure_ref") != "success-roll":
+        raise ExecutionError("Phase D environment binding must use attempt-attribute -> success-roll")
+    if binding.get("target_source") != expected_target_source:
+        raise ExecutionError("Phase D attribute target-source binding is unsupported or malformed")
+    if binding.get("attribute_result_format") != PHASE_D_ATTRIBUTE_RESULT_FORMAT:
+        raise ExecutionError("Phase D attribute result format is unsupported")
+    if binding.get("result_format") != PHASE_D_RESULT_FORMAT:
+        raise ExecutionError("Phase D encounter result format is unsupported")
+    if binding.get("binding_source_ref") != "dirps-proto":
+        raise ExecutionError("Phase D binding source is malformed")
+    if binding.get("target_source_ref") != "scenario-01-source":
+        raise ExecutionError("Phase D target source is malformed")
+    if binding.get("consequence_source_ref") != "scenario-01-source":
+        raise ExecutionError("Phase D consequence source is malformed")
+    if binding.get("critical_resolution_ref") != "phase_a_execution_bindings.attempt-skill.critical_resolution":
+        raise ExecutionError("Phase D critical-resolution reuse binding is malformed")
+    if binding.get("random_evidence_ref") != "phase_a_execution_bindings.attempt-skill.random_evidence":
+        raise ExecutionError("Phase D random-evidence reuse binding is malformed")
+    if binding.get("dice_resolution_ref") != "dice_resolution":
+        raise ExecutionError("Phase D dice-resolution reuse binding is malformed")
+    expected_effective_target = {
+        "from": "selected-attribute-level-plus-context-modifiers",
+        "modifier_policy": "sum-resolved-context-modifiers",
+        "minimum": 3,
+        "below_minimum": "error",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 2, Success Rolls; Modifiers and Effective Skill",
+    }
+    if binding.get("effective_target") != expected_effective_target:
+        raise ExecutionError("Phase D effective-target binding is malformed")
+    consequences = _require_mapping(binding.get("consequences"), "Phase D consequences")
+    if set(consequences) != {"success", "failure"}:
+        raise ExecutionError("Phase D must bind success and failure consequences")
+    return binding
+
+
+def create_environment_runtime_state(resolved, *, encounter_ref):
+    binding = _phase_d_binding(resolved, encounter_ref)
+    states = _require_mapping(resolved.get("runtime_states"), "resolved runtime_states")
+    source = _require_mapping(
+        states.get(binding.get("runtime_state_ref")),
+        f"runtime state {binding.get('runtime_state_ref')}",
+    )
+    state = copy.deepcopy(source)
+    validate_runtime_state(resolved, state)
+    return state
+
+
+def _phase_d_context(resolved, encounter_ref, binding):
+    encounter = _encounter(resolved, encounter_ref)
+    action = _encounter_action(encounter, binding.get("action_id"))
+    if action.get("actor_ref") != binding.get("actor_ref"):
+        raise ExecutionError("Phase D encounter actor disagrees with binding")
+    if action.get("action_ref") != binding.get("action_ref"):
+        raise ExecutionError("Phase D encounter action_ref disagrees with binding")
+    if action.get("context_ref") != binding.get("context_ref"):
+        raise ExecutionError("Phase D encounter context_ref disagrees with binding")
+    scenario = _require_mapping(resolved.get("scenario"), "resolved scenario")
+    checks = _require_mapping(scenario.get("contextual_checks"), "resolved contextual_checks")
+    check = _require_mapping(
+        checks.get(binding.get("context_ref")), "Phase D contextual check"
+    )
+    if check.get("encounter_ref") != encounter_ref or check.get("action_ref") != binding.get("action_ref"):
+        raise ExecutionError("Phase D contextual check identity is malformed")
+    attribute_ref = check.get("attribute_ref")
+    if not isinstance(attribute_ref, str) or not attribute_ref:
+        raise ExecutionError("Phase D contextual check requires attribute_ref")
+    modifiers = check.get("modifiers")
+    if not isinstance(modifiers, list) or not modifiers:
+        raise ExecutionError("Phase D contextual check requires modifiers")
+    return encounter, action, check, attribute_ref, copy.deepcopy(modifiers)
+
+
+def _phase_d_attribute_resolution(
+    resolved, *, actor_ref, encounter_ref, dice_terms=None, random_seed=None
+):
+    binding = _phase_d_binding(resolved, encounter_ref)
+    encounter, action, check, attribute_ref, modifiers = _phase_d_context(
+        resolved, encounter_ref, binding
+    )
+    actor = _actor(resolved, actor_ref)
+    _require_actor_available(resolved, actor, binding["action_ref"])
+    character = _require_mapping(actor.get("character"), f"actor {actor_ref} character")
+    attributes = _require_mapping(
+        character.get("primary_attributes"), f"actor {actor_ref} primary_attributes"
+    )
+    base_target = attributes.get(attribute_ref)
+    if not isinstance(base_target, int) or isinstance(base_target, bool):
+        raise ExecutionError(f"Phase D attribute {attribute_ref} is unavailable or non-integer")
+
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    validated_modifiers = []
+    seen = set()
+    for index, modifier in enumerate(modifiers):
+        row = _require_mapping(modifier, f"Phase D modifier {index}")
+        modifier_id = row.get("id")
+        if not isinstance(modifier_id, str) or not modifier_id or modifier_id in seen:
+            raise ExecutionError("Phase D modifier ids must be unique non-empty strings")
+        seen.add(modifier_id)
+        if not isinstance(row.get("amount"), int) or isinstance(row.get("amount"), bool):
+            raise ExecutionError(f"Phase D modifier {modifier_id} amount must be integer")
+        if row.get("source_ref") != binding.get("target_source_ref"):
+            raise ExecutionError(f"Phase D modifier {modifier_id} source_ref disagrees with binding")
+        source = _require_mapping(sources.get(row.get("source_ref")), "Phase D modifier source")
+        if row.get("authority") != source.get("authority"):
+            raise ExecutionError(f"Phase D modifier {modifier_id} authority disagrees with source")
+        if row.get("provenance") != character.get("provenance"):
+            raise ExecutionError(f"Phase D modifier {modifier_id} provenance disagrees with character")
+        validated_modifiers.append(copy.deepcopy(row))
+
+    effective = _require_mapping(binding.get("effective_target"), "Phase D effective target")
+    if effective.get("from") != "selected-attribute-level-plus-context-modifiers":
+        raise ExecutionError("Phase D effective-target source is unsupported")
+    if effective.get("modifier_policy") != "sum-resolved-context-modifiers":
+        raise ExecutionError("Phase D modifier policy is unsupported")
+    modifier_total = sum(row["amount"] for row in validated_modifiers)
+    effective_target = base_target + modifier_total
+    minimum = effective.get("minimum")
+    if not isinstance(minimum, int) or effective_target < minimum:
+        raise ExecutionError("Phase D effective target is below the supported minimum")
+
+    phase_a = _execution_binding(resolved)
+    dice = _dice_contract(resolved, phase_a)
+    terms, evidence_kind = _random_terms(
+        dice_terms=dice_terms,
+        random_seed=random_seed,
+        contract=dice,
+        binding=phase_a,
+    )
+    total = sum(terms)
+    classification, success = _critical_classification(total, effective_target, phase_a)
+    margin = effective_target - total
+    critical = _require_mapping(phase_a.get("critical_resolution"), "Phase A critical contract")
+
+    return {
+        "format": binding["attribute_result_format"],
+        "mechanic": "attribute-success-roll",
+        "input": {
+            "actor_ref": actor_ref,
+            "attribute_ref": attribute_ref,
+            "context_ref": binding["context_ref"],
+        },
+        "semantic_path": {
+            "action_ref": binding["action_ref"],
+            "procedure_ref": binding["procedure_ref"],
+        },
+        "target": {
+            "kind": binding["target_source"]["kind"],
+            "attribute_ref": attribute_ref,
+            "base_target": base_target,
+            "modifiers": validated_modifiers,
+            "modifier_total": modifier_total,
+            "effective_target": effective_target,
+            "modifier_policy": effective["modifier_policy"],
+        },
+        "random_evidence": {
+            **evidence_kind,
+            "proto_ref": binding["dice_resolution_ref"],
+            "randomizer_id": dice["id"],
+            "dice_kind": dice["kind"],
+            "sides": dice["sides"],
+            "terms": terms,
+            "total": total,
+        },
+        "outcome": {
+            "classification": classification,
+            "success": success,
+            "margin": margin,
+        },
+        "trace": {
+            "attribute_target": {
+                "actor_ref": actor_ref,
+                "attribute_ref": attribute_ref,
+                "base_value": base_target,
+                "character_provenance": character.get("provenance"),
+                "canonical_path": f"player_character.attributes.{attribute_ref}",
+                "source_ref": binding["target_source_ref"],
+                "authority": sources[binding["target_source_ref"]].get("authority"),
+            },
+            "effective_target": {
+                "modifier_total": modifier_total,
+                "value": effective_target,
+                "rule_source_ref": effective["rule_source_ref"],
+                "rule_authority": sources[effective["rule_source_ref"]].get("authority"),
+                "rule_locator": effective["rule_locator"],
+                "modifiers": copy.deepcopy(validated_modifiers),
+            },
+            "critical_resolution": {
+                "classification": classification,
+                "source_ref": critical["rule_source_ref"],
+                "authority": sources[critical["rule_source_ref"]].get("authority"),
+                "rule_locator": critical["rule_locator"],
+            },
+            "execution_binding": {
+                "ref": f"proto_sidecar.phase_d_environment_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": sources[binding["binding_source_ref"]].get("authority"),
+            },
+        },
+        "state_delta": [],
+    }
+
+
+def describe_environment_challenge(resolved, state, *, encounter_ref):
+    binding = _phase_d_binding(resolved, encounter_ref)
+    encounter, action, check, attribute_ref, modifiers = _phase_d_context(
+        resolved, encounter_ref, binding
+    )
+    index = validate_runtime_state(resolved, state)
+    ready = all(
+        _state_value(index, row.get("ref")) == row.get("value")
+        for row in binding.get("required_state", [])
+    )
+    refs = _require_mapping(
+        _require_mapping(encounter.get("state_contract"), "Phase D state_contract").get("refs"),
+        "Phase D state refs",
+    )
+    return {
+        "encounter": {"id": encounter_ref, "type": encounter.get("type"), "purpose": encounter.get("purpose")},
+        "runtime_state_revision": state.get("revision"),
+        "state": {role: _state_value(index, ref) for role, ref in refs.items()},
+        "available_actions": [{
+            "id": action.get("id"),
+            "label": action.get("label"),
+            "actor_ref": action.get("actor_ref"),
+            "action_ref": action.get("action_ref"),
+            "context_ref": action.get("context_ref"),
+            "source_ref": action.get("source_ref"),
+            "authority": action.get("authority"),
+            "provenance": action.get("provenance"),
+        }] if ready else [],
+        "check": {
+            "attribute_ref": attribute_ref,
+            "modifiers": copy.deepcopy(modifiers),
+            "procedure_ref": binding["procedure_ref"],
+            "target_source": copy.deepcopy(binding["target_source"]),
+        },
+        "result_format": binding["result_format"],
+    }
+
+
+def execute_environment_challenge(
+    resolved, state, *, encounter_ref, action_id, actor_ref,
+    dice_terms=None, random_seed=None
+):
+    binding = _phase_d_binding(resolved, encounter_ref)
+    encounter, action, check, attribute_ref, modifiers = _phase_d_context(
+        resolved, encounter_ref, binding
+    )
+    if action_id != binding.get("action_id"):
+        raise ExecutionError(f"action is not bound for Phase D encounter {encounter_ref}: {action_id}")
+    if actor_ref != binding.get("actor_ref"):
+        raise ExecutionError(f"actor {actor_ref} is not eligible for Phase D encounter")
+    before = copy.deepcopy(state)
+    index = validate_runtime_state(resolved, before)
+    if not all(
+        _state_value(index, row.get("ref")) == row.get("value")
+        for row in binding.get("required_state", [])
+    ):
+        raise ExecutionError(f"encounter action {action_id} is unavailable in current runtime state")
+
+    attribute_resolution = _phase_d_attribute_resolution(
+        resolved,
+        actor_ref=actor_ref,
+        encounter_ref=encounter_ref,
+        dice_terms=dice_terms,
+        random_seed=random_seed,
+    )
+    branch = "success" if attribute_resolution["outcome"]["success"] else "failure"
+    consequence = _require_mapping(
+        (action.get("consequences") or {}).get(branch),
+        f"Phase D {branch} consequence",
+    )
+    effect_refs = binding["consequences"][branch]["effect_refs"]
+    after = copy.deepcopy(before)
+    after_index = validate_runtime_state(resolved, after)
+    delta = [_apply_set_effect(resolved, after, after_index, ref) for ref in effect_refs]
+    after["revision"] = str(int(after["revision"]) + 1)
+    validate_runtime_state(resolved, after)
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    return {
+        "format": binding["result_format"],
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "outcome_branch": branch,
+        "attribute_resolution": attribute_resolution,
+        "consequence": copy.deepcopy(consequence),
+        "state_before": before,
+        "state_after": after,
+        "state_delta": delta,
+        "trace": {
+            "encounter_action": {
+                "encounter_ref": encounter_ref,
+                "action_id": action_id,
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            },
+            "execution_binding": {
+                "ref": f"proto_sidecar.phase_d_environment_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": sources[binding["binding_source_ref"]].get("authority"),
+            },
+            "consequence_source": {
+                "source_ref": binding["consequence_source_ref"],
+                "authority": sources[binding["consequence_source_ref"]].get("authority"),
+                "effect_refs": copy.deepcopy(effect_refs),
+            },
+            "nested_attribute_result_format": binding["attribute_result_format"],
+        },
+    }
+
+
+def replay_environment_challenge(resolved, record):
+    if not isinstance(record, dict) or record.get("format") != PHASE_D_RESULT_FORMAT:
+        raise ExecutionError("unsupported Phase D environmental record format")
+    resolution = _require_mapping(record.get("attribute_resolution"), "Phase D attribute_resolution")
+    evidence = _require_mapping(resolution.get("random_evidence"), "Phase D random_evidence")
+    kwargs = {
+        "resolved": resolved,
+        "state": copy.deepcopy(record.get("state_before")),
+        "encounter_ref": record.get("encounter_ref"),
+        "action_id": record.get("action_id"),
+        "actor_ref": record.get("actor_ref"),
+    }
+    if evidence.get("kind") == "generated-seeded-dice-terms":
+        kwargs["random_seed"] = evidence.get("seed")
+    elif evidence.get("kind") == "supplied-dice-terms":
+        kwargs["dice_terms"] = evidence.get("terms")
+    else:
+        raise ExecutionError("Phase D random evidence kind is unsupported")
+    recomputed = execute_environment_challenge(**kwargs)
+    if recomputed != record:
+        raise ExecutionError("environment encounter record divergence detected")
+    return recomputed
