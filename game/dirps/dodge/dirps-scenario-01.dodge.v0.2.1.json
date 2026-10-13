@@ -3,7 +3,7 @@
   "document_id": "dirps.scenario-01-v0.2.1",
   "game_id": "dirps",
   "title": "DIRPS — Scenario 01",
-  "description": "G6-targeted DIRPS Scenario 01 with Phase C Frightened Witness social/reaction resolution. The accepted v1/v2 skill and Phase B Roadside contracts remain intact; a bounded GURPS Lite reaction-roll procedure now drives one stateful social encounter through neutral DODGE state/effects and thin target support.",
+  "description": "G6-targeted DIRPS Scenario 01 through Phase D. The accepted v1/v2 skill, Phase B investigation, and Phase C social contracts remain intact; Washed-Out Path now executes an explicit DX attribute success roll with persistent environmental consequences.",
   "sources": {
     "gurps-lite": {
       "kind": "rules",
@@ -649,6 +649,15 @@
         "procedure_ref": "recovery-check",
         "source_ref": "gurps-lite",
         "authority": "authoritative"
+      },
+      "attempt-attribute": {
+        "name": "Attempt attribute",
+        "condition_refs": [
+          "actor-conscious"
+        ],
+        "procedure_ref": "success-roll",
+        "source_ref": "gurps-lite",
+        "authority": "authoritative"
       }
     },
     "procedures": {
@@ -783,7 +792,8 @@
       "action_refs": [
         "attempt-skill",
         "attack",
-        "recover"
+        "recover",
+        "attempt-attribute"
       ],
       "turn_procedure_ref": "tutorial-turn",
       "objectives": [
