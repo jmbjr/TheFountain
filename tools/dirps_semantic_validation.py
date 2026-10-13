@@ -1838,7 +1838,7 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
         "owner_scope": "actor",
         "persistence_scope": "scenario",
         "assumptions": [
-            "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; Phase F consumes this obligation while the actor remains conscious."
+            "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; Phase F consumes the obligation while the actor remains conscious."
         ],
     }
     if value != expected_value:
