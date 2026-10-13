@@ -2016,6 +2016,18 @@ def _phase_d_binding(resolved, encounter_ref):
         raise ExecutionError("Phase D critical-resolution reuse binding is malformed")
     if binding.get("random_evidence_ref") != "phase_a_execution_bindings.attempt-skill.random_evidence":
         raise ExecutionError("Phase D random-evidence reuse binding is malformed")
+    if binding.get("dice_resolution_ref") != "dice_resolution":
+        raise ExecutionError("Phase D dice-resolution reuse binding is malformed")
+    expected_effective_target = {
+        "from": "selected-attribute-level-plus-context-modifiers",
+        "modifier_policy": "sum-resolved-context-modifiers",
+        "minimum": 3,
+        "below_minimum": "error",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 2, Success Rolls; Modifiers and Effective Skill",
+    }
+    if binding.get("effective_target") != expected_effective_target:
+        raise ExecutionError("Phase D effective-target binding is malformed")
     consequences = _require_mapping(binding.get("consequences"), "Phase D consequences")
     if set(consequences) != {"success", "failure"}:
         raise ExecutionError("Phase D must bind success and failure consequences")
