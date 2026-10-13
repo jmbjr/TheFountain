@@ -722,6 +722,68 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
         if not isinstance(action, dict) or action.get("procedure_ref") != combat["procedure_ref"]:
             errors.append("Phase E attack action/procedure binding must resolve in DODGE rules")
 
+    expected_phase_f_binding = {
+        "encounter_ref": "bandit-scout",
+        "action_id": "resolve-bandit-next-turn",
+        "actor_ref": "bandit-scout",
+        "action_ref": "recover",
+        "procedure_ref": "recovery-check",
+        "timing": "next-turn-start",
+        "resolution_order": ["consciousness", "stun-recovery"],
+        "minimum_state_revision": 1,
+        "ht_source": "encounter.opponent.attributes.ht",
+        "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "consciousness": {
+            "hit_points_ref": "hit-points",
+            "check_required_ref": "consciousness-check-required",
+            "unconscious_ref": "unconscious",
+            "will_modifier_source": "encounter.post_combat_recovery.consciousness.will_modifier",
+            "success_effect_refs": [],
+            "failure_effect_refs": [
+                "phase-f-bandit-set-unconscious",
+                "phase-f-bandit-clear-consciousness-check-required",
+            ],
+            "rule_source_ref": RULES_SOURCE,
+            "rule_locator": "p. 27, General Damage / Unconsciousness",
+        },
+        "stun_recovery": {
+            "stunned_ref": "stunned",
+            "unconscious_ref": "unconscious",
+            "success_effect_refs": ["phase-f-bandit-clear-stunned"],
+            "failure_effect_refs": [],
+            "rule_source_ref": RULES_SOURCE,
+            "rule_locator": "p. 27, Stunning; p. 26, Knockdown and Stunning",
+        },
+        "long_term_unconscious_recovery": "unsupported",
+        "check_result_format": "dirps-ht-check-result.v1",
+        "result_format": "dirps-recovery-result.v1",
+        "binding_source_ref": PROTO_SOURCE,
+        "scenario_source_ref": SCENARIO_SOURCE,
+    }
+    phase_f_bindings = sidecar.get("phase_f_recovery_bindings")
+    if not isinstance(phase_f_bindings, dict) or phase_f_bindings.get("bandit-scout") != expected_phase_f_binding:
+        errors.append(
+            "Phase F bandit-scout recovery binding must match the declared next-turn HT contract"
+        )
+    elif dodge:
+        recovery = phase_f_bindings["bandit-scout"]
+        action = (dodge.get("rules", {}).get("actions", {}) or {}).get(
+            recovery["action_ref"]
+        )
+        if not isinstance(action, dict) or action.get("procedure_ref") != recovery["procedure_ref"]:
+            errors.append(
+                "Phase F recover action/procedure binding must resolve in DODGE rules"
+            )
+        effects = dodge.get("rules", {}).get("effects", {}) or {}
+        for check_name in ("consciousness", "stun_recovery"):
+            check = recovery[check_name]
+            for branch in ("success_effect_refs", "failure_effect_refs"):
+                for effect_ref in check[branch]:
+                    if effect_ref not in effects:
+                        errors.append(
+                            f"Phase F recovery effect_ref does not resolve: {effect_ref}"
+                        )
+
     for proto_id in ("derived_values", "expressions", "damage_injury"):
         spec = specs.get(proto_id) or {}
         if spec.get("status") != "exercised":
@@ -731,7 +793,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
 
     if (specs.get("replay_session_history") or {}).get("status") != "suspected":
         errors.append(
-            "Phase B one-encounter replay must not promote replay_session_history"
+            "Phase F single-turn recovery replay must not promote replay_session_history"
         )
 
 
@@ -1776,7 +1838,7 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
         "owner_scope": "actor",
         "persistence_scope": "scenario",
         "assumptions": [
-            "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; the actual HT check is Phase F."
+            "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; Phase F consumes this obligation while the actor remains conscious."
         ],
     }
     if value != expected_value:
@@ -1824,6 +1886,108 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
         )
 
 
+def _validate_phase_f_recovery_contract(dodge, canonical, errors):
+    encounter = next(
+        (
+            row
+            for row in canonical.get("encounters", [])
+            if isinstance(row, dict) and row.get("id") == "bandit-scout"
+        ),
+        None,
+    )
+    if not isinstance(encounter, dict):
+        errors.append("Phase F requires canonical bandit-scout encounter")
+        return
+
+    recovery = encounter.get("post_combat_recovery")
+    if not isinstance(recovery, dict):
+        errors.append("Phase F bandit-scout requires post_combat_recovery")
+        return
+
+    action = recovery.get("action")
+    expected_action = {
+        "id": "resolve-bandit-next-turn",
+        "label": "Resolve the bandit scout's next-turn injury checks",
+        "actor_ref": "bandit-scout",
+        "action_ref": "recover",
+        "source_ref": SCENARIO_SOURCE,
+        "authority": "provisional",
+        "provenance": PC_PROVENANCE,
+    }
+    if action != expected_action:
+        errors.append("Phase F recovery action must match the bounded next-turn contract")
+
+    if recovery.get("timing") != "next-turn-start":
+        errors.append("Phase F recovery timing must be next-turn-start")
+    if recovery.get("resolution_order") != ["consciousness", "stun-recovery"]:
+        errors.append(
+            "Phase F recovery order must be consciousness then stun-recovery"
+        )
+    if recovery.get("long_term_unconscious_recovery") != "unsupported":
+        errors.append(
+            "Phase F must keep long-term unconscious recovery explicitly unsupported"
+        )
+
+    consciousness = recovery.get("consciousness")
+    if not isinstance(consciousness, dict):
+        errors.append("Phase F recovery requires consciousness assumptions")
+    else:
+        modifier = consciousness.get("will_modifier")
+        if not isinstance(modifier, int) or isinstance(modifier, bool):
+            errors.append("Phase F consciousness will_modifier must be an integer")
+        if consciousness.get("modifier_source_ref") != SCENARIO_SOURCE:
+            errors.append(
+                "Phase F consciousness modifier_source_ref must be scenario-01-source"
+            )
+        if consciousness.get("authority") != "provisional":
+            errors.append("Phase F consciousness modifier must remain provisional")
+        if consciousness.get("provenance") != PC_PROVENANCE:
+            errors.append(
+                "Phase F consciousness modifier provenance must be prototype_assumption"
+            )
+
+    actions = dodge.get("rules", {}).get("actions", {}) or {}
+    procedures = dodge.get("rules", {}).get("procedures", {}) or {}
+    recover_action = actions.get("recover")
+    if not isinstance(recover_action, dict) or recover_action.get("procedure_ref") != "recovery-check":
+        errors.append("Phase F DODGE recover action must resolve recovery-check")
+    if "recovery-check" not in procedures:
+        errors.append("Phase F DODGE recovery-check procedure is required")
+
+    effects = dodge.get("rules", {}).get("effects", {}) or {}
+    expected_effects = {
+        "phase-f-bandit-set-unconscious": {
+            "op": "set",
+            "target_ref": "unconscious",
+            "subject": {"instance_ref": "bandit-scout"},
+            "value": True,
+            "source_ref": RULES_SOURCE,
+            "authority": "authoritative",
+        },
+        "phase-f-bandit-clear-consciousness-check-required": {
+            "op": "set",
+            "target_ref": "consciousness-check-required",
+            "subject": {"instance_ref": "bandit-scout"},
+            "value": False,
+            "source_ref": PROTO_SOURCE,
+            "authority": "provisional",
+        },
+        "phase-f-bandit-clear-stunned": {
+            "op": "set",
+            "target_ref": "stunned",
+            "subject": {"instance_ref": "bandit-scout"},
+            "value": False,
+            "source_ref": RULES_SOURCE,
+            "authority": "authoritative",
+        },
+    }
+    for effect_id, expected in expected_effects.items():
+        if effects.get(effect_id) != expected:
+            errors.append(
+                f"Phase F DODGE effect {effect_id} must match the declared recovery consequence"
+            )
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -1840,6 +2004,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_phase_c_social_contract(dodge, canonical, errors)
     _validate_phase_d_environment_contract(dodge, canonical, errors)
     _validate_phase_e_combat_contract(dodge, canonical, errors)
+    _validate_phase_f_recovery_contract(dodge, canonical, errors)
     return errors
 
 
