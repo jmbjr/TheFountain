@@ -2402,6 +2402,13 @@ def _phase_e_binding(resolved, encounter_ref):
         "rule_source_ref": "gurps-lite",
         "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
         "result_format": PHASE_E_DAMAGE_FORMAT,
+        "critical_attack_total_three": {
+            "attack_total": 3,
+            "resolution": "automatic-maximum-profile-damage",
+            "damage_random_evidence": "none",
+            "rule_source_ref": "gurps-lite",
+            "rule_locator": "Rolling to Attack / Critical Hits",
+        },
     }:
         raise ExecutionError("Phase E damage binding is unsupported or malformed")
     if binding.get("injury_state") != {
@@ -2793,6 +2800,62 @@ def _phase_e_defense_roll(
     }
 
 
+def _phase_e_damage_result(
+    resolved,
+    *,
+    attacker,
+    opponent,
+    binding,
+    profile,
+    lookup_trace,
+    random_evidence,
+    rolled_total,
+    resolution_mode,
+):
+    assumptions = _require_mapping(
+        opponent.get("defense_assumptions"), "Phase E defense assumptions"
+    )
+    armor_dr = assumptions.get("armor_dr")
+    if not isinstance(armor_dr, int) or isinstance(armor_dr, bool) or armor_dr < 0:
+        raise ExecutionError("Phase E armor DR must be a nonnegative integer")
+
+    basic_damage = max(
+        binding["damage"]["minimum_basic_damage"],
+        rolled_total + profile["adds"] + binding["damage"]["weapon_add"],
+    )
+    penetrating = max(0, basic_damage - armor_dr)
+    injury, injury_trace = _phase_e_derived_value(
+        resolved,
+        "cutting-injury",
+        {"penetrating_damage": penetrating},
+    )
+    if not isinstance(injury, int) or injury < 0:
+        raise ExecutionError("Phase E injury must be a nonnegative integer")
+
+    attacker_state = _require_mapping(attacker.get("state"), "Phase E attacker state")
+    strength = attacker_state.get("st")
+    return {
+        "format": binding["damage"]["result_format"],
+        "strength": strength,
+        "attack_mode": binding["attack_mode"],
+        "damage_type": binding["damage"]["damage_type"],
+        "resolution_mode": resolution_mode,
+        "random_evidence": copy.deepcopy(random_evidence),
+        "weapon_add": binding["damage"]["weapon_add"],
+        "basic_damage": basic_damage,
+        "armor_dr": armor_dr,
+        "penetrating_damage": penetrating,
+        "injury": injury,
+        "trace": {
+            "strength_lookup": lookup_trace,
+            "injury_derived": injury_trace,
+            "rule_source_ref": binding["damage"]["rule_source_ref"],
+            "rule_authority": "authoritative",
+            "rule_locator": binding["damage"]["rule_locator"],
+        },
+    }
+
+
 def _phase_e_damage_roll(
     resolved,
     *,
@@ -2818,50 +2881,74 @@ def _phase_e_damage_roll(
         sides=profile["sides"],
     )
     rolled = sum(terms)
-    basic_damage = max(
-        binding["damage"]["minimum_basic_damage"],
-        rolled + profile["adds"] + binding["damage"]["weapon_add"],
-    )
-    assumptions = _require_mapping(
-        opponent.get("defense_assumptions"), "Phase E defense assumptions"
-    )
-    armor_dr = assumptions.get("armor_dr")
-    if not isinstance(armor_dr, int) or isinstance(armor_dr, bool) or armor_dr < 0:
-        raise ExecutionError("Phase E armor DR must be a nonnegative integer")
-    penetrating = max(0, basic_damage - armor_dr)
-    injury, injury_trace = _phase_e_derived_value(
+    return _phase_e_damage_result(
         resolved,
-        "cutting-injury",
-        {"penetrating_damage": penetrating},
-    )
-    if not isinstance(injury, int) or injury < 0:
-        raise ExecutionError("Phase E injury must be a nonnegative integer")
-    return {
-        "format": binding["damage"]["result_format"],
-        "strength": strength,
-        "attack_mode": binding["attack_mode"],
-        "damage_type": binding["damage"]["damage_type"],
-        "random_evidence": {
+        attacker=attacker,
+        opponent=opponent,
+        binding=binding,
+        profile=profile,
+        lookup_trace=lookup_trace,
+        random_evidence={
             **evidence_kind,
             "dice_kind": "dice-pool",
             "sides": profile["sides"],
             "terms": terms,
             "rolled_total": rolled,
         },
-        "weapon_add": binding["damage"]["weapon_add"],
-        "basic_damage": basic_damage,
-        "armor_dr": armor_dr,
-        "penetrating_damage": penetrating,
-        "injury": injury,
-        "trace": {
-            "strength_lookup": lookup_trace,
-            "injury_derived": injury_trace,
-            "rule_source_ref": binding["damage"]["rule_source_ref"],
-            "rule_authority": "authoritative",
-            "rule_locator": binding["damage"]["rule_locator"],
-        },
-    }
+        rolled_total=rolled,
+        resolution_mode="rolled",
+    )
 
+
+def _phase_e_maximum_damage(
+    resolved,
+    *,
+    attacker,
+    opponent,
+    binding,
+):
+    rule = _require_mapping(
+        binding["damage"].get("critical_attack_total_three"),
+        "Phase E roll-3 critical damage rule",
+    )
+    if rule != {
+        "attack_total": 3,
+        "resolution": "automatic-maximum-profile-damage",
+        "damage_random_evidence": "none",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "Rolling to Attack / Critical Hits",
+    }:
+        raise ExecutionError("Phase E roll-3 critical damage rule is malformed")
+
+    attacker_state = _require_mapping(attacker.get("state"), "Phase E attacker state")
+    strength = attacker_state.get("st")
+    if not isinstance(strength, int) or isinstance(strength, bool):
+        raise ExecutionError("Phase E attacker ST must be an integer")
+    profile, lookup_trace = _phase_e_damage_profile(
+        resolved, binding["damage"]["strength_lookup_ref"], strength
+    )
+    maximum_rolled_total = profile["count"] * profile["sides"]
+    result = _phase_e_damage_result(
+        resolved,
+        attacker=attacker,
+        opponent=opponent,
+        binding=binding,
+        profile=profile,
+        lookup_trace=lookup_trace,
+        random_evidence=None,
+        rolled_total=maximum_rolled_total,
+        resolution_mode="automatic-maximum",
+    )
+    result["trace"]["critical_maximum_damage"] = {
+        "attack_total": rule["attack_total"],
+        "resolution": rule["resolution"],
+        "random_damage_evidence": rule["damage_random_evidence"],
+        "maximum_rolled_total": maximum_rolled_total,
+        "rule_source_ref": rule["rule_source_ref"],
+        "rule_authority": "authoritative",
+        "rule_locator": rule["rule_locator"],
+    }
+    return result
 
 def _combat_delta_row(ref, before, after, target_ref, source_ref, authority):
     return {
@@ -3119,14 +3206,23 @@ def execute_combat_exchange(
             outcome_branch = "defended"
         else:
             outcome_branch = "hit"
-            damage = _phase_e_damage_roll(
-                resolved,
-                attacker=attacker,
-                opponent=opponent,
-                binding=binding,
-                damage_terms=damage_terms,
-                random_seed=random_seed,
-            )
+            attack_total = attack["random_evidence"]["total"]
+            if attack_total == binding["damage"]["critical_attack_total_three"]["attack_total"]:
+                damage = _phase_e_maximum_damage(
+                    resolved,
+                    attacker=attacker,
+                    opponent=opponent,
+                    binding=binding,
+                )
+            else:
+                damage = _phase_e_damage_roll(
+                    resolved,
+                    attacker=attacker,
+                    opponent=opponent,
+                    binding=binding,
+                    damage_terms=damage_terms,
+                    random_seed=random_seed,
+                )
             after, state_delta, injury_effects = _apply_phase_e_injury(
                 resolved,
                 after,
