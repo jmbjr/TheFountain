@@ -697,37 +697,45 @@
   },
   "phase_e_expressions": {
     "bandit-dodge-target": {
-      "op": "subtract",
+      "op": "add",
       "args": [
         {
-          "op": "floor",
-          "arg": {
-            "op": "divide",
-            "args": [
-              {
-                "op": "add",
+          "op": "subtract",
+          "args": [
+            {
+              "op": "floor",
+              "arg": {
+                "op": "divide",
                 "args": [
                   {
-                    "ref": "defender.dx"
+                    "op": "add",
+                    "args": [
+                      {
+                        "ref": "defender.dx"
+                      },
+                      {
+                        "ref": "defender.ht"
+                      }
+                    ]
                   },
                   {
-                    "ref": "defender.ht"
+                    "literal": 4
                   }
                 ]
-              },
-              {
-                "literal": 4
               }
-            ]
-          }
+            },
+            {
+              "ref": "defender.encumbrance_penalty"
+            }
+          ]
         },
         {
-          "ref": "defender.encumbrance_penalty"
+          "ref": "defender.passive_defense"
         }
       ],
       "source_ref": "gurps-lite",
       "authority": "authoritative",
-      "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge"
+      "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge; Defense/Passive Defense"
     },
     "cutting-injury": {
       "op": "add",
@@ -762,7 +770,8 @@
       "dependencies": [
         "defender.dx",
         "defender.ht",
-        "defender.encumbrance_penalty"
+        "defender.encumbrance_penalty",
+        "defender.passive_defense"
       ],
       "recompute": "on-dependency-change"
     },
@@ -851,7 +860,8 @@
       "attack_result_format": "dirps-attack-result.v1",
       "result_format": "dirps-combat-exchange-result.v1",
       "binding_source_ref": "dirps-proto",
-      "scenario_source_ref": "scenario-01-source"
+      "scenario_source_ref": "scenario-01-source",
+      "required_revision": "0"
     }
   }
 }
