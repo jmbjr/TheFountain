@@ -123,7 +123,8 @@
             "hit-points": 10,
             "fatigue": 10,
             "stunned": false,
-            "unconscious": false
+            "unconscious": false,
+            "consciousness-check-required": false
           },
           "extensions": {
             "org.dirps.character": {
@@ -152,7 +153,8 @@
             "hit-points": 10,
             "fatigue": 10,
             "stunned": false,
-            "unconscious": false
+            "unconscious": false,
+            "consciousness-check-required": false
           }
         }
       ]
