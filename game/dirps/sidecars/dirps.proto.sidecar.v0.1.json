@@ -26,7 +26,8 @@
     ],
     "g5_note": "G5 exercises only the minimum concepts required by the bounded attempt-skill -> success-roll path. Exercise does not imply DODGE candidacy. The binary <= classifier is explicitly bounded to effective targets 4..16; targets outside that domain fail visibly rather than approximating GURPS edge semantics. Session history, derived values/modifiers, critical-result consequences, and broader RPG semantics remain suspected/unimplemented.",
     "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. The accepted G5 g5_execution_bindings.attempt-skill contract remains unchanged and continues to emit dirps-execution-result.v1. The expanded Phase A contract lives separately under phase_a_execution_bindings.attempt-skill and emits dirps-execution-result.v2, so legacy records remain reproducible and cannot be confused with v2. derived_values and expressions remain suspected because Phase A uses a bounded DIRPS-private execution binding rather than either proposed generic proto shape.",
-    "phase_b_note": "Phase B composes the accepted Phase A contextual skill result with standard DODGE 0.2.1 scenario runtime-state bindings and structured set effects. The sidecar only bridges the skill outcome branch to ordered DODGE effect refs and one encounter-result evidence record. No new proto concept is promoted; replay_session_history remains suspected because this is still one encounter record, not an append-only session."
+    "phase_b_note": "Phase B composes the accepted Phase A contextual skill result with standard DODGE 0.2.1 scenario runtime-state bindings and structured set effects. The sidecar only bridges the skill outcome branch to ordered DODGE effect refs and one encounter-result evidence record. No new proto concept is promoted; replay_session_history remains suspected because this is still one encounter record, not an append-only session.",
+    "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -59,7 +60,8 @@
       ],
       "candidate_for_dodge": "not-yet-candidate",
       "g5_evidence": "G5 executes the proposed 3d6 dice-pool/lte success-roll contract from the resolved sidecar using supplied deterministic die terms.",
-      "phase_a_evidence": "Phase A adds deterministic generated evidence using the runtime-owned sha256-rejection-v1 algorithm while preserving seed, algorithm id, individual die terms, and total. Supplied explicit die terms remain supported."
+      "phase_a_evidence": "Phase A adds deterministic generated evidence using the runtime-owned sha256-rejection-v1 algorithm while preserving seed, algorithm id, individual die terms, and total. Supplied explicit die terms remain supported.",
+      "phase_c_evidence": "Phase C reuses deterministic supplied/seeded 3d6 evidence for a reaction roll whose higher modified total feeds a lookup table rather than a success-roll comparator."
     },
     "derived_values": {
       "status": "suspected",
@@ -108,7 +110,7 @@
       "candidate_for_dodge": "not-yet-candidate"
     },
     "lookup_tables": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 has no first-class table lookup semantic for rules that map one value/range to another result.",
       "proposed_shape": {
         "key_expression_ref": "expression-id",
@@ -127,7 +129,8 @@
         "strength-to-damage style tables",
         "range/modifier tables where required"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "phase_c_evidence": "Phase C executes the GURPS Lite Reaction Table as a target-neutral ordered range lookup from modified reaction total to reaction category. The representation is exercised only in DIRPS and is not yet proposed upstream."
     },
     "procedure_context": {
       "status": "exercised",
@@ -150,7 +153,8 @@
       "candidate_for_dodge": "not-yet-candidate",
       "g5_evidence": "G5 requires named actor/skill/random-evidence inputs and emits named target/result outputs for success-roll; this remains a DIRPS-private runtime shape.",
       "phase_a_evidence": "Phase A adds context_ref plus resolved modifier inputs and exposes base target, modifier total, effective target, critical classification, and random-evidence provenance.",
-      "phase_b_evidence": "Phase B carries encounter_ref/action_id/runtime state plus the nested Phase A skill result through one investigation procedure and emits explicit before/after state evidence."
+      "phase_b_evidence": "Phase B carries encounter_ref/action_id/runtime state plus the nested Phase A skill result through one investigation procedure and emits explicit before/after state evidence.",
+      "phase_c_evidence": "Phase C carries encounter/action identity, resolved reaction modifiers, random evidence, modified total, lookup-table classification, and scenario consequence state through one social procedure."
     },
     "reaction_timing": {
       "status": "suspected",
@@ -166,7 +170,8 @@
       "dirps_evidence": [
         "active defenses after a successful attack"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "phase_c_evidence": "Reassessed but not promoted: GURPS reaction rolls classify NPC attitude; they do not exercise interrupt/reaction-window timing."
     },
     "visibility_and_secret_state": {
       "status": "suspected",
@@ -258,7 +263,8 @@
       "candidate_for_dodge": "not-yet-candidate",
       "g5_evidence": "G5 emits a structured execution record linking action, procedure, target, die evidence, result/margin, and source authority.",
       "phase_a_evidence": "Phase A adds modifier-by-modifier provenance, effective-target derivation trace, critical classification source trace, and generated-random seed/algorithm evidence.",
-      "phase_b_evidence": "Phase B records the selected encounter action, nested v2 skill resolution, ordered DODGE consequence effect refs, exact state delta, and before/after neutral runtime state."
+      "phase_b_evidence": "Phase B records the selected encounter action, nested v2 skill resolution, ordered DODGE consequence effect refs, exact state delta, and before/after neutral runtime state.",
+      "phase_c_evidence": "Phase C preserves reaction modifier provenance, 3d6 terms, raw/modified totals, reaction-table source/row, consequence effects, and before/after neutral state."
     },
     "replay_session_history": {
       "status": "suspected",
@@ -437,6 +443,171 @@
       },
       "skill_result_format": "dirps-execution-result.v2",
       "result_format": "dirps-encounter-result.v1",
+      "binding_source_ref": "dirps-proto",
+      "consequence_source_ref": "scenario-01-source"
+    }
+  },
+  "phase_c_lookup_tables": {
+    "gurps-lite-reaction-table": {
+      "key_ref": "modified-reaction-total",
+      "rows": [
+        {
+          "when": {
+            "min": null,
+            "max": 0
+          },
+          "value": "disastrous"
+        },
+        {
+          "when": {
+            "min": 1,
+            "max": 3
+          },
+          "value": "very-bad"
+        },
+        {
+          "when": {
+            "min": 4,
+            "max": 6
+          },
+          "value": "bad"
+        },
+        {
+          "when": {
+            "min": 7,
+            "max": 9
+          },
+          "value": "poor"
+        },
+        {
+          "when": {
+            "min": 10,
+            "max": 12
+          },
+          "value": "neutral"
+        },
+        {
+          "when": {
+            "min": 13,
+            "max": 15
+          },
+          "value": "good"
+        },
+        {
+          "when": {
+            "min": 16,
+            "max": 18
+          },
+          "value": "very-good"
+        },
+        {
+          "when": {
+            "min": 19,
+            "max": null
+          },
+          "value": "excellent"
+        }
+      ],
+      "fallback": "error",
+      "source_ref": "gurps-lite",
+      "authority": "authoritative",
+      "rule_locator": "p. 3, Reaction Table"
+    }
+  },
+  "phase_c_social_bindings": {
+    "frightened-witness": {
+      "encounter_ref": "frightened-witness",
+      "action_id": "reassure-and-question",
+      "actor_ref": "pc",
+      "procedure_ref": "reaction-roll",
+      "runtime_state_ref": "scenario-01-frightened-witness-initial",
+      "required_state": [
+        {
+          "ref": "frightened-witness-status",
+          "value": "ready"
+        }
+      ],
+      "modifier_source": {
+        "kind": "encounter-action-reaction-modifiers",
+        "path": "scenario.encounters[].actions[].reaction_modifiers"
+      },
+      "random_evidence": {
+        "randomizer": {
+          "kind": "dice-pool",
+          "count": 3,
+          "sides": 6,
+          "combine": "sum"
+        },
+        "supplied_terms": {
+          "supported": true
+        },
+        "generated": {
+          "supported": true,
+          "seed_required": true,
+          "algorithm": "sha256-rejection-v1"
+        }
+      },
+      "lookup_table_ref": "gurps-lite-reaction-table",
+      "consequences": {
+        "disastrous": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-disastrous",
+            "frightened-witness-set-information-no-useful-account"
+          ]
+        },
+        "very-bad": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-very-bad",
+            "frightened-witness-set-information-no-useful-account"
+          ]
+        },
+        "bad": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-bad",
+            "frightened-witness-set-information-no-useful-account"
+          ]
+        },
+        "poor": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-poor",
+            "frightened-witness-set-information-no-useful-account"
+          ]
+        },
+        "neutral": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-neutral",
+            "frightened-witness-set-information-partial-account"
+          ]
+        },
+        "good": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-good",
+            "frightened-witness-set-information-useful-lead"
+          ]
+        },
+        "very-good": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-very-good",
+            "frightened-witness-set-information-useful-lead"
+          ]
+        },
+        "excellent": {
+          "effect_refs": [
+            "frightened-witness-set-status-resolved",
+            "frightened-witness-set-reaction-excellent",
+            "frightened-witness-set-information-useful-lead"
+          ]
+        }
+      },
+      "reaction_result_format": "dirps-reaction-result.v1",
+      "result_format": "dirps-social-encounter-result.v1",
       "binding_source_ref": "dirps-proto",
       "consequence_source_ref": "scenario-01-source"
     }
