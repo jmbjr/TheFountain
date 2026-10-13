@@ -31,7 +31,12 @@ Rook attacks with Broadsword
 → mark future consciousness check when HP <= 0
 ```
 
-A critical attack bypasses the defense window and proceeds to the supported damage path.
+A critical attack bypasses the defense window.
+
+The critical-damage split is authoritative and explicit:
+
+- attack total **3**: do **not** roll damage; use maximum damage from the matched ST/weapon profile;
+- other supported critical hits: bypass defense but roll damage normally.
 
 A failed attack stops before defense/damage.
 
@@ -129,6 +134,8 @@ The attack result preserves:
 
 Attack critical success bypasses the defense window.
 
+An attack total of exactly 3 additionally triggers the GURPS Lite maximum-damage rule. The runtime derives the maximum from the matched ST damage profile plus weapon add, records no damage random evidence, and then applies DR/cutting injury/state normally. Other supported critical successes still roll damage normally.
+
 Attack failure or critical failure ends the exchange without damage.
 
 ## Reaction timing and active defense
@@ -184,8 +191,8 @@ Damage evidence preserves:
 
 - attacker ST;
 - matched lookup row;
-- die term;
-- rolled total;
+- resolution mode (`rolled` or `automatic-maximum`);
+- damage random evidence only when a damage roll actually occurs;
 - weapon add;
 - basic damage;
 - armor DR;
@@ -193,6 +200,36 @@ Damage evidence preserves:
 - damage type;
 - final injury;
 - rule/derived-expression trace.
+
+For attack total 3, `random_evidence` is null and the trace records the authoritative critical maximum-damage rule plus the derived maximum dice total.
+
+## Critical attack total 3
+
+GURPS Lite's ordinary attack rule distinguishes a roll of exactly 3 from other critical hits.
+
+For the bounded default attack:
+
+```text
+ST10 swing = 1d
+Broadsword swing/cut = +1
+maximum basic damage = 6 + 1 = 7
+DR0 → penetrating 7
+cutting injury = 7 + floor(7/2) = 10
+bandit HP 10 → 0
+```
+
+Therefore the supported roll-3 branch:
+
+- bypasses active defense;
+- consumes no damage RNG evidence;
+- emits `resolution_mode: automatic-maximum`;
+- emits `random_evidence: null`;
+- produces basic damage 7 / injury 10 on the default profile;
+- sets stunned and `consciousness-check-required` while leaving unconsciousness for Phase F.
+
+The existing total-4 critical branch remains distinct: it bypasses defense but uses a normal damage roll.
+
+Both branches are covered by deterministic replay evidence.
 
 ## Injury state
 
