@@ -336,6 +336,21 @@ or use `--seed`.
 
 On success the target refreshes capability from the post-action runtime state, just as the accepted Phase B parity fix requires.
 
+## Executable modifier-source binding
+
+The Phase C social bridge declares the only supported executable reaction-modifier source:
+
+```json
+{
+  "kind": "encounter-action-reaction-modifiers",
+  "path": "scenario.encounters[].actions[].reaction_modifiers"
+}
+```
+
+`_phase_c_binding()` validates that declaration exactly at runtime before social execution. The runtime then reads reaction modifiers from the resolved encounter action that corresponds to that declared source.
+
+If a consumer mutates the resolved `modifier_source` kind/path, execution fails visibly rather than silently continuing through a hard-wired modifier path. This preserves the same executable-binding drift discipline already used by the accepted G5 and Phase A layers.
+
 ## Deterministic, negative, and perturbation evidence
 
 `tests/test_dirps_phase_c.py` proves:
@@ -349,21 +364,22 @@ On success the target refreshes capability from the post-action runtime state, j
 7. all eight Reaction Table bands execute at their boundaries;
 8. canonical reaction-modifier perturbation changes modified total/reaction;
 9. modifier rule-authority drift is rejected;
-10. authoritative lookup-table drift is rejected;
-11. canonical consequence change with stale sidecar bridge is rejected;
-12. canonical + bridge consequence perturbation changes runtime state;
-13. seeded reaction evidence is deterministic;
-14. a changed seed changes terms/reaction;
-15. social replay succeeds;
-16. tampered reaction/state evidence diverges;
-17. resolved witness interaction cannot be repeated;
-18. `lookup_tables` is exercised/not-yet-candidate;
-19. `reaction_timing` remains suspected;
-20. target inspect/execute uses the same runtime state;
-21. generic target dispatch preserves Phase B and adds Phase C;
-22. fake social result/capability passes through without target recomputation;
-23. target source contains no Phase C gameplay identifiers;
-24. actual registered CLI executes the social encounter.
+10. executable `modifier_source` binding drift is rejected at runtime;
+11. authoritative lookup-table drift is rejected;
+12. canonical consequence change with stale sidecar bridge is rejected;
+13. canonical + bridge consequence perturbation changes runtime state;
+14. seeded reaction evidence is deterministic;
+15. a changed seed changes terms/reaction;
+16. social replay succeeds;
+17. tampered reaction/state evidence diverges;
+18. resolved witness interaction cannot be repeated;
+19. `lookup_tables` is exercised/not-yet-candidate;
+20. `reaction_timing` remains suspected;
+21. target inspect/execute uses the same runtime state;
+22. generic target dispatch preserves Phase B and adds Phase C;
+23. fake social result/capability passes through without target recomputation;
+24. target source contains no Phase C gameplay identifiers;
+25. actual registered CLI executes the social encounter.
 
 Named evidence:
 
