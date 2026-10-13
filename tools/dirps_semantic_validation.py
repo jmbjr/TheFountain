@@ -133,7 +133,7 @@ def _registered_sidecar(config):
     return json.loads(sidecars[0].read_text())
 
 
-def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
+def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
     if not isinstance(sidecar, dict):
         errors.append("G5 requires the registered DIRPS proto sidecar")
         return
@@ -404,18 +404,39 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None):
             "Phase C must preserve the authoritative GURPS Lite Reaction Table lookup exactly"
         )
 
-    info_by_reaction = {
-        "disastrous": "no-useful-account",
-        "very-bad": "no-useful-account",
-        "bad": "no-useful-account",
-        "poor": "no-useful-account",
-        "neutral": "partial-account",
-        "good": "useful-lead",
-        "very-good": "useful-lead",
-        "excellent": "useful-lead",
-    }
+    reaction_order = [
+        "disastrous",
+        "very-bad",
+        "bad",
+        "poor",
+        "neutral",
+        "good",
+        "very-good",
+        "excellent",
+    ]
+    canonical_consequences = {}
+    if isinstance(canonical, dict):
+        witness = next(
+            (
+                row
+                for row in canonical.get("encounters", [])
+                if isinstance(row, dict) and row.get("id") == "frightened-witness"
+            ),
+            None,
+        )
+        if isinstance(witness, dict):
+            actions = witness.get("actions") or []
+            if len(actions) == 1 and isinstance(actions[0], dict):
+                canonical_consequences = actions[0].get("consequences") or {}
+
     expected_consequences = {}
-    for reaction, information in info_by_reaction.items():
+    for reaction in reaction_order:
+        information = (canonical_consequences.get(reaction) or {}).get("information")
+        if not isinstance(information, str) or not information:
+            errors.append(
+                f"Phase C canonical consequence information is required for {reaction}"
+            )
+            information = "missing"
         expected_consequences[reaction] = {
             "effect_refs": [
                 "frightened-witness-set-status-resolved",
@@ -1204,6 +1225,8 @@ def _validate_phase_c_social_contract(dodge, canonical, errors):
             )
         if row.get("reaction") != reaction:
             errors.append(f"Phase C {reaction} consequence must preserve its reaction id")
+        if row.get("status") != "resolved":
+            errors.append(f"Phase C {reaction} consequence status must be resolved")
         if not isinstance(row.get("information_text"), str) or not row.get(
             "information_text"
         ):
@@ -1327,6 +1350,7 @@ def validate_source_context(context):
             _registered_sidecar(context.get("config")),
             errors,
             context["dodge"],
+            context["scenario_source"],
         )
     return errors
 
@@ -1485,7 +1509,7 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
     # G5 and later gameplay tranches make these proto contracts executable;
     # resolved validation must continue to guard their exact authority/status boundary.
     if (canonical.get("status") or "").startswith(("g5-", "g6-")):
-        _validate_g5_proto_semantics(sidecar, errors, dodge)
+        _validate_g5_proto_semantics(sidecar, errors, dodge, canonical)
 
     expected_unresolved = _resolved_unresolved_index(sidecar)
     if resolved.get("unresolved") != expected_unresolved:
