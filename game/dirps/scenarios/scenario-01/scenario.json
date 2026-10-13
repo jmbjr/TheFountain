@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-d-washed-out-path",
+  "status": "g6-phase-e-bounded-combat",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 through Phase D: Roadside investigation, Frightened Witness social resolution, and a Washed-Out Path environmental DX challenge all execute through neutral runtime semantics.",
+    "target": "A G6-targeted Scenario 01 with Phase E bounded combat: one Rook broadsword attack, one bandit-scout Dodge reaction, one ST10 broadsword cutting damage path, injury/HP mutation, stun threshold, and deferred consciousness-check state.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase D adds one bounded environmental attribute check with explicit persistent success/failure consequences. Combat, recovery, whole-scenario progression, session history, Web presentation, and G7 remain later phases."
+    "acceptance_note": "Phase E proves the attack -> active defense -> damage -> injury -> state-change sequence without implementing full GURPS combat. Phase F owns HT recovery/consciousness rolls after combat."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -231,7 +231,46 @@
     {
       "id": "bandit-scout",
       "type": "combat",
-      "purpose": "Exercise attack, active defense, damage, injury, and state change in a bounded encounter."
+      "purpose": "Exercise attack, active defense, damage, injury, and state change in a bounded encounter.",
+      "opponent": {
+        "actor_ref": "bandit-scout",
+        "provenance": "prototype_assumption",
+        "attributes": {
+          "st": 10,
+          "dx": 10,
+          "ht": 10
+        },
+        "state": {
+          "hit_points": 10,
+          "stunned": false,
+          "unconscious": false
+        },
+        "defense_assumptions": {
+          "aware_of_attack": true,
+          "encumbrance_penalty": 0,
+          "armor_dr": 0,
+          "passive_defense": 0
+        }
+      },
+      "actions": [
+        {
+          "id": "strike-bandit-scout",
+          "label": "Attack the bandit scout with Rook's broadsword",
+          "actor_ref": "pc",
+          "target_ref": "bandit-scout",
+          "action_ref": "attack",
+          "skill_ref": "broadsword",
+          "weapon_ref": "broadsword",
+          "attack_mode": "swing-cut",
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption",
+          "supported_defense": "dodge"
+        }
+      ],
+      "bounded_combat": {
+        "maximum_exchanges": 1
+      }
     }
   ],
   "implementation_boundary": {

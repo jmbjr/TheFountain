@@ -377,10 +377,10 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
         errors.append("Phase C lookup_tables must remain not-yet-candidate")
 
     reaction_timing = specs.get("reaction_timing") or {}
-    if reaction_timing.get("status") != "suspected":
-        errors.append(
-            "Phase C reaction roll must not promote reaction_timing; no interrupt window executes"
-        )
+    if reaction_timing.get("status") != "exercised":
+        errors.append("Phase E must mark reaction_timing exercised")
+    if reaction_timing.get("candidate_for_dodge") != "not-yet-candidate":
+        errors.append("Phase E reaction_timing must remain not-yet-candidate")
 
     expected_lookup = {
         "key_ref": "modified-reaction-total",
@@ -555,17 +555,183 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
                 if effect_ref not in effects:
                     errors.append(f"Phase D consequence effect_ref does not resolve: {effect_ref}")
 
+    phase_e_expressions = sidecar.get("phase_e_expressions")
+    expected_phase_e_expressions = {
+        "bandit-dodge-target": {
+            "op": "add",
+            "args": [
+                {
+                    "op": "subtract",
+                    "args": [
+                        {
+                            "op": "floor",
+                            "arg": {
+                                "op": "divide",
+                                "args": [
+                                    {
+                                        "op": "add",
+                                        "args": [
+                                            {"ref": "defender.dx"},
+                                            {"ref": "defender.ht"},
+                                        ],
+                                    },
+                                    {"literal": 4},
+                                ],
+                            },
+                        },
+                        {"ref": "defender.encumbrance_penalty"},
+                    ],
+                },
+                {"ref": "defender.passive_defense"},
+            ],
+            "source_ref": RULES_SOURCE,
+            "authority": "authoritative",
+            "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge; Defense/Passive Defense",
+        },
+        "cutting-injury": {
+            "op": "add",
+            "args": [
+                {"ref": "penetrating_damage"},
+                {
+                    "op": "floor",
+                    "arg": {
+                        "op": "divide",
+                        "args": [
+                            {"ref": "penetrating_damage"},
+                            {"literal": 2},
+                        ],
+                    },
+                },
+            ],
+            "source_ref": RULES_SOURCE,
+            "authority": "authoritative",
+            "rule_locator": "p. 18, Damage Types; p. 27, Injury",
+        },
+    }
+    if phase_e_expressions != expected_phase_e_expressions:
+        errors.append("Phase E expressions must match the bounded authoritative combat math exactly")
+
+    expected_phase_e_derived = {
+        "bandit-dodge": {
+            "value_type": "integer",
+            "expression_ref": "bandit-dodge-target",
+            "dependencies": [
+                "defender.dx",
+                "defender.ht",
+                "defender.encumbrance_penalty",
+                "defender.passive_defense",
+            ],
+            "recompute": "on-dependency-change",
+        },
+        "cutting-injury": {
+            "value_type": "integer",
+            "expression_ref": "cutting-injury",
+            "dependencies": ["penetrating_damage"],
+            "recompute": "on-dependency-change",
+        },
+    }
+    if sidecar.get("phase_e_derived_values") != expected_phase_e_derived:
+        errors.append("Phase E derived values must match the bounded Dodge/injury contract exactly")
+
+    expected_phase_e_lookup = {
+        "key_ref": "attacker.st",
+        "rows": [
+            {
+                "when": {"min": 10, "max": 10},
+                "value": {"count": 1, "sides": 6, "adds": 0},
+            }
+        ],
+        "fallback": "error",
+        "source_ref": RULES_SOURCE,
+        "authority": "authoritative",
+        "rule_locator": "p. 18, Basic Weapon Damage",
+    }
+    lookups_e = sidecar.get("phase_e_lookup_tables")
+    if not isinstance(lookups_e, dict) or lookups_e.get("gurps-lite-st10-swing") != expected_phase_e_lookup:
+        errors.append("Phase E must preserve the authoritative bounded ST10 swing-damage lookup exactly")
+
+    expected_phase_e_binding = {
+        "encounter_ref": "bandit-scout",
+        "action_id": "strike-bandit-scout",
+        "attacker_ref": "pc",
+        "target_ref": "bandit-scout",
+        "action_ref": "attack",
+        "procedure_ref": "attack-resolution",
+        "skill_ref": "broadsword",
+        "weapon_ref": "broadsword",
+        "attack_mode": "swing-cut",
+        "runtime_state_ref": "scenario-01-bandit-scout-initial",
+        "required_revision": "0",
+        "attack_random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "attack_critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
+        "reaction_window": {
+            "trigger": "successful-noncritical-attack",
+            "responder_ref": "bandit-scout",
+            "eligible_defenses": ["dodge"],
+            "resolution_order": "attack-then-defense-before-damage",
+        },
+        "defense": {
+            "kind": "dodge",
+            "target_expression_ref": "bandit-dodge-target",
+            "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+            "rule_source_ref": RULES_SOURCE,
+            "rule_locator": "p. 26, Defense / Dodging",
+            "result_format": "dirps-active-defense-result.v1",
+        },
+        "damage": {
+            "strength_lookup_ref": "gurps-lite-st10-swing",
+            "weapon_add": 1,
+            "damage_type": "cutting",
+            "minimum_basic_damage": 1,
+            "armor_dr_source": "encounter.opponent.defense_assumptions.armor_dr",
+            "injury_expression_ref": "cutting-injury",
+            "rule_source_ref": RULES_SOURCE,
+            "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
+            "result_format": "dirps-damage-result.v1",
+            "critical_attack_total_three": {
+                "attack_total": 3,
+                "resolution": "automatic-maximum-profile-damage",
+                "damage_random_evidence": "none",
+                "rule_source_ref": RULES_SOURCE,
+                "rule_locator": "Rolling to Attack / Critical Hits",
+            },
+        },
+        "injury_state": {
+            "hit_points_ref": "hit-points",
+            "stunned_ref": "stunned",
+            "unconscious_ref": "unconscious",
+            "consciousness_check_required_ref": "consciousness-check-required",
+            "major_wound_rule": "injury > defender.ht / 2",
+            "consciousness_check_rule": "remaining_hp <= 0",
+            "consciousness_check_timing": "next-turn-start",
+            "recovery_phase": "Phase F",
+        },
+        "attack_result_format": "dirps-attack-result.v1",
+        "result_format": "dirps-combat-exchange-result.v1",
+        "binding_source_ref": PROTO_SOURCE,
+        "scenario_source_ref": SCENARIO_SOURCE,
+    }
+    combat_bindings = sidecar.get("phase_e_combat_bindings")
+    if not isinstance(combat_bindings, dict) or combat_bindings.get("bandit-scout") != expected_phase_e_binding:
+        errors.append("Phase E bandit-scout combat binding must match the declared bounded contract")
+    elif dodge:
+        combat = combat_bindings["bandit-scout"]
+        if combat["runtime_state_ref"] not in (dodge.get("runtime_states") or {}):
+            errors.append("Phase E runtime_state_ref must resolve in DODGE runtime_states")
+        action = (dodge.get("rules", {}).get("actions", {}) or {}).get(combat["action_ref"])
+        if not isinstance(action, dict) or action.get("procedure_ref") != combat["procedure_ref"]:
+            errors.append("Phase E attack action/procedure binding must resolve in DODGE rules")
+
+    for proto_id in ("derived_values", "expressions", "damage_injury"):
+        spec = specs.get(proto_id) or {}
+        if spec.get("status") != "exercised":
+            errors.append(f"Phase E must mark {proto_id} exercised")
+        if spec.get("candidate_for_dodge") != "not-yet-candidate":
+            errors.append(f"Phase E {proto_id} must remain not-yet-candidate")
+
     if (specs.get("replay_session_history") or {}).get("status") != "suspected":
         errors.append(
             "Phase B one-encounter replay must not promote replay_session_history"
-        )
-    if (specs.get("derived_values") or {}).get("status") != "suspected":
-        errors.append(
-            "Phase A must keep derived_values suspected; the generic proposed shape is not executed"
-        )
-    if (specs.get("expressions") or {}).get("status") != "suspected":
-        errors.append(
-            "Phase A must not promote expressions; no reusable expression graph executes"
         )
 
 
@@ -645,13 +811,22 @@ def _validate_actor_model(dodge, canonical, errors):
         if definition.get("owner_scope") == "actor"
     }
     for value_id in sorted(actor_values):
-        _source_contract(
-            errors,
-            f"value {value_id}",
-            values[value_id],
-            RULES_SOURCE,
-            "authoritative",
-        )
+        if value_id == "consciousness-check-required":
+            _source_contract(
+                errors,
+                f"value {value_id}",
+                values[value_id],
+                PROTO_SOURCE,
+                "provisional",
+            )
+        else:
+            _source_contract(
+                errors,
+                f"value {value_id}",
+                values[value_id],
+                RULES_SOURCE,
+                "authoritative",
+            )
 
     # DIRPS Scenario 01 requires explicit initial bindings for every declared
     # actor-scoped value so tutorial actors do not depend on hidden runtime defaults.
@@ -1482,6 +1657,173 @@ def _validate_phase_d_environment_contract(dodge, canonical, errors):
             errors.append(f"Phase D DODGE effect {effect_id} must normalize canonical consequence exactly")
 
 
+def _validate_phase_e_combat_contract(dodge, canonical, errors):
+    encounter = next(
+        (
+            row
+            for row in canonical.get("encounters", [])
+            if isinstance(row, dict) and row.get("id") == "bandit-scout"
+        ),
+        None,
+    )
+    if not isinstance(encounter, dict):
+        errors.append("Phase E requires canonical bandit-scout encounter")
+        return
+
+    opponent = encounter.get("opponent")
+    if not isinstance(opponent, dict):
+        errors.append("Phase E bandit-scout requires canonical opponent data")
+        return
+    if opponent.get("actor_ref") != "bandit-scout":
+        errors.append("Phase E opponent actor_ref must be bandit-scout")
+    if opponent.get("provenance") != PC_PROVENANCE:
+        errors.append("Phase E opponent provenance must be prototype_assumption")
+    attributes = opponent.get("attributes")
+    if not isinstance(attributes, dict) or set(attributes) != {"st", "dx", "ht"}:
+        errors.append("Phase E bounded opponent attributes must define exactly ST/DX/HT")
+        attributes = {}
+    for ref in ("st", "dx", "ht"):
+        value = attributes.get(ref)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            errors.append(f"Phase E opponent attribute {ref} must be a positive integer")
+
+    opponent_state = opponent.get("state")
+    if not isinstance(opponent_state, dict) or set(opponent_state) != {
+        "hit_points", "stunned", "unconscious"
+    }:
+        errors.append("Phase E bounded opponent state must define HP/stunned/unconscious")
+        opponent_state = {}
+    if not isinstance(opponent_state.get("hit_points"), int) or isinstance(
+        opponent_state.get("hit_points"), bool
+    ):
+        errors.append("Phase E opponent hit_points must be an integer")
+    for ref in ("stunned", "unconscious"):
+        if not isinstance(opponent_state.get(ref), bool):
+            errors.append(f"Phase E opponent {ref} must be boolean")
+        elif opponent_state.get(ref) is not False:
+            errors.append(f"Phase E bounded combat requires initial {ref} == false")
+
+    assumptions = opponent.get("defense_assumptions")
+    if not isinstance(assumptions, dict) or set(assumptions) != {
+        "aware_of_attack", "encumbrance_penalty", "armor_dr", "passive_defense"
+    }:
+        errors.append("Phase E defense assumptions must define awareness/encumbrance/DR/passive defense")
+        assumptions = {}
+    if assumptions.get("aware_of_attack") is not True:
+        errors.append("Phase E bounded Dodge slice requires an aware defender")
+    for ref in ("encumbrance_penalty", "armor_dr", "passive_defense"):
+        value = assumptions.get(ref)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            errors.append(f"Phase E defense assumption {ref} must be a nonnegative integer")
+    if encounter.get("bounded_combat") != {"maximum_exchanges": 1}:
+        errors.append("Phase E combat scope must remain exactly one exchange")
+
+    actions = encounter.get("actions")
+    if not isinstance(actions, list) or len(actions) != 1:
+        errors.append("Phase E bandit-scout must expose exactly one supported combat action")
+        return
+    action = actions[0]
+    expected_action = {
+        "id": "strike-bandit-scout",
+        "label": "Attack the bandit scout with Rook's broadsword",
+        "actor_ref": "pc",
+        "target_ref": "bandit-scout",
+        "action_ref": "attack",
+        "skill_ref": "broadsword",
+        "weapon_ref": "broadsword",
+        "attack_mode": "swing-cut",
+        "source_ref": SCENARIO_SOURCE,
+        "authority": "provisional",
+        "provenance": PC_PROVENANCE,
+        "supported_defense": "dodge",
+    }
+    if action != expected_action:
+        errors.append("Phase E combat action must match the bounded broadsword/Dodge contract")
+
+    pc = canonical.get("player_character") or {}
+    if (pc.get("skills") or {}).get("broadsword") is None:
+        errors.append("Phase E requires canonical PC broadsword skill")
+    if "broadsword" not in (pc.get("equipment") or []):
+        errors.append("Phase E requires canonical PC broadsword equipment")
+
+    scenario, scene = _scene_for_scenario(dodge)
+    instances = _instance_map(scene)
+    bandit = instances.get("bandit-scout") or {}
+    bandit_state = bandit.get("state") or {}
+    expected_actor_state = {
+        "st": attributes.get("st"),
+        "dx": attributes.get("dx"),
+        "ht": attributes.get("ht"),
+        "hit-points": opponent_state.get("hit_points"),
+        "stunned": opponent_state.get("stunned"),
+        "unconscious": opponent_state.get("unconscious"),
+    }
+    for ref, expected in expected_actor_state.items():
+        if bandit_state.get(ref) != expected:
+            errors.append(
+                f"Phase E bandit DODGE scene state {ref} must equal canonical value {expected!r}"
+            )
+
+    value = (dodge.get("rules", {}).get("values", {}) or {}).get(
+        "consciousness-check-required"
+    )
+    expected_value = {
+        "name": "Consciousness check required",
+        "type": "boolean",
+        "default": False,
+        "source_ref": PROTO_SOURCE,
+        "authority": "provisional",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+            "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; the actual HT check is Phase F."
+        ],
+    }
+    if value != expected_value:
+        errors.append(
+            "Phase E consciousness-check-required DODGE value must match the declared deferred Phase F contract"
+        )
+
+    runtime = (dodge.get("runtime_states") or {}).get(
+        "scenario-01-bandit-scout-initial"
+    )
+    expected_runtime = {
+        "scenario_ref": "scenario-01",
+        "bindings": [
+            {
+                "ref": "hit-points",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": opponent_state.get("hit_points"),
+                "authority": "provisional",
+            },
+            {
+                "ref": "stunned",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": opponent_state.get("stunned"),
+                "authority": "provisional",
+            },
+            {
+                "ref": "unconscious",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": opponent_state.get("unconscious"),
+                "authority": "provisional",
+            },
+            {
+                "ref": "consciousness-check-required",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": False,
+                "authority": "provisional",
+            },
+        ],
+        "events": [],
+        "revision": "0",
+    }
+    if runtime != expected_runtime:
+        errors.append(
+            "Phase E bandit combat runtime state must normalize canonical opponent state exactly"
+        )
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -1497,6 +1839,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_phase_b_investigation_contract(dodge, canonical, errors)
     _validate_phase_c_social_contract(dodge, canonical, errors)
     _validate_phase_d_environment_contract(dodge, canonical, errors)
+    _validate_phase_e_combat_contract(dodge, canonical, errors)
     return errors
 
 

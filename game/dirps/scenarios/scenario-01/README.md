@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase C gameplay candidate.** The accepted skill and Roadside encounter contracts remain intact. Frightened Witness now executes through an authoritative GURPS Lite reaction roll/table, a canonical reassuring-approach modifier and information mapping, neutral DODGE witness state/effects, deterministic replay evidence, and the same thin target boundary. `../../docs/phase-c-frightened-witness-validation.md` records the social authority/lookup/state/replay evidence.
+**G6 — Targeted, Phase E gameplay candidate.** Accepted Phases A-D remain intact. The Bandit Scout now executes one bounded Broadsword attack → active Dodge → damage → cutting injury → HP/stun/consciousness-check-state exchange. `../../docs/phase-e-bounded-combat-validation.md` records the combat authority/timing/damage/state/replay evidence.
 
 ## Goal
 
@@ -33,9 +33,14 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B and C are accepted stateful encounters. Phase D now resolves Washed-Out Path through a distinct DX attribute check and persists `crossed` or `detour-required` in neutral state. It intentionally does **not** auto-advance into combat; combat/recovery/completion and immutable session history remain later roadmap work.
+Phases B/C/D are accepted playable encounters. Phase E adds one bounded combat exchange and may leave the bandit wounded, stunned, and requiring a future consciousness check. The actual HT consciousness/recovery roll belongs to Phase F; automatic scenario progression/completion and immutable session history remain later roadmap work.
 
 
 ## Phase D — Washed-Out Path
 
 The environmental encounter now executes one bounded `attempt-attribute → success-roll` DX crossing check. Success records `crossed`; failure records `detour-required` in neutral runtime state. The check reuses accepted success-roll/random/critical semantics and remains separate from later automatic encounter progression. Evidence: `../../docs/phase-d-washed-out-path-validation.md`.
+
+
+## Phase E — Bandit Scout combat
+
+The combat encounter supports one Rook Broadsword swing against the bandit scout. Ordinary hits open one Dodge reaction; a failed defense rolls bounded ST10 broadsword cutting damage and persists HP/stun/consciousness-check state. The exchange is intentionally one-shot and visibly rejects unsupported defenses, weapons, ST damage rows, and broader combat options. Evidence: `../../docs/phase-e-bounded-combat-validation.md`.

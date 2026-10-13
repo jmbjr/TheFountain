@@ -28,7 +28,8 @@
     "phase_a_note": "Phase A executes source-owned contextual modifiers, derives effective target as base skill plus the declared modifier total, classifies GURPS Lite critical success/failure boundaries, and supports deterministic generated 3d6 evidence. The accepted G5 g5_execution_bindings.attempt-skill contract remains unchanged and continues to emit dirps-execution-result.v1. The expanded Phase A contract lives separately under phase_a_execution_bindings.attempt-skill and emits dirps-execution-result.v2, so legacy records remain reproducible and cannot be confused with v2. derived_values and expressions remain suspected because Phase A uses a bounded DIRPS-private execution binding rather than either proposed generic proto shape.",
     "phase_b_note": "Phase B composes the accepted Phase A contextual skill result with standard DODGE 0.2.1 scenario runtime-state bindings and structured set effects. The sidecar only bridges the skill outcome branch to ordered DODGE effect refs and one encounter-result evidence record. No new proto concept is promoted; replay_session_history remains suspected because this is still one encounter record, not an append-only session.",
     "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window.",
-    "phase_d_note": "Phase D reuses the accepted success-roll/dice/procedure-context machinery for a canonical DX-based environmental check and standard DODGE runtime state/effects for consequences. No new proto concept is promoted."
+    "phase_d_note": "Phase D reuses the accepted success-roll/dice/procedure-context machinery for a canonical DX-based environmental check and standard DODGE runtime state/effects for consequences. No new proto concept is promoted.",
+    "phase_e_note": "Phase E executes one bounded attack -> active defense -> damage -> injury sequence. reaction_timing, derived_values, expressions, and damage_injury are exercised from target-neutral sidecar contracts. lookup_tables remains exercised via a bounded ST10 swing-damage lookup. Unsupported combat options fail visibly."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -65,7 +66,7 @@
       "phase_c_evidence": "Phase C reuses deterministic supplied/seeded 3d6 evidence for a reaction roll whose higher modified total feeds a lookup table rather than a success-roll comparator."
     },
     "derived_values": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 value definitions store typed state but do not define dependency formulas for derived values.",
       "proposed_shape": {
         "id": "derived-value",
@@ -82,10 +83,11 @@
         "effective target values"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "phase_a_evidence": "Reassessed but not promoted: Phase A computes one effective target inside the bounded attempt-skill execution binding. It does not implement the proposed generic derived-value contract, dependency graph, or recomputation model."
+      "phase_a_evidence": "Reassessed but not promoted: Phase A computes one effective target inside the bounded attempt-skill execution binding. It does not implement the proposed generic derived-value contract, dependency graph, or recomputation model.",
+      "phase_e_evidence": "Phase E derives the bandit's Dodge target from DX/HT/encumbrance and derives cutting injury from penetrating damage through resolver-preserved expression references."
     },
     "expressions": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 conditions/effects provide bounded operators but not a reusable arithmetic expression graph for rules math.",
       "proposed_shape": {
         "operators": [
@@ -108,7 +110,8 @@
         "defense derivation",
         "damage adjustments"
       ],
-      "candidate_for_dodge": "not-yet-candidate"
+      "candidate_for_dodge": "not-yet-candidate",
+      "phase_e_evidence": "Phase E executes pure add/subtract/divide/floor expression trees for Dodge target and cutting injury rather than embedding those calculations in the target."
     },
     "lookup_tables": {
       "status": "exercised",
@@ -131,7 +134,8 @@
         "range/modifier tables where required"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "phase_c_evidence": "Phase C executes the GURPS Lite Reaction Table as a target-neutral ordered range lookup from modified reaction total to reaction category. The representation is exercised only in DIRPS and is not yet proposed upstream."
+      "phase_c_evidence": "Phase C executes the GURPS Lite Reaction Table as a target-neutral ordered range lookup from modified reaction total to reaction category. The representation is exercised only in DIRPS and is not yet proposed upstream.",
+      "phase_e_evidence": "Phase E uses a bounded authoritative ST-to-swing-damage lookup for the supported ST10 broadsword path."
     },
     "procedure_context": {
       "status": "exercised",
@@ -159,7 +163,7 @@
       "phase_d_evidence": "Phase D carries an attribute-target context (DX), source-owned environmental modifier, runtime state, and ordered success/failure effects through one bounded procedure."
     },
     "reaction_timing": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 phases and ordered procedures do not explicitly model interrupt/reaction windows or constrained defensive responses.",
       "proposed_shape": {
         "trigger_event": "semantic-event",
@@ -173,7 +177,8 @@
         "active defenses after a successful attack"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "phase_c_evidence": "Reassessed but not promoted: GURPS reaction rolls classify NPC attitude; they do not exercise interrupt/reaction-window timing."
+      "phase_c_evidence": "Reassessed but not promoted: GURPS reaction rolls classify NPC attitude; they do not exercise interrupt/reaction-window timing.",
+      "phase_e_evidence": "Phase E opens one defense window only after a successful noncritical attack, restricts the responder to the attacked bandit, allows exactly one declared Dodge defense, and closes the window before damage."
     },
     "visibility_and_secret_state": {
       "status": "suspected",
@@ -293,6 +298,28 @@
       ],
       "candidate_for_dodge": "not-yet-candidate",
       "phase_b_evidence": "Reassessed but not promoted: Phase B deterministically re-evaluates one stateful encounter record. It still does not define an immutable append-only multi-step session history."
+    },
+    "damage_injury": {
+      "status": "exercised",
+      "dodge_gap": "DODGE 0.2.1 has typed actor state and effects but no first-class combat damage profile tying weapon/ST damage, DR, damage type, injury multiplier, HP loss, and injury thresholds into one executable result.",
+      "proposed_shape": {
+        "damage_profile_ref": "rules-owned profile",
+        "base_damage": "lookup-or-expression",
+        "damage_type": "semantic type",
+        "damage_resistance": "numeric input",
+        "penetrating_damage": "derived result",
+        "injury": "derived result",
+        "state_targets": [
+          "hit-points",
+          "stunned",
+          "unconscious"
+        ]
+      },
+      "dirps_evidence": [
+        "bounded broadsword cutting injury in Scenario 01"
+      ],
+      "candidate_for_dodge": "not-yet-candidate",
+      "phase_e_evidence": "Phase E executes one ST10 broadsword swing/cutting path with DR0, HP subtraction, major-wound stun, and deferred consciousness-check state."
     }
   },
   "g5_execution_bindings": {
@@ -666,6 +693,182 @@
       "binding_source_ref": "dirps-proto",
       "target_source_ref": "scenario-01-source",
       "consequence_source_ref": "scenario-01-source"
+    }
+  },
+  "phase_e_expressions": {
+    "bandit-dodge-target": {
+      "op": "add",
+      "args": [
+        {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "floor",
+              "arg": {
+                "op": "divide",
+                "args": [
+                  {
+                    "op": "add",
+                    "args": [
+                      {
+                        "ref": "defender.dx"
+                      },
+                      {
+                        "ref": "defender.ht"
+                      }
+                    ]
+                  },
+                  {
+                    "literal": 4
+                  }
+                ]
+              }
+            },
+            {
+              "ref": "defender.encumbrance_penalty"
+            }
+          ]
+        },
+        {
+          "ref": "defender.passive_defense"
+        }
+      ],
+      "source_ref": "gurps-lite",
+      "authority": "authoritative",
+      "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge; Defense/Passive Defense"
+    },
+    "cutting-injury": {
+      "op": "add",
+      "args": [
+        {
+          "ref": "penetrating_damage"
+        },
+        {
+          "op": "floor",
+          "arg": {
+            "op": "divide",
+            "args": [
+              {
+                "ref": "penetrating_damage"
+              },
+              {
+                "literal": 2
+              }
+            ]
+          }
+        }
+      ],
+      "source_ref": "gurps-lite",
+      "authority": "authoritative",
+      "rule_locator": "p. 18, Damage Types; p. 27, Injury"
+    }
+  },
+  "phase_e_derived_values": {
+    "bandit-dodge": {
+      "value_type": "integer",
+      "expression_ref": "bandit-dodge-target",
+      "dependencies": [
+        "defender.dx",
+        "defender.ht",
+        "defender.encumbrance_penalty",
+        "defender.passive_defense"
+      ],
+      "recompute": "on-dependency-change"
+    },
+    "cutting-injury": {
+      "value_type": "integer",
+      "expression_ref": "cutting-injury",
+      "dependencies": [
+        "penetrating_damage"
+      ],
+      "recompute": "on-dependency-change"
+    }
+  },
+  "phase_e_lookup_tables": {
+    "gurps-lite-st10-swing": {
+      "key_ref": "attacker.st",
+      "rows": [
+        {
+          "when": {
+            "min": 10,
+            "max": 10
+          },
+          "value": {
+            "count": 1,
+            "sides": 6,
+            "adds": 0
+          }
+        }
+      ],
+      "fallback": "error",
+      "source_ref": "gurps-lite",
+      "authority": "authoritative",
+      "rule_locator": "p. 18, Basic Weapon Damage"
+    }
+  },
+  "phase_e_combat_bindings": {
+    "bandit-scout": {
+      "encounter_ref": "bandit-scout",
+      "action_id": "strike-bandit-scout",
+      "attacker_ref": "pc",
+      "target_ref": "bandit-scout",
+      "action_ref": "attack",
+      "procedure_ref": "attack-resolution",
+      "skill_ref": "broadsword",
+      "weapon_ref": "broadsword",
+      "attack_mode": "swing-cut",
+      "runtime_state_ref": "scenario-01-bandit-scout-initial",
+      "attack_random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+      "attack_critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
+      "reaction_window": {
+        "trigger": "successful-noncritical-attack",
+        "responder_ref": "bandit-scout",
+        "eligible_defenses": [
+          "dodge"
+        ],
+        "resolution_order": "attack-then-defense-before-damage"
+      },
+      "defense": {
+        "kind": "dodge",
+        "target_expression_ref": "bandit-dodge-target",
+        "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 26, Defense / Dodging",
+        "result_format": "dirps-active-defense-result.v1"
+      },
+      "damage": {
+        "strength_lookup_ref": "gurps-lite-st10-swing",
+        "weapon_add": 1,
+        "damage_type": "cutting",
+        "minimum_basic_damage": 1,
+        "armor_dr_source": "encounter.opponent.defense_assumptions.armor_dr",
+        "injury_expression_ref": "cutting-injury",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
+        "result_format": "dirps-damage-result.v1",
+        "critical_attack_total_three": {
+          "attack_total": 3,
+          "resolution": "automatic-maximum-profile-damage",
+          "damage_random_evidence": "none",
+          "rule_source_ref": "gurps-lite",
+          "rule_locator": "Rolling to Attack / Critical Hits"
+        }
+      },
+      "injury_state": {
+        "hit_points_ref": "hit-points",
+        "stunned_ref": "stunned",
+        "unconscious_ref": "unconscious",
+        "consciousness_check_required_ref": "consciousness-check-required",
+        "major_wound_rule": "injury > defender.ht / 2",
+        "consciousness_check_rule": "remaining_hp <= 0",
+        "consciousness_check_timing": "next-turn-start",
+        "recovery_phase": "Phase F"
+      },
+      "attack_result_format": "dirps-attack-result.v1",
+      "result_format": "dirps-combat-exchange-result.v1",
+      "binding_source_ref": "dirps-proto",
+      "scenario_source_ref": "scenario-01-source",
+      "required_revision": "0"
     }
   }
 }

@@ -170,6 +170,10 @@ class DirpsResolutionTests(unittest.TestCase):
                 "skill_model",
                 "resolution_trace",
                 "lookup_tables",
+                "reaction_timing",
+                "derived_values",
+                "expressions",
+                "damage_injury",
             },
         )
         self.assertTrue(

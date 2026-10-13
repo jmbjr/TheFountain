@@ -672,3 +672,16 @@ This is the first concrete execution evidence for the lookup-table gap, so `look
 After Phase C merged in PR #181, DIRPS started Phase D from fresh post-merge `main`. The Washed-Out Path now executes a bounded `attempt-attribute → success-roll` DX check using the resolved PC attribute, a canonical provisional obstacle modifier, the accepted GURPS success/critical/random machinery, standard DODGE runtime state/effects, deterministic replay evidence, and the existing runtime-dispatched debug target. The distinct action identity prevents the environmental attribute test from silently masquerading as an accepted skill-check contract.
 
 Success persists `crossed`; failure persists `detour-required`, giving later scenario progression an explicit neutral consequence. Phase D adds no combat, injury, automatic progression, session history, or G7 claim, and promotes no new proto concept.
+
+
+## DIRPS gameplay Phase E adds bounded combat
+
+**October 13, 2026.**
+
+After accepted/merged Phase D PR #182, DIRPS started Phase E from fresh post-merge `main`. The Bandit Scout now executes one bounded Rook Broadsword attack through a real attack → active defense → damage → injury → state-change sequence while formal maturity remains G6.
+
+Scenario 01 owns the provisional combat setup and defender assumptions. GURPS Lite remains authoritative for attack rolls, Dodge timing/derivation, ST-based weapon damage, DR, cutting injury, HP, major-wound stun, and the future consciousness-check obligation. DODGE continues to own actor values and the neutral runtime-state snapshot. The sidecar supplies only the RPG-shaped gaps DODGE 0.2.1 cannot yet express as one executable combat contract.
+
+Phase E is the first concrete execution evidence for `reaction_timing`, `derived_values`, and `expressions`, and adds a bounded `damage_injury` gap record. Each becomes `exercised` while remaining `not-yet-candidate`. The existing `lookup_tables` concept remains exercised through an intentionally narrow ST10 swing-damage row. Independent review caught one combat-rule completeness bug before acceptance: attack total 3 had been treated like other critical hits and rolled damage normally. The corrected binding/runtime now derives maximum profile damage with no damage RNG evidence on total 3, while total 4/5/6 critical hits continue to roll damage normally. Unsupported defenses, weapons, ST rows, repeated exchanges, hit locations, and broader combat rules fail visibly instead of being guessed.
+
+A successful undefended hit mutates only the bandit combat snapshot. Major wounds mark the scout stunned. HP at or below zero records `consciousness-check-required = true` but does not execute the beginning-of-turn HT roll or set unconsciousness; those mechanics are deliberately reserved for Phase F. No G7 work is included.

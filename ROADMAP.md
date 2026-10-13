@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A, B, and C are accepted; Phase D now adds the Washed-Out Path environmental challenge.
+The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A-D are accepted; Phase E now adds the bounded Bandit Scout combat vertical slice.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,7 +175,7 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4/G5/G6 and Phase A/B/C evidence remains in the existing validation documents. Gameplay Phase D adds a distinct authoritative `attempt-attribute → success-roll` DX check, canonical obstacle modifier/consequences, neutral Washed-Out Path state/effects, deterministic replay, and runtime-dispatched environmental target support; evidence lives in `game/dirps/docs/phase-d-washed-out-path-validation.md`. Phase E — bounded combat vertical slice — is next after Phase D acceptance. G7 has not started.
+G2/G3/G4/G5/G6 and Phase A-D evidence remains in the existing validation documents. Gameplay Phase E adds one Broadsword attack, an active-defense reaction window, derived Dodge, bounded ST10 cutting damage/injury, HP/stun/future-consciousness state, deterministic replay, and runtime-dispatched combat target support; evidence lives in `game/dirps/docs/phase-e-bounded-combat-validation.md`. Phase F — recovery / consciousness — is next after Phase E acceptance. G7 has not started.
 
 Current DIRPS maturity:
 
@@ -184,7 +184,7 @@ Current DIRPS maturity:
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
-- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, and Phase C `lookup_tables` are **exercised** / `not-yet-candidate`; `reaction_timing`, `replay_session_history`, `visibility_and_secret_state`, `derived_values`, and `expressions` remain **suspected**;
+- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, and Phase E `damage_injury` are **exercised** / `not-yet-candidate`; `replay_session_history` and `visibility_and_secret_state` remain **suspected**;
 - one registered debug CLI target now consumes the accepted resolved/runtime path and exposes execution/provenance evidence without owning gameplay semantics;
 - gameplay convergence is tracked in issue **#178** and maturity/conformance in **#163**; G7 requires a separate whole-system reference-quality review after the playable roadmap is complete enough to support it.
 
@@ -257,4 +257,4 @@ tune the source
 The roadmap should change whenever playtesting, a second game, or better implementation evidence shows that it should.
 
 
-DIRPS gameplay roadmap #178: Phase D now adds the Washed-Out Path environmental challenge as the current G6 gameplay candidate. Phase E bounded combat remains next after independent Phase D acceptance.
+DIRPS gameplay roadmap #178: Phase E now adds the bounded Bandit Scout combat exchange as the current G6 gameplay candidate. Phase F recovery/consciousness remains next after independent Phase E acceptance.

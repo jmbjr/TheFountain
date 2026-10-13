@@ -622,3 +622,27 @@ canonical DX + environmental context
 ```
 
 Success persists `crossed`; failure persists `detour-required`. Both are neutral scenario state intended for later progression rather than presentation-only flags. Phase D does not advance encounter order itself. No new proto concept is promoted.
+
+### DIRPS gameplay Phase E — bounded combat
+
+Phase E adds one attack/defense/damage/injury exchange without disturbing the accepted G5/Phase A-D record contracts:
+
+```text
+canonical combat setup
+→ resolved Broadsword skill + actor state
+→ attack-resolution / 3d6 evidence
+→ explicit active-defense reaction window
+→ derived Dodge target
+→ 3d6 defense evidence
+→ bounded ST10 swing lookup + Broadsword add
+→ DR / cutting injury expression
+→ target HP/stun/consciousness-check state
+→ dirps-combat-exchange-result.v1
+→ runtime-dispatched debug target
+```
+
+The target never computes attack, defense, damage, or injury. `phase_e_combat_bindings` owns the bounded orchestration; `phase_e_expressions` and `phase_e_derived_values` own Dodge/injury math; `phase_e_lookup_tables` owns the intentionally narrow ST10 swing row. The combat binding also preserves the authoritative roll-3 critical rule: attack total 3 bypasses defense and uses maximum profile damage without consuming damage RNG evidence, while other supported critical hits still roll damage normally. Unknown operators, defenses, attack modes, ST rows, or repeated exchanges fail visibly.
+
+Phase E is the first concrete interrupt/reaction-window evidence, so `reaction_timing` becomes exercised. It also executes the existing `derived_values` and `expressions` proposals and adds a bounded `damage_injury` gap record. All remain not-yet-candidate.
+
+Actor injury is stored in a neutral DODGE runtime snapshot. A major wound marks the scout stunned. HP <= 0 sets a provisional `consciousness-check-required` actor value while leaving `unconscious = false`; the actual beginning-of-turn HT roll and stun recovery are Phase F.
