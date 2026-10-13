@@ -1693,6 +1693,8 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
     for ref in ("stunned", "unconscious"):
         if not isinstance(opponent_state.get(ref), bool):
             errors.append(f"Phase E opponent {ref} must be boolean")
+        elif opponent_state.get(ref) is not False:
+            errors.append(f"Phase E bounded combat requires initial {ref} == false")
 
     assumptions = opponent.get("defense_assumptions")
     if not isinstance(assumptions, dict) or set(assumptions) != {
