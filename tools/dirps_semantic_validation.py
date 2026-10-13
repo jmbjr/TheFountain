@@ -377,10 +377,10 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
         errors.append("Phase C lookup_tables must remain not-yet-candidate")
 
     reaction_timing = specs.get("reaction_timing") or {}
-    if reaction_timing.get("status") != "suspected":
-        errors.append(
-            "Phase C reaction roll must not promote reaction_timing; no interrupt window executes"
-        )
+    if reaction_timing.get("status") != "exercised":
+        errors.append("Phase E must mark reaction_timing exercised")
+    if reaction_timing.get("candidate_for_dodge") != "not-yet-candidate":
+        errors.append("Phase E reaction_timing must remain not-yet-candidate")
 
     expected_lookup = {
         "key_ref": "modified-reaction-total",
@@ -555,17 +555,168 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
                 if effect_ref not in effects:
                     errors.append(f"Phase D consequence effect_ref does not resolve: {effect_ref}")
 
+    phase_e_expressions = sidecar.get("phase_e_expressions")
+    expected_phase_e_expressions = {
+        "bandit-dodge-target": {
+            "op": "subtract",
+            "args": [
+                {
+                    "op": "floor",
+                    "arg": {
+                        "op": "divide",
+                        "args": [
+                            {
+                                "op": "add",
+                                "args": [
+                                    {"ref": "defender.dx"},
+                                    {"ref": "defender.ht"},
+                                ],
+                            },
+                            {"literal": 4},
+                        ],
+                    },
+                },
+                {"ref": "defender.encumbrance_penalty"},
+            ],
+            "source_ref": RULES_SOURCE,
+            "authority": "authoritative",
+            "rule_locator": "pp. 20, 26, Basic Speed/Move/Dodge",
+        },
+        "cutting-injury": {
+            "op": "add",
+            "args": [
+                {"ref": "penetrating_damage"},
+                {
+                    "op": "floor",
+                    "arg": {
+                        "op": "divide",
+                        "args": [
+                            {"ref": "penetrating_damage"},
+                            {"literal": 2},
+                        ],
+                    },
+                },
+            ],
+            "source_ref": RULES_SOURCE,
+            "authority": "authoritative",
+            "rule_locator": "p. 18, Damage Types; p. 27, Injury",
+        },
+    }
+    if phase_e_expressions != expected_phase_e_expressions:
+        errors.append("Phase E expressions must match the bounded authoritative combat math exactly")
+
+    expected_phase_e_derived = {
+        "bandit-dodge": {
+            "value_type": "integer",
+            "expression_ref": "bandit-dodge-target",
+            "dependencies": [
+                "defender.dx",
+                "defender.ht",
+                "defender.encumbrance_penalty",
+            ],
+            "recompute": "on-dependency-change",
+        },
+        "cutting-injury": {
+            "value_type": "integer",
+            "expression_ref": "cutting-injury",
+            "dependencies": ["penetrating_damage"],
+            "recompute": "on-dependency-change",
+        },
+    }
+    if sidecar.get("phase_e_derived_values") != expected_phase_e_derived:
+        errors.append("Phase E derived values must match the bounded Dodge/injury contract exactly")
+
+    expected_phase_e_lookup = {
+        "key_ref": "attacker.st",
+        "rows": [
+            {
+                "when": {"min": 10, "max": 10},
+                "value": {"count": 1, "sides": 6, "adds": 0},
+            }
+        ],
+        "fallback": "error",
+        "source_ref": RULES_SOURCE,
+        "authority": "authoritative",
+        "rule_locator": "p. 18, Basic Weapon Damage",
+    }
+    lookups_e = sidecar.get("phase_e_lookup_tables")
+    if not isinstance(lookups_e, dict) or lookups_e.get("gurps-lite-st10-swing") != expected_phase_e_lookup:
+        errors.append("Phase E must preserve the authoritative bounded ST10 swing-damage lookup exactly")
+
+    expected_phase_e_binding = {
+        "encounter_ref": "bandit-scout",
+        "action_id": "strike-bandit-scout",
+        "attacker_ref": "pc",
+        "target_ref": "bandit-scout",
+        "action_ref": "attack",
+        "procedure_ref": "attack-resolution",
+        "skill_ref": "broadsword",
+        "weapon_ref": "broadsword",
+        "attack_mode": "swing-cut",
+        "runtime_state_ref": "scenario-01-bandit-scout-initial",
+        "attack_random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "attack_critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
+        "reaction_window": {
+            "trigger": "successful-noncritical-attack",
+            "responder_ref": "bandit-scout",
+            "eligible_defenses": ["dodge"],
+            "resolution_order": "attack-then-defense-before-damage",
+        },
+        "defense": {
+            "kind": "dodge",
+            "target_expression_ref": "bandit-dodge-target",
+            "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+            "rule_source_ref": RULES_SOURCE,
+            "rule_locator": "p. 26, Defense / Dodging",
+            "result_format": "dirps-active-defense-result.v1",
+        },
+        "damage": {
+            "strength_lookup_ref": "gurps-lite-st10-swing",
+            "weapon_add": 1,
+            "damage_type": "cutting",
+            "minimum_basic_damage": 1,
+            "armor_dr_source": "encounter.opponent.defense_assumptions.armor_dr",
+            "injury_expression_ref": "cutting-injury",
+            "rule_source_ref": RULES_SOURCE,
+            "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
+            "result_format": "dirps-damage-result.v1",
+        },
+        "injury_state": {
+            "hit_points_ref": "hit-points",
+            "stunned_ref": "stunned",
+            "unconscious_ref": "unconscious",
+            "consciousness_check_required_ref": "consciousness-check-required",
+            "major_wound_rule": "injury > defender.ht / 2",
+            "consciousness_check_rule": "remaining_hp <= 0",
+            "consciousness_check_timing": "next-turn-start",
+            "recovery_phase": "Phase F",
+        },
+        "attack_result_format": "dirps-attack-result.v1",
+        "result_format": "dirps-combat-exchange-result.v1",
+        "binding_source_ref": PROTO_SOURCE,
+        "scenario_source_ref": SCENARIO_SOURCE,
+    }
+    combat_bindings = sidecar.get("phase_e_combat_bindings")
+    if not isinstance(combat_bindings, dict) or combat_bindings.get("bandit-scout") != expected_phase_e_binding:
+        errors.append("Phase E bandit-scout combat binding must match the declared bounded contract")
+    elif dodge:
+        combat = combat_bindings["bandit-scout"]
+        if combat["runtime_state_ref"] not in (dodge.get("runtime_states") or {}):
+            errors.append("Phase E runtime_state_ref must resolve in DODGE runtime_states")
+        action = (dodge.get("rules", {}).get("actions", {}) or {}).get(combat["action_ref"])
+        if not isinstance(action, dict) or action.get("procedure_ref") != combat["procedure_ref"]:
+            errors.append("Phase E attack action/procedure binding must resolve in DODGE rules")
+
+    for proto_id in ("derived_values", "expressions", "damage_injury"):
+        spec = specs.get(proto_id) or {}
+        if spec.get("status") != "exercised":
+            errors.append(f"Phase E must mark {proto_id} exercised")
+        if spec.get("candidate_for_dodge") != "not-yet-candidate":
+            errors.append(f"Phase E {proto_id} must remain not-yet-candidate")
+
     if (specs.get("replay_session_history") or {}).get("status") != "suspected":
         errors.append(
             "Phase B one-encounter replay must not promote replay_session_history"
-        )
-    if (specs.get("derived_values") or {}).get("status") != "suspected":
-        errors.append(
-            "Phase A must keep derived_values suspected; the generic proposed shape is not executed"
-        )
-    if (specs.get("expressions") or {}).get("status") != "suspected":
-        errors.append(
-            "Phase A must not promote expressions; no reusable expression graph executes"
         )
 
 
