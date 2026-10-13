@@ -611,6 +611,7 @@ Phase D adds a bounded attribute-based environmental path without changing accep
 
 ```text
 canonical DX + environmental context
+→ authoritative `attempt-attribute → success-roll`
 → resolved primary attribute + source modifier
 → accepted 3d6 success/critical machinery
 → dirps-attribute-result.v1
