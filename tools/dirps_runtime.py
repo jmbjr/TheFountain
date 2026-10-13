@@ -2,9 +2,9 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path plus the bounded Phase A-E
-investigation, social, environmental, and combat gameplay slices over neutral
-resolved semantics and DODGE runtime state/effects.
+It executes the accepted success-roll path plus the bounded Phase A-F
+investigation, social, environmental, combat, and post-combat recovery slices
+over neutral resolved semantics and DODGE runtime state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
