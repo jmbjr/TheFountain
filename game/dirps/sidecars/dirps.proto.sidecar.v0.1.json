@@ -620,7 +620,7 @@
       "encounter_ref": "washed-out-path",
       "action_id": "cross-washed-out-path",
       "actor_ref": "pc",
-      "action_ref": "attempt-skill",
+      "action_ref": "attempt-attribute",
       "procedure_ref": "success-roll",
       "context_ref": "washed-out-path-dx",
       "target_source": {
