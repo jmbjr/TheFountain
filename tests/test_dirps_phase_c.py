@@ -309,14 +309,17 @@ class DirpsPhaseCFrightenedWitnessTests(unittest.TestCase):
         )
         self.assertEqual(capability["available_actions"], [])
 
-    def test_phase_c_exercises_lookup_tables_but_not_reaction_timing(self):
+    def test_phase_c_lookup_evidence_remains_non_candidate(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
         self.assertEqual(specs["lookup_tables"]["status"], "exercised")
         self.assertEqual(
             specs["lookup_tables"]["candidate_for_dodge"],
             "not-yet-candidate",
         )
-        self.assertEqual(specs["reaction_timing"]["status"], "suspected")
+        self.assertEqual(
+            specs["reaction_timing"]["candidate_for_dodge"],
+            "not-yet-candidate",
+        )
         self.assertEqual(specs["replay_session_history"]["status"], "suspected")
 
     def test_social_target_inspects_executes_and_refreshes_post_state(self):
