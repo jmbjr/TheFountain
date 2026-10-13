@@ -845,7 +845,14 @@
         "injury_expression_ref": "cutting-injury",
         "rule_source_ref": "gurps-lite",
         "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
-        "result_format": "dirps-damage-result.v1"
+        "result_format": "dirps-damage-result.v1",
+        "critical_attack_total_three": {
+          "attack_total": 3,
+          "resolution": "automatic-maximum-profile-damage",
+          "damage_random_evidence": "none",
+          "rule_source_ref": "gurps-lite",
+          "rule_locator": "Rolling to Attack / Critical Hits"
+        }
       },
       "injury_state": {
         "hit_points_ref": "hit-points",
