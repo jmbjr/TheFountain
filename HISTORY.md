@@ -669,6 +669,6 @@ This is the first concrete execution evidence for the lookup-table gap, so `look
 
 **October 12, 2026.**
 
-After Phase C merged in PR #181, DIRPS started Phase D from fresh post-merge `main`. The Washed-Out Path now executes a bounded DX success roll using the resolved PC attribute, a canonical provisional obstacle modifier, the accepted GURPS success/critical/random machinery, standard DODGE runtime state/effects, deterministic replay evidence, and the existing runtime-dispatched debug target.
+After Phase C merged in PR #181, DIRPS started Phase D from fresh post-merge `main`. The Washed-Out Path now executes a bounded `attempt-attribute → success-roll` DX check using the resolved PC attribute, a canonical provisional obstacle modifier, the accepted GURPS success/critical/random machinery, standard DODGE runtime state/effects, deterministic replay evidence, and the existing runtime-dispatched debug target. The distinct action identity prevents the environmental attribute test from silently masquerading as an accepted skill-check contract.
 
 Success persists `crossed`; failure persists `detour-required`, giving later scenario progression an explicit neutral consequence. Phase D adds no combat, injury, automatic progression, session history, or G7 claim, and promotes no new proto concept.
