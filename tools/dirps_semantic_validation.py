@@ -1465,9 +1465,15 @@ def _validate_phase_d_environment_contract(dodge, canonical, errors):
     expected_effects = {
         "washed-out-path-set-status-resolved": (refs["status"], consequences["success"].get("status")),
         "washed-out-path-set-outcome-success": (refs["outcome"], consequences["success"].get("outcome")),
-        "washed-out-path-set-progress-crossed": (refs["progress"], consequences["success"].get("progress")),
+        f"washed-out-path-set-progress-{consequences['success'].get('progress')}": (
+            refs["progress"],
+            consequences["success"].get("progress"),
+        ),
         "washed-out-path-set-outcome-failure": (refs["outcome"], consequences["failure"].get("outcome")),
-        "washed-out-path-set-progress-detour-required": (refs["progress"], consequences["failure"].get("progress")),
+        f"washed-out-path-set-progress-{consequences['failure'].get('progress')}": (
+            refs["progress"],
+            consequences["failure"].get("progress"),
+        ),
     }
     effects = dodge.get("rules", {}).get("effects", {}) or {}
     for effect_id, (target_ref, value) in expected_effects.items():
