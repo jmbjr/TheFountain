@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-b-roadside-investigation",
+  "status": "g6-phase-c-frightened-witness-social",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 with Phase B Roadside Tracks investigation runtime semantics: source-owned encounter state, one investigation choice, Phase A contextual Tracking resolution, DODGE-normalized success/failure state consequences, and a thin debug-target path.",
+    "target": "A G6-targeted Scenario 01 with Phase C Frightened Witness social/reaction resolution: one canonical social action, a source-owned approach modifier, authoritative GURPS Lite reaction-roll/table semantics, meaningful information consequences, neutral DODGE encounter state, deterministic evidence, and thin debug-target support.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase B makes the Roadside Tracks encounter playable end-to-end through neutral runtime state. It does not advance automatically into the Frightened Witness encounter; broader scenario progression remains Phase G, while Phase C is the next gameplay tranche."
+    "acceptance_note": "Phase C exercises a materially different noncombat RPG interaction path. It does not auto-progress into Washed-Out Path; broader encounter progression remains Phase G, while Phase D is the next gameplay tranche."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -98,7 +98,92 @@
     {
       "id": "frightened-witness",
       "type": "social",
-      "purpose": "Exercise a social/reaction-oriented resolution without requiring a large NPC subsystem."
+      "purpose": "Exercise a social/reaction-oriented resolution without requiring a large NPC subsystem.",
+      "state_contract": {
+        "refs": {
+          "status": "frightened-witness-status",
+          "reaction": "frightened-witness-reaction",
+          "information": "frightened-witness-information"
+        },
+        "initial": {
+          "status": "ready",
+          "reaction": "unresolved",
+          "information": "unknown"
+        }
+      },
+      "actions": [
+        {
+          "id": "reassure-and-question",
+          "label": "Reassure the frightened witness and ask what they saw",
+          "actor_ref": "pc",
+          "action_ref": "request-information",
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption",
+          "reaction_modifiers": [
+            {
+              "id": "reassuring-approach",
+              "amount": 1,
+              "source_ref": "scenario-01-source",
+              "authority": "provisional",
+              "provenance": "prototype_assumption",
+              "rule_source_ref": "gurps-lite",
+              "rule_locator": "p. 3, Reaction Modifiers",
+              "reason": "Scenario 01 treats this bounded reassuring approach as a good approach worth the minimum +1 behavior bonus described by GURPS Lite."
+            }
+          ],
+          "consequences": {
+            "disastrous": {
+              "status": "resolved",
+              "reaction": "disastrous",
+              "information": "no-useful-account",
+              "information_text": "The frightened witness recoils and refuses to give a usable account."
+            },
+            "very-bad": {
+              "status": "resolved",
+              "reaction": "very-bad",
+              "information": "no-useful-account",
+              "information_text": "The witness distrusts Rook and refuses to give a useful direction."
+            },
+            "bad": {
+              "status": "resolved",
+              "reaction": "bad",
+              "information": "no-useful-account",
+              "information_text": "The witness gives no reliable detail that advances the search."
+            },
+            "poor": {
+              "status": "resolved",
+              "reaction": "poor",
+              "information": "no-useful-account",
+              "information_text": "The witness remains too wary to offer a useful lead."
+            },
+            "neutral": {
+              "status": "resolved",
+              "reaction": "neutral",
+              "information": "partial-account",
+              "information_text": "The witness confirms the courier left the road but cannot give a reliable direction."
+            },
+            "good": {
+              "status": "resolved",
+              "reaction": "good",
+              "information": "useful-lead",
+              "information_text": "The witness gives a useful direction for continuing the search toward the washed-out path."
+            },
+            "very-good": {
+              "status": "resolved",
+              "reaction": "very-good",
+              "information": "useful-lead",
+              "information_text": "The witness gives a clear, cooperative account pointing the search toward the washed-out path."
+            },
+            "excellent": {
+              "status": "resolved",
+              "reaction": "excellent",
+              "information": "useful-lead",
+              "information_text": "The witness eagerly provides the clearest available account and points Rook toward the washed-out path."
+            }
+          }
+        }
+      ]
     },
     {
       "id": "washed-out-path",
