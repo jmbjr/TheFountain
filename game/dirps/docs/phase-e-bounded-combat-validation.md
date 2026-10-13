@@ -443,4 +443,4 @@ Phase E may leave the bandit with:
 
 That state is the input for **Phase F — Recovery / consciousness**.
 
-Phase F, not this PR, owns the required HT recovery/consciousness checks and resulting unconscious/recovered state.
+Phase F now owns the required HT recovery/consciousness checks and resulting state; see `phase-f-recovery-consciousness-validation.md`. The accepted Phase E combat record/state contract itself remains unchanged.
