@@ -2,9 +2,9 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path plus the bounded Phase A-D
-investigation, social, and environmental gameplay slices over neutral resolved
-semantics and DODGE runtime state/effects.
+It executes the accepted success-roll path plus the bounded Phase A-E
+investigation, social, environmental, and combat gameplay slices over neutral
+resolved semantics and DODGE runtime state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import math
 
 
 BINDING_ID = "attempt-skill"
@@ -21,6 +22,10 @@ PHASE_C_REACTION_FORMAT = "dirps-reaction-result.v1"
 PHASE_C_RESULT_FORMAT = "dirps-social-encounter-result.v1"
 PHASE_D_ATTRIBUTE_RESULT_FORMAT = "dirps-attribute-result.v1"
 PHASE_D_RESULT_FORMAT = "dirps-environment-encounter-result.v1"
+PHASE_E_ATTACK_FORMAT = "dirps-attack-result.v1"
+PHASE_E_DEFENSE_FORMAT = "dirps-active-defense-result.v1"
+PHASE_E_DAMAGE_FORMAT = "dirps-damage-result.v1"
+PHASE_E_RESULT_FORMAT = "dirps-combat-exchange-result.v1"
 
 
 class ExecutionError(ValueError):
@@ -2333,4 +2338,879 @@ def replay_environment_challenge(resolved, record):
     recomputed = execute_environment_challenge(**kwargs)
     if recomputed != record:
         raise ExecutionError("environment encounter record divergence detected")
+    return recomputed
+
+
+def _phase_e_binding(resolved, encounter_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    bindings = _require_mapping(
+        sidecar.get("phase_e_combat_bindings"), "resolved phase_e_combat_bindings"
+    )
+    binding = _require_mapping(
+        bindings.get(encounter_ref), f"Phase E combat binding {encounter_ref}"
+    )
+    if binding.get("encounter_ref") != encounter_ref:
+        raise ExecutionError("Phase E combat binding identity is malformed")
+    expected_scalar = {
+        "action_id": "strike-bandit-scout",
+        "attacker_ref": "pc",
+        "target_ref": "bandit-scout",
+        "action_ref": "attack",
+        "procedure_ref": "attack-resolution",
+        "skill_ref": "broadsword",
+        "weapon_ref": "broadsword",
+        "attack_mode": "swing-cut",
+        "runtime_state_ref": "scenario-01-bandit-scout-initial",
+        "required_revision": "0",
+        "attack_random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "attack_critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
+        "attack_result_format": PHASE_E_ATTACK_FORMAT,
+        "result_format": PHASE_E_RESULT_FORMAT,
+        "binding_source_ref": "dirps-proto",
+        "scenario_source_ref": "scenario-01-source",
+    }
+    for key, expected in expected_scalar.items():
+        if binding.get(key) != expected:
+            raise ExecutionError(
+                f"Phase E combat binding {key} is unsupported or malformed"
+            )
+    if binding.get("reaction_window") != {
+        "trigger": "successful-noncritical-attack",
+        "responder_ref": "bandit-scout",
+        "eligible_defenses": ["dodge"],
+        "resolution_order": "attack-then-defense-before-damage",
+    }:
+        raise ExecutionError("Phase E active-defense reaction window is unsupported or malformed")
+    if binding.get("defense") != {
+        "kind": "dodge",
+        "target_expression_ref": "bandit-dodge-target",
+        "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 26, Defense / Dodging",
+        "result_format": PHASE_E_DEFENSE_FORMAT,
+    }:
+        raise ExecutionError("Phase E Dodge binding is unsupported or malformed")
+    if binding.get("damage") != {
+        "strength_lookup_ref": "gurps-lite-st10-swing",
+        "weapon_add": 1,
+        "damage_type": "cutting",
+        "minimum_basic_damage": 1,
+        "armor_dr_source": "encounter.opponent.defense_assumptions.armor_dr",
+        "injury_expression_ref": "cutting-injury",
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "pp. 18-19, Weapon Damage; pp. 26-28, Damage and Injury",
+        "result_format": PHASE_E_DAMAGE_FORMAT,
+    }:
+        raise ExecutionError("Phase E damage binding is unsupported or malformed")
+    if binding.get("injury_state") != {
+        "hit_points_ref": "hit-points",
+        "stunned_ref": "stunned",
+        "unconscious_ref": "unconscious",
+        "consciousness_check_required_ref": "consciousness-check-required",
+        "major_wound_rule": "injury > defender.ht / 2",
+        "consciousness_check_rule": "remaining_hp <= 0",
+        "consciousness_check_timing": "next-turn-start",
+        "recovery_phase": "Phase F",
+    }:
+        raise ExecutionError("Phase E injury-state binding is unsupported or malformed")
+    return binding
+
+
+def _phase_e_context(resolved, encounter_ref, binding):
+    encounter = _encounter(resolved, encounter_ref)
+    actions = encounter.get("actions")
+    if not isinstance(actions, list) or len(actions) != 1:
+        raise ExecutionError("Phase E bounded combat requires exactly one encounter action")
+    action = _require_mapping(actions[0], "Phase E combat action")
+    expected = {
+        "id": binding["action_id"],
+        "actor_ref": binding["attacker_ref"],
+        "target_ref": binding["target_ref"],
+        "action_ref": binding["action_ref"],
+        "skill_ref": binding["skill_ref"],
+        "weapon_ref": binding["weapon_ref"],
+        "attack_mode": binding["attack_mode"],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional",
+        "provenance": "prototype_assumption",
+        "supported_defense": "dodge",
+    }
+    for key, value in expected.items():
+        if action.get(key) != value:
+            raise ExecutionError(f"Phase E combat action {key} disagrees with binding")
+
+    opponent = _require_mapping(encounter.get("opponent"), "Phase E opponent")
+    if opponent.get("actor_ref") != binding["target_ref"]:
+        raise ExecutionError("Phase E opponent actor_ref disagrees with combat target")
+    assumptions = _require_mapping(
+        opponent.get("defense_assumptions"), "Phase E defense assumptions"
+    )
+    if assumptions.get("aware_of_attack") is not True:
+        raise ExecutionError("Phase E Dodge requires an aware defender")
+    for ref in ("encumbrance_penalty", "armor_dr", "passive_defense"):
+        value = assumptions.get(ref)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            raise ExecutionError(f"Phase E defense assumption {ref} is malformed")
+    if encounter.get("bounded_combat") != {"maximum_exchanges": 1}:
+        raise ExecutionError("Phase E combat scope must remain one exchange")
+
+    attacker = _actor(resolved, binding["attacker_ref"])
+    defender = _actor(resolved, binding["target_ref"])
+    character = _require_mapping(
+        attacker.get("character"), "Phase E attacker resolved character"
+    )
+    skills = _require_mapping(character.get("skills"), "Phase E attacker skills")
+    if binding["skill_ref"] not in skills:
+        raise ExecutionError("Phase E Broadsword skill is missing")
+    if binding["weapon_ref"] not in (character.get("equipment") or []):
+        raise ExecutionError("Phase E Broadsword equipment is missing")
+    _require_actor_available(resolved, attacker, binding["action_ref"])
+    return encounter, action, opponent, attacker, defender
+
+
+def _phase_e_expression(resolved, expression_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    expressions = _require_mapping(
+        sidecar.get("phase_e_expressions"), "resolved phase_e_expressions"
+    )
+    expression = _require_mapping(
+        expressions.get(expression_ref), f"Phase E expression {expression_ref}"
+    )
+    if expression.get("source_ref") != "gurps-lite" or expression.get("authority") != "authoritative":
+        raise ExecutionError(f"Phase E expression {expression_ref} lost rule authority")
+    return expression
+
+
+def _eval_phase_e_expression(node, values):
+    node = _require_mapping(node, "Phase E expression node")
+    if "literal" in node:
+        value = node["literal"]
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise ExecutionError("Phase E expression literal must be numeric")
+        return value
+    if "ref" in node:
+        ref = node["ref"]
+        if ref not in values:
+            raise ExecutionError(f"Phase E expression reference is unresolved: {ref}")
+        return values[ref]
+
+    op = node.get("op")
+    if op == "floor":
+        return math.floor(_eval_phase_e_expression(node.get("arg"), values))
+    args = node.get("args")
+    if not isinstance(args, list) or len(args) != 2:
+        raise ExecutionError(f"Phase E expression {op!r} requires exactly two args")
+    left = _eval_phase_e_expression(args[0], values)
+    right = _eval_phase_e_expression(args[1], values)
+    if op == "add":
+        return left + right
+    if op == "subtract":
+        return left - right
+    if op == "divide":
+        if right == 0:
+            raise ExecutionError("Phase E expression division by zero")
+        return left / right
+    raise ExecutionError(f"unsupported Phase E expression operator: {op!r}")
+
+
+def _phase_e_derived_value(resolved, derived_ref, values):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    derived = _require_mapping(
+        (sidecar.get("phase_e_derived_values") or {}).get(derived_ref),
+        f"Phase E derived value {derived_ref}",
+    )
+    expression_ref = derived.get("expression_ref")
+    expression = _phase_e_expression(resolved, expression_ref)
+    result = _eval_phase_e_expression(expression, values)
+    if derived.get("value_type") == "integer":
+        if isinstance(result, bool) or int(result) != result:
+            raise ExecutionError(f"Phase E derived value {derived_ref} must be integer")
+        result = int(result)
+    return result, {
+        "derived_ref": derived_ref,
+        "expression_ref": expression_ref,
+        "dependencies": copy.deepcopy(derived.get("dependencies", [])),
+        "recompute": derived.get("recompute"),
+        "source_ref": expression.get("source_ref"),
+        "authority": expression.get("authority"),
+        "rule_locator": expression.get("rule_locator"),
+    }
+
+
+def _phase_e_damage_profile(resolved, lookup_ref, strength):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    table = _require_mapping(
+        (sidecar.get("phase_e_lookup_tables") or {}).get(lookup_ref),
+        f"Phase E damage lookup {lookup_ref}",
+    )
+    if table.get("source_ref") != "gurps-lite" or table.get("authority") != "authoritative":
+        raise ExecutionError("Phase E damage lookup lost rule authority")
+    matches = []
+    for row in table.get("rows", []):
+        when = _require_mapping(row.get("when"), "Phase E damage lookup range")
+        if when.get("min") is not None and strength < when["min"]:
+            continue
+        if when.get("max") is not None and strength > when["max"]:
+            continue
+        matches.append(row)
+    if len(matches) != 1:
+        raise ExecutionError(
+            f"Phase E bounded damage lookup has no unique row for ST {strength}"
+        )
+    value = _require_mapping(matches[0].get("value"), "Phase E damage lookup result")
+    count = value.get("count")
+    sides = value.get("sides")
+    adds = value.get("adds")
+    if (
+        not isinstance(count, int) or count <= 0
+        or not isinstance(sides, int) or sides < 2
+        or not isinstance(adds, int) or isinstance(adds, bool)
+    ):
+        raise ExecutionError("Phase E damage lookup result is malformed")
+    return copy.deepcopy(value), {
+        "table_ref": lookup_ref,
+        "matched_row": copy.deepcopy(matches[0]),
+        "source_ref": table.get("source_ref"),
+        "authority": table.get("authority"),
+        "rule_locator": table.get("rule_locator"),
+    }
+
+
+def validate_combat_runtime_state(resolved, state, *, target_ref):
+    if not isinstance(state, dict):
+        raise ExecutionError("combat runtime state must be an object")
+    if state.get("scenario_ref") != resolved.get("scenario_id"):
+        raise ExecutionError("combat runtime state scenario_ref disagrees with resolved scenario")
+    revision = state.get("revision")
+    if not isinstance(revision, str):
+        raise ExecutionError("combat runtime state revision must be a string")
+    try:
+        int(revision)
+    except ValueError as exc:
+        raise ExecutionError("combat runtime state revision must be an integer string") from exc
+    if not isinstance(state.get("events"), list):
+        raise ExecutionError("combat runtime state events must be a list")
+
+    expected_refs = {
+        "hit-points",
+        "stunned",
+        "unconscious",
+        "consciousness-check-required",
+    }
+    definitions = _require_mapping(
+        (resolved.get("rules") or {}).get("values"), "resolved value definitions"
+    )
+    index = {}
+    for row in state.get("bindings", []):
+        binding = _require_mapping(row, "combat runtime state binding")
+        ref = binding.get("ref")
+        if ref not in expected_refs:
+            raise ExecutionError(f"unsupported Phase E combat state binding: {ref}")
+        if binding.get("subject") != {"instance_ref": target_ref}:
+            raise ExecutionError(
+                f"Phase E combat state binding {ref} must target {target_ref}"
+            )
+        if binding.get("authority") != "provisional":
+            raise ExecutionError(
+                f"Phase E combat state binding {ref} must remain provisional"
+            )
+        if ref in index:
+            raise ExecutionError(f"duplicate combat state binding: {ref}")
+        definition = _require_mapping(
+            definitions.get(ref), f"combat state value definition {ref}"
+        )
+        _validate_state_value(definition, binding.get("value"), ref)
+        index[ref] = binding
+    missing = sorted(expected_refs - set(index))
+    if missing:
+        raise ExecutionError(f"Phase E combat state is missing bindings: {missing}")
+    return index
+
+
+def create_combat_runtime_state(resolved, *, encounter_ref="bandit-scout"):
+    binding = _phase_e_binding(resolved, encounter_ref)
+    states = _require_mapping(resolved.get("runtime_states"), "resolved runtime_states")
+    state = copy.deepcopy(
+        _require_mapping(
+            states.get(binding["runtime_state_ref"]),
+            f"combat runtime state {binding['runtime_state_ref']}",
+        )
+    )
+    validate_combat_runtime_state(resolved, state, target_ref=binding["target_ref"])
+    return state
+
+
+def _phase_e_random_terms(
+    *,
+    resolved,
+    label,
+    terms,
+    random_seed,
+    count,
+    sides,
+):
+    phase_a = _execution_binding(resolved)
+    contract = {"count": count, "sides": sides}
+    if random_seed is not None:
+        if terms is not None:
+            raise ExecutionError("Phase E cannot mix supplied combat dice with random_seed")
+        return _random_terms(
+            dice_terms=None,
+            random_seed=f"{random_seed}:{label}",
+            contract=contract,
+            binding=phase_a,
+        )
+    if terms is None:
+        raise ExecutionError(f"Phase E requires {label} dice evidence")
+    return _random_terms(
+        dice_terms=terms,
+        random_seed=None,
+        contract=contract,
+        binding=phase_a,
+    )
+
+
+def _phase_e_attack_roll(
+    resolved,
+    *,
+    attacker,
+    binding,
+    attack_terms,
+    random_seed,
+):
+    phase_a = _execution_binding(resolved)
+    character = _require_mapping(attacker.get("character"), "Phase E attacker character")
+    skills = _require_mapping(character.get("skills"), "Phase E attacker skills")
+    target = skills.get(binding["skill_ref"])
+    if not isinstance(target, int) or isinstance(target, bool) or target < 3:
+        raise ExecutionError("Phase E attack skill target must be an integer >= 3")
+    dice = _dice_contract(resolved, phase_a)
+    terms, evidence_kind = _phase_e_random_terms(
+        resolved=resolved,
+        label="attack",
+        terms=attack_terms,
+        random_seed=random_seed,
+        count=dice["count"],
+        sides=dice["sides"],
+    )
+    total = sum(terms)
+    classification, success = _critical_classification(total, target, phase_a)
+    return {
+        "format": binding["attack_result_format"],
+        "skill_ref": binding["skill_ref"],
+        "target": target,
+        "random_evidence": {
+            **evidence_kind,
+            "dice_kind": dice["kind"],
+            "sides": dice["sides"],
+            "terms": terms,
+            "total": total,
+        },
+        "outcome": {
+            "classification": classification,
+            "success": success,
+            "margin": target - total,
+        },
+        "trace": {
+            "action_ref": binding["action_ref"],
+            "procedure_ref": binding["procedure_ref"],
+            "rule_source_ref": "gurps-lite",
+            "rule_authority": "authoritative",
+            "random_evidence_ref": binding["attack_random_evidence_ref"],
+            "critical_resolution_ref": binding["attack_critical_resolution_ref"],
+        },
+    }
+
+
+def _phase_e_defense_roll(
+    resolved,
+    *,
+    opponent,
+    binding,
+    defense_terms,
+    random_seed,
+):
+    attrs = _require_mapping(opponent.get("attributes"), "Phase E opponent attributes")
+    assumptions = _require_mapping(
+        opponent.get("defense_assumptions"), "Phase E defense assumptions"
+    )
+    values = {
+        "defender.dx": attrs.get("dx"),
+        "defender.ht": attrs.get("ht"),
+        "defender.encumbrance_penalty": assumptions.get("encumbrance_penalty"),
+        "defender.passive_defense": assumptions.get("passive_defense"),
+    }
+    target, derived_trace = _phase_e_derived_value(
+        resolved, "bandit-dodge", values
+    )
+    if not isinstance(target, int) or target < 0:
+        raise ExecutionError("Phase E Dodge target must be a nonnegative integer")
+
+    terms, evidence_kind = _phase_e_random_terms(
+        resolved=resolved,
+        label="defense",
+        terms=defense_terms,
+        random_seed=random_seed,
+        count=3,
+        sides=6,
+    )
+    total = sum(terms)
+    if total <= 4:
+        classification = "critical-success"
+        success = True
+    elif total >= 17:
+        classification = "failure"
+        success = False
+    else:
+        success = total <= target
+        classification = "success" if success else "failure"
+    return {
+        "format": binding["defense"]["result_format"],
+        "kind": binding["defense"]["kind"],
+        "target": target,
+        "random_evidence": {
+            **evidence_kind,
+            "dice_kind": "dice-pool",
+            "sides": 6,
+            "terms": terms,
+            "total": total,
+        },
+        "outcome": {
+            "classification": classification,
+            "success": success,
+            "margin": target - total,
+        },
+        "trace": {
+            "reaction_window": copy.deepcopy(binding["reaction_window"]),
+            "derived_target": derived_trace,
+            "rule_source_ref": binding["defense"]["rule_source_ref"],
+            "rule_authority": "authoritative",
+            "rule_locator": binding["defense"]["rule_locator"],
+            "random_evidence_ref": binding["defense"]["random_evidence_ref"],
+        },
+    }
+
+
+def _phase_e_damage_roll(
+    resolved,
+    *,
+    attacker,
+    opponent,
+    binding,
+    damage_terms,
+    random_seed,
+):
+    attacker_state = _require_mapping(attacker.get("state"), "Phase E attacker state")
+    strength = attacker_state.get("st")
+    if not isinstance(strength, int) or isinstance(strength, bool):
+        raise ExecutionError("Phase E attacker ST must be an integer")
+    profile, lookup_trace = _phase_e_damage_profile(
+        resolved, binding["damage"]["strength_lookup_ref"], strength
+    )
+    terms, evidence_kind = _phase_e_random_terms(
+        resolved=resolved,
+        label="damage",
+        terms=damage_terms,
+        random_seed=random_seed,
+        count=profile["count"],
+        sides=profile["sides"],
+    )
+    rolled = sum(terms)
+    basic_damage = max(
+        binding["damage"]["minimum_basic_damage"],
+        rolled + profile["adds"] + binding["damage"]["weapon_add"],
+    )
+    assumptions = _require_mapping(
+        opponent.get("defense_assumptions"), "Phase E defense assumptions"
+    )
+    armor_dr = assumptions.get("armor_dr")
+    if not isinstance(armor_dr, int) or isinstance(armor_dr, bool) or armor_dr < 0:
+        raise ExecutionError("Phase E armor DR must be a nonnegative integer")
+    penetrating = max(0, basic_damage - armor_dr)
+    injury, injury_trace = _phase_e_derived_value(
+        resolved,
+        "cutting-injury",
+        {"penetrating_damage": penetrating},
+    )
+    if not isinstance(injury, int) or injury < 0:
+        raise ExecutionError("Phase E injury must be a nonnegative integer")
+    return {
+        "format": binding["damage"]["result_format"],
+        "strength": strength,
+        "attack_mode": binding["attack_mode"],
+        "damage_type": binding["damage"]["damage_type"],
+        "random_evidence": {
+            **evidence_kind,
+            "dice_kind": "dice-pool",
+            "sides": profile["sides"],
+            "terms": terms,
+            "rolled_total": rolled,
+        },
+        "weapon_add": binding["damage"]["weapon_add"],
+        "basic_damage": basic_damage,
+        "armor_dr": armor_dr,
+        "penetrating_damage": penetrating,
+        "injury": injury,
+        "trace": {
+            "strength_lookup": lookup_trace,
+            "injury_derived": injury_trace,
+            "rule_source_ref": binding["damage"]["rule_source_ref"],
+            "rule_authority": "authoritative",
+            "rule_locator": binding["damage"]["rule_locator"],
+        },
+    }
+
+
+def _combat_delta_row(ref, before, after, target_ref, source_ref, authority):
+    return {
+        "op": "set",
+        "ref": ref,
+        "subject": {"instance_ref": target_ref},
+        "before": copy.deepcopy(before),
+        "after": copy.deepcopy(after),
+        "source_ref": source_ref,
+        "authority": authority,
+    }
+
+
+def _apply_phase_e_injury(
+    resolved,
+    state,
+    *,
+    target_ref,
+    opponent,
+    binding,
+    injury,
+):
+    after = copy.deepcopy(state)
+    index = validate_combat_runtime_state(resolved, after, target_ref=target_ref)
+    injury_state = binding["injury_state"]
+    hp_ref = injury_state["hit_points_ref"]
+    stunned_ref = injury_state["stunned_ref"]
+    unconscious_ref = injury_state["unconscious_ref"]
+    check_ref = injury_state["consciousness_check_required_ref"]
+
+    hp_before = index[hp_ref]["value"]
+    hp_after = hp_before - injury
+    index[hp_ref]["value"] = hp_after
+    delta = [
+        _combat_delta_row(
+            hp_ref,
+            hp_before,
+            hp_after,
+            target_ref,
+            "gurps-lite",
+            "authoritative",
+        )
+    ] if injury else []
+
+    ht = (_require_mapping(opponent.get("attributes"), "Phase E opponent attributes")).get("ht")
+    if not isinstance(ht, int) or isinstance(ht, bool) or ht < 1:
+        raise ExecutionError("Phase E defender HT must be a positive integer")
+
+    major_wound = injury > (ht / 2)
+    stunned_before = index[stunned_ref]["value"]
+    stunned_after = bool(stunned_before or major_wound)
+    if stunned_after != stunned_before:
+        index[stunned_ref]["value"] = stunned_after
+        delta.append(
+            _combat_delta_row(
+                stunned_ref,
+                stunned_before,
+                stunned_after,
+                target_ref,
+                "gurps-lite",
+                "authoritative",
+            )
+        )
+
+    check_before = index[check_ref]["value"]
+    check_after = bool(check_before or hp_after <= 0)
+    if check_after != check_before:
+        index[check_ref]["value"] = check_after
+        delta.append(
+            _combat_delta_row(
+                check_ref,
+                check_before,
+                check_after,
+                target_ref,
+                "dirps-proto",
+                "provisional",
+            )
+        )
+
+    # Phase E intentionally does not perform the beginning-of-turn HT check.
+    if index[unconscious_ref]["value"] is not False:
+        raise ExecutionError("Phase E does not support an already-unconscious defender")
+
+    return after, delta, {
+        "major_wound": major_wound,
+        "stunned": stunned_after,
+        "remaining_hp": hp_after,
+        "consciousness_check_required": check_after,
+        "unconscious": False,
+        "deferred_recovery_phase": injury_state["recovery_phase"],
+        "consciousness_check_timing": injury_state["consciousness_check_timing"],
+    }
+
+
+def describe_combat_exchange(resolved, state, *, encounter_ref):
+    binding = _phase_e_binding(resolved, encounter_ref)
+    encounter, action, opponent, attacker, defender = _phase_e_context(
+        resolved, encounter_ref, binding
+    )
+    index = validate_combat_runtime_state(
+        resolved, state, target_ref=binding["target_ref"]
+    )
+    ready = (
+        state.get("revision") == binding["required_revision"]
+        and index["unconscious"]["value"] is False
+    )
+    defense_values = {
+        "defender.dx": opponent["attributes"]["dx"],
+        "defender.ht": opponent["attributes"]["ht"],
+        "defender.encumbrance_penalty": opponent["defense_assumptions"]["encumbrance_penalty"],
+        "defender.passive_defense": opponent["defense_assumptions"]["passive_defense"],
+    }
+    defense_target, defense_trace = _phase_e_derived_value(
+        resolved, "bandit-dodge", defense_values
+    )
+    damage_profile, damage_trace = _phase_e_damage_profile(
+        resolved, binding["damage"]["strength_lookup_ref"], attacker["state"]["st"]
+    )
+    character = _require_mapping(attacker.get("character"), "Phase E attacker character")
+    return {
+        "encounter": {
+            "id": encounter_ref,
+            "type": encounter.get("type"),
+            "purpose": encounter.get("purpose"),
+        },
+        "runtime_state_revision": state.get("revision"),
+        "target_state": {ref: row["value"] for ref, row in index.items()},
+        "available_actions": [
+            {
+                "id": action.get("id"),
+                "label": action.get("label"),
+                "actor_ref": action.get("actor_ref"),
+                "target_ref": action.get("target_ref"),
+                "action_ref": action.get("action_ref"),
+                "skill_ref": action.get("skill_ref"),
+                "weapon_ref": action.get("weapon_ref"),
+                "attack_mode": action.get("attack_mode"),
+                "supported_defense": action.get("supported_defense"),
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            }
+        ] if ready else [],
+        "combat_capability": {
+            "attack_target": character["skills"][binding["skill_ref"]],
+            "reaction_window": copy.deepcopy(binding["reaction_window"]),
+            "defense": {
+                "kind": binding["defense"]["kind"],
+                "target": defense_target,
+                "trace": defense_trace,
+            },
+            "damage": {
+                "strength": attacker["state"]["st"],
+                "profile": damage_profile,
+                "weapon_add": binding["damage"]["weapon_add"],
+                "damage_type": binding["damage"]["damage_type"],
+                "armor_dr": opponent["defense_assumptions"]["armor_dr"],
+                "trace": damage_trace,
+            },
+            "injury_state": copy.deepcopy(binding["injury_state"]),
+        },
+        "result_format": binding["result_format"],
+    }
+
+
+def execute_combat_exchange(
+    resolved,
+    state,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    target_ref,
+    defense_kind="dodge",
+    attack_terms=None,
+    defense_terms=None,
+    damage_terms=None,
+    random_seed=None,
+):
+    binding = _phase_e_binding(resolved, encounter_ref)
+    encounter, action, opponent, attacker, defender = _phase_e_context(
+        resolved, encounter_ref, binding
+    )
+    if action_id != binding["action_id"]:
+        raise ExecutionError(f"unsupported Phase E combat action: {action_id}")
+    if actor_ref != binding["attacker_ref"] or target_ref != binding["target_ref"]:
+        raise ExecutionError("Phase E combat actor/target selection is unsupported")
+    if defense_kind not in binding["reaction_window"]["eligible_defenses"]:
+        raise ExecutionError(f"unsupported Phase E active defense: {defense_kind}")
+    if defense_kind != binding["defense"]["kind"]:
+        raise ExecutionError("Phase E defense selection disagrees with binding")
+    if random_seed is not None and any(
+        terms is not None for terms in (attack_terms, defense_terms, damage_terms)
+    ):
+        raise ExecutionError("Phase E cannot mix supplied combat dice with random_seed")
+
+    before = copy.deepcopy(state)
+    index = validate_combat_runtime_state(
+        resolved, before, target_ref=binding["target_ref"]
+    )
+    if before.get("revision") != binding["required_revision"]:
+        raise ExecutionError("Phase E bounded combat supports exactly one exchange")
+    if index["unconscious"]["value"] is not False:
+        raise ExecutionError("Phase E target is already unconscious")
+
+    attack = _phase_e_attack_roll(
+        resolved,
+        attacker=attacker,
+        binding=binding,
+        attack_terms=attack_terms,
+        random_seed=random_seed,
+    )
+    attack_class = attack["outcome"]["classification"]
+    attack_success = attack["outcome"]["success"]
+
+    defense = None
+    damage = None
+    state_delta = []
+    injury_effects = {
+        "major_wound": False,
+        "stunned": index["stunned"]["value"],
+        "remaining_hp": index["hit-points"]["value"],
+        "consciousness_check_required": index["consciousness-check-required"]["value"],
+        "unconscious": index["unconscious"]["value"],
+        "deferred_recovery_phase": binding["injury_state"]["recovery_phase"],
+        "consciousness_check_timing": binding["injury_state"]["consciousness_check_timing"],
+    }
+    after = copy.deepcopy(before)
+
+    if not attack_success:
+        outcome_branch = "attack-missed"
+        reaction_window = {
+            "opened": False,
+            "reason": "attack-failed",
+            **copy.deepcopy(binding["reaction_window"]),
+        }
+    else:
+        critical_hit = attack_class == "critical-success"
+        reaction_window = {
+            "opened": not critical_hit,
+            "reason": "critical-hit-bypasses-defense" if critical_hit else "successful-attack",
+            **copy.deepcopy(binding["reaction_window"]),
+        }
+        defended = False
+        if not critical_hit:
+            defense = _phase_e_defense_roll(
+                resolved,
+                opponent=opponent,
+                binding=binding,
+                defense_terms=defense_terms,
+                random_seed=random_seed,
+            )
+            defended = defense["outcome"]["success"]
+        if defended:
+            outcome_branch = "defended"
+        else:
+            outcome_branch = "hit"
+            damage = _phase_e_damage_roll(
+                resolved,
+                attacker=attacker,
+                opponent=opponent,
+                binding=binding,
+                damage_terms=damage_terms,
+                random_seed=random_seed,
+            )
+            after, state_delta, injury_effects = _apply_phase_e_injury(
+                resolved,
+                after,
+                target_ref=binding["target_ref"],
+                opponent=opponent,
+                binding=binding,
+                injury=damage["injury"],
+            )
+
+    after["revision"] = str(int(before["revision"]) + 1)
+    validate_combat_runtime_state(
+        resolved, after, target_ref=binding["target_ref"]
+    )
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    return {
+        "format": binding["result_format"],
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "target_ref": target_ref,
+        "outcome_branch": outcome_branch,
+        "random_mode": (
+            {"kind": "generated-seeded-combat", "seed": str(random_seed)}
+            if random_seed is not None
+            else {"kind": "supplied-combat-terms"}
+        ),
+        "attack_resolution": attack,
+        "reaction_window": reaction_window,
+        "defense_resolution": defense,
+        "damage_resolution": damage,
+        "injury_effects": injury_effects,
+        "state_before": before,
+        "state_after": after,
+        "state_delta": state_delta,
+        "trace": {
+            "combat_binding": {
+                "ref": f"proto_sidecar.phase_e_combat_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": sources[binding["binding_source_ref"]].get("authority"),
+            },
+            "scenario_source": {
+                "source_ref": binding["scenario_source_ref"],
+                "authority": sources[binding["scenario_source_ref"]].get("authority"),
+            },
+            "attack_rule": {
+                "action_ref": binding["action_ref"],
+                "procedure_ref": binding["procedure_ref"],
+                "source_ref": "gurps-lite",
+                "authority": sources["gurps-lite"].get("authority"),
+            },
+        },
+    }
+
+
+def replay_combat_exchange(resolved, record):
+    if not isinstance(record, dict) or record.get("format") != PHASE_E_RESULT_FORMAT:
+        raise ExecutionError("unsupported Phase E combat record format")
+    kwargs = {
+        "resolved": resolved,
+        "state": copy.deepcopy(record.get("state_before")),
+        "encounter_ref": record.get("encounter_ref"),
+        "action_id": record.get("action_id"),
+        "actor_ref": record.get("actor_ref"),
+        "target_ref": record.get("target_ref"),
+        "defense_kind": (
+            (record.get("defense_resolution") or {}).get("kind") or "dodge"
+        ),
+    }
+    random_mode = _require_mapping(record.get("random_mode"), "Phase E random_mode")
+    if random_mode.get("kind") == "generated-seeded-combat":
+        kwargs["random_seed"] = random_mode.get("seed")
+    elif random_mode.get("kind") == "supplied-combat-terms":
+        attack = _require_mapping(
+            record.get("attack_resolution"), "Phase E attack_resolution"
+        )
+        kwargs["attack_terms"] = (attack.get("random_evidence") or {}).get("terms")
+        defense = record.get("defense_resolution")
+        if isinstance(defense, dict):
+            kwargs["defense_terms"] = (defense.get("random_evidence") or {}).get("terms")
+        damage = record.get("damage_resolution")
+        if isinstance(damage, dict):
+            kwargs["damage_terms"] = (damage.get("random_evidence") or {}).get("terms")
+    else:
+        raise ExecutionError("unsupported Phase E combat random mode")
+
+    recomputed = execute_combat_exchange(**kwargs)
+    if recomputed != record:
+        raise ExecutionError("combat exchange record divergence detected")
     return recomputed
