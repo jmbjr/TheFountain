@@ -169,6 +169,7 @@ class DirpsResolutionTests(unittest.TestCase):
                 "actor_character_model",
                 "skill_model",
                 "resolution_trace",
+                "lookup_tables",
             },
         )
         self.assertTrue(
