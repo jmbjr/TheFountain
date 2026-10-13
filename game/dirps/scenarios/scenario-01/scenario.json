@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-e-bounded-combat",
+  "status": "g6-phase-f-recovery-consciousness",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 with Phase E bounded combat: one Rook broadsword attack, one bandit-scout Dodge reaction, one ST10 broadsword cutting damage path, injury/HP mutation, stun threshold, and deferred consciousness-check state.",
+    "target": "A G6-targeted Scenario 01 with Phase F post-combat recovery/consciousness semantics over the same neutral combat state. The bounded runtime resolves the next-turn HT consciousness obligation and physical-stun recovery without adding a healing subsystem.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase E proves the attack -> active defense -> damage -> injury -> state-change sequence without implementing full GURPS combat. Phase F owns HT recovery/consciousness rolls after combat."
+    "acceptance_note": "Phase F makes Phase E injury state actionable. It does not implement long-term waking, natural healing, first aid, death checks, or scenario progression/completion."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -270,6 +270,29 @@
       ],
       "bounded_combat": {
         "maximum_exchanges": 1
+      },
+      "post_combat_recovery": {
+        "action": {
+          "id": "resolve-bandit-next-turn",
+          "label": "Resolve the bandit scout's next-turn injury checks",
+          "actor_ref": "bandit-scout",
+          "action_ref": "recover",
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption"
+        },
+        "timing": "next-turn-start",
+        "resolution_order": [
+          "consciousness",
+          "stun-recovery"
+        ],
+        "consciousness": {
+          "will_modifier": 0,
+          "modifier_source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption"
+        },
+        "long_term_unconscious_recovery": "unsupported"
       }
     }
   ],
