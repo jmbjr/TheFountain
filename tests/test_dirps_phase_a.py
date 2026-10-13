@@ -308,14 +308,13 @@ class DirpsPhaseAContextualSkillTests(unittest.TestCase):
             "sum-resolved-context-modifiers",
         )
 
-    def test_proto_maturity_remains_conservative(self):
+    def test_phase_a_proto_gaps_remain_non_candidates(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
-        self.assertEqual(specs["derived_values"]["status"], "suspected")
-        self.assertEqual(
-            specs["derived_values"]["candidate_for_dodge"],
-            "not-yet-candidate",
-        )
-        self.assertEqual(specs["expressions"]["status"], "suspected")
+        for proto_id in ("derived_values", "expressions"):
+            self.assertEqual(
+                specs[proto_id]["candidate_for_dodge"],
+                "not-yet-candidate",
+            )
         self.assertEqual(specs["replay_session_history"]["status"], "suspected")
 
 
