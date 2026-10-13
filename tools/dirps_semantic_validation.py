@@ -515,7 +515,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
         "encounter_ref":"washed-out-path",
         "action_id":"cross-washed-out-path",
         "actor_ref":"pc",
-        "action_ref":"attempt-skill",
+        "action_ref":"attempt-attribute",
         "procedure_ref":"success-roll",
         "context_ref":"washed-out-path-dx",
         "target_source":{"kind":"resolved-character-primary-attribute","path":"scene.instances[].character.primary_attributes"},
@@ -1387,7 +1387,7 @@ def _validate_phase_d_environment_contract(dodge, canonical, errors):
         return
     action = actions[0]
     expected_identity = {
-        "id": "cross-washed-out-path", "actor_ref": "pc", "action_ref": "attempt-skill",
+        "id": "cross-washed-out-path", "actor_ref": "pc", "action_ref": "attempt-attribute",
         "context_ref": "washed-out-path-dx", "source_ref": SCENARIO_SOURCE,
         "authority": "provisional", "provenance": PC_PROVENANCE,
     }
@@ -1398,8 +1398,20 @@ def _validate_phase_d_environment_contract(dodge, canonical, errors):
     if not isinstance(check, dict):
         errors.append("Phase D environmental context_ref must resolve")
         return
-    if check.get("encounter_ref") != "washed-out-path" or check.get("action_ref") != "attempt-skill":
+    if check.get("encounter_ref") != "washed-out-path" or check.get("action_ref") != "attempt-attribute":
         errors.append("Phase D environmental contextual check identity is malformed")
+    dodge_action = (dodge.get("rules", {}).get("actions", {}) or {}).get("attempt-attribute")
+    expected_dodge_action = {
+        "name": "Attempt attribute",
+        "condition_refs": ["actor-conscious"],
+        "procedure_ref": "success-roll",
+        "source_ref": RULES_SOURCE,
+        "authority": "authoritative",
+    }
+    if dodge_action != expected_dodge_action:
+        errors.append(
+            "Phase D DODGE attempt-attribute action must preserve the authoritative success-roll binding"
+        )
     attribute_ref = check.get("attribute_ref")
     attributes = (canonical.get("player_character") or {}).get("attributes") or {}
     if attribute_ref not in attributes:
