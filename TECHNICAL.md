@@ -641,7 +641,7 @@ canonical combat setup
 → runtime-dispatched debug target
 ```
 
-The target never computes attack, defense, damage, or injury. `phase_e_combat_bindings` owns the bounded orchestration; `phase_e_expressions` and `phase_e_derived_values` own Dodge/injury math; `phase_e_lookup_tables` owns the intentionally narrow ST10 swing row. Unknown operators, defenses, attack modes, ST rows, or repeated exchanges fail visibly.
+The target never computes attack, defense, damage, or injury. `phase_e_combat_bindings` owns the bounded orchestration; `phase_e_expressions` and `phase_e_derived_values` own Dodge/injury math; `phase_e_lookup_tables` owns the intentionally narrow ST10 swing row. The combat binding also preserves the authoritative roll-3 critical rule: attack total 3 bypasses defense and uses maximum profile damage without consuming damage RNG evidence, while other supported critical hits still roll damage normally. Unknown operators, defenses, attack modes, ST rows, or repeated exchanges fail visibly.
 
 Phase E is the first concrete interrupt/reaction-window evidence, so `reaction_timing` becomes exercised. It also executes the existing `derived_values` and `expressions` proposals and adds a bounded `damage_injury` gap record. All remain not-yet-candidate.
 
