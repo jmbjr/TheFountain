@@ -15,6 +15,7 @@ Phase D implements the roadmap's bounded environmental challenge while DIRPS rem
 ```text
 fresh Washed-Out Path runtime state
 → cross-washed-out-path
+→ `attempt-attribute → success-roll`
 → resolved PC DX
 → canonical environmental modifier
 → authoritative success-roll / critical rules + 3d6 evidence
@@ -66,7 +67,7 @@ Both branch results persist in neutral runtime state for later Phase G progressi
 
 ## Attribute resolution
 
-The bounded check is `washed-out-path-dx`.
+The bounded check is `washed-out-path-dx`, executed through the distinct authoritative DODGE action `attempt-attribute → success-roll`. This keeps the accepted `attempt-skill` contracts unchanged while accurately identifying an attribute test.
 
 Baseline:
 
@@ -93,7 +94,10 @@ Baseline:
 - canonical DX perturbation;
 - canonical modifier perturbation;
 - stale canonical/DODGE consequence normalization;
+- normalized canonical + DODGE + sidecar consequence perturbation reaching runtime state;
 - target-source binding drift;
+- inherited critical/random binding drift;
+- `attempt-attribute` authority drift;
 - conservative proto status;
 - generic target dispatch;
 - target anti-hardcoding;
