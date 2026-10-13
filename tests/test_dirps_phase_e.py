@@ -205,19 +205,69 @@ class DirpsPhaseEBoundedCombatTests(unittest.TestCase):
         self.assertFalse(values["unconscious"])
         print("PASS dirps/scenario-01: Phase E bounded combat exchange")
 
-    def test_critical_hit_bypasses_defense_and_rolls_damage(self):
-        record = self.execute(attack=(1, 1, 2), defense=None, damage=(1,))
+    def test_attack_roll_three_bypasses_defense_and_uses_maximum_damage(self):
+        # The supplied damage term is deliberately low. Roll 3 must not consume it.
+        record = self.execute(attack=(1, 1, 1), defense=None, damage=(1,))
         self.assertEqual(
             record["attack_resolution"]["outcome"]["classification"],
             "critical-success",
         )
+        self.assertEqual(record["attack_resolution"]["random_evidence"]["total"], 3)
         self.assertFalse(record["reaction_window"]["opened"])
         self.assertEqual(
             record["reaction_window"]["reason"],
             "critical-hit-bypasses-defense",
         )
         self.assertIsNone(record["defense_resolution"])
-        self.assertIsNotNone(record["damage_resolution"])
+
+        damage = record["damage_resolution"]
+        self.assertEqual(damage["resolution_mode"], "automatic-maximum")
+        self.assertIsNone(damage["random_evidence"])
+        self.assertEqual(damage["basic_damage"], 7)
+        self.assertEqual(damage["penetrating_damage"], 7)
+        self.assertEqual(damage["injury"], 10)
+        self.assertEqual(
+            damage["trace"]["critical_maximum_damage"]["maximum_rolled_total"],
+            6,
+        )
+        self.assertEqual(
+            damage["trace"]["critical_maximum_damage"]["rule_source_ref"],
+            "gurps-lite",
+        )
+
+        self.assertEqual(record["injury_effects"]["remaining_hp"], 0)
+        self.assertTrue(record["injury_effects"]["major_wound"])
+        self.assertTrue(record["injury_effects"]["stunned"])
+        self.assertTrue(record["injury_effects"]["consciousness_check_required"])
+        self.assertFalse(record["injury_effects"]["unconscious"])
+
+        values = self.state_values(record["state_after"])
+        self.assertEqual(values["hit-points"], 0)
+        self.assertTrue(values["stunned"])
+        self.assertTrue(values["consciousness-check-required"])
+        self.assertFalse(values["unconscious"])
+        self.assertEqual(replay_combat_exchange(self.resolved, record), record)
+
+    def test_other_critical_hit_bypasses_defense_and_rolls_damage_normally(self):
+        record = self.execute(attack=(1, 1, 2), defense=None, damage=(1,))
+        self.assertEqual(
+            record["attack_resolution"]["outcome"]["classification"],
+            "critical-success",
+        )
+        self.assertEqual(record["attack_resolution"]["random_evidence"]["total"], 4)
+        self.assertFalse(record["reaction_window"]["opened"])
+        self.assertEqual(
+            record["reaction_window"]["reason"],
+            "critical-hit-bypasses-defense",
+        )
+        self.assertIsNone(record["defense_resolution"])
+        damage = record["damage_resolution"]
+        self.assertEqual(damage["resolution_mode"], "rolled")
+        self.assertEqual(damage["random_evidence"]["terms"], [1])
+        self.assertEqual(damage["random_evidence"]["rolled_total"], 1)
+        self.assertEqual(damage["basic_damage"], 2)
+        self.assertEqual(damage["injury"], 3)
+        self.assertEqual(replay_combat_exchange(self.resolved, record), record)
 
     def test_unsupported_active_defense_fails_visibly(self):
         with self.assertRaisesRegex(ExecutionError, "unsupported Phase E active defense"):
