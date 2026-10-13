@@ -1734,12 +1734,12 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
     bandit = instances.get("bandit-scout") or {}
     bandit_state = bandit.get("state") or {}
     expected_actor_state = {
-        "st": opponent["attributes"]["st"],
-        "dx": opponent["attributes"]["dx"],
-        "ht": opponent["attributes"]["ht"],
-        "hit-points": opponent["state"]["hit_points"],
-        "stunned": opponent["state"]["stunned"],
-        "unconscious": opponent["state"]["unconscious"],
+        "st": attributes.get("st"),
+        "dx": attributes.get("dx"),
+        "ht": attributes.get("ht"),
+        "hit-points": opponent_state.get("hit_points"),
+        "stunned": opponent_state.get("stunned"),
+        "unconscious": opponent_state.get("unconscious"),
     }
     for ref, expected in expected_actor_state.items():
         if bandit_state.get(ref) != expected:
@@ -1776,19 +1776,19 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
             {
                 "ref": "hit-points",
                 "subject": {"instance_ref": "bandit-scout"},
-                "value": opponent["state"]["hit_points"],
+                "value": opponent_state.get("hit_points"),
                 "authority": "provisional",
             },
             {
                 "ref": "stunned",
                 "subject": {"instance_ref": "bandit-scout"},
-                "value": opponent["state"]["stunned"],
+                "value": opponent_state.get("stunned"),
                 "authority": "provisional",
             },
             {
                 "ref": "unconscious",
                 "subject": {"instance_ref": "bandit-scout"},
-                "value": opponent["state"]["unconscious"],
+                "value": opponent_state.get("unconscious"),
                 "authority": "provisional",
             },
             {
