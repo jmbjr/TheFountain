@@ -650,3 +650,16 @@ The sidecar adds only a Phase B encounter bridge that maps the accepted Phase A 
 The debug CLI gains a separate encounter mode that consumes the same stateful runtime APIs. Its legacy G5/G6 direct-skill behavior remains intact, and the target contains no Roadside/action/consequence literals.
 
 No proto concept changes maturity: state and effects were already first-class DODGE 0.2.1 semantics, public information does not exercise hidden-state policy, and one stateful encounter record is still not append-only session replay. Phase C social interaction remains the next gameplay tranche; no G7 work was added.
+
+
+## DIRPS gameplay Phase C adds the Frightened Witness social path
+
+**October 12, 2026.**
+
+After accepted/merged Phase B PR #180, DIRPS began Phase C from fresh post-merge `main`. Phase C exercises a materially different noncombat mechanic: an authoritative GURPS Lite reaction roll for a frightened witness responding to a request for information.
+
+Scenario 01 now owns the provisional `reassure-and-question` action, a +1 reassuring-approach assumption, and the information consequence attached to each reaction category. The GURPS Lite source remains authoritative for 3d6 reaction rolls, direct reaction modifiers, higher-is-better interpretation, and the eight-band Reaction Table. The DODGE document adds an authoritative `reaction-roll` procedure and standard witness state/effects while keeping the accepted Phase B initial runtime snapshot unchanged.
+
+The sidecar introduces `phase_c_lookup_tables.gurps-lite-reaction-table` and a bounded `phase_c_social_bindings` bridge. Runtime code reads the declared table, produces `dirps-reaction-result.v1`, applies canonical-derived DODGE consequence effects, and emits `dirps-social-encounter-result.v1` with exact before/after state and deterministic replay evidence. The debug CLI dispatches encounter handling based on runtime-owned kind rather than target-owned encounter ids.
+
+This is the first concrete execution evidence for the lookup-table gap, so `lookup_tables` moves from `suspected` to `exercised` while remaining `not-yet-candidate`. `reaction_timing` stays `suspected`: the social reaction roll does not exercise attack interrupts or defensive reaction windows. Phase D environmental gameplay remains next; no G7 work was added.
