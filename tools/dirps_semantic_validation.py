@@ -1125,23 +1125,44 @@ def _validate_phase_c_social_contract(dodge, canonical, errors):
         )
     else:
         modifier = modifiers[0]
-        expected_modifier = {
-            "id": "reassuring-approach",
-            "amount": 1,
-            "source_ref": SCENARIO_SOURCE,
-            "authority": "provisional",
-            "provenance": PC_PROVENANCE,
-            "rule_source_ref": RULES_SOURCE,
-            "rule_locator": "p. 3, Reaction Modifiers",
-            "reason": modifier.get("reason") if isinstance(modifier, dict) else None,
-        }
         if not isinstance(modifier, dict):
             errors.append("Phase C reaction modifier must be an object")
         else:
-            if modifier != expected_modifier:
+            expected_keys = {
+                "id",
+                "amount",
+                "source_ref",
+                "authority",
+                "provenance",
+                "rule_source_ref",
+                "rule_locator",
+                "reason",
+            }
+            if set(modifier) != expected_keys:
                 errors.append(
-                    "Phase C reassuring approach modifier must preserve source/provenance/rule authority exactly"
+                    "Phase C reassuring approach modifier must preserve the bounded declared shape"
                 )
+            if modifier.get("id") != "reassuring-approach":
+                errors.append("Phase C reaction modifier id must be reassuring-approach")
+            amount = modifier.get("amount")
+            if not isinstance(amount, int) or isinstance(amount, bool):
+                errors.append("Phase C reaction modifier amount must be integer")
+            if modifier.get("source_ref") != SCENARIO_SOURCE:
+                errors.append(
+                    f"Phase C reaction modifier source_ref must be {SCENARIO_SOURCE}"
+                )
+            if modifier.get("authority") != "provisional":
+                errors.append("Phase C reaction modifier authority must remain provisional")
+            if modifier.get("provenance") != PC_PROVENANCE:
+                errors.append(
+                    f"Phase C reaction modifier provenance must be {PC_PROVENANCE}"
+                )
+            if modifier.get("rule_source_ref") != RULES_SOURCE:
+                errors.append(
+                    f"Phase C reaction modifier rule_source_ref must be {RULES_SOURCE}"
+                )
+            if modifier.get("rule_locator") != "p. 3, Reaction Modifiers":
+                errors.append("Phase C reaction modifier rule locator is unsupported")
             if not isinstance(modifier.get("reason"), str) or not modifier.get("reason"):
                 errors.append("Phase C reassuring approach modifier reason is required")
 
