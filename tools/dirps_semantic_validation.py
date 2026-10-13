@@ -1663,21 +1663,43 @@ def _validate_phase_e_combat_contract(dodge, canonical, errors):
         errors.append("Phase E opponent actor_ref must be bandit-scout")
     if opponent.get("provenance") != PC_PROVENANCE:
         errors.append("Phase E opponent provenance must be prototype_assumption")
-    if opponent.get("attributes") != {"st": 10, "dx": 10, "ht": 10}:
-        errors.append("Phase E bounded opponent attributes must be ST10/DX10/HT10")
-    if opponent.get("state") != {
-        "hit_points": 10,
-        "stunned": False,
-        "unconscious": False,
+    attributes = opponent.get("attributes")
+    if not isinstance(attributes, dict) or set(attributes) != {"st", "dx", "ht"}:
+        errors.append("Phase E bounded opponent attributes must define exactly ST/DX/HT")
+        attributes = {}
+    for ref in ("st", "dx", "ht"):
+        value = attributes.get(ref)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1:
+            errors.append(f"Phase E opponent attribute {ref} must be a positive integer")
+
+    opponent_state = opponent.get("state")
+    if not isinstance(opponent_state, dict) or set(opponent_state) != {
+        "hit_points", "stunned", "unconscious"
     }:
-        errors.append("Phase E bounded opponent state must start at HP10/not stunned/conscious")
+        errors.append("Phase E bounded opponent state must define HP/stunned/unconscious")
+        opponent_state = {}
+    if not isinstance(opponent_state.get("hit_points"), int) or isinstance(
+        opponent_state.get("hit_points"), bool
+    ):
+        errors.append("Phase E opponent hit_points must be an integer")
+    for ref in ("stunned", "unconscious"):
+        if not isinstance(opponent_state.get(ref), bool):
+            errors.append(f"Phase E opponent {ref} must be boolean")
+
     assumptions = opponent.get("defense_assumptions")
-    if assumptions != {
-        "aware_of_attack": True,
-        "encumbrance_penalty": 0,
-        "armor_dr": 0,
+    if not isinstance(assumptions, dict) or set(assumptions) != {
+        "aware_of_attack", "encumbrance_penalty", "armor_dr", "passive_defense"
     }:
-        errors.append("Phase E bounded defense assumptions must be aware/unencumbered/DR0")
+        errors.append("Phase E defense assumptions must define awareness/encumbrance/DR/passive defense")
+        assumptions = {}
+    if assumptions.get("aware_of_attack") is not True:
+        errors.append("Phase E bounded Dodge slice requires an aware defender")
+    for ref in ("encumbrance_penalty", "armor_dr", "passive_defense"):
+        value = assumptions.get(ref)
+        if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+            errors.append(f"Phase E defense assumption {ref} must be a nonnegative integer")
+    if encounter.get("bounded_combat") != {"maximum_exchanges": 1}:
+        errors.append("Phase E combat scope must remain exactly one exchange")
 
     actions = encounter.get("actions")
     if not isinstance(actions, list) or len(actions) != 1:
