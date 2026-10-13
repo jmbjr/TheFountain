@@ -29,6 +29,7 @@ PRIMARY_ATTRIBUTES = frozenset({"st", "dx", "iq", "ht"})
 
 ACTION_PROCEDURES = {
     "attempt-skill": "success-roll",
+    "attempt-attribute": "success-roll",
     "attack": "attack-resolution",
     "recover": "recovery-check",
 }
