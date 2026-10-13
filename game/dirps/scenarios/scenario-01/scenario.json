@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-c-frightened-witness-social",
+  "status": "g6-phase-d-washed-out-path",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 with Phase C Frightened Witness social/reaction resolution: one canonical social action, a source-owned approach modifier, authoritative GURPS Lite reaction-roll/table semantics, meaningful information consequences, neutral DODGE encounter state, deterministic evidence, and thin debug-target support.",
+    "target": "A G6-targeted Scenario 01 through Phase D: Roadside investigation, Frightened Witness social resolution, and a Washed-Out Path environmental DX challenge all execute through neutral runtime semantics.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase C exercises a materially different noncombat RPG interaction path. It does not auto-progress into Washed-Out Path; broader encounter progression remains Phase G, while Phase D is the next gameplay tranche."
+    "acceptance_note": "Phase D adds one bounded environmental attribute check with explicit persistent success/failure consequences. Combat, recovery, whole-scenario progression, session history, Web presentation, and G7 remain later phases."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -188,7 +188,45 @@
     {
       "id": "washed-out-path",
       "type": "environmental",
-      "purpose": "Exercise an attribute or skill test with clear consequences."
+      "purpose": "Exercise an attribute or skill test with clear consequences.",
+      "state_contract": {
+        "refs": {
+          "status": "washed-out-path-status",
+          "outcome": "washed-out-path-outcome",
+          "progress": "washed-out-path-progress"
+        },
+        "initial": {
+          "status": "ready",
+          "outcome": "unresolved",
+          "progress": "not-crossed"
+        }
+      },
+      "actions": [
+        {
+          "id": "cross-washed-out-path",
+          "label": "Cross the washed-out path",
+          "actor_ref": "pc",
+          "action_ref": "attempt-skill",
+          "context_ref": "washed-out-path-dx",
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption",
+          "consequences": {
+            "success": {
+              "status": "resolved",
+              "outcome": "success",
+              "progress": "crossed",
+              "consequence_text": "Rook crosses the washed-out section and can continue beyond the obstacle."
+            },
+            "failure": {
+              "status": "resolved",
+              "outcome": "failure",
+              "progress": "detour-required",
+              "consequence_text": "Rook cannot cross safely and must take a detour before continuing."
+            }
+          }
+        }
+      ]
     },
     {
       "id": "bandit-scout",
@@ -224,6 +262,22 @@
           "authority": "provisional",
           "provenance": "prototype_assumption",
           "reason": "Scenario 01 prototype tuning for the first contextual Tracking check; this magnitude is not asserted as a GURPS rule value."
+        }
+      ]
+    },
+    "washed-out-path-dx": {
+      "encounter_ref": "washed-out-path",
+      "action_ref": "attempt-skill",
+      "attribute_ref": "dx",
+      "provenance": "prototype_assumption",
+      "modifiers": [
+        {
+          "id": "washed-out-path-unstable-footing",
+          "amount": -1,
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption",
+          "reason": "Scenario 01 prototype tuning for unstable footing at the washed-out path; this magnitude is not asserted as a GURPS rule value."
         }
       ]
     }
