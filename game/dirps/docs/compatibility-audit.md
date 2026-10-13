@@ -12,7 +12,7 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 | 3d6/random roll resolution with preserved rolled terms | Gap | Proto sidecar + bounded G5 runtime: `dice_resolution` | **Exercised**; not candidate |
 | Derived values/formulas | Gap | Proto sidecar: `derived_values` | Suspected; exercise first |
 | Reusable arithmetic expression graph | Gap | Proto sidecar: `expressions` | Suspected; exercise first |
-| Rules lookup tables | Gap | Proto sidecar: `lookup_tables` | Suspected; exercise first |
+| Rules lookup tables | Gap | Phase C reaction-table range lookup via `phase_c_lookup_tables` | **Exercised**; not candidate |
 | Procedure-local inputs/locals/outputs | Gap | Proto sidecar + bounded G5 execution binding: `procedure_context` | **Exercised**; not candidate |
 | Reaction/interrupt timing | Gap | Proto sidecar: `reaction_timing` | Suspected; exercise first |
 | GM-only/hidden visibility | Gap | Proto sidecar: `visibility_and_secret_state` | Suspected; exercise first |
@@ -71,6 +71,16 @@ The sidecar adds only `phase_b_encounter_bindings.roadside-tracks`: a provisiona
 
 No new proto concept is promoted. Public Roadside information does not exercise hidden-state semantics, and one encounter replay does not satisfy the append-only `replay_session_history` proposal.
 
+## Phase C Frightened Witness social result
+
+Gameplay roadmap Phase C adds a materially different noncombat resolution path while formal maturity remains G6. GURPS Lite remains authoritative for reaction-roll semantics: 3d6, direct reaction modifiers, higher-is-better interpretation, requests for information as a normal use, and the eight-band Reaction Table. Scenario 01 owns the provisional `reassure-and-question` action, the +1 reassuring-approach judgment, and what information each reaction category reveals.
+
+The DODGE document adds an authoritative `reaction-roll` procedure plus standard scenario-owned witness values/effects and a separate neutral witness runtime snapshot. The separate snapshot intentionally preserves accepted Phase B encounter-record state shape until Phase G unifies whole-scenario progression.
+
+DODGE 0.2.1 lacks an executable value-range lookup primitive, so Phase C exercises `lookup_tables` through `phase_c_lookup_tables.gurps-lite-reaction-table`. Runtime code reads the declared table and does not duplicate its thresholds. `lookup_tables` moves to **exercised / not-yet-candidate**. `reaction_timing` remains **suspected**: a reaction roll is an NPC-attitude mechanic, not an interrupt/reaction window.
+
+`execute_social_interaction()` emits `dirps-social-encounter-result.v1` around a nested `dirps-reaction-result.v1`, preserving random terms, raw/modified totals, modifier provenance, matched table row, reaction category, canonical consequence, exact before/after state, ordered state delta, and source trace. Deterministic replay re-executes the social record from its recorded evidence.
+
 ## Non-goals for this pass
 
 - Do not encode the full GURPS ruleset.
@@ -87,7 +97,7 @@ The sidecar uses the onboarding progression:
 suspected → exercised → candidate
 ```
 
-Only the five concepts listed in the G5 result are currently **exercised**. Every other gap remains **suspected**; none is a DODGE candidate.
+The five G5 concepts plus Phase C `lookup_tables` are currently **exercised**. All remain `not-yet-candidate`. Every other gap remains **suspected**; none is a DODGE candidate.
 
 ## Promotion test
 
