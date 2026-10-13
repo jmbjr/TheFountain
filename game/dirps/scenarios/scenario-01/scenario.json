@@ -116,7 +116,6 @@
           "id": "reassure-and-question",
           "label": "Reassure the frightened witness and ask what they saw",
           "actor_ref": "pc",
-          "action_ref": "request-information",
           "source_ref": "scenario-01-source",
           "authority": "provisional",
           "provenance": "prototype_assumption",
@@ -181,7 +180,8 @@
               "information": "useful-lead",
               "information_text": "The witness eagerly provides the clearest available account and points Rook toward the washed-out path."
             }
-          }
+          },
+          "procedure_ref": "reaction-roll"
         }
       ]
     },
