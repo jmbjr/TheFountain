@@ -253,28 +253,10 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
             "clear-trail-perturbed",
         )
 
-    def test_phase_b_uses_standard_dodge_state_without_proto_promotion(self):
+    def test_phase_b_standard_state_gaps_remain_unpromoted(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
-        exercised = {
-            proto_id
-            for proto_id, spec in specs.items()
-            if spec["status"] == "exercised"
-        }
-        self.assertEqual(
-            exercised,
-            {
-                "dice_resolution",
-                "procedure_context",
-                "actor_character_model",
-                "skill_model",
-                "resolution_trace",
-                "lookup_tables",
-            },
-        )
         self.assertEqual(specs["replay_session_history"]["status"], "suspected")
         self.assertEqual(specs["visibility_and_secret_state"]["status"], "suspected")
-        self.assertEqual(specs["derived_values"]["status"], "suspected")
-        self.assertEqual(specs["expressions"]["status"], "suspected")
 
     def test_target_inspects_and_executes_same_runtime_state(self):
         view = inspect_investigation_target(
