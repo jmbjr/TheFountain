@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-a-contextual-skill-checks",
+  "status": "g6-phase-b-roadside-investigation",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 with Phase A contextual skill-check runtime semantics: the accepted success-roll path now supports source-owned situational modifiers, effective-target derivation, critical classification, and deterministic generated 3d6 evidence. Encounter consequences remain later phases.",
+    "target": "A G6-targeted Scenario 01 with Phase B Roadside Tracks investigation runtime semantics: source-owned encounter state, one investigation choice, Phase A contextual Tracking resolution, DODGE-normalized success/failure state consequences, and a thin debug-target path.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase A makes ordinary skill checks RPG-usable without starting the Roadside Tracks state/consequence tranche. Social/environmental/combat/recovery/completion and immutable session replay remain later roadmap work."
+    "acceptance_note": "Phase B makes the Roadside Tracks encounter playable end-to-end through neutral runtime state. It does not advance automatically into the Frightened Witness encounter; broader scenario progression remains Phase G, while Phase C is the next gameplay tranche."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -55,7 +55,45 @@
     {
       "id": "roadside-tracks",
       "type": "investigation",
-      "purpose": "Exercise an ordinary success roll with a situational modifier."
+      "purpose": "Exercise an ordinary success roll with a situational modifier.",
+      "state_contract": {
+        "refs": {
+          "status": "roadside-tracks-status",
+          "outcome": "roadside-tracks-outcome",
+          "information": "roadside-tracks-information"
+        },
+        "initial": {
+          "status": "ready",
+          "outcome": "unresolved",
+          "information": "undiscovered"
+        }
+      },
+      "actions": [
+        {
+          "id": "investigate-tracks",
+          "label": "Study the roadside tracks",
+          "actor_ref": "pc",
+          "action_ref": "attempt-skill",
+          "context_ref": "roadside-tracks-tracking",
+          "source_ref": "scenario-01-source",
+          "authority": "provisional",
+          "provenance": "prototype_assumption",
+          "consequences": {
+            "success": {
+              "status": "resolved",
+              "outcome": "success",
+              "information": "clear-trail",
+              "information_text": "Rook identifies a clear trail leading away from the road."
+            },
+            "failure": {
+              "status": "resolved",
+              "outcome": "failure",
+              "information": "trail-inconclusive",
+              "information_text": "Rook cannot establish a reliable trail from the disturbed roadside signs."
+            }
+          }
+        }
+      ]
     },
     {
       "id": "frightened-witness",

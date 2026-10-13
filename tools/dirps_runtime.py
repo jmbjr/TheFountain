@@ -2,8 +2,9 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path, including Phase A contextual
-modifiers, critical classification, and deterministic generated random evidence.
+It executes the accepted success-roll path, Phase A contextual checks, and
+Phase B's first stateful investigation encounter using neutral DODGE runtime
+state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
@@ -15,6 +16,7 @@ import hashlib
 
 BINDING_ID = "attempt-skill"
 RNG_ALGORITHM = "sha256-rejection-v1"
+PHASE_B_RESULT_FORMAT = "dirps-encounter-result.v1"
 
 
 class ExecutionError(ValueError):
@@ -1112,3 +1114,390 @@ def replay_contextual_skill(resolved, record):
         raise ExecutionError("execution record divergence detected")
     return recomputed
 
+
+
+def _phase_b_binding(resolved, encounter_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    bindings = _require_mapping(
+        sidecar.get("phase_b_encounter_bindings"),
+        "resolved phase_b_encounter_bindings",
+    )
+    binding = _require_mapping(
+        bindings.get(encounter_ref), f"Phase B encounter binding {encounter_ref}"
+    )
+    if binding.get("encounter_ref") != encounter_ref:
+        raise ExecutionError("Phase B encounter binding identity is malformed")
+    if binding.get("skill_result_format") != "dirps-execution-result.v2":
+        raise ExecutionError("Phase B requires Phase A/v2 skill evidence")
+    if binding.get("result_format") != PHASE_B_RESULT_FORMAT:
+        raise ExecutionError("Phase B encounter result format is unsupported")
+    if binding.get("binding_source_ref") != "dirps-proto":
+        raise ExecutionError("Phase B encounter binding source is malformed")
+    if binding.get("consequence_source_ref") != "scenario-01-source":
+        raise ExecutionError("Phase B consequence source is malformed")
+    if not isinstance(binding.get("required_state"), list):
+        raise ExecutionError("Phase B required_state must be a list")
+    consequences = _require_mapping(
+        binding.get("consequences"), "Phase B consequence bindings"
+    )
+    if set(consequences) != {"success", "failure"}:
+        raise ExecutionError("Phase B must bind success and failure consequences")
+    for branch in ("success", "failure"):
+        effect_refs = (consequences.get(branch) or {}).get("effect_refs")
+        if not isinstance(effect_refs, list) or not effect_refs:
+            raise ExecutionError(
+                f"Phase B {branch} consequence must declare ordered effect_refs"
+            )
+    return binding
+
+
+def _encounter(resolved, encounter_ref):
+    scenario = _require_mapping(resolved.get("scenario"), "resolved scenario")
+    for row in scenario.get("encounters", []):
+        if isinstance(row, dict) and row.get("id") == encounter_ref:
+            return row
+    raise ExecutionError(f"encounter is not available in resolved scenario: {encounter_ref}")
+
+
+def _encounter_action(encounter, action_id):
+    for row in encounter.get("actions", []):
+        if isinstance(row, dict) and row.get("id") == action_id:
+            return row
+    raise ExecutionError(
+        f"action is not available in encounter {encounter.get('id')}: {action_id}"
+    )
+
+
+def _state_binding_index(state):
+    bindings = state.get("bindings")
+    if not isinstance(bindings, list):
+        raise ExecutionError("runtime state bindings must be a list")
+    index = {}
+    for row in bindings:
+        binding = _require_mapping(row, "runtime state binding")
+        ref = binding.get("ref")
+        subject = binding.get("subject")
+        if not isinstance(ref, str) or not ref:
+            raise ExecutionError("runtime state binding ref is required")
+        if subject != {"relative": "scenario"}:
+            raise ExecutionError(
+                f"Phase B runtime state binding {ref} must target the scenario subject"
+            )
+        if ref in index:
+            raise ExecutionError(f"duplicate runtime state binding: {ref}")
+        index[ref] = binding
+    return index
+
+
+def _validate_state_value(definition, value, ref):
+    value_type = definition.get("type")
+    if value_type == "enum":
+        if value not in (definition.get("enum_values") or []):
+            raise ExecutionError(
+                f"runtime state value {ref}={value!r} is outside declared enum_values"
+            )
+    elif value_type == "boolean":
+        if not isinstance(value, bool):
+            raise ExecutionError(f"runtime state value {ref} must be boolean")
+    elif value_type == "integer":
+        if not isinstance(value, int) or isinstance(value, bool):
+            raise ExecutionError(f"runtime state value {ref} must be integer")
+    elif value_type == "number":
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            raise ExecutionError(f"runtime state value {ref} must be numeric")
+    elif value_type == "string":
+        if not isinstance(value, str):
+            raise ExecutionError(f"runtime state value {ref} must be string")
+    else:
+        raise ExecutionError(f"unsupported runtime state value type for {ref}: {value_type}")
+
+
+def validate_runtime_state(resolved, state):
+    """Validate the neutral DODGE runtime-state subset used by Phase B."""
+    if not isinstance(state, dict):
+        raise ExecutionError("runtime state must be an object")
+    if state.get("scenario_ref") != resolved.get("scenario_id"):
+        raise ExecutionError("runtime state scenario_ref disagrees with resolved scenario")
+    if not isinstance(state.get("revision"), str):
+        raise ExecutionError("runtime state revision must be a string")
+    try:
+        int(state["revision"])
+    except ValueError as exc:
+        raise ExecutionError("runtime state revision must be an integer string") from exc
+    events = state.get("events")
+    if not isinstance(events, list):
+        raise ExecutionError("runtime state events must be a list")
+
+    definitions = _require_mapping(
+        (resolved.get("rules") or {}).get("values"), "resolved value definitions"
+    )
+    index = _state_binding_index(state)
+    for ref, row in index.items():
+        definition = _require_mapping(
+            definitions.get(ref), f"runtime state value definition {ref}"
+        )
+        if definition.get("owner_scope") != "scenario":
+            raise ExecutionError(
+                f"Phase B runtime state value {ref} must be scenario-owned"
+            )
+        if row.get("authority") != definition.get("authority"):
+            raise ExecutionError(
+                f"runtime state binding {ref} authority disagrees with value definition"
+            )
+        _validate_state_value(definition, row.get("value"), ref)
+    return index
+
+
+def create_runtime_state(resolved, *, encounter_ref="roadside-tracks"):
+    """Create a fresh neutral runtime-state snapshot from resolved DODGE."""
+    binding = _phase_b_binding(resolved, encounter_ref)
+    states = _require_mapping(resolved.get("runtime_states"), "resolved runtime_states")
+    source = _require_mapping(
+        states.get(binding.get("runtime_state_ref")),
+        f"runtime state {binding.get('runtime_state_ref')}",
+    )
+    state = copy.deepcopy(source)
+    validate_runtime_state(resolved, state)
+    return state
+
+
+def _state_value(state_index, ref):
+    row = state_index.get(ref)
+    if not isinstance(row, dict):
+        raise ExecutionError(f"required runtime state binding is missing: {ref}")
+    return row.get("value")
+
+
+def _phase_b_ready(resolved, state, binding):
+    index = validate_runtime_state(resolved, state)
+    for requirement in binding.get("required_state", []):
+        row = _require_mapping(requirement, "Phase B state requirement")
+        if _state_value(index, row.get("ref")) != row.get("value"):
+            return False
+    return True
+
+
+def describe_investigation(resolved, state, *, encounter_ref):
+    """Describe available Phase B encounter actions from neutral runtime state."""
+    binding = _phase_b_binding(resolved, encounter_ref)
+    encounter = _encounter(resolved, encounter_ref)
+    action = _encounter_action(encounter, binding.get("action_id"))
+    ready = _phase_b_ready(resolved, state, binding)
+
+    state_contract = _require_mapping(
+        encounter.get("state_contract"), f"encounter {encounter_ref} state_contract"
+    )
+    refs = _require_mapping(
+        state_contract.get("refs"), f"encounter {encounter_ref} state refs"
+    )
+    index = validate_runtime_state(resolved, state)
+    current_state = {
+        role: _state_value(index, ref)
+        for role, ref in refs.items()
+    }
+
+    return {
+        "encounter": {
+            "id": encounter_ref,
+            "type": encounter.get("type"),
+            "purpose": encounter.get("purpose"),
+        },
+        "runtime_state_revision": state.get("revision"),
+        "state": current_state,
+        "available_actions": [
+            {
+                "id": action.get("id"),
+                "label": action.get("label"),
+                "actor_ref": action.get("actor_ref"),
+                "action_ref": action.get("action_ref"),
+                "context_ref": action.get("context_ref"),
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            }
+        ]
+        if ready
+        else [],
+        "skill_capability": describe_contextual_skill(resolved),
+        "result_format": binding.get("result_format"),
+    }
+
+
+def _apply_set_effect(resolved, state, state_index, effect_ref):
+    effects = _require_mapping(
+        (resolved.get("rules") or {}).get("effects"), "resolved effects"
+    )
+    effect = _require_mapping(effects.get(effect_ref), f"resolved effect {effect_ref}")
+    if effect.get("op") != "set":
+        raise ExecutionError(
+            f"Phase B only supports normalized set effects, got {effect.get('op')!r}"
+        )
+    if effect.get("subject") != {"relative": "scenario"}:
+        raise ExecutionError(f"Phase B effect {effect_ref} must target scenario state")
+    if effect.get("source_ref") != "scenario-01-source":
+        raise ExecutionError(f"Phase B effect {effect_ref} has wrong source authority")
+    if effect.get("authority") != "provisional":
+        raise ExecutionError(f"Phase B effect {effect_ref} must remain provisional")
+
+    target_ref = effect.get("target_ref")
+    binding = state_index.get(target_ref)
+    if not isinstance(binding, dict):
+        raise ExecutionError(
+            f"Phase B effect {effect_ref} target binding is missing: {target_ref}"
+        )
+    definitions = _require_mapping(
+        (resolved.get("rules") or {}).get("values"), "resolved value definitions"
+    )
+    definition = _require_mapping(
+        definitions.get(target_ref), f"value definition {target_ref}"
+    )
+    new_value = effect.get("value")
+    _validate_state_value(definition, new_value, target_ref)
+    before = binding.get("value")
+    binding["value"] = copy.deepcopy(new_value)
+    return {
+        "effect_ref": effect_ref,
+        "op": "set",
+        "ref": target_ref,
+        "subject": {"relative": "scenario"},
+        "before": copy.deepcopy(before),
+        "after": copy.deepcopy(new_value),
+        "source_ref": effect.get("source_ref"),
+        "authority": effect.get("authority"),
+    }
+
+
+def execute_investigation(
+    resolved,
+    state,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    dice_terms=None,
+    random_seed=None,
+):
+    """Resolve one Phase B investigation action and apply neutral DODGE effects."""
+    binding = _phase_b_binding(resolved, encounter_ref)
+    encounter = _encounter(resolved, encounter_ref)
+    action = _encounter_action(encounter, action_id)
+    if action_id != binding.get("action_id"):
+        raise ExecutionError(
+            f"action is not bound for Phase B encounter {encounter_ref}: {action_id}"
+        )
+    if actor_ref != binding.get("actor_ref") or actor_ref != action.get("actor_ref"):
+        raise ExecutionError(
+            f"actor {actor_ref} is not eligible for encounter action {action_id}"
+        )
+    if action.get("action_ref") != binding.get("action_ref"):
+        raise ExecutionError("encounter action disagrees with Phase B action_ref")
+    if action.get("context_ref") != binding.get("context_ref"):
+        raise ExecutionError("encounter action disagrees with Phase B context_ref")
+
+    before = copy.deepcopy(state)
+    if not _phase_b_ready(resolved, before, binding):
+        raise ExecutionError(
+            f"encounter action {action_id} is unavailable in current runtime state"
+        )
+
+    skill_resolution = execute_contextual_skill(
+        resolved,
+        actor_ref=actor_ref,
+        context_ref=binding["context_ref"],
+        dice_terms=dice_terms,
+        random_seed=random_seed,
+    )
+    if skill_resolution.get("format") != binding.get("skill_result_format"):
+        raise ExecutionError("Phase B received an unexpected nested skill-result format")
+
+    branch = "success" if skill_resolution["outcome"]["success"] else "failure"
+    consequence = _require_mapping(
+        (action.get("consequences") or {}).get(branch),
+        f"encounter consequence {branch}",
+    )
+    effect_refs = binding["consequences"][branch]["effect_refs"]
+
+    after = copy.deepcopy(before)
+    state_index = validate_runtime_state(resolved, after)
+    delta = [
+        _apply_set_effect(resolved, after, state_index, effect_ref)
+        for effect_ref in effect_refs
+    ]
+    after["revision"] = str(int(after["revision"]) + 1)
+    validate_runtime_state(resolved, after)
+
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    bridge_source = _require_mapping(
+        sources.get(binding["binding_source_ref"]), "Phase B binding source"
+    )
+    consequence_source = _require_mapping(
+        sources.get(binding["consequence_source_ref"]),
+        "Phase B consequence source",
+    )
+
+    return {
+        "format": binding["result_format"],
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "outcome_branch": branch,
+        "skill_resolution": skill_resolution,
+        "consequence": copy.deepcopy(consequence),
+        "state_before": before,
+        "state_after": after,
+        "state_delta": delta,
+        "trace": {
+            "encounter_action": {
+                "encounter_ref": encounter_ref,
+                "action_id": action_id,
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            },
+            "execution_binding": {
+                "ref": f"proto_sidecar.phase_b_encounter_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": bridge_source.get("authority"),
+            },
+            "consequence_source": {
+                "source_ref": binding["consequence_source_ref"],
+                "authority": consequence_source.get("authority"),
+                "effect_refs": copy.deepcopy(effect_refs),
+            },
+            "nested_skill_result_format": binding["skill_result_format"],
+        },
+    }
+
+
+def replay_investigation(resolved, record):
+    """Deterministically re-evaluate one Phase B stateful encounter record."""
+    if not isinstance(record, dict):
+        raise ExecutionError("encounter record must be an object")
+    if record.get("format") != PHASE_B_RESULT_FORMAT:
+        raise ExecutionError(
+            f"unsupported Phase B encounter record format: {record.get('format')!r}"
+        )
+    skill = _require_mapping(
+        record.get("skill_resolution"), "encounter record skill_resolution"
+    )
+    evidence = _require_mapping(
+        skill.get("random_evidence"), "encounter record random_evidence"
+    )
+    kwargs = {
+        "resolved": resolved,
+        "state": copy.deepcopy(record.get("state_before")),
+        "encounter_ref": record.get("encounter_ref"),
+        "action_id": record.get("action_id"),
+        "actor_ref": record.get("actor_ref"),
+    }
+    if evidence.get("kind") == "generated-seeded-dice-terms":
+        kwargs["random_seed"] = evidence.get("seed")
+    elif evidence.get("kind") == "supplied-dice-terms":
+        kwargs["dice_terms"] = evidence.get("terms")
+    else:
+        raise ExecutionError("encounter record random evidence kind is unsupported")
+
+    recomputed = execute_investigation(**kwargs)
+    if recomputed != record:
+        raise ExecutionError("encounter record divergence detected")
+    return recomputed

@@ -61,6 +61,16 @@ Phase A reassesses `derived_values` and `expressions` but does **not** promote e
 
 Phase A does not mutate encounter/scenario state or apply investigation consequences. Those begin in roadmap Phase B.
 
+## Phase B Roadside investigation result
+
+Gameplay roadmap Phase B makes the first encounter stateful without changing DIRPS maturity. Canonical Scenario 01 owns the Roadside initial state, one investigation action, and success/failure consequence values/text. Those facts are normalized using standard DODGE 0.2.1 scenario-owned values, `scenario.initial_state`, `runtime_states`, and structured `set` effects. DIRPS source validation derives the normalized contract from canonical Scenario 01 so stale DODGE copies fail before resolution.
+
+The sidecar adds only `phase_b_encounter_bindings.roadside-tracks`: a provisional bridge from the accepted Phase A v2 Boolean success result to the ordered normalized DODGE effect refs. The sidecar does not duplicate the consequence values.
+
+`execute_investigation()` consumes a neutral runtime-state snapshot, executes the Phase A contextual skill path, applies the selected effect list, and emits `dirps-encounter-result.v1` with nested skill evidence, before/after state, ordered state delta, and provenance. `replay_investigation()` re-evaluates the one encounter record deterministically.
+
+No new proto concept is promoted. Public Roadside information does not exercise hidden-state semantics, and one encounter replay does not satisfy the append-only `replay_session_history` proposal.
+
 ## Non-goals for this pass
 
 - Do not encode the full GURPS ruleset.

@@ -3,7 +3,7 @@
   "document_id": "dirps.scenario-01-v0.2.1",
   "game_id": "dirps",
   "title": "DIRPS — Scenario 01",
-  "description": "G6-targeted DIRPS Scenario 01 with Phase A contextual skill-check runtime semantics. The accepted neutral resolver/runtime/CLI architecture now supports source-owned situational modifiers, effective-target derivation, critical classification, and deterministic generated 3d6 evidence. Encounter consequences and later gameplay phases remain unimplemented.",
+  "description": "G6-targeted DIRPS Scenario 01 with Phase B Roadside Tracks investigation semantics. Standard DODGE scenario state/runtime-state/effects now carry the first encounter's neutral progress state, while the DIRPS runtime composes Phase A contextual Tracking resolution with those normalized consequences.",
   "sources": {
     "gurps-lite": {
       "kind": "rules",
@@ -254,6 +254,47 @@
         "assumptions": [
           "G1 bounds this value to Scenario 01; persistence beyond the scenario is intentionally unresolved until a later semantic gate."
         ]
+      },
+      "roadside-tracks-status": {
+        "name": "Roadside Tracks status",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "ready",
+        "enum_values": [
+          "ready",
+          "resolved"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "roadside-tracks-outcome": {
+        "name": "Roadside Tracks outcome",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "unresolved",
+        "enum_values": [
+          "unresolved",
+          "success",
+          "failure"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "roadside-tracks-information": {
+        "name": "Roadside Tracks information",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "undiscovered",
+        "enum_values": [
+          "undiscovered",
+          "clear-trail",
+          "trail-inconclusive"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
       }
     },
     "conditions": {
@@ -270,7 +311,58 @@
         "authority": "authoritative"
       }
     },
-    "effects": {},
+    "effects": {
+      "roadside-tracks-set-status-resolved": {
+        "op": "set",
+        "target_ref": "roadside-tracks-status",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "resolved",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "roadside-tracks-set-outcome-success": {
+        "op": "set",
+        "target_ref": "roadside-tracks-outcome",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "success",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "roadside-tracks-set-information-clear-trail": {
+        "op": "set",
+        "target_ref": "roadside-tracks-information",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "clear-trail",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "roadside-tracks-set-outcome-failure": {
+        "op": "set",
+        "target_ref": "roadside-tracks-outcome",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "failure",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "roadside-tracks-set-information-trail-inconclusive": {
+        "op": "set",
+        "target_ref": "roadside-tracks-information",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "trail-inconclusive",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      }
+    },
     "actions": {
       "attempt-skill": {
         "name": "Attempt skill",
@@ -432,15 +524,41 @@
       "authority": "provisional",
       "assumptions": [
         "The prose objective preserves intended tutorial completion semantics, but no executable scenario end condition is declared at G6; deterministic completion semantics remain a later executable-design task."
+      ],
+      "initial_state": [
+        {
+          "ref": "roadside-tracks-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "ready",
+          "authority": "provisional"
+        },
+        {
+          "ref": "roadside-tracks-outcome",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unresolved",
+          "authority": "provisional"
+        },
+        {
+          "ref": "roadside-tracks-information",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "undiscovered",
+          "authority": "provisional"
+        }
       ]
     }
   },
   "metadata": {
-    "status": "targeted-g6-phase-a-contextual-skill-checks",
+    "status": "targeted-g6-phase-b-roadside-investigation",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "G6 — Targeted, Phase A gameplay candidate: one debug CLI remains the accepted target while the DIRPS runtime now executes contextual skill checks from resolved Scenario 01 modifiers with deterministic random evidence and critical classification; G7 and Phase B encounter consequences are not claimed."
+    "conformance_claim": "G6 — Targeted, Phase B gameplay candidate: Roadside Tracks is playable through neutral DODGE runtime state and effects plus the Phase A contextual skill runtime. Later encounters, full scenario progression, session history, Web presentation, and G7 are not claimed."
   },
   "extensions": {
     "org.dirps.proto": {
@@ -466,5 +584,38 @@
         "description": "Checks DIRPS Scenario 01 source authority/domain contracts and verifies the exact target-neutral resolved model preserves them without invention."
       }
     ]
+  },
+  "runtime_states": {
+    "scenario-01-initial": {
+      "scenario_ref": "scenario-01",
+      "bindings": [
+        {
+          "ref": "roadside-tracks-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "ready",
+          "authority": "provisional"
+        },
+        {
+          "ref": "roadside-tracks-outcome",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unresolved",
+          "authority": "provisional"
+        },
+        {
+          "ref": "roadside-tracks-information",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "undiscovered",
+          "authority": "provisional"
+        }
+      ],
+      "events": [],
+      "revision": "0"
+    }
   }
 }
