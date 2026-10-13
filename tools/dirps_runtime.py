@@ -1996,8 +1996,8 @@ def _phase_d_binding(resolved, encounter_ref):
     }
     if binding.get("encounter_ref") != encounter_ref:
         raise ExecutionError("Phase D environment binding identity is malformed")
-    if binding.get("action_ref") != "attempt-skill" or binding.get("procedure_ref") != "success-roll":
-        raise ExecutionError("Phase D environment binding must use the accepted success-roll path")
+    if binding.get("action_ref") != "attempt-attribute" or binding.get("procedure_ref") != "success-roll":
+        raise ExecutionError("Phase D environment binding must use attempt-attribute -> success-roll")
     if binding.get("target_source") != expected_target_source:
         raise ExecutionError("Phase D attribute target-source binding is unsupported or malformed")
     if binding.get("attribute_result_format") != PHASE_D_ATTRIBUTE_RESULT_FORMAT:
