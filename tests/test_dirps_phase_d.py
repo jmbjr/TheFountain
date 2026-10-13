@@ -111,7 +111,10 @@ class DirpsPhaseDWashedOutPathTests(unittest.TestCase):
         canonical = copy.deepcopy(self.canonical)
         canonical["player_character"]["attributes"]["dx"] = 12
         dodge = copy.deepcopy(self.dodge)
-        pc = next(x for x in dodge["scenes"]["tutorial-scene"]["instances"] if x["id"] == "pc")
+        scene_ref = dodge["scenarios"]["scenario-01"]["scene_ref"]
+        pc = next(
+            x for x in dodge["scenes"][scene_ref]["instances"] if x["id"] == "pc"
+        )
         pc["state"]["dx"] = 12
         resolved = resolve_documents(dodge, canonical, self.sidecar, self.cfg)
         baseline = self.execute(terms=[3,3,5])
