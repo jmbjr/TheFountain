@@ -186,6 +186,36 @@ class DirpsPhaseDWashedOutPathTests(unittest.TestCase):
             with self.assertRaisesRegex(ExecutionError, "reuse binding is malformed"):
                 self.execute(resolved=resolved, terms=[3, 3, 4])
 
+    def test_dice_resolution_ref_cannot_drift(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["proto_sidecar"]["phase_d_environment_bindings"][ENCOUNTER_REF][
+            "dice_resolution_ref"
+        ] = "not-dice-resolution"
+        with self.assertRaisesRegex(
+            ExecutionError, "dice-resolution reuse binding is malformed"
+        ):
+            self.execute(resolved=resolved, terms=[3, 3, 4])
+
+    def test_effective_target_binding_cannot_drift(self):
+        drifts = (
+            ("from", "not-attribute-plus-modifiers"),
+            ("modifier_policy", "ignore-context-modifiers"),
+            ("minimum", 4),
+            ("below_minimum", "clamp"),
+            ("rule_source_ref", "scenario-01-source"),
+            ("rule_locator", "not-the-accepted-rule-locator"),
+        )
+        for field, value in drifts:
+            with self.subTest(field=field):
+                resolved = copy.deepcopy(self.resolved)
+                resolved["proto_sidecar"]["phase_d_environment_bindings"][ENCOUNTER_REF][
+                    "effective_target"
+                ][field] = value
+                with self.assertRaisesRegex(
+                    ExecutionError, "effective-target binding is malformed"
+                ):
+                    self.execute(resolved=resolved, terms=[3, 3, 4])
+
     def test_attempt_attribute_authority_drift_is_rejected(self):
         dodge = copy.deepcopy(self.dodge)
         dodge["rules"]["actions"]["attempt-attribute"]["authority"] = "provisional"
