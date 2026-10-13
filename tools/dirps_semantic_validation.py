@@ -645,13 +645,22 @@ def _validate_actor_model(dodge, canonical, errors):
         if definition.get("owner_scope") == "actor"
     }
     for value_id in sorted(actor_values):
-        _source_contract(
-            errors,
-            f"value {value_id}",
-            values[value_id],
-            RULES_SOURCE,
-            "authoritative",
-        )
+        if value_id == "consciousness-check-required":
+            _source_contract(
+                errors,
+                f"value {value_id}",
+                values[value_id],
+                PROTO_SOURCE,
+                "provisional",
+            )
+        else:
+            _source_contract(
+                errors,
+                f"value {value_id}",
+                values[value_id],
+                RULES_SOURCE,
+                "authoritative",
+            )
 
     # DIRPS Scenario 01 requires explicit initial bindings for every declared
     # actor-scoped value so tutorial actors do not depend on hidden runtime defaults.
