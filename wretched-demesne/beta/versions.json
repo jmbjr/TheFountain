@@ -1,7 +1,13 @@
 {
   "format": "wretched-beta-versions.v1",
-  "current": "c3e6bbbdeec1e5a8f70cedccb92d3d16c302b5ea",
+  "current": "461d088e7c03c72b169e7de9b67f32a5854b1b29",
   "versions": [
+    {
+      "git_sha": "461d088e7c03c72b169e7de9b67f32a5854b1b29",
+      "short_sha": "461d088e7c03",
+      "label": "Build 461d088e7c03",
+      "path": "./web/461d088e7c03/index.html"
+    },
     {
       "git_sha": "c3e6bbbdeec1e5a8f70cedccb92d3d16c302b5ea",
       "short_sha": "c3e6bbbdeec1",
