@@ -1529,6 +1529,17 @@ def _phase_c_binding(resolved, encounter_ref):
     if not isinstance(binding.get("required_state"), list):
         raise ExecutionError("Phase C required_state must be a list")
 
+    modifier_source = _require_mapping(
+        binding.get("modifier_source"), "Phase C reaction-modifier source binding"
+    )
+    if modifier_source != {
+        "kind": "encounter-action-reaction-modifiers",
+        "path": "scenario.encounters[].actions[].reaction_modifiers",
+    }:
+        raise ExecutionError(
+            "Phase C reaction-modifier source binding is unsupported or malformed"
+        )
+
     random_evidence = _require_mapping(
         binding.get("random_evidence"), "Phase C random-evidence binding"
     )
