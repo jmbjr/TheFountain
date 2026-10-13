@@ -10,15 +10,16 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 | Ordered actions/procedures | Expressible | DODGE actions/procedures | No |
 | Conditions and state changes | Expressible | DODGE conditions/effects where sufficient | No |
 | 3d6/random roll resolution with preserved rolled terms | Gap | Proto sidecar + bounded G5 runtime: `dice_resolution` | **Exercised**; not candidate |
-| Derived values/formulas | Gap | Proto sidecar: `derived_values` | Suspected; exercise first |
-| Reusable arithmetic expression graph | Gap | Proto sidecar: `expressions` | Suspected; exercise first |
+| Derived values/formulas | Gap | Phase E sidecar/runtime derives Dodge and cutting injury | **Exercised**; not candidate |
+| Reusable arithmetic expression graph | Gap | Phase E bounded add/subtract/divide/floor expressions | **Exercised**; not candidate |
 | Rules lookup tables | Gap | Phase C reaction-table range lookup via `phase_c_lookup_tables` | **Exercised**; not candidate |
 | Procedure-local inputs/locals/outputs | Gap | Proto sidecar + bounded G5 execution binding: `procedure_context` | **Exercised**; not candidate |
-| Reaction/interrupt timing | Gap | Proto sidecar: `reaction_timing` | Suspected; exercise first |
+| Reaction/interrupt timing | Gap | Phase E successful-attack → defender-Dodge reaction window | **Exercised**; not candidate |
 | GM-only/hidden visibility | Gap | Proto sidecar: `visibility_and_secret_state` | Suspected; exercise first |
 | RPG character organization | Partially expressible | DODGE actor state + resolved character structure consumed by G5 runtime | **Exercised**; not candidate |
 | Skills/defaults/governing attributes | Gap | G5 executes one explicit resolved skill level only; defaults/governing-attribute derivation remain absent | **Exercised** narrowly; not candidate |
 | Rules-resolution evidence | Gap | accepted G5 `dirps-execution-result.v1` plus contextual Phase A `dirps-execution-result.v2` traces | **Exercised**; not candidate |
+| Damage / injury composition | Gap | Phase E bounded ST/weapon → DR → cutting injury → actor state | **Exercised**; not candidate |
 | Immutable replay/session history | Gap | Proto sidecar: `replay_session_history` | Suspected; exercise first |
 
 ## G3 semantic-validation result
@@ -81,6 +82,14 @@ DODGE 0.2.1 lacks an executable value-range lookup primitive, so Phase C exercis
 
 `execute_social_interaction()` emits `dirps-social-encounter-result.v1` around a nested `dirps-reaction-result.v1`, preserving random terms, raw/modified totals, modifier provenance, matched table row, reaction category, canonical consequence, exact before/after state, ordered state delta, and source trace. Deterministic replay re-executes the social record from its recorded evidence.
 
+## Phase E bounded combat result
+
+Gameplay roadmap Phase E executes one target-neutral combat exchange without changing DIRPS maturity. Canonical Scenario 01 owns the bounded attacker/target/weapon/defender assumptions; GURPS Lite remains authoritative for attack, active-defense timing, Dodge, weapon damage, DR, cutting injury, HP, major-wound stun, and the future consciousness-check obligation. DODGE continues to own actor state/value definitions and the neutral combat runtime snapshot.
+
+DODGE 0.2.1 does not first-class the complete RPG combat procedure, so the sidecar now executes four concrete gaps: `reaction_timing`, `derived_values`, `expressions`, and `damage_injury`. All move to **exercised / not-yet-candidate**. `lookup_tables` remains exercised through the bounded ST10 swing-damage lookup. Runtime code interprets the declared expression/lookup/combat bindings rather than duplicating their values in the target.
+
+`execute_combat_exchange()` emits `dirps-combat-exchange-result.v1` containing attack, optional active-defense, optional damage, injury effects, exact before/after target state, state delta, and source trace. A one-exchange revision bound keeps unsupported turn sequencing out of Phase E. When HP reaches 0 or less, Phase E sets `consciousness-check-required` but does not roll HT or set unconsciousness; that is the explicit Phase F handoff.
+
 ## Non-goals for this pass
 
 - Do not encode the full GURPS ruleset.
@@ -97,7 +106,7 @@ The sidecar uses the onboarding progression:
 suspected → exercised → candidate
 ```
 
-The five G5 concepts plus Phase C `lookup_tables` are currently **exercised**. All remain `not-yet-candidate`. Every other gap remains **suspected**; none is a DODGE candidate.
+The five G5 concepts plus `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, and `damage_injury` are currently **exercised**. All remain `not-yet-candidate`. `visibility_and_secret_state` and `replay_session_history` remain **suspected**; none is a DODGE candidate.
 
 ## Promotion test
 
