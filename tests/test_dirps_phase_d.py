@@ -64,6 +64,10 @@ class DirpsPhaseDWashedOutPathTests(unittest.TestCase):
         self.assertEqual(record["format"], "dirps-environment-encounter-result.v1")
         roll = record["attribute_resolution"]
         self.assertEqual(roll["format"], "dirps-attribute-result.v1")
+        self.assertEqual(
+            roll["semantic_path"],
+            {"action_ref": "attempt-attribute", "procedure_ref": "success-roll"},
+        )
         self.assertEqual(roll["target"]["attribute_ref"], "dx")
         self.assertEqual(roll["target"]["base_target"], 11)
         self.assertEqual(roll["target"]["modifier_total"], -1)
@@ -138,6 +142,58 @@ class DirpsPhaseDWashedOutPathTests(unittest.TestCase):
         encounter["actions"][0]["consequences"]["success"]["progress"] = "other-progress"
         with self.assertRaisesRegex(ResolutionError, "washed-out-path-progress must normalize canonical progress state exactly"):
             resolve_documents(self.dodge, canonical, self.sidecar, self.cfg)
+
+    def test_normalized_consequence_perturbation_flows_into_runtime_state(self):
+        dodge = copy.deepcopy(self.dodge)
+        canonical = copy.deepcopy(self.canonical)
+        sidecar = copy.deepcopy(self.sidecar)
+        encounter = next(
+            x for x in canonical["encounters"] if x["id"] == ENCOUNTER_REF
+        )
+        encounter["actions"][0]["consequences"]["success"]["progress"] = (
+            "crossed-alternate"
+        )
+
+        progress = dodge["rules"]["values"]["washed-out-path-progress"]
+        progress["enum_values"][1] = "crossed-alternate"
+        dodge["rules"]["effects"][
+            "washed-out-path-set-progress-crossed-alternate"
+        ] = {
+            "op": "set",
+            "target_ref": "washed-out-path-progress",
+            "subject": {"relative": "scenario"},
+            "value": "crossed-alternate",
+            "source_ref": "scenario-01-source",
+            "authority": "provisional",
+        }
+        sidecar["phase_d_environment_bindings"][ENCOUNTER_REF]["consequences"][
+            "success"
+        ]["effect_refs"][2] = "washed-out-path-set-progress-crossed-alternate"
+
+        resolved = resolve_documents(dodge, canonical, sidecar, self.cfg)
+        record = self.execute(resolved=resolved, terms=[3, 3, 4])
+        self.assertEqual(
+            self.values(record["state_after"])["washed-out-path-progress"],
+            "crossed-alternate",
+        )
+
+    def test_inherited_success_roll_binding_refs_cannot_drift(self):
+        for field in ("critical_resolution_ref", "random_evidence_ref"):
+            resolved = copy.deepcopy(self.resolved)
+            resolved["proto_sidecar"]["phase_d_environment_bindings"][ENCOUNTER_REF][
+                field
+            ] = "not-the-accepted-phase-a-contract"
+            with self.assertRaisesRegex(ExecutionError, "reuse binding is malformed"):
+                self.execute(resolved=resolved, terms=[3, 3, 4])
+
+    def test_attempt_attribute_authority_drift_is_rejected(self):
+        dodge = copy.deepcopy(self.dodge)
+        dodge["rules"]["actions"]["attempt-attribute"]["authority"] = "provisional"
+        with self.assertRaisesRegex(
+            ResolutionError,
+            "attempt-attribute action must preserve the authoritative success-roll binding",
+        ):
+            resolve_documents(dodge, self.canonical, self.sidecar, self.cfg)
 
     def test_target_source_binding_drift_fails_at_runtime(self):
         resolved = copy.deepcopy(self.resolved)
