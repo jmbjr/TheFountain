@@ -2,9 +2,9 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path, Phase A contextual checks, and
-Phase B's first stateful investigation encounter using neutral DODGE runtime
-state/effects.
+It executes the accepted success-roll path plus the bounded Phase A-D
+investigation, social, and environmental gameplay slices over neutral resolved
+semantics and DODGE runtime state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
@@ -19,6 +19,8 @@ RNG_ALGORITHM = "sha256-rejection-v1"
 PHASE_B_RESULT_FORMAT = "dirps-encounter-result.v1"
 PHASE_C_REACTION_FORMAT = "dirps-reaction-result.v1"
 PHASE_C_RESULT_FORMAT = "dirps-social-encounter-result.v1"
+PHASE_D_ATTRIBUTE_RESULT_FORMAT = "dirps-attribute-result.v1"
+PHASE_D_RESULT_FORMAT = "dirps-environment-encounter-result.v1"
 
 
 class ExecutionError(ValueError):
