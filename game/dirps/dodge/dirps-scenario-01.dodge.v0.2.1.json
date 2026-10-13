@@ -396,7 +396,7 @@
         "owner_scope": "actor",
         "persistence_scope": "scenario",
         "assumptions": [
-          "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; the actual HT check is Phase F."
+          "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; Phase F consumes the obligation while the actor remains conscious."
         ]
       }
     },
