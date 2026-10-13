@@ -802,8 +802,7 @@
       "action_refs": [
         "attempt-skill",
         "attack",
-        "recover",
-        "attempt-attribute"
+        "recover"
       ],
       "turn_procedure_ref": "tutorial-turn",
       "objectives": [
