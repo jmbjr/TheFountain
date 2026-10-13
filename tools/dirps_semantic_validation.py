@@ -1482,6 +1482,149 @@ def _validate_phase_d_environment_contract(dodge, canonical, errors):
             errors.append(f"Phase D DODGE effect {effect_id} must normalize canonical consequence exactly")
 
 
+def _validate_phase_e_combat_contract(dodge, canonical, errors):
+    encounter = next(
+        (
+            row
+            for row in canonical.get("encounters", [])
+            if isinstance(row, dict) and row.get("id") == "bandit-scout"
+        ),
+        None,
+    )
+    if not isinstance(encounter, dict):
+        errors.append("Phase E requires canonical bandit-scout encounter")
+        return
+
+    opponent = encounter.get("opponent")
+    if not isinstance(opponent, dict):
+        errors.append("Phase E bandit-scout requires canonical opponent data")
+        return
+    if opponent.get("actor_ref") != "bandit-scout":
+        errors.append("Phase E opponent actor_ref must be bandit-scout")
+    if opponent.get("provenance") != PC_PROVENANCE:
+        errors.append("Phase E opponent provenance must be prototype_assumption")
+    if opponent.get("attributes") != {"st": 10, "dx": 10, "ht": 10}:
+        errors.append("Phase E bounded opponent attributes must be ST10/DX10/HT10")
+    if opponent.get("state") != {
+        "hit_points": 10,
+        "stunned": False,
+        "unconscious": False,
+    }:
+        errors.append("Phase E bounded opponent state must start at HP10/not stunned/conscious")
+    assumptions = opponent.get("defense_assumptions")
+    if assumptions != {
+        "aware_of_attack": True,
+        "encumbrance_penalty": 0,
+        "armor_dr": 0,
+    }:
+        errors.append("Phase E bounded defense assumptions must be aware/unencumbered/DR0")
+
+    actions = encounter.get("actions")
+    if not isinstance(actions, list) or len(actions) != 1:
+        errors.append("Phase E bandit-scout must expose exactly one supported combat action")
+        return
+    action = actions[0]
+    expected_action = {
+        "id": "strike-bandit-scout",
+        "label": "Attack the bandit scout with Rook's broadsword",
+        "actor_ref": "pc",
+        "target_ref": "bandit-scout",
+        "action_ref": "attack",
+        "skill_ref": "broadsword",
+        "weapon_ref": "broadsword",
+        "attack_mode": "swing-cut",
+        "source_ref": SCENARIO_SOURCE,
+        "authority": "provisional",
+        "provenance": PC_PROVENANCE,
+        "supported_defense": "dodge",
+    }
+    if action != expected_action:
+        errors.append("Phase E combat action must match the bounded broadsword/Dodge contract")
+
+    pc = canonical.get("player_character") or {}
+    if (pc.get("skills") or {}).get("broadsword") is None:
+        errors.append("Phase E requires canonical PC broadsword skill")
+    if "broadsword" not in (pc.get("equipment") or []):
+        errors.append("Phase E requires canonical PC broadsword equipment")
+
+    scenario, scene = _scene_for_scenario(dodge)
+    instances = _instance_map(scene)
+    bandit = instances.get("bandit-scout") or {}
+    bandit_state = bandit.get("state") or {}
+    expected_actor_state = {
+        "st": opponent["attributes"]["st"],
+        "dx": opponent["attributes"]["dx"],
+        "ht": opponent["attributes"]["ht"],
+        "hit-points": opponent["state"]["hit_points"],
+        "stunned": opponent["state"]["stunned"],
+        "unconscious": opponent["state"]["unconscious"],
+    }
+    for ref, expected in expected_actor_state.items():
+        if bandit_state.get(ref) != expected:
+            errors.append(
+                f"Phase E bandit DODGE scene state {ref} must equal canonical value {expected!r}"
+            )
+
+    value = (dodge.get("rules", {}).get("values", {}) or {}).get(
+        "consciousness-check-required"
+    )
+    expected_value = {
+        "name": "Consciousness check required",
+        "type": "boolean",
+        "default": False,
+        "source_ref": PROTO_SOURCE,
+        "authority": "provisional",
+        "owner_scope": "actor",
+        "persistence_scope": "scenario",
+        "assumptions": [
+            "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; the actual HT check is Phase F."
+        ],
+    }
+    if value != expected_value:
+        errors.append(
+            "Phase E consciousness-check-required DODGE value must match the declared deferred Phase F contract"
+        )
+
+    runtime = (dodge.get("runtime_states") or {}).get(
+        "scenario-01-bandit-scout-initial"
+    )
+    expected_runtime = {
+        "scenario_ref": "scenario-01",
+        "bindings": [
+            {
+                "ref": "hit-points",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": opponent["state"]["hit_points"],
+                "authority": "provisional",
+            },
+            {
+                "ref": "stunned",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": opponent["state"]["stunned"],
+                "authority": "provisional",
+            },
+            {
+                "ref": "unconscious",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": opponent["state"]["unconscious"],
+                "authority": "provisional",
+            },
+            {
+                "ref": "consciousness-check-required",
+                "subject": {"instance_ref": "bandit-scout"},
+                "value": False,
+                "authority": "provisional",
+            },
+        ],
+        "events": [],
+        "revision": "0",
+    }
+    if runtime != expected_runtime:
+        errors.append(
+            "Phase E bandit combat runtime state must normalize canonical opponent state exactly"
+        )
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -1497,6 +1640,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_phase_b_investigation_contract(dodge, canonical, errors)
     _validate_phase_c_social_contract(dodge, canonical, errors)
     _validate_phase_d_environment_contract(dodge, canonical, errors)
+    _validate_phase_e_combat_contract(dodge, canonical, errors)
     return errors
 
 
