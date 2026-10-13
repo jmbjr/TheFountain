@@ -1985,6 +1985,8 @@ def encounter_runtime_kind(resolved, encounter_ref):
         return "social"
     if encounter_ref in (sidecar.get("phase_d_environment_bindings") or {}):
         return "environment"
+    if encounter_ref in (sidecar.get("phase_e_combat_bindings") or {}):
+        return "combat"
     raise ExecutionError(f"encounter has no supported runtime binding: {encounter_ref}")
 
 
