@@ -90,6 +90,16 @@ DODGE 0.2.1 does not first-class the complete RPG combat procedure, so the sidec
 
 `execute_combat_exchange()` emits `dirps-combat-exchange-result.v1` containing attack, optional active-defense, optional damage, injury effects, exact before/after target state, state delta, and source trace. A one-exchange revision bound keeps unsupported turn sequencing out of Phase E. When HP reaches 0 or less, Phase E sets `consciousness-check-required` but does not roll HT or set unconsciousness; that is the explicit Phase F handoff.
 
+## Phase F recovery / consciousness result
+
+Gameplay roadmap Phase F makes Phase E injury state actionable without changing formal maturity. The exact Phase E combat snapshot is the Phase F input; no parallel recovery-state model is introduced.
+
+GURPS Lite remains authoritative for the beginning-of-turn HT stay-conscious check at HP <= 0 and the next-turn basic-HT physical-stun recovery check. Canonical Scenario 01 owns the bounded recovery action/timing/order and a provisional Strong/Weak Will modifier assumption of 0. DODGE owns the actor state plus normalized set effects. The sidecar only orchestrates those pieces through `phase_f_recovery_bindings.bandit-scout`.
+
+`execute_recovery()` emits `dirps-recovery-result.v1` around zero, one, or two ordered `dirps-ht-check-result.v1` checks. Failed consciousness sets unconsciousness and clears the provisional stay-conscious obligation; successful consciousness leaves that obligation active while HP remains <= 0. Stun recovery executes only while the actor remains conscious. Deterministic replay re-executes one recovery-turn record from its recorded post-combat state and random evidence.
+
+No proto concept changes maturity. Long-term waking/healing is intentionally unsupported, and one recovery-turn replay still does not satisfy `replay_session_history`.
+
 ## Non-goals for this pass
 
 - Do not encode the full GURPS ruleset.
