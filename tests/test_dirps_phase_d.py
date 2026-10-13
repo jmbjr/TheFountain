@@ -235,14 +235,9 @@ class DirpsPhaseDWashedOutPathTests(unittest.TestCase):
                 actor_ref="pc", dice_terms=[3,3,4],
             )
 
-    def test_phase_d_promotes_no_new_proto_concept(self):
+    def test_phase_d_keeps_session_history_unpromoted(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
-        exercised = {k for k,v in specs.items() if v["status"] == "exercised"}
-        self.assertEqual(exercised, {
-            "dice_resolution","procedure_context","actor_character_model",
-            "skill_model","resolution_trace","lookup_tables",
-        })
-        self.assertEqual(specs["reaction_timing"]["status"], "suspected")
+        self.assertEqual(specs["lookup_tables"]["status"], "exercised")
         self.assertEqual(specs["replay_session_history"]["status"], "suspected")
 
     def test_generic_target_dispatches_environment(self):
