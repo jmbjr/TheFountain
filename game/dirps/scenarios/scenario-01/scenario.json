@@ -248,7 +248,8 @@
         "defense_assumptions": {
           "aware_of_attack": true,
           "encumbrance_penalty": 0,
-          "armor_dr": 0
+          "armor_dr": 0,
+          "passive_defense": 0
         }
       },
       "actions": [
@@ -266,7 +267,10 @@
           "provenance": "prototype_assumption",
           "supported_defense": "dodge"
         }
-      ]
+      ],
+      "bounded_combat": {
+        "maximum_exchanges": 1
+      }
     }
   ],
   "implementation_boundary": {
