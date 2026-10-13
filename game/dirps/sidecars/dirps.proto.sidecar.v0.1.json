@@ -113,7 +113,7 @@
       "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 has no first-class table lookup semantic for rules that map one value/range to another result.",
       "proposed_shape": {
-        "key_expression_ref": "expression-id",
+        "key_ref": "value-or-derived-result-id",
         "rows": [
           {
             "when": {
