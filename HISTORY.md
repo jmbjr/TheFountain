@@ -663,3 +663,12 @@ Scenario 01 now owns the provisional `reassure-and-question` action, a +1 reassu
 The sidecar introduces `phase_c_lookup_tables.gurps-lite-reaction-table` and a bounded `phase_c_social_bindings` bridge. Runtime code reads the declared table, produces `dirps-reaction-result.v1`, applies canonical-derived DODGE consequence effects, and emits `dirps-social-encounter-result.v1` with exact before/after state and deterministic replay evidence. The debug CLI dispatches encounter handling based on runtime-owned kind rather than target-owned encounter ids.
 
 This is the first concrete execution evidence for the lookup-table gap, so `lookup_tables` moves from `suspected` to `exercised` while remaining `not-yet-candidate`. `reaction_timing` stays `suspected`: the social reaction roll does not exercise attack interrupts or defensive reaction windows. Phase D environmental gameplay remains next; no G7 work was added.
+
+
+## DIRPS gameplay Phase D adds the Washed-Out Path environmental challenge
+
+**October 12, 2026.**
+
+After Phase C merged in PR #181, DIRPS started Phase D from fresh post-merge `main`. The Washed-Out Path now executes a bounded DX success roll using the resolved PC attribute, a canonical provisional obstacle modifier, the accepted GURPS success/critical/random machinery, standard DODGE runtime state/effects, deterministic replay evidence, and the existing runtime-dispatched debug target.
+
+Success persists `crossed`; failure persists `detour-required`, giving later scenario progression an explicit neutral consequence. Phase D adds no combat, injury, automatic progression, session history, or G7 claim, and promotes no new proto concept.
