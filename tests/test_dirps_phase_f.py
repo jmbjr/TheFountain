@@ -433,6 +433,44 @@ class DirpsPhaseFRecoveryTests(unittest.TestCase):
         self.assertIs(view["execution"], fake_record)
         self.assertEqual(view["runtime_state"], fake_record["state_after"])
 
+    def test_registered_cli_continues_real_post_combat_state(self):
+        state = self.combat_zero_hp()["state_after"]
+        proc = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "tools" / "dirps_debug_target.py"),
+                "--recovery",
+                "--encounter",
+                ENCOUNTER_REF,
+                "--action",
+                RECOVERY_ACTION,
+                "--actor",
+                "bandit-scout",
+                "--state-json",
+                json.dumps(state, separators=(",", ":")),
+                "--consciousness-dice",
+                "3",
+                "3",
+                "4",
+                "--stun-dice",
+                "3",
+                "3",
+                "4",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        view = json.loads(proc.stdout)
+        self.assertEqual(view["status"], "ok")
+        self.assertEqual(view["execution"]["format"], "dirps-recovery-result.v1")
+        self.assertEqual(view["execution"]["state_before"], state)
+        values = self.state_values(view["runtime_state"])
+        self.assertEqual(values["hit-points"], 0)
+        self.assertFalse(values["stunned"])
+        self.assertFalse(values["unconscious"])
+        self.assertTrue(values["consciousness-check-required"])
+
     def test_target_source_contains_no_phase_f_gameplay_literals(self):
         source = inspect.getsource(dirps_debug_target)
         for literal in [
