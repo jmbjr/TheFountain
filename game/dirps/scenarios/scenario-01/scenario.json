@@ -206,7 +206,7 @@
           "id": "cross-washed-out-path",
           "label": "Cross the washed-out path",
           "actor_ref": "pc",
-          "action_ref": "attempt-skill",
+          "action_ref": "attempt-attribute",
           "context_ref": "washed-out-path-dx",
           "source_ref": "scenario-01-source",
           "authority": "provisional",
@@ -267,7 +267,7 @@
     },
     "washed-out-path-dx": {
       "encounter_ref": "washed-out-path",
-      "action_ref": "attempt-skill",
+      "action_ref": "attempt-attribute",
       "attribute_ref": "dx",
       "provenance": "prototype_assumption",
       "modifiers": [
