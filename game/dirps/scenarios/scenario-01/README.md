@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase E gameplay candidate.** Accepted Phases A-D remain intact. The Bandit Scout now executes one bounded Broadsword attack → active Dodge → damage → cutting injury → HP/stun/consciousness-check-state exchange. `../../docs/phase-e-bounded-combat-validation.md` records the combat authority/timing/damage/state/replay evidence.
+**G6 — Targeted, Phase F gameplay candidate.** Accepted Phases A-E remain intact. The Bandit Scout's post-combat HP/stun/consciousness-check state now feeds bounded next-turn HT consciousness and physical-stun recovery checks over the same neutral combat snapshot. `../../docs/phase-f-recovery-consciousness-validation.md` records the recovery authority/state/replay evidence.
 
 ## Goal
 
@@ -33,7 +33,7 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B/C/D are accepted playable encounters. Phase E adds one bounded combat exchange and may leave the bandit wounded, stunned, and requiring a future consciousness check. The actual HT consciousness/recovery roll belongs to Phase F; automatic scenario progression/completion and immutable session history remain later roadmap work.
+Phases B/C/D/E are accepted gameplay slices. Phase F consumes the combat consequences: a bandit at HP <= 0 must make the bounded beginning-of-turn stay-conscious HT check, and a conscious stunned bandit can make the physical-stun recovery HT check. Long-term waking/healing, automatic scenario progression/completion, and immutable session history remain later roadmap work.
 
 
 ## Phase D — Washed-Out Path
@@ -44,3 +44,8 @@ The environmental encounter now executes one bounded `attempt-attribute → succ
 ## Phase E — Bandit Scout combat
 
 The combat encounter supports one Rook Broadsword swing against the bandit scout. Ordinary hits open one Dodge reaction; a failed defense rolls bounded ST10 broadsword cutting damage and persists HP/stun/consciousness-check state. The exchange is intentionally one-shot and visibly rejects unsupported defenses, weapons, ST damage rows, and broader combat options. Evidence: `../../docs/phase-e-bounded-combat-validation.md`.
+
+
+## Phase F — Bandit Scout recovery
+
+The recovery slice consumes the exact post-combat state from Phase E. Consciousness is checked first when HP <= 0 and the stay-conscious obligation is active; physical-stun recovery follows only if the scout remains conscious. A successful stay-conscious roll does not clear the obligation while HP remains <= 0, so a later turn still requires another check. Long-term recovery from unconsciousness is explicitly unsupported. Evidence: `../../docs/phase-f-recovery-consciousness-validation.md`.
