@@ -343,6 +343,47 @@
         ],
         "source_ref": "scenario-01-source",
         "authority": "provisional"
+      },
+      "washed-out-path-status": {
+        "name": "Washed-Out Path status",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "ready",
+        "enum_values": [
+          "ready",
+          "resolved"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-outcome": {
+        "name": "Washed-Out Path outcome",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "unresolved",
+        "enum_values": [
+          "unresolved",
+          "success",
+          "failure"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-progress": {
+        "name": "Washed-Out Path progress",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "not-crossed",
+        "enum_values": [
+          "not-crossed",
+          "crossed",
+          "detour-required"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
       }
     },
     "conditions": {
@@ -527,6 +568,56 @@
           "relative": "scenario"
         },
         "value": "useful-lead",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-set-status-resolved": {
+        "op": "set",
+        "target_ref": "washed-out-path-status",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "resolved",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-set-outcome-success": {
+        "op": "set",
+        "target_ref": "washed-out-path-outcome",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "success",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-set-progress-crossed": {
+        "op": "set",
+        "target_ref": "washed-out-path-progress",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "crossed",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-set-outcome-failure": {
+        "op": "set",
+        "target_ref": "washed-out-path-outcome",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "failure",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "washed-out-path-set-progress-detour-required": {
+        "op": "set",
+        "target_ref": "washed-out-path-progress",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "detour-required",
         "source_ref": "scenario-01-source",
         "authority": "provisional"
       }
@@ -742,11 +833,11 @@
     }
   },
   "metadata": {
-    "status": "targeted-g6-phase-c-frightened-witness-social",
+    "status": "targeted-g6-phase-d-washed-out-path",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "G6 — Targeted, Phase C gameplay candidate: Frightened Witness resolves through an authoritative reaction-roll/table contract, canonical scenario approach/consequences, neutral DODGE state/effects, deterministic evidence, and the existing debug target boundary. Phase D+, full progression/session history/Web/G7 are not claimed."
+    "conformance_claim": "G6 — Targeted, Phase D gameplay candidate: Washed-Out Path executes a bounded DX environmental success roll and persists explicit success/failure progress consequences. Phase E combat and later phases are not claimed."
   },
   "extensions": {
     "org.dirps.proto": {
@@ -830,6 +921,37 @@
             "relative": "scenario"
           },
           "value": "unknown",
+          "authority": "provisional"
+        }
+      ],
+      "events": [],
+      "revision": "0"
+    },
+    "scenario-01-washed-out-path-initial": {
+      "scenario_ref": "scenario-01",
+      "bindings": [
+        {
+          "ref": "washed-out-path-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "ready",
+          "authority": "provisional"
+        },
+        {
+          "ref": "washed-out-path-outcome",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unresolved",
+          "authority": "provisional"
+        },
+        {
+          "ref": "washed-out-path-progress",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "not-crossed",
           "authority": "provisional"
         }
       ],
