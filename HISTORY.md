@@ -685,3 +685,20 @@ Scenario 01 owns the provisional combat setup and defender assumptions. GURPS Li
 Phase E is the first concrete execution evidence for `reaction_timing`, `derived_values`, and `expressions`, and adds a bounded `damage_injury` gap record. Each becomes `exercised` while remaining `not-yet-candidate`. The existing `lookup_tables` concept remains exercised through an intentionally narrow ST10 swing-damage row. Independent review caught one combat-rule completeness bug before acceptance: attack total 3 had been treated like other critical hits and rolled damage normally. The corrected binding/runtime now derives maximum profile damage with no damage RNG evidence on total 3, while total 4/5/6 critical hits continue to roll damage normally. Unsupported defenses, weapons, ST rows, repeated exchanges, hit locations, and broader combat rules fail visibly instead of being guessed.
 
 A successful undefended hit mutates only the bandit combat snapshot. Major wounds mark the scout stunned. HP at or below zero records `consciousness-check-required = true` but does not execute the beginning-of-turn HT roll or set unconsciousness; those mechanics are deliberately reserved for Phase F. No G7 work is included.
+
+
+## DIRPS gameplay Phase F resolves post-combat HT obligations
+
+**October 13, 2026.**
+
+After accepted/merged Phase E PR #183, DIRPS started Phase F from fresh post-merge `main`. Phase F makes combat injury state actionable without broadening into a healing subsystem while formal maturity remains G6.
+
+The implementation keeps the Phase E combat snapshot as the single state authority. GURPS Lite remains authoritative for the beginning-of-turn basic-HT stay-conscious check at HP <= 0 and for physical-stun recovery. Canonical Scenario 01 owns the bounded recovery action/timing/order and a provisional Strong/Weak Will modifier assumption of 0. DODGE supplies the existing actor state plus normalized set effects. The sidecar adds only the ordered recovery orchestration and source locators.
+
+`execute_recovery()` resolves consciousness first when required, then physical-stun recovery only if the actor remains conscious. Failed consciousness sets `unconscious = true` and clears the provisional stay-conscious obligation. Successful consciousness intentionally leaves the obligation active while HP remains <= 0, because a later turn still requires another roll. Successful stun recovery clears `stunned`; failure leaves it set.
+
+`dirps-recovery-result.v1` preserves each executed HT check, skipped-check reasons, exact before/after combat state, ordered state delta, canonical HT/modifier provenance, and deterministic random evidence. One-record replay detects divergence. The debug CLI adds a continuation mode that requires the actual post-combat state rather than fabricating a recovery state.
+
+No proto concept changes maturity. Long-term recovery from unconsciousness, healing, death checks, scenario progression/completion, full session history, Web presentation, and G7 remain later work.
+
+Independent Phase F review caught one executable-auditability gap: the runtime reused Phase A dice and critical-classification machinery while the Phase F bridge declared only random-evidence reuse. The corrected contract explicitly pins `dice_resolution_ref`, `critical_resolution_ref`, and `random_evidence_ref`, validates them before execution, records them in each HT-check trace, and adds pre-resolution drift regressions.

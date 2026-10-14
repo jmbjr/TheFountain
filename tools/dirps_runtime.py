@@ -2,9 +2,9 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path plus the bounded Phase A-E
-investigation, social, environmental, and combat gameplay slices over neutral
-resolved semantics and DODGE runtime state/effects.
+It executes the accepted success-roll path plus the bounded Phase A-F
+investigation, social, environmental, combat, and post-combat recovery slices
+over neutral resolved semantics and DODGE runtime state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
@@ -26,6 +26,8 @@ PHASE_E_ATTACK_FORMAT = "dirps-attack-result.v1"
 PHASE_E_DEFENSE_FORMAT = "dirps-active-defense-result.v1"
 PHASE_E_DAMAGE_FORMAT = "dirps-damage-result.v1"
 PHASE_E_RESULT_FORMAT = "dirps-combat-exchange-result.v1"
+PHASE_F_CHECK_FORMAT = "dirps-ht-check-result.v1"
+PHASE_F_RESULT_FORMAT = "dirps-recovery-result.v1"
 
 
 class ExecutionError(ValueError):
@@ -2127,6 +2129,30 @@ def _phase_d_attribute_resolution(
         raise ExecutionError("Phase D effective target is below the supported minimum")
 
     phase_a = _execution_binding(resolved)
+    if binding["dice_resolution_ref"] != phase_a.get("dice_resolution_ref"):
+        raise ExecutionError(
+            "Phase F roll dice_resolution_ref disagrees with the accepted Phase A binding"
+        )
+    if binding["critical_resolution_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.critical_resolution"
+    ):
+        raise ExecutionError(
+            "Phase F roll critical_resolution_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("critical_resolution"),
+        "Phase F roll referenced Phase A critical_resolution",
+    )
+    if binding["random_evidence_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.random_evidence"
+    ):
+        raise ExecutionError(
+            "Phase F roll random_evidence_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("random_evidence"),
+        "Phase F roll referenced Phase A random_evidence",
+    )
     dice = _dice_contract(resolved, phase_a)
     terms, evidence_kind = _random_terms(
         dice_terms=dice_terms,
@@ -3311,4 +3337,581 @@ def replay_combat_exchange(resolved, record):
     recomputed = execute_combat_exchange(**kwargs)
     if recomputed != record:
         raise ExecutionError("combat exchange record divergence detected")
+    return recomputed
+
+
+def _phase_f_binding(resolved, encounter_ref):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    bindings = _require_mapping(
+        sidecar.get("phase_f_recovery_bindings"),
+        "resolved phase_f_recovery_bindings",
+    )
+    binding = _require_mapping(
+        bindings.get(encounter_ref), f"Phase F recovery binding {encounter_ref}"
+    )
+    expected_scalars = {
+        "encounter_ref": encounter_ref,
+        "action_id": "resolve-bandit-next-turn",
+        "actor_ref": "bandit-scout",
+        "action_ref": "recover",
+        "procedure_ref": "recovery-check",
+        "timing": "next-turn-start",
+        "minimum_state_revision": 1,
+        "ht_source": "encounter.opponent.attributes.ht",
+        "dice_resolution_ref": "dice_resolution",
+        "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
+        "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+        "long_term_unconscious_recovery": "unsupported",
+        "check_result_format": PHASE_F_CHECK_FORMAT,
+        "result_format": PHASE_F_RESULT_FORMAT,
+        "binding_source_ref": "dirps-proto",
+        "scenario_source_ref": "scenario-01-source",
+    }
+    for key, expected in expected_scalars.items():
+        if binding.get(key) != expected:
+            raise ExecutionError(
+                f"Phase F recovery binding {key} is unsupported or malformed"
+            )
+    if binding.get("resolution_order") != ["consciousness", "stun-recovery"]:
+        raise ExecutionError("Phase F recovery resolution order is unsupported")
+    if binding.get("consciousness") != {
+        "hit_points_ref": "hit-points",
+        "check_required_ref": "consciousness-check-required",
+        "unconscious_ref": "unconscious",
+        "will_modifier_source": "encounter.post_combat_recovery.consciousness.will_modifier",
+        "success_effect_refs": [],
+        "failure_effect_refs": [
+            "phase-f-bandit-set-unconscious",
+            "phase-f-bandit-clear-consciousness-check-required",
+        ],
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 27, General Damage / Unconsciousness",
+    }:
+        raise ExecutionError("Phase F consciousness binding is unsupported or malformed")
+    if binding.get("stun_recovery") != {
+        "stunned_ref": "stunned",
+        "unconscious_ref": "unconscious",
+        "success_effect_refs": ["phase-f-bandit-clear-stunned"],
+        "failure_effect_refs": [],
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 27, Stunning; p. 26, Knockdown and Stunning",
+    }:
+        raise ExecutionError("Phase F stun-recovery binding is unsupported or malformed")
+
+    phase_a = _execution_binding(resolved)
+    if binding["dice_resolution_ref"] != phase_a.get("dice_resolution_ref"):
+        raise ExecutionError(
+            "Phase F dice_resolution_ref disagrees with the accepted Phase A binding"
+        )
+    if binding["critical_resolution_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.critical_resolution"
+    ):
+        raise ExecutionError(
+            "Phase F critical_resolution_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("critical_resolution"),
+        "Phase F referenced Phase A critical_resolution",
+    )
+    if binding["random_evidence_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.random_evidence"
+    ):
+        raise ExecutionError(
+            "Phase F random_evidence_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("random_evidence"),
+        "Phase F referenced Phase A random_evidence",
+    )
+    return binding
+
+
+def _phase_f_context(resolved, encounter_ref, binding):
+    encounter = _encounter(resolved, encounter_ref)
+    recovery = _require_mapping(
+        encounter.get("post_combat_recovery"), "Phase F post_combat_recovery"
+    )
+    action = _require_mapping(recovery.get("action"), "Phase F recovery action")
+    expected_action = {
+        "id": binding["action_id"],
+        "actor_ref": binding["actor_ref"],
+        "action_ref": binding["action_ref"],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional",
+        "provenance": "prototype_assumption",
+    }
+    for key, expected in expected_action.items():
+        if action.get(key) != expected:
+            raise ExecutionError(f"Phase F recovery action {key} disagrees with binding")
+    if recovery.get("timing") != binding["timing"]:
+        raise ExecutionError("Phase F canonical recovery timing disagrees with binding")
+    if recovery.get("resolution_order") != binding["resolution_order"]:
+        raise ExecutionError("Phase F canonical recovery order disagrees with binding")
+    if recovery.get("long_term_unconscious_recovery") != "unsupported":
+        raise ExecutionError("Phase F long-term unconscious recovery must remain unsupported")
+
+    consciousness = _require_mapping(
+        recovery.get("consciousness"), "Phase F consciousness assumptions"
+    )
+    modifier = consciousness.get("will_modifier")
+    if not isinstance(modifier, int) or isinstance(modifier, bool):
+        raise ExecutionError("Phase F consciousness will modifier must be an integer")
+    if (
+        consciousness.get("modifier_source_ref") != "scenario-01-source"
+        or consciousness.get("authority") != "provisional"
+        or consciousness.get("provenance") != "prototype_assumption"
+    ):
+        raise ExecutionError("Phase F consciousness modifier provenance is malformed")
+
+    opponent = _require_mapping(encounter.get("opponent"), "Phase F opponent")
+    attrs = _require_mapping(opponent.get("attributes"), "Phase F opponent attributes")
+    ht = attrs.get("ht")
+    if not isinstance(ht, int) or isinstance(ht, bool) or ht < 1:
+        raise ExecutionError("Phase F opponent HT must be a positive integer")
+
+    actor = _actor(resolved, binding["actor_ref"])
+    actor_state = _require_mapping(actor.get("state"), "Phase F resolved actor state")
+    if actor_state.get("ht") != ht:
+        raise ExecutionError("Phase F resolved actor HT disagrees with canonical opponent HT")
+
+    rules = _require_mapping(resolved.get("rules"), "resolved rules")
+    recover_action = _require_mapping(
+        (rules.get("actions") or {}).get(binding["action_ref"]),
+        "Phase F recover DODGE action",
+    )
+    if recover_action.get("procedure_ref") != binding["procedure_ref"]:
+        raise ExecutionError("Phase F recover action/procedure binding disagrees")
+    if binding["procedure_ref"] not in (rules.get("procedures") or {}):
+        raise ExecutionError("Phase F recovery procedure is missing")
+    return encounter, recovery, action, opponent, actor, ht, modifier
+
+
+def _phase_f_state_requirements(resolved, state, binding):
+    index = validate_combat_runtime_state(
+        resolved, state, target_ref=binding["actor_ref"]
+    )
+    revision = int(state["revision"])
+    if revision < binding["minimum_state_revision"]:
+        raise ExecutionError(
+            "Phase F requires the post-combat runtime state from Phase E"
+        )
+
+    consciousness = binding["consciousness"]
+    stun = binding["stun_recovery"]
+    hp = index[consciousness["hit_points_ref"]]["value"]
+    check_required = index[consciousness["check_required_ref"]]["value"]
+    unconscious = index[consciousness["unconscious_ref"]]["value"]
+    stunned = index[stun["stunned_ref"]]["value"]
+
+    if unconscious and check_required:
+        raise ExecutionError(
+            "Phase F state is inconsistent: unconscious actor cannot retain stay-conscious obligation"
+        )
+    if check_required and hp > 0:
+        raise ExecutionError(
+            "Phase F state is inconsistent: consciousness check is required only at HP <= 0"
+        )
+    if hp <= 0 and not unconscious and not check_required:
+        raise ExecutionError(
+            "Phase F state is inconsistent: conscious actor at HP <= 0 is missing the consciousness obligation"
+        )
+
+    consciousness_needed = bool(hp <= 0 and check_required and not unconscious)
+    stun_needed = bool(stunned and not unconscious)
+    return index, {
+        "hit_points": hp,
+        "consciousness_check_required": check_required,
+        "unconscious": unconscious,
+        "stunned": stunned,
+        "consciousness_needed": consciousness_needed,
+        "stun_needed": stun_needed,
+    }
+
+
+def _phase_f_roll(
+    resolved,
+    *,
+    label,
+    ht,
+    modifier,
+    terms,
+    random_seed,
+    binding,
+    rule,
+):
+    target = ht + modifier
+    if target < 3:
+        raise ExecutionError(
+            f"Phase F {label} effective HT target {target} is below supported minimum 3"
+        )
+    phase_a = _execution_binding(resolved)
+    dice = _dice_contract(resolved, phase_a)
+    if random_seed is not None:
+        if terms is not None:
+            raise ExecutionError(
+                f"Phase F {label} cannot mix supplied dice with random_seed"
+            )
+        rolled, evidence_kind = _random_terms(
+            dice_terms=None,
+            random_seed=f"{random_seed}:phase-f:{label}",
+            contract={"count": dice["count"], "sides": dice["sides"]},
+            binding=phase_a,
+        )
+    else:
+        if terms is None:
+            raise ExecutionError(f"Phase F requires {label} dice evidence")
+        rolled, evidence_kind = _random_terms(
+            dice_terms=terms,
+            random_seed=None,
+            contract={"count": dice["count"], "sides": dice["sides"]},
+            binding=phase_a,
+        )
+
+    total = sum(rolled)
+    classification, success = _critical_classification(total, target, phase_a)
+    return {
+        "format": binding["check_result_format"],
+        "check": label,
+        "base_ht": ht,
+        "modifier": modifier,
+        "target": target,
+        "random_evidence": {
+            **evidence_kind,
+            "dice_kind": dice["kind"],
+            "sides": dice["sides"],
+            "terms": rolled,
+            "total": total,
+        },
+        "outcome": {
+            "classification": classification,
+            "success": success,
+            "margin": target - total,
+        },
+        "trace": {
+            "rule_source_ref": rule["rule_source_ref"],
+            "rule_authority": "authoritative",
+            "rule_locator": rule["rule_locator"],
+            "dice_resolution_ref": binding["dice_resolution_ref"],
+            "critical_resolution_ref": binding["critical_resolution_ref"],
+            "random_evidence_ref": binding["random_evidence_ref"],
+        },
+    }
+
+
+def _apply_phase_f_effect(resolved, state, index, *, target_ref, effect_ref):
+    effects = _require_mapping(
+        (resolved.get("rules") or {}).get("effects"), "resolved effects"
+    )
+    effect = _require_mapping(effects.get(effect_ref), f"Phase F effect {effect_ref}")
+    if effect.get("op") != "set":
+        raise ExecutionError(f"Phase F effect {effect_ref} must use set")
+    if effect.get("subject") != {"instance_ref": target_ref}:
+        raise ExecutionError(f"Phase F effect {effect_ref} targets the wrong actor")
+    target_state_ref = effect.get("target_ref")
+    row = index.get(target_state_ref)
+    if not isinstance(row, dict):
+        raise ExecutionError(
+            f"Phase F effect {effect_ref} target binding is missing: {target_state_ref}"
+        )
+    definitions = _require_mapping(
+        (resolved.get("rules") or {}).get("values"), "resolved value definitions"
+    )
+    definition = _require_mapping(
+        definitions.get(target_state_ref), f"Phase F value definition {target_state_ref}"
+    )
+    value = effect.get("value")
+    _validate_state_value(definition, value, target_state_ref)
+    if effect.get("source_ref") not in {"gurps-lite", "dirps-proto"}:
+        raise ExecutionError(f"Phase F effect {effect_ref} has unsupported source")
+    expected_authority = (
+        "authoritative" if effect["source_ref"] == "gurps-lite" else "provisional"
+    )
+    if effect.get("authority") != expected_authority:
+        raise ExecutionError(f"Phase F effect {effect_ref} authority is malformed")
+
+    before = row.get("value")
+    row["value"] = copy.deepcopy(value)
+    return {
+        "effect_ref": effect_ref,
+        "op": "set",
+        "ref": target_state_ref,
+        "subject": {"instance_ref": target_ref},
+        "before": copy.deepcopy(before),
+        "after": copy.deepcopy(value),
+        "source_ref": effect.get("source_ref"),
+        "authority": effect.get("authority"),
+    }
+
+
+def describe_recovery(resolved, state, *, encounter_ref):
+    binding = _phase_f_binding(resolved, encounter_ref)
+    encounter, recovery, action, opponent, actor, ht, modifier = _phase_f_context(
+        resolved, encounter_ref, binding
+    )
+    index, status = _phase_f_state_requirements(resolved, state, binding)
+
+    if status["unconscious"]:
+        availability = []
+        unsupported = "long-term-unconscious-recovery"
+    else:
+        needed = status["consciousness_needed"] or status["stun_needed"]
+        availability = [
+            {
+                "id": action.get("id"),
+                "label": action.get("label"),
+                "actor_ref": action.get("actor_ref"),
+                "action_ref": action.get("action_ref"),
+                "timing": recovery.get("timing"),
+                "source_ref": action.get("source_ref"),
+                "authority": action.get("authority"),
+                "provenance": action.get("provenance"),
+            }
+        ] if needed else []
+        unsupported = None
+
+    return {
+        "encounter": {
+            "id": encounter_ref,
+            "type": encounter.get("type"),
+            "purpose": encounter.get("purpose"),
+        },
+        "runtime_state_revision": state.get("revision"),
+        "target_state": {ref: row["value"] for ref, row in index.items()},
+        "available_actions": availability,
+        "check_plan": {
+            "timing": binding["timing"],
+            "resolution_order": copy.deepcopy(binding["resolution_order"]),
+            "consciousness": {
+                "required": status["consciousness_needed"],
+                "base_ht": ht,
+                "will_modifier": modifier,
+                "target": ht + modifier,
+                "rule_source_ref": binding["consciousness"]["rule_source_ref"],
+                "rule_locator": binding["consciousness"]["rule_locator"],
+            },
+            "stun_recovery": {
+                "required": status["stun_needed"] and not status["unconscious"],
+                "base_ht": ht,
+                "target": ht,
+                "rule_source_ref": binding["stun_recovery"]["rule_source_ref"],
+                "rule_locator": binding["stun_recovery"]["rule_locator"],
+            },
+        },
+        "unsupported": unsupported,
+        "result_format": binding["result_format"],
+    }
+
+
+def execute_recovery(
+    resolved,
+    state,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    consciousness_terms=None,
+    stun_terms=None,
+    random_seed=None,
+):
+    binding = _phase_f_binding(resolved, encounter_ref)
+    encounter, recovery, action, opponent, actor, ht, modifier = _phase_f_context(
+        resolved, encounter_ref, binding
+    )
+    if action_id != binding["action_id"]:
+        raise ExecutionError(f"unsupported Phase F recovery action: {action_id}")
+    if actor_ref != binding["actor_ref"] or actor_ref != action.get("actor_ref"):
+        raise ExecutionError("Phase F recovery actor selection is unsupported")
+    if random_seed is not None and (
+        consciousness_terms is not None or stun_terms is not None
+    ):
+        raise ExecutionError(
+            "Phase F cannot mix supplied recovery dice with random_seed"
+        )
+
+    before = copy.deepcopy(state)
+    index, status = _phase_f_state_requirements(resolved, before, binding)
+    if status["unconscious"]:
+        raise ExecutionError(
+            "Phase F long-term recovery from unconsciousness is unsupported"
+        )
+    if not status["consciousness_needed"] and not status["stun_needed"]:
+        raise ExecutionError("Phase F recovery action is unavailable in current state")
+    if not status["consciousness_needed"] and consciousness_terms is not None:
+        raise ExecutionError("Phase F consciousness dice were supplied for a skipped check")
+
+    after = copy.deepcopy(before)
+    after_index = validate_combat_runtime_state(
+        resolved, after, target_ref=binding["actor_ref"]
+    )
+    delta = []
+    consciousness_result = None
+    stun_result = None
+    skipped = []
+
+    if status["consciousness_needed"]:
+        consciousness_result = _phase_f_roll(
+            resolved,
+            label="consciousness",
+            ht=ht,
+            modifier=modifier,
+            terms=consciousness_terms,
+            random_seed=random_seed,
+            binding=binding,
+            rule=binding["consciousness"],
+        )
+        if not consciousness_result["outcome"]["success"]:
+            for effect_ref in binding["consciousness"]["failure_effect_refs"]:
+                delta.append(
+                    _apply_phase_f_effect(
+                        resolved,
+                        after,
+                        after_index,
+                        target_ref=binding["actor_ref"],
+                        effect_ref=effect_ref,
+                    )
+                )
+            if stun_terms is not None:
+                raise ExecutionError(
+                    "Phase F stun-recovery dice were supplied after a failed consciousness check"
+                )
+            skipped.append(
+                {
+                    "check": "stun-recovery",
+                    "reason": "actor-fell-unconscious",
+                }
+            )
+        else:
+            # The obligation persists while HP remains <= 0; there is no
+            # success effect that clears consciousness-check-required.
+            pass
+    else:
+        skipped.append(
+            {
+                "check": "consciousness",
+                "reason": "consciousness-check-not-required",
+            }
+        )
+
+    current_unconscious = after_index[binding["consciousness"]["unconscious_ref"]]["value"]
+    current_stunned = after_index[binding["stun_recovery"]["stunned_ref"]]["value"]
+    if not current_unconscious and current_stunned:
+        stun_result = _phase_f_roll(
+            resolved,
+            label="stun-recovery",
+            ht=ht,
+            modifier=0,
+            terms=stun_terms,
+            random_seed=random_seed,
+            binding=binding,
+            rule=binding["stun_recovery"],
+        )
+        if stun_result["outcome"]["success"]:
+            for effect_ref in binding["stun_recovery"]["success_effect_refs"]:
+                delta.append(
+                    _apply_phase_f_effect(
+                        resolved,
+                        after,
+                        after_index,
+                        target_ref=binding["actor_ref"],
+                        effect_ref=effect_ref,
+                    )
+                )
+    elif not current_unconscious:
+        if stun_terms is not None:
+            raise ExecutionError("Phase F stun-recovery dice were supplied for a skipped check")
+        skipped.append(
+            {
+                "check": "stun-recovery",
+                "reason": "actor-not-stunned",
+            }
+        )
+
+    after["revision"] = str(int(before["revision"]) + 1)
+    final_index, final_status = _phase_f_state_requirements(
+        resolved, after, binding
+    )
+    sources = _require_mapping(resolved.get("sources"), "resolved sources")
+    return {
+        "format": binding["result_format"],
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "timing": binding["timing"],
+        "resolution_order": copy.deepcopy(binding["resolution_order"]),
+        "random_mode": (
+            {"kind": "generated-seeded-recovery", "seed": str(random_seed)}
+            if random_seed is not None
+            else {"kind": "supplied-recovery-terms"}
+        ),
+        "consciousness_check": consciousness_result,
+        "stun_recovery_check": stun_result,
+        "skipped_checks": skipped,
+        "outcome": {
+            "unconscious": final_status["unconscious"],
+            "stunned": final_status["stunned"],
+            "consciousness_check_required": final_status[
+                "consciousness_check_required"
+            ],
+            "can_act_normally": (
+                not final_status["unconscious"] and not final_status["stunned"]
+            ),
+        },
+        "state_before": before,
+        "state_after": after,
+        "state_delta": delta,
+        "trace": {
+            "recovery_binding": {
+                "ref": f"proto_sidecar.phase_f_recovery_bindings.{encounter_ref}",
+                "source_ref": binding["binding_source_ref"],
+                "authority": sources[binding["binding_source_ref"]].get("authority"),
+            },
+            "scenario_source": {
+                "source_ref": binding["scenario_source_ref"],
+                "authority": sources[binding["scenario_source_ref"]].get("authority"),
+            },
+            "ht_source": {
+                "path": binding["ht_source"],
+                "value": ht,
+                "source_ref": binding["scenario_source_ref"],
+                "authority": sources[binding["scenario_source_ref"]].get("authority"),
+            },
+            "consciousness_modifier": {
+                "value": modifier,
+                "path": binding["consciousness"]["will_modifier_source"],
+                "source_ref": recovery["consciousness"]["modifier_source_ref"],
+                "authority": recovery["consciousness"]["authority"],
+                "provenance": recovery["consciousness"]["provenance"],
+            },
+        },
+    }
+
+
+def replay_recovery(resolved, record):
+    if not isinstance(record, dict) or record.get("format") != PHASE_F_RESULT_FORMAT:
+        raise ExecutionError("unsupported Phase F recovery record format")
+    kwargs = {
+        "resolved": resolved,
+        "state": copy.deepcopy(record.get("state_before")),
+        "encounter_ref": record.get("encounter_ref"),
+        "action_id": record.get("action_id"),
+        "actor_ref": record.get("actor_ref"),
+    }
+    random_mode = _require_mapping(record.get("random_mode"), "Phase F random_mode")
+    if random_mode.get("kind") == "generated-seeded-recovery":
+        kwargs["random_seed"] = random_mode.get("seed")
+    elif random_mode.get("kind") == "supplied-recovery-terms":
+        consciousness = record.get("consciousness_check")
+        stun = record.get("stun_recovery_check")
+        if isinstance(consciousness, dict):
+            kwargs["consciousness_terms"] = (
+                consciousness.get("random_evidence") or {}
+            ).get("terms")
+        if isinstance(stun, dict):
+            kwargs["stun_terms"] = (stun.get("random_evidence") or {}).get("terms")
+    else:
+        raise ExecutionError("unsupported Phase F recovery random mode")
+
+    recomputed = execute_recovery(**kwargs)
+    if recomputed != record:
+        raise ExecutionError("recovery record divergence detected")
     return recomputed

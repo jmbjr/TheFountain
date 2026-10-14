@@ -15,6 +15,7 @@ from dirps_runtime import (
     create_social_runtime_state,
     create_environment_runtime_state,
     create_combat_runtime_state,
+    describe_recovery,
     describe_attempt_skill,
     describe_investigation,
     describe_social_interaction,
@@ -26,6 +27,7 @@ from dirps_runtime import (
     execute_social_interaction,
     execute_environment_challenge,
     execute_combat_exchange,
+    execute_recovery,
 )
 from resolve_dirps_dodge import resolve
 
@@ -37,6 +39,7 @@ ENCOUNTER_TARGET_FORMAT = "dirps-debug-encounter-target.v1"
 SOCIAL_TARGET_FORMAT = "dirps-debug-social-target.v1"
 ENVIRONMENT_TARGET_FORMAT = "dirps-debug-environment-target.v1"
 COMBAT_TARGET_FORMAT = "dirps-debug-combat-target.v1"
+RECOVERY_TARGET_FORMAT = "dirps-debug-recovery-target.v1"
 
 
 def inspect_target(resolved, *, runtime_describe=describe_attempt_skill):
@@ -429,6 +432,95 @@ def execute_combat_target(
     return view
 
 
+def inspect_recovery_target(
+    resolved,
+    *,
+    encounter_ref,
+    state,
+    runtime_describe=describe_recovery,
+):
+    if state is None:
+        raise ExecutionError("Phase F recovery target requires post-combat runtime state")
+    capability = runtime_describe(
+        resolved,
+        state,
+        encounter_ref=encounter_ref,
+    )
+    return {
+        "target": {
+            "id": TARGET_ID,
+            "format": RECOVERY_TARGET_FORMAT,
+            "kind": TARGET_KIND,
+        },
+        "status": "ready",
+        "encounter": capability["encounter"],
+        "runtime_state": state,
+        "capability": capability,
+    }
+
+
+def execute_recovery_target(
+    resolved,
+    *,
+    encounter_ref,
+    action_id,
+    actor_ref,
+    state,
+    consciousness_terms=None,
+    stun_terms=None,
+    random_seed=None,
+    runtime_describe=describe_recovery,
+    runtime_execute=execute_recovery,
+):
+    view = inspect_recovery_target(
+        resolved,
+        encounter_ref=encounter_ref,
+        state=state,
+        runtime_describe=runtime_describe,
+    )
+    view["selection"] = {
+        "encounter_ref": encounter_ref,
+        "action_id": action_id,
+        "actor_ref": actor_ref,
+        "consciousness_terms": (
+            list(consciousness_terms)
+            if isinstance(consciousness_terms, (list, tuple))
+            else consciousness_terms
+        ),
+        "stun_terms": (
+            list(stun_terms)
+            if isinstance(stun_terms, (list, tuple))
+            else stun_terms
+        ),
+        "random_seed": random_seed,
+    }
+    try:
+        record = runtime_execute(
+            resolved,
+            state,
+            encounter_ref=encounter_ref,
+            action_id=action_id,
+            actor_ref=actor_ref,
+            consciousness_terms=consciousness_terms,
+            stun_terms=stun_terms,
+            random_seed=random_seed,
+        )
+    except ExecutionError as exc:
+        view["status"] = "error"
+        view["error"] = {"type": type(exc).__name__, "message": str(exc)}
+        return view
+    view["status"] = "ok"
+    view["execution"] = record
+    view["runtime_state"] = record["state_after"]
+    view["capability"] = runtime_describe(
+        resolved,
+        view["runtime_state"],
+        encounter_ref=encounter_ref,
+    )
+    view["encounter"] = view["capability"]["encounter"]
+    return view
+
+
 def inspect_encounter_target(resolved, *, encounter_ref, state=None):
     """Dispatch encounter inspection by runtime-owned encounter kind."""
     kind = encounter_runtime_kind(resolved, encounter_ref)
@@ -574,6 +666,10 @@ def main():
     parser.add_argument("--attack-dice", nargs="+", type=int, help="Explicit attack-roll die terms.")
     parser.add_argument("--defense-dice", nargs="+", type=int, help="Explicit defense-roll die terms.")
     parser.add_argument("--damage-dice", nargs="+", type=int, help="Explicit damage-roll die terms.")
+    parser.add_argument("--recovery", action="store_true", help="Use Phase F post-combat recovery mode.")
+    parser.add_argument("--state-json", help="JSON runtime-state object for continuation modes.")
+    parser.add_argument("--consciousness-dice", nargs="+", type=int, help="Explicit consciousness-check die terms.")
+    parser.add_argument("--stun-dice", nargs="+", type=int, help="Explicit stun-recovery die terms.")
     parser.add_argument(
         "--dice",
         nargs="+",
@@ -584,7 +680,48 @@ def main():
 
     resolved = resolve()
 
-    if args.encounter is not None:
+    if args.recovery:
+        if args.encounter is None:
+            view = _input_error_view(resolved, "--recovery requires --encounter")
+        elif args.state_json is None:
+            view = _encounter_input_error_view(
+                resolved, args.encounter, "--recovery requires --state-json"
+            )
+        else:
+            try:
+                recovery_state = json.loads(args.state_json)
+            except json.JSONDecodeError as exc:
+                view = _encounter_input_error_view(
+                    resolved, args.encounter, f"invalid --state-json: {exc.msg}"
+                )
+            else:
+                if args.action is None:
+                    try:
+                        view = inspect_recovery_target(
+                            resolved,
+                            encounter_ref=args.encounter,
+                            state=recovery_state,
+                        )
+                    except ExecutionError as exc:
+                        view = _encounter_input_error_view(
+                            resolved, args.encounter, str(exc)
+                        )
+                elif args.actor is None:
+                    view = _encounter_input_error_view(
+                        resolved, args.encounter, "recovery execution requires --actor"
+                    )
+                else:
+                    view = execute_recovery_target(
+                        resolved,
+                        encounter_ref=args.encounter,
+                        action_id=args.action,
+                        actor_ref=args.actor,
+                        state=recovery_state,
+                        consciousness_terms=args.consciousness_dice,
+                        stun_terms=args.stun_dice,
+                        random_seed=args.seed,
+                    )
+    elif args.encounter is not None:
         if args.skill is not None:
             view = _encounter_input_error_view(
                 resolved,

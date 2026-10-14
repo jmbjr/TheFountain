@@ -646,3 +646,25 @@ The target never computes attack, defense, damage, or injury. `phase_e_combat_bi
 Phase E is the first concrete interrupt/reaction-window evidence, so `reaction_timing` becomes exercised. It also executes the existing `derived_values` and `expressions` proposals and adds a bounded `damage_injury` gap record. All remain not-yet-candidate.
 
 Actor injury is stored in a neutral DODGE runtime snapshot. A major wound marks the scout stunned. HP <= 0 sets a provisional `consciousness-check-required` actor value while leaving `unconscious = false`; the actual beginning-of-turn HT roll and stun recovery are Phase F.
+
+### DIRPS gameplay Phase F — recovery / consciousness
+
+Phase F is additive to the accepted combat architecture and consumes the same neutral combat-state object:
+
+```text
+Phase E combat state
+→ next-turn recovery capability
+→ conditional HT consciousness check
+→ conditional HT stun-recovery check
+→ DODGE actor-state set effects
+→ dirps-recovery-result.v1
+→ thin debug continuation target
+```
+
+The external GURPS Lite source owns the HT check rules. Canonical Scenario 01 owns only the bounded action/timing/order and the provisional Strong/Weak Will modifier assumption. DODGE owns `hit-points`, `stunned`, `unconscious`, the provisional `consciousness-check-required` bookkeeping value, and structured effects. `phase_f_recovery_bindings` owns orchestration/source locators/result identities **and explicitly pins every reused accepted success-roll dependency**: `dice_resolution_ref`, the Phase A `critical_resolution_ref`, and the Phase A `random_evidence_ref`. Runtime binding validation checks those refs before any recovery roll; each HT-check trace preserves all three for auditability.
+
+Recovery does not fabricate a new runtime state. It requires a Phase E state revision >= 1 and validates consistency between HP, unconsciousness, and the stay-conscious obligation. Consciousness is resolved before stun recovery. A failed stay-conscious check sets unconsciousness and clears the provisional obligation; a successful check leaves the obligation active while HP remains <= 0. Stun recovery runs only if the actor remains conscious.
+
+The target requires explicit post-combat state (including through CLI `--state-json`) and passes it to the runtime. It does not know the bandit id, state refs, check order, HT target, or effects.
+
+No proto maturity changes in Phase F. Long-term unconscious recovery/healing and scenario progression remain later work.

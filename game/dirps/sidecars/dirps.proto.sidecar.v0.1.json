@@ -29,7 +29,8 @@
     "phase_b_note": "Phase B composes the accepted Phase A contextual skill result with standard DODGE 0.2.1 scenario runtime-state bindings and structured set effects. The sidecar only bridges the skill outcome branch to ordered DODGE effect refs and one encounter-result evidence record. No new proto concept is promoted; replay_session_history remains suspected because this is still one encounter record, not an append-only session.",
     "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window.",
     "phase_d_note": "Phase D reuses the accepted success-roll/dice/procedure-context machinery for a canonical DX-based environmental check and standard DODGE runtime state/effects for consequences. No new proto concept is promoted.",
-    "phase_e_note": "Phase E executes one bounded attack -> active defense -> damage -> injury sequence. reaction_timing, derived_values, expressions, and damage_injury are exercised from target-neutral sidecar contracts. lookup_tables remains exercised via a bounded ST10 swing-damage lookup. Unsupported combat options fail visibly."
+    "phase_e_note": "Phase E executes one bounded attack -> active defense -> damage -> injury sequence. reaction_timing, derived_values, expressions, and damage_injury are exercised from target-neutral sidecar contracts. lookup_tables remains exercised via a bounded ST10 swing-damage lookup. Unsupported combat options fail visibly.",
+    "phase_f_note": "Phase F resolves the next-turn HT consciousness obligation and physical-stun recovery over the exact Phase E combat runtime state. GURPS Lite owns the HT checks and state consequences; Scenario 01 owns the bounded actor/action/timing/order plus a prototype 0 Strong/Weak Will modifier assumption; DODGE set effects own normalized state mutation; the sidecar only orchestrates the two checks. Long-term recovery from unconsciousness and healing remain unsupported. Phase F explicitly pins the accepted reusable success-roll dependencies: dice_resolution, Phase A critical_resolution, and Phase A random_evidence; HT-check traces preserve all three refs for executable auditability."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -160,7 +161,8 @@
       "phase_a_evidence": "Phase A adds context_ref plus resolved modifier inputs and exposes base target, modifier total, effective target, critical classification, and random-evidence provenance.",
       "phase_b_evidence": "Phase B carries encounter_ref/action_id/runtime state plus the nested Phase A skill result through one investigation procedure and emits explicit before/after state evidence.",
       "phase_c_evidence": "Phase C carries encounter/action identity, resolved reaction modifiers, random evidence, modified total, lookup-table classification, and scenario consequence state through one social procedure.",
-      "phase_d_evidence": "Phase D carries an attribute-target context (DX), source-owned environmental modifier, runtime state, and ordered success/failure effects through one bounded procedure."
+      "phase_d_evidence": "Phase D carries an attribute-target context (DX), source-owned environmental modifier, runtime state, and ordered success/failure effects through one bounded procedure.",
+      "phase_f_evidence": "Phase F executes one ordered next-turn recovery procedure: consciousness first when HP <= 0 and the obligation flag is set, then physical-stun recovery only if the actor remains conscious."
     },
     "reaction_timing": {
       "status": "exercised",
@@ -272,7 +274,8 @@
       "phase_a_evidence": "Phase A adds modifier-by-modifier provenance, effective-target derivation trace, critical classification source trace, and generated-random seed/algorithm evidence.",
       "phase_b_evidence": "Phase B records the selected encounter action, nested v2 skill resolution, ordered DODGE consequence effect refs, exact state delta, and before/after neutral runtime state.",
       "phase_c_evidence": "Phase C preserves reaction modifier provenance, 3d6 terms, raw/modified totals, reaction-table source/row, consequence effects, and before/after neutral state.",
-      "phase_d_evidence": "Phase D records attribute target provenance, modifiers, dice evidence, success classification, ordered DODGE effects, and exact before/after environmental state."
+      "phase_d_evidence": "Phase D records attribute target provenance, modifiers, dice evidence, success classification, ordered DODGE effects, and exact before/after environmental state.",
+      "phase_f_evidence": "Phase F preserves each executed HT roll, target/modifier provenance, skipped-check reason, normalized DODGE effect refs, and exact before/after combat state."
     },
     "replay_session_history": {
       "status": "suspected",
@@ -297,7 +300,8 @@
         "state-divergence detection"
       ],
       "candidate_for_dodge": "not-yet-candidate",
-      "phase_b_evidence": "Reassessed but not promoted: Phase B deterministically re-evaluates one stateful encounter record. It still does not define an immutable append-only multi-step session history."
+      "phase_b_evidence": "Reassessed but not promoted: Phase B deterministically re-evaluates one stateful encounter record. It still does not define an immutable append-only multi-step session history.",
+      "phase_f_evidence": "Reassessed but not promoted: deterministic replay covers one recovery-turn record over a Phase E combat snapshot, not an append-only multi-step session."
     },
     "damage_injury": {
       "status": "exercised",
@@ -869,6 +873,53 @@
       "binding_source_ref": "dirps-proto",
       "scenario_source_ref": "scenario-01-source",
       "required_revision": "0"
+    }
+  },
+  "phase_f_recovery_bindings": {
+    "bandit-scout": {
+      "encounter_ref": "bandit-scout",
+      "action_id": "resolve-bandit-next-turn",
+      "actor_ref": "bandit-scout",
+      "action_ref": "recover",
+      "procedure_ref": "recovery-check",
+      "timing": "next-turn-start",
+      "resolution_order": [
+        "consciousness",
+        "stun-recovery"
+      ],
+      "minimum_state_revision": 1,
+      "ht_source": "encounter.opponent.attributes.ht",
+      "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
+      "consciousness": {
+        "hit_points_ref": "hit-points",
+        "check_required_ref": "consciousness-check-required",
+        "unconscious_ref": "unconscious",
+        "will_modifier_source": "encounter.post_combat_recovery.consciousness.will_modifier",
+        "success_effect_refs": [],
+        "failure_effect_refs": [
+          "phase-f-bandit-set-unconscious",
+          "phase-f-bandit-clear-consciousness-check-required"
+        ],
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 27, General Damage / Unconsciousness"
+      },
+      "stun_recovery": {
+        "stunned_ref": "stunned",
+        "unconscious_ref": "unconscious",
+        "success_effect_refs": [
+          "phase-f-bandit-clear-stunned"
+        ],
+        "failure_effect_refs": [],
+        "rule_source_ref": "gurps-lite",
+        "rule_locator": "p. 27, Stunning; p. 26, Knockdown and Stunning"
+      },
+      "long_term_unconscious_recovery": "unsupported",
+      "check_result_format": "dirps-ht-check-result.v1",
+      "result_format": "dirps-recovery-result.v1",
+      "binding_source_ref": "dirps-proto",
+      "scenario_source_ref": "scenario-01-source",
+      "dice_resolution_ref": "dice_resolution",
+      "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution"
     }
   }
 }
