@@ -65,7 +65,7 @@ The runtime decides how that seed becomes the mechanic's recorded dice terms.
 
 The page presents:
 
-- resolved Rook attributes, skills, equipment, and provenance;
+- resolved Rook attributes, exact resolved runtime state (including HP, fatigue, stun/unconsciousness/check flags), skills, equipment, and provenance;
 - current scenario encounter/progress state;
 - only the runtime-described `available_actions`;
 - optional deterministic seed input;
@@ -103,6 +103,7 @@ The resolver still constructs `dirps-resolved-game.v1` from those inputs in the 
 `tests/test_dirps_phase_i.py` proves:
 
 - the initial Web view equals `describe_scenario()` over the Phase H initial session;
+- the Web presentation model carries the exact resolved Rook `state` object with no target-owned defaults;
 - the Web adapter's execution history exactly equals direct `append_scenario_session_step()` output for the same action/seed;
 - generated random evidence remains owned by the accepted runtime;
 - the target can drive a complete Scenario 01 run using only runtime-described actions;
@@ -111,6 +112,8 @@ The resolver still constructs `dirps-resolved-game.v1` from those inputs in the 
 - JavaScript contains no mechanic-specific random-input keys and no `Math.random`;
 - the browser mounts the exact resolver/runtime/source files;
 - the static page contains character, action, scenario, result, provenance, replay, and debug surfaces;
+- a real headless Chromium smoke test serves the exact checkout, loads `/dirps/`, imports pinned Pyodide, fetches/mounts the repository files through browser URL resolution, waits for the shared Python resolver/runtime to report ready, verifies exact rendered HP/fatigue/status values, clicks a runtime-described action, and observes a Phase H history step plus recorded random evidence;
+- the browser smoke fails if the fatal runtime panel appears or any browser request/page error occurs;
 - `game/dirps/game.json` registers both the debug CLI and browser target;
 - the Forbidden Places hub links to `/dirps/`.
 
@@ -123,6 +126,8 @@ PASS dirps/scenario-01: Phase I player-facing Web target consumes shared runtime
 ## CI boundary
 
 The generic conformance workflow now watches `dirps/**`, the root hub entry/style, and continues to watch `src/**`, `game/**`, `tools/**`, and `tests/**`. Web-only presentation edits therefore cannot silently bypass DIRPS conformance.
+
+Phase I browser evidence is not a filesystem analogue: CI installs pinned Playwright `1.64.1`/Chromium, starts a local HTTP server from the exact checkout, and runs `tests/dirps-web-smoke.mjs` against the actual HTML → JS module → CDN Pyodide → fetch/mount → Python import/resolve/runtime → DOM path.
 
 ## Proto maturity
 
@@ -142,5 +147,7 @@ Phase I does not add:
 - broader combat;
 - simulation/PnP/TTS DIRPS targets;
 - G7 reference status.
+
+Independent review of the first Phase I candidate found two target-evidence gaps: the adapter exposed resolved character state but the renderer dropped it, and CI proved only Python adapter parity rather than the actual browser/Pyodide transport. The corrected target renders the resolved state verbatim and adds a real headless-browser boot/action smoke test. No resolver/runtime/proto change was required.
 
 Exact-head CI identity belongs in the pull request and #178/#163 after the final literal PR head passes.
