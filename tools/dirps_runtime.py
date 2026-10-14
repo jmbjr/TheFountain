@@ -2,9 +2,10 @@
 """Bounded DIRPS execution runtime.
 
 This module consumes only an accepted `dirps-resolved-game.v1` model.
-It executes the accepted success-roll path plus the bounded Phase A-G
-investigation, social, environmental, combat, recovery, and scenario-progression
-slices over neutral resolved semantics and DODGE runtime state/effects.
+It executes the accepted success-roll path plus the bounded Phase A-H
+investigation, social, environmental, combat, recovery, scenario-progression,
+and full-session replay slices over neutral resolved semantics and DODGE runtime
+state/effects.
 
 It does not own canonical scenario facts or target presentation.
 """
@@ -12,6 +13,7 @@ from __future__ import annotations
 
 import copy
 import hashlib
+import json
 import math
 
 
@@ -29,6 +31,8 @@ PHASE_E_RESULT_FORMAT = "dirps-combat-exchange-result.v1"
 PHASE_F_CHECK_FORMAT = "dirps-ht-check-result.v1"
 PHASE_F_RESULT_FORMAT = "dirps-recovery-result.v1"
 PHASE_G_RESULT_FORMAT = "dirps-scenario-progression-result.v1"
+PHASE_H_SESSION_FORMAT = "dirps-session-history.v1"
+PHASE_H_HASH_ALGORITHM = "sha256-canonical-json-v1"
 
 
 class ExecutionError(ValueError):
@@ -4788,3 +4792,281 @@ def replay_scenario_progression(resolved, record):
     if recomputed != record:
         raise ExecutionError("scenario-progression record divergence detected")
     return recomputed
+
+
+def _canonical_json_hash(value):
+    payload = json.dumps(
+        value,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
+    ).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def _phase_h_binding(resolved):
+    sidecar = _require_mapping(resolved.get("proto_sidecar"), "resolved proto_sidecar")
+    binding = _require_mapping(
+        sidecar.get("phase_h_session_history_binding"),
+        "resolved Phase H session-history binding",
+    )
+    expected = {
+        "scenario_ref": "scenario-01",
+        "runtime_state_ref": "scenario-01-playable-initial",
+        "transition_result_format": PHASE_G_RESULT_FORMAT,
+        "session_format": PHASE_H_SESSION_FORMAT,
+        "hash_algorithm": PHASE_H_HASH_ALGORITHM,
+        "source_identity_fields": [
+            "dodge_version",
+            "document_id",
+            "game_id",
+            "scenario_id",
+            "sources",
+            "rules",
+            "scenario",
+            "runtime_states",
+            "proto_sidecar.phase_g_progression_bindings",
+            "proto_sidecar.phase_h_session_history_binding",
+        ],
+        "step_evidence": [
+            "declared_action",
+            "random_evidence",
+            "state_before_hash",
+            "state_after_hash",
+            "resolution_trace",
+            "transition_record",
+        ],
+        "append_policy": "copy-on-append",
+        "replay_policy": "reexecute-from-initial-state",
+        "divergence_policy": "fail-first-inconsistent-step",
+        "binding_source_ref": "dirps-proto",
+    }
+    if binding != expected:
+        raise ExecutionError("Phase H session-history binding is unsupported or drifted")
+
+    phase_g = _phase_g_binding(resolved)
+    if (
+        binding["scenario_ref"] != phase_g["scenario_ref"]
+        or binding["runtime_state_ref"] != phase_g["runtime_state_ref"]
+        or binding["transition_result_format"] != phase_g["result_format"]
+    ):
+        raise ExecutionError("Phase H binding must preserve the accepted Phase G contract")
+    replay_spec = _require_mapping(
+        (_require_mapping(sidecar.get("proto_specs"), "resolved proto_specs")).get(
+            "replay_session_history"
+        ),
+        "resolved replay_session_history proto",
+    )
+    if (
+        replay_spec.get("status") != "exercised"
+        or replay_spec.get("candidate_for_dodge") != "not-yet-candidate"
+    ):
+        raise ExecutionError(
+            "Phase H replay_session_history maturity must be exercised/not-yet-candidate"
+        )
+    return binding
+
+
+def _phase_h_resolved_field(resolved, path):
+    value = resolved
+    for part in path.split("."):
+        value = _require_mapping(value, f"Phase H source identity parent for {path}").get(part)
+        if value is None:
+            raise ExecutionError(f"Phase H source identity field is missing: {path}")
+    return copy.deepcopy(value)
+
+
+def _phase_h_source_identity(resolved, binding):
+    payload = {
+        field: _phase_h_resolved_field(resolved, field)
+        for field in binding["source_identity_fields"]
+    }
+    return {
+        "algorithm": binding["hash_algorithm"],
+        "fields": copy.deepcopy(binding["source_identity_fields"]),
+        "digest": _canonical_json_hash(payload),
+        "resolved_identity": {
+            "dodge_version": resolved.get("dodge_version"),
+            "document_id": resolved.get("document_id"),
+            "game_id": resolved.get("game_id"),
+            "scenario_id": resolved.get("scenario_id"),
+        },
+    }
+
+
+def create_scenario_session_history(resolved):
+    binding = _phase_h_binding(resolved)
+    initial_state = create_scenario_runtime_state(resolved)
+    return {
+        "format": binding["session_format"],
+        "scenario_ref": binding["scenario_ref"],
+        "source_identity": _phase_h_source_identity(resolved, binding),
+        "initial_state": copy.deepcopy(initial_state),
+        "initial_state_hash": _canonical_json_hash(initial_state),
+        "steps": [],
+    }
+
+
+def _phase_h_divergence(sequence, reason):
+    raise ExecutionError(f"Phase H divergence at step {sequence}: {reason}")
+
+
+def _phase_h_validate_header(resolved, history, binding):
+    if not isinstance(history, dict):
+        raise ExecutionError("Phase H session history must be an object")
+    if history.get("format") != binding["session_format"]:
+        raise ExecutionError("unsupported Phase H session-history format")
+    if history.get("scenario_ref") != binding["scenario_ref"]:
+        raise ExecutionError("Phase H session history has wrong scenario_ref")
+    expected_identity = _phase_h_source_identity(resolved, binding)
+    if history.get("source_identity") != expected_identity:
+        raise ExecutionError("Phase H source identity mismatch")
+    initial_state = history.get("initial_state")
+    if not isinstance(initial_state, dict):
+        raise ExecutionError("Phase H session history requires initial_state")
+    if history.get("initial_state_hash") != _canonical_json_hash(initial_state):
+        raise ExecutionError("Phase H initial_state_hash mismatch")
+    expected_initial = create_scenario_runtime_state(resolved)
+    if initial_state != expected_initial:
+        raise ExecutionError("Phase H initial state disagrees with resolved runtime")
+    if not isinstance(history.get("steps"), list):
+        raise ExecutionError("Phase H session-history steps must be an array")
+    return copy.deepcopy(initial_state)
+
+
+def replay_scenario_session_history(resolved, history, *, require_complete=False):
+    binding = _phase_h_binding(resolved)
+    current = _phase_h_validate_header(resolved, history, binding)
+    replayed = []
+
+    for index, raw_step in enumerate(history["steps"], start=1):
+        if not isinstance(raw_step, dict):
+            _phase_h_divergence(index, "step must be an object")
+        sequence = raw_step.get("sequence")
+        if sequence != index:
+            _phase_h_divergence(index, f"sequence must be {index}, got {sequence!r}")
+
+        declared_action = raw_step.get("declared_action")
+        if not isinstance(declared_action, dict):
+            _phase_h_divergence(index, "declared_action is required")
+        if set(declared_action) != {"action_id", "actor_ref"}:
+            _phase_h_divergence(index, "declared_action shape is malformed")
+        action_id = declared_action.get("action_id")
+        actor_ref = declared_action.get("actor_ref")
+        if not isinstance(action_id, str) or not isinstance(actor_ref, str):
+            _phase_h_divergence(index, "declared action identity must be strings")
+
+        transition = raw_step.get("transition_record")
+        if not isinstance(transition, dict):
+            _phase_h_divergence(index, "transition_record is required")
+        if transition.get("format") != binding["transition_result_format"]:
+            _phase_h_divergence(index, "transition record format drifted")
+        if (
+            transition.get("action_id") != action_id
+            or transition.get("actor_ref") != actor_ref
+        ):
+            _phase_h_divergence(index, "declared action disagrees with transition record")
+
+        random_evidence = raw_step.get("random_evidence")
+        if random_evidence != transition.get("random_inputs"):
+            _phase_h_divergence(index, "random evidence disagrees with transition record")
+        if raw_step.get("resolution_trace") != transition.get("trace"):
+            _phase_h_divergence(index, "resolution trace disagrees with transition record")
+
+        expected_before_hash = _canonical_json_hash(current)
+        if raw_step.get("state_before_hash") != expected_before_hash:
+            _phase_h_divergence(index, "state_before_hash breaks session continuity")
+        if transition.get("state_before") != current:
+            _phase_h_divergence(index, "transition state_before breaks session continuity")
+        if _canonical_json_hash(transition.get("state_before")) != expected_before_hash:
+            _phase_h_divergence(index, "transition state_before hash is inconsistent")
+
+        recorded_after = transition.get("state_after")
+        if not isinstance(recorded_after, dict):
+            _phase_h_divergence(index, "transition state_after is required")
+        recorded_after_hash = _canonical_json_hash(recorded_after)
+        if raw_step.get("state_after_hash") != recorded_after_hash:
+            _phase_h_divergence(index, "state_after_hash disagrees with transition record")
+
+        try:
+            recomputed = execute_scenario_action(
+                resolved,
+                copy.deepcopy(current),
+                action_id=action_id,
+                actor_ref=actor_ref,
+                random_inputs=copy.deepcopy(random_evidence),
+            )
+        except ExecutionError as exc:
+            _phase_h_divergence(index, f"transition re-execution failed: {exc}")
+
+        if recomputed != transition:
+            _phase_h_divergence(index, "transition record diverged from re-execution")
+        if raw_step.get("resolution_trace") != recomputed.get("trace"):
+            _phase_h_divergence(index, "resolution trace diverged from re-execution")
+        if raw_step.get("state_after_hash") != _canonical_json_hash(
+            recomputed.get("state_after")
+        ):
+            _phase_h_divergence(index, "state_after_hash diverged from re-execution")
+
+        current = copy.deepcopy(recomputed["state_after"])
+        replayed.append(copy.deepcopy(recomputed))
+
+    view = describe_scenario(resolved, current)
+    complete = view["progress"]["status"] == "complete"
+    if require_complete and not complete:
+        raise ExecutionError(
+            f"Phase H session history is incomplete after {len(replayed)} steps"
+        )
+    return {
+        "format": binding["session_format"],
+        "scenario_ref": binding["scenario_ref"],
+        "steps_replayed": len(replayed),
+        "complete": complete,
+        "outcome": view["progress"]["outcome"],
+        "final_state": current,
+        "final_state_hash": _canonical_json_hash(current),
+        "transition_records": replayed,
+    }
+
+
+def append_scenario_session_step(
+    resolved,
+    history,
+    *,
+    action_id,
+    actor_ref,
+    random_inputs=None,
+):
+    binding = _phase_h_binding(resolved)
+    replayed = replay_scenario_session_history(
+        resolved, history, require_complete=False
+    )
+    if replayed["complete"]:
+        raise ExecutionError("Phase H cannot append after scenario completion")
+
+    transition = execute_scenario_action(
+        resolved,
+        copy.deepcopy(replayed["final_state"]),
+        action_id=action_id,
+        actor_ref=actor_ref,
+        random_inputs=copy.deepcopy(random_inputs),
+    )
+    step = {
+        "sequence": len(history["steps"]) + 1,
+        "declared_action": {
+            "action_id": action_id,
+            "actor_ref": actor_ref,
+        },
+        "random_evidence": copy.deepcopy(transition["random_inputs"]),
+        "state_before_hash": _canonical_json_hash(transition["state_before"]),
+        "state_after_hash": _canonical_json_hash(transition["state_after"]),
+        "resolution_trace": copy.deepcopy(transition["trace"]),
+        "transition_record": copy.deepcopy(transition),
+    }
+    if set(step) != set(binding["step_evidence"]) | {"sequence"}:
+        raise ExecutionError("Phase H step evidence shape disagrees with binding")
+
+    updated = copy.deepcopy(history)
+    updated["steps"].append(step)
+    replay_scenario_session_history(resolved, updated, require_complete=False)
+    return updated
