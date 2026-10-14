@@ -350,12 +350,6 @@
     "authority": "provisional",
     "provenance": "prototype_assumption",
     "runtime_state_ref": "scenario-01-playable-initial",
-    "encounter_order": [
-      "roadside-tracks",
-      "frightened-witness",
-      "washed-out-path",
-      "bandit-scout"
-    ],
     "state_contract": {
       "refs": {
         "status": "scenario-progress-status",
