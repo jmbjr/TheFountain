@@ -815,7 +815,7 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
     expected_phase_g_binding = {
         "scenario_ref": "scenario-01",
         "runtime_state_ref": "scenario-01-playable-initial",
-        "encounter_order_source": "scenario.progression.encounter_order",
+        "encounter_order_source": "scenario.encounters",
         "progress_refs": {
             "status": "scenario-progress-status",
             "current_encounter": "scenario-current-encounter",
@@ -2106,15 +2106,11 @@ def _validate_phase_g_progression_contract(dodge, canonical, errors):
     if progression.get("runtime_state_ref") != "scenario-01-playable-initial":
         errors.append("Phase G progression must use scenario-01-playable-initial")
 
-    encounter_ids = [
+    order = [
         row.get("id")
         for row in canonical.get("encounters", [])
         if isinstance(row, dict) and row.get("id")
     ]
-    order = progression.get("encounter_order")
-    if order != encounter_ids:
-        errors.append("Phase G encounter_order must exactly follow canonical encounter order")
-        return
     if len(order) != len(set(order)) or set(order) != {
         "roadside-tracks",
         "frightened-witness",
