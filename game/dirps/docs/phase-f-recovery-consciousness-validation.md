@@ -94,7 +94,9 @@ It binds:
 - next-turn timing;
 - check order;
 - source of canonical HT;
-- accepted random-evidence contract;
+- accepted `dice_resolution` contract;
+- accepted Phase A `critical_resolution` contract;
+- accepted Phase A `random_evidence` contract;
 - state refs;
 - effect refs;
 - rule source/locators;
@@ -210,9 +212,30 @@ Each `dirps-ht-check-result.v1` preserves:
 - classification;
 - success/failure;
 - margin;
-- rule-source trace.
+- recovery-rule source trace;
+- `dice_resolution_ref`;
+- `critical_resolution_ref`;
+- `random_evidence_ref`.
+
+Those three reuse refs are executable dependencies, not documentation-only labels. The runtime validates them against the accepted Phase A success-roll binding before any recovery HT roll.
 
 Unused-check dice fail visibly rather than being silently ignored.
+
+## Phase F dice/critical reuse refs
+
+Independent review identified that Phase F was calling the accepted Phase A dice/critical helpers while declaring only the random-evidence dependency.
+
+The Phase F bridge now explicitly pins:
+
+```text
+dice_resolution_ref     = dice_resolution
+critical_resolution_ref = phase_a_execution_bindings.attempt-skill.critical_resolution
+random_evidence_ref     = phase_a_execution_bindings.attempt-skill.random_evidence
+```
+
+Semantic validation rejects any drift in those refs before resolution. Runtime binding validation checks the same refs against the accepted Phase A binding before an HT roll, and each HT-check trace records all three.
+
+Focused regressions perturb the dice and critical reuse refs independently and prove that both fail visibly before resolution.
 
 ## Recovery record
 
