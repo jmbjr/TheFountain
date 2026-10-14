@@ -1,0 +1,380 @@
+import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v0.29.1/full/pyodide.mjs";
+
+const PYODIDE_INDEX = "https://cdn.jsdelivr.net/pyodide/v0.29.1/full/";
+const PYTHON_FILES = [
+  "../tools/game_registry.py",
+  "../tools/dirps_semantic_validation.py",
+  "../tools/resolve_dirps_dodge.py",
+  "../tools/dirps_runtime.py",
+  "../tools/dirps_web_target.py",
+  "../game/dirps/game.json",
+  "../game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
+  "../game/dirps/scenarios/scenario-01/scenario.json",
+  "../game/dirps/sidecars/dirps.proto.sidecar.v0.1.json",
+];
+
+const $ = (id) => document.getElementById(id);
+let pyodide;
+let model;
+
+function text(id, value) {
+  $(id).textContent = value ?? "";
+}
+
+function pretty(value) {
+  return JSON.stringify(value, null, 2);
+}
+
+function shortHash(value) {
+  return typeof value === "string" && value.length > 16
+    ? value.slice(0, 12) + "…"
+    : value ?? "—";
+}
+
+function row(label, value) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "dirps-kv";
+  const key = document.createElement("span");
+  key.textContent = label;
+  const content = document.createElement("strong");
+  content.textContent = String(value ?? "—");
+  wrapper.append(key, content);
+  return wrapper;
+}
+
+function badge(label, value) {
+  const chip = document.createElement("span");
+  chip.className = "dirps-chip";
+  chip.textContent = `${label}: ${value}`;
+  return chip;
+}
+
+function clear(node) {
+  while (node.firstChild) node.removeChild(node.firstChild);
+}
+
+function renderCharacter() {
+  const host = $("character");
+  clear(host);
+  const character = model.characters?.[0];
+  if (!character) {
+    host.append(document.createTextNode("No resolved character."));
+    return;
+  }
+
+  const name = document.createElement("h2");
+  name.textContent = character.name || character.id;
+  host.append(name);
+
+  const provenance = document.createElement("p");
+  provenance.className = "dirps-muted";
+  provenance.textContent = `provenance · ${character.provenance || "unspecified"}`;
+  host.append(provenance);
+
+  const attrs = document.createElement("div");
+  attrs.className = "dirps-stat-grid";
+  for (const [key, value] of Object.entries(character.primary_attributes || {})) {
+    attrs.append(row(key.toUpperCase(), value));
+  }
+  host.append(attrs);
+
+  const skillsTitle = document.createElement("h3");
+  skillsTitle.textContent = "Skills";
+  host.append(skillsTitle);
+  const skills = document.createElement("div");
+  skills.className = "dirps-chip-list";
+  for (const [key, value] of Object.entries(character.skills || {})) {
+    skills.append(badge(key, value));
+  }
+  host.append(skills);
+
+  const equipmentTitle = document.createElement("h3");
+  equipmentTitle.textContent = "Equipment";
+  host.append(equipmentTitle);
+  const equipment = document.createElement("div");
+  equipment.className = "dirps-chip-list";
+  for (const item of character.equipment || []) {
+    equipment.append(badge("item", item));
+  }
+  host.append(equipment);
+}
+
+function renderActions() {
+  const host = $("availableActions");
+  clear(host);
+  const actions = model.scenario?.available_actions || [];
+
+  if (!actions.length) {
+    const done = document.createElement("p");
+    done.className = "dirps-quiet";
+    done.textContent =
+      model.scenario?.progress?.status === "complete"
+        ? "Scenario complete."
+        : "No semantic action is currently available.";
+    host.append(done);
+    return;
+  }
+
+  for (const action of actions) {
+    const button = document.createElement("button");
+    button.className = "dirps-action";
+    const label = document.createElement("strong");
+    label.textContent = action.label || action.name || action.id;
+    const meta = document.createElement("span");
+    meta.textContent = `${action.id} · actor ${action.actor_ref}`;
+    button.append(label, meta);
+    button.addEventListener("click", () => executeAction(action, button));
+    host.append(button);
+  }
+}
+
+function renderScenario() {
+  const scenario = model.scenario || {};
+  const progress = scenario.progress || {};
+  const capability = scenario.current_capability || {};
+  const encounter = capability.encounter || {};
+
+  text(
+    "encounterTitle",
+    encounter.name || encounter.title || encounter.id || progress.current_encounter || "Complete"
+  );
+  text(
+    "encounterPurpose",
+    encounter.purpose || encounter.description || capability.purpose || ""
+  );
+  text(
+    "progressMeta",
+    `${progress.current_encounter || "complete"} · ${progress.step || "complete"}`
+  );
+
+  const banner = $("scenarioBanner");
+  banner.className = "dirps-banner";
+  if (progress.status === "complete") {
+    banner.classList.add(progress.outcome === "success" ? "success" : "failure");
+    banner.textContent = `SCENARIO COMPLETE · ${String(progress.outcome || "complete").toUpperCase()}`;
+  } else {
+    banner.textContent = `${model.scenario.title || "The Missing Courier"} · revision ${model.scenario.runtime_state_revision}`;
+  }
+
+  const state = $("scenarioState");
+  clear(state);
+  for (const [key, value] of Object.entries(progress)) {
+    state.append(row(key.replaceAll("_", " "), value));
+  }
+  const retained = document.createElement("details");
+  const summary = document.createElement("summary");
+  summary.textContent = "Retained encounter state";
+  const pre = document.createElement("pre");
+  pre.className = "dirps-code";
+  pre.textContent = pretty(scenario.retained_state || {});
+  retained.append(summary, pre);
+  state.append(retained);
+
+  renderActions();
+}
+
+function resolutionHighlights(record) {
+  if (!record) return [];
+  const mechanic = record.mechanic_result || {};
+  const highlights = [
+    ["action", record.action_id],
+    ["encounter", record.encounter_ref],
+    ["mechanic", mechanic.format],
+    ["advanced to", record.progression?.advanced_to],
+    ["outcome", record.progression?.outcome],
+  ];
+  return highlights.filter(([, value]) => value !== undefined && value !== null);
+}
+
+function renderLatest() {
+  const host = $("lastResolution");
+  clear(host);
+  const record = model.latest_execution;
+  if (!record) {
+    const quiet = document.createElement("p");
+    quiet.className = "dirps-quiet";
+    quiet.textContent = "No action resolved yet.";
+    host.append(quiet);
+    text("provenance", "No execution trace yet.");
+    return;
+  }
+
+  const grid = document.createElement("div");
+  grid.className = "dirps-stat-grid";
+  for (const [label, value] of resolutionHighlights(record)) {
+    grid.append(row(label, value));
+  }
+  host.append(grid);
+
+  const randomTitle = document.createElement("h3");
+  randomTitle.textContent = "Recorded random evidence";
+  const random = document.createElement("pre");
+  random.className = "dirps-code";
+  random.textContent = pretty(record.random_inputs || {});
+  host.append(randomTitle, random);
+
+  const mechanic = document.createElement("details");
+  const mechanicSummary = document.createElement("summary");
+  mechanicSummary.textContent = "Mechanic result";
+  const mechanicJson = document.createElement("pre");
+  mechanicJson.className = "dirps-code";
+  mechanicJson.textContent = pretty(record.mechanic_result || {});
+  mechanic.append(mechanicSummary, mechanicJson);
+  host.append(mechanic);
+
+  text(
+    "provenance",
+    pretty({
+      scenario_trace: record.trace || null,
+      mechanic_trace: record.mechanic_result?.trace || null,
+      authority_chain: record.mechanic_result?.authority_chain || null,
+    })
+  );
+}
+
+function renderHistory() {
+  const host = $("history");
+  clear(host);
+  const steps = model.history?.steps || [];
+  text("historyCount", `${steps.length} step${steps.length === 1 ? "" : "s"}`);
+
+  if (!steps.length) {
+    const quiet = document.createElement("p");
+    quiet.className = "dirps-quiet";
+    quiet.textContent = "The append-only replay log is empty.";
+    host.append(quiet);
+    return;
+  }
+
+  for (const step of steps) {
+    const item = document.createElement("div");
+    item.className = "dirps-history-step";
+    const heading = document.createElement("strong");
+    heading.textContent = `#${step.sequence} · ${step.declared_action?.action_id || "action"}`;
+    const seed = document.createElement("span");
+    seed.textContent = `seed ${step.random_evidence?.random_seed ?? step.random_evidence?.seed ?? "recorded"}`;
+    const hashes = document.createElement("small");
+    hashes.textContent =
+      `${shortHash(step.state_before_hash)} → ${shortHash(step.state_after_hash)}`;
+    item.append(heading, seed, hashes);
+    host.append(item);
+  }
+}
+
+function render() {
+  $("play").hidden = false;
+  $("fatal").hidden = true;
+  text("runtimeStatus", "Shared Python resolver/runtime active in this browser.");
+  renderCharacter();
+  renderScenario();
+  renderLatest();
+  renderHistory();
+  text("debugView", pretty(model));
+}
+
+function setBusy(isBusy, message) {
+  document.querySelectorAll(".dirps-action, #restart").forEach((button) => {
+    button.disabled = isBusy;
+  });
+  if (message) text("runtimeStatus", message);
+}
+
+async function executeAction(action, button) {
+  const seedInput = $("seedInput");
+  const seed = seedInput.value.trim() || `web-${crypto.randomUUID()}`;
+  seedInput.value = seed;
+  setBusy(true, `Resolving ${action.label || action.id} through the shared runtime…`);
+  button.disabled = true;
+
+  try {
+    pyodide.globals.set("web_history_json", JSON.stringify(model.history));
+    pyodide.globals.set("web_action_id", action.id);
+    pyodide.globals.set("web_actor_ref", action.actor_ref);
+    pyodide.globals.set("web_seed", seed);
+    const raw = await pyodide.runPythonAsync(
+      "dirps_web_target.web_execute_json(web_history_json, web_action_id, web_actor_ref, web_seed)"
+    );
+    model = JSON.parse(raw);
+    render();
+  } catch (error) {
+    showFatal(error);
+  } finally {
+    for (const name of ["web_history_json", "web_action_id", "web_actor_ref", "web_seed"]) {
+      pyodide.globals.delete(name);
+    }
+    setBusy(false);
+  }
+}
+
+function repoPath(url) {
+  const parsed = new URL(url, window.location.href);
+  const marker = "/dirps/";
+  const index = parsed.pathname.indexOf(marker);
+  if (index < 0) throw new Error(`Cannot map repository path: ${url}`);
+  return parsed.pathname.slice(index + marker.length - 1).replace(/^\.\.\//, "");
+}
+
+function pythonFsPath(sourceUrl) {
+  const normalized = sourceUrl.replace(/^\.\.\//, "");
+  return `/home/pyodide/${normalized}`;
+}
+
+async function mountRepositoryFiles() {
+  const loaded = await Promise.all(
+    PYTHON_FILES.map(async (path) => {
+      const response = await fetch(path, { cache: "no-cache" });
+      if (!response.ok) throw new Error(`Failed to load ${path}: HTTP ${response.status}`);
+      return [path, await response.text()];
+    })
+  );
+
+  for (const [path, source] of loaded) {
+    const fsPath = pythonFsPath(path);
+    const directory = fsPath.slice(0, fsPath.lastIndexOf("/"));
+    pyodide.FS.mkdirTree(directory);
+    pyodide.FS.writeFile(fsPath, source);
+  }
+}
+
+async function startRuntime() {
+  text("runtimeStatus", "Loading pinned Pyodide runtime…");
+  pyodide = await loadPyodide({ indexURL: PYODIDE_INDEX });
+  text("runtimeStatus", "Mounting authoritative DIRPS source and runtime modules…");
+  await mountRepositoryFiles();
+  await pyodide.runPythonAsync(`
+import os
+import sys
+os.chdir("/home/pyodide")
+if "/home/pyodide/tools" not in sys.path:
+    sys.path.insert(0, "/home/pyodide/tools")
+import dirps_web_target
+`);
+  text("runtimeStatus", "Resolving Scenario 01 through the shared Python resolver…");
+  const raw = await pyodide.runPythonAsync("dirps_web_target.web_bootstrap_json()");
+  model = JSON.parse(raw);
+  render();
+}
+
+function showFatal(error) {
+  $("play").hidden = true;
+  const fatal = $("fatal");
+  fatal.hidden = false;
+  fatal.textContent = `DIRPS Web target failed visibly: ${error?.message || error}`;
+  text("runtimeStatus", "Runtime unavailable.");
+}
+
+$("restart").addEventListener("click", async () => {
+  setBusy(true, "Restarting from the accepted Scenario 01 initial state…");
+  try {
+    const raw = await pyodide.runPythonAsync("dirps_web_target.web_bootstrap_json()");
+    model = JSON.parse(raw);
+    $("seedInput").value = "";
+    render();
+  } catch (error) {
+    showFatal(error);
+  } finally {
+    setBusy(false);
+  }
+});
+
+startRuntime().catch(showFatal);
