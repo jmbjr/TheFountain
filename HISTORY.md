@@ -700,3 +700,5 @@ The implementation keeps the Phase E combat snapshot as the single state authori
 `dirps-recovery-result.v1` preserves each executed HT check, skipped-check reasons, exact before/after combat state, ordered state delta, canonical HT/modifier provenance, and deterministic random evidence. One-record replay detects divergence. The debug CLI adds a continuation mode that requires the actual post-combat state rather than fabricating a recovery state.
 
 No proto concept changes maturity. Long-term recovery from unconsciousness, healing, death checks, scenario progression/completion, full session history, Web presentation, and G7 remain later work.
+
+Independent Phase F review caught one executable-auditability gap: the runtime reused Phase A dice and critical-classification machinery while the Phase F bridge declared only random-evidence reuse. The corrected contract explicitly pins `dice_resolution_ref`, `critical_resolution_ref`, and `random_evidence_ref`, validates them before execution, records them in each HT-check trace, and adds pre-resolution drift regressions.
