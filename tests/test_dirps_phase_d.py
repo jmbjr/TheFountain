@@ -238,7 +238,8 @@ class DirpsPhaseDWashedOutPathTests(unittest.TestCase):
     def test_phase_d_keeps_session_history_unpromoted(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
         self.assertEqual(specs["lookup_tables"]["status"], "exercised")
-        self.assertEqual(specs["replay_session_history"]["status"], "exercised")\n        self.assertEqual(specs["replay_session_history"]["candidate_for_dodge"], "not-yet-candidate")
+        self.assertEqual(specs["replay_session_history"]["status"], "exercised")
+        self.assertEqual(specs["replay_session_history"]["candidate_for_dodge"], "not-yet-candidate")
 
     def test_generic_target_dispatches_environment(self):
         view = inspect_encounter_target(self.resolved, encounter_ref=ENCOUNTER_REF)
