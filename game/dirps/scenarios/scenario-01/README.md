@@ -53,7 +53,7 @@ The recovery slice consumes the exact post-combat state from Phase E. Consciousn
 
 ## Phase G — Scenario progression / completion
 
-Full play begins from the neutral `scenario-01-playable-initial` runtime snapshot. The runtime exposes only the action for the current canonical encounter, merges the accepted mechanic result back into that full snapshot, retains prior information/consequences, and advances to the next encounter from `scenario.progression.encounter_order`.
+Full play begins from the neutral `scenario-01-playable-initial` runtime snapshot. The runtime exposes only the action for the current canonical encounter, merges the accepted mechanic result back into that full snapshot, retains prior information/consequences, and advances to the next encounter from `scenario.encounters`.
 
 At the Bandit Scout, the accepted Phase E exchange either ends immediately if no recovery is required or enters the accepted Phase F recovery step. The resulting `can_act_normally` state drives the canonical bounded completion branch. DODGE `scenario-success` / `scenario-failure` conditions and `missing-courier-success` / `missing-courier-failure` end conditions make the terminal state explicit.
 
