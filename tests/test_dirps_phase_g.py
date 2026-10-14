@@ -196,6 +196,7 @@ class DirpsPhaseGProgressionTests(unittest.TestCase):
             path["mechanic_result"]["consequence"]["progress"],
         )
         self.assertTrue(final_view["retained_state"]["bandit-scout"]["unconscious"])
+        print("PASS dirps/scenario-01: Phase G scenario progression and completion")
 
     def test_full_scenario_has_deterministic_failure_end_state(self):
         record = self.complete_failure()
