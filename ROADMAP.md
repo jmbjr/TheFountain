@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A-G are accepted; Phase H now adds complete target-neutral session history and deterministic replay over that playable Scenario 01 path.
+The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A-H are accepted; Phase I now adds a player-facing browser target over the same resolved/runtime/replay semantics.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,7 +175,7 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4/G5/G6 and Phase A-G evidence remains in the existing validation documents. Gameplay Phase H adds `dirps-session-history.v1`, copy-on-append step evidence, resolved semantic source identity, state hashes, complete scenario replay, and first-inconsistent-step divergence detection while preserving every accepted Phase G transition record. Evidence lives in `game/dirps/docs/phase-h-session-history-validation.md`. Phase I — player-facing Web target — remains next; G7 has not started.
+G2/G3/G4/G5/G6 and Phase A-G evidence remains in the existing validation documents. Gameplay Phase H adds `dirps-session-history.v1`, copy-on-append step evidence, resolved semantic source identity, state hashes, complete scenario replay, and first-inconsistent-step divergence detection while preserving every accepted Phase G transition record. Phase I adds `/dirps/`, a static browser target that boots the repository's Python resolver/runtime through pinned Pyodide rather than duplicating mechanics in JavaScript. Evidence lives in `game/dirps/docs/phase-i-web-target-validation.md`. G7 has not started.
 
 Current DIRPS maturity:
 
@@ -185,7 +185,7 @@ Current DIRPS maturity:
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
 - `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, Phase E `damage_injury`, and Phase H `replay_session_history` remain **exercised** / `not-yet-candidate`; `visibility_and_secret_state` remains **suspected**;
-- one registered debug CLI target now consumes the accepted resolved/runtime path and exposes execution/provenance evidence without owning gameplay semantics;
+- the registered debug CLI remains the low-level reference target, and Phase I adds a player-facing Web target that consumes the same resolver/runtime/replay path in-browser without owning gameplay semantics;
 - gameplay convergence is tracked in issue **#178** and maturity/conformance in **#163**; G7 requires a separate whole-system reference-quality review after the playable roadmap is complete enough to support it.
 
 ## DODGE 0.2.1 / reference-release direction
@@ -257,4 +257,4 @@ tune the source
 The roadmap should change whenever playtesting, a second game, or better implementation evidence shows that it should.
 
 
-DIRPS gameplay roadmap #178: Phases A-G are accepted/merged. Phase H full session history/replay is the current G6 gameplay candidate; Phase I player-facing Web remains next after independent Phase H acceptance.
+DIRPS gameplay roadmap #178: Phases A-H are accepted/merged. Phase I player-facing Web target is the current G6 gameplay candidate; Phase J/G7 remains next after independent Phase I acceptance.
