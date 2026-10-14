@@ -732,6 +732,8 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
         "resolution_order": ["consciousness", "stun-recovery"],
         "minimum_state_revision": 1,
         "ht_source": "encounter.opponent.attributes.ht",
+        "dice_resolution_ref": "dice_resolution",
+        "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
         "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
         "consciousness": {
             "hit_points_ref": "hit-points",
@@ -774,6 +776,31 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
             errors.append(
                 "Phase F recover action/procedure binding must resolve in DODGE rules"
             )
+        phase_a = (sidecar.get("phase_a_execution_bindings") or {}).get("attempt-skill")
+        if not isinstance(phase_a, dict):
+            errors.append("Phase F reuse contract requires Phase A attempt-skill binding")
+        else:
+            if recovery.get("dice_resolution_ref") != phase_a.get("dice_resolution_ref"):
+                errors.append(
+                    "Phase F dice_resolution_ref must reuse the accepted Phase A dice_resolution_ref"
+                )
+            if recovery.get("critical_resolution_ref") != "phase_a_execution_bindings.attempt-skill.critical_resolution":
+                errors.append(
+                    "Phase F critical_resolution_ref must point to the accepted Phase A critical_resolution"
+                )
+            if not isinstance(phase_a.get("critical_resolution"), dict):
+                errors.append(
+                    "Phase F critical_resolution_ref target must exist on the accepted Phase A binding"
+                )
+            if recovery.get("random_evidence_ref") != "phase_a_execution_bindings.attempt-skill.random_evidence":
+                errors.append(
+                    "Phase F random_evidence_ref must point to the accepted Phase A random_evidence"
+                )
+            if not isinstance(phase_a.get("random_evidence"), dict):
+                errors.append(
+                    "Phase F random_evidence_ref target must exist on the accepted Phase A binding"
+                )
+
         effects = dodge.get("rules", {}).get("effects", {}) or {}
         for check_name in ("consciousness", "stun_recovery"):
             check = recovery[check_name]
