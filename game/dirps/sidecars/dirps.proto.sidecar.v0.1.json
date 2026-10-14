@@ -921,5 +921,52 @@
       "dice_resolution_ref": "dice_resolution",
       "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution"
     }
+  },
+  "phase_g_progression_bindings": {
+    "scenario-01": {
+      "scenario_ref": "scenario-01",
+      "runtime_state_ref": "scenario-01-playable-initial",
+      "encounter_order_source": "scenario.encounters",
+      "progress_refs": {
+        "status": "scenario-progress-status",
+        "current_encounter": "scenario-current-encounter",
+        "step": "scenario-progress-step",
+        "outcome": "scenario-outcome",
+        "information": "scenario-completion-information"
+      },
+      "phase_runtime_state_refs": {
+        "roadside-tracks": "scenario-01-initial",
+        "frightened-witness": "scenario-01-frightened-witness-initial",
+        "washed-out-path": "scenario-01-washed-out-path-initial",
+        "bandit-scout": "scenario-01-bandit-scout-initial"
+      },
+      "advance_effect_refs": {
+        "frightened-witness": "phase-g-current-frightened-witness",
+        "washed-out-path": "phase-g-current-washed-out-path",
+        "bandit-scout": "phase-g-current-bandit-scout"
+      },
+      "recovery_effect_ref": "phase-g-step-recovery",
+      "terminal_effect_refs": {
+        "success": [
+          "phase-g-status-complete",
+          "phase-g-current-complete",
+          "phase-g-step-complete",
+          "phase-g-outcome-success",
+          "phase-g-information-success"
+        ],
+        "failure": [
+          "phase-g-status-complete",
+          "phase-g-current-complete",
+          "phase-g-step-complete",
+          "phase-g-outcome-failure",
+          "phase-g-information-failure"
+        ]
+      },
+      "completion_condition_ref": "scenario-success",
+      "failure_condition_ref": "scenario-failure",
+      "result_format": "dirps-scenario-progression-result.v1",
+      "binding_source_ref": "dirps-proto",
+      "scenario_source_ref": "scenario-01-source"
+    }
   }
 }

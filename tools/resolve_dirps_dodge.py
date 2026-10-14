@@ -172,9 +172,12 @@ def resolve_documents(dodge, canonical, sidecar, config=None):
             "action_refs": copy.deepcopy(scenario.get("action_refs", [])),
             "turn_procedure_ref": scenario.get("turn_procedure_ref"),
             "objectives": copy.deepcopy(scenario.get("objectives", [])),
+            "end_conditions": copy.deepcopy(scenario.get("end_conditions", [])),
             "initial_state": copy.deepcopy(scenario.get("initial_state", [])),
             # List order is canonical Scenario 01 encounter order.
             "encounters": copy.deepcopy(canonical.get("encounters", [])),
+            # Phase G progression/completion remains a canonical Scenario 01 fact.
+            "progression": copy.deepcopy(canonical.get("progression", {})),
             # Contextual checks are provisional Scenario 01 gameplay facts.
             "contextual_checks": copy.deepcopy(canonical.get("contextual_checks", {})),
         },

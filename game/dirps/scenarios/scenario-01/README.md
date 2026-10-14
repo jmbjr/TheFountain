@@ -4,11 +4,11 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase F gameplay candidate.** Accepted Phases A-E remain intact. The Bandit Scout's post-combat HP/stun/consciousness-check state now feeds bounded next-turn HT consciousness and physical-stun recovery checks over the same neutral combat snapshot. `../../docs/phase-f-recovery-consciousness-validation.md` records the recovery authority/state/replay evidence.
+**G6 — Targeted, Phase G gameplay candidate.** Accepted Phases A-F remain intact. Scenario 01 now composes their neutral state into one ordered runtime from Roadside Tracks through Bandit Scout completion, with explicit success/failure end states. `../../docs/phase-g-scenario-progression-validation.md` records the authority/state/perturbation/replay evidence.
 
 ## Goal
 
-Eventually run a short solo tutorial that teaches core RPG resolution while pressure-testing DODGE + the DIRPS proto sidecar.
+Run a short solo tutorial from start to deterministic completion while pressure-testing DODGE + the DIRPS proto sidecar.
 
 The intended path includes:
 
@@ -21,7 +21,7 @@ The intended path includes:
 
 ## Source-of-truth rules
 
-- `scenario.json` owns scenario fiction, encounter order, the prototype character build, and tutorial acceptance criteria. Encounter ordering remains canonical in `scenario.json`; the G4 resolver now exposes it directly as the ordered `scenario.encounters` list in `dirps-resolved-game.v1` rather than inventing or reordering it.
+- `scenario.json` owns scenario fiction, encounter order, the prototype character build, tutorial acceptance criteria, and Phase G's bounded success/failure interpretation. The resolver exposes that order and progression source directly in `dirps-resolved-game.v1`; runtime code does not keep a second order.
 - `../../dodge/dirps-scenario-01.dodge.v0.2.1.json` owns everything already expressible in DODGE 0.2.1.
 - `../../sidecars/dirps.proto.sidecar.v0.1.json` owns explicit proto semantics that DODGE 0.2.1 cannot yet express.
 - The external GURPS Lite rules reference remains authoritative for GURPS mechanics.
@@ -33,7 +33,7 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B/C/D/E are accepted gameplay slices. Phase F consumes the combat consequences: a bandit at HP <= 0 must make the bounded beginning-of-turn stay-conscious HT check, and a conscious stunned bandit can make the physical-stun recovery HT check. Long-term waking/healing, automatic scenario progression/completion, and immutable session history remain later roadmap work.
+Phases B/C/D/E/F are accepted gameplay slices. Phase G composes them into one bounded tutorial state. Encounter failures before the Bandit Scout are retained as consequences but are nonterminal; the final bounded combat/recovery result determines whether Rook can establish the courier's fate. Long-term waking/healing and immutable multi-step session history remain later roadmap work.
 
 
 ## Phase D — Washed-Out Path
@@ -49,3 +49,12 @@ The combat encounter supports one Rook Broadsword swing against the bandit scout
 ## Phase F — Bandit Scout recovery
 
 The recovery slice consumes the exact post-combat state from Phase E. Consciousness is checked first when HP <= 0 and the stay-conscious obligation is active; physical-stun recovery follows only if the scout remains conscious. A successful stay-conscious roll does not clear the obligation while HP remains <= 0, so a later turn still requires another check. Long-term recovery from unconsciousness is explicitly unsupported. Evidence: `../../docs/phase-f-recovery-consciousness-validation.md`.
+
+
+## Phase G — Scenario progression / completion
+
+Full play begins from the neutral `scenario-01-playable-initial` runtime snapshot. The runtime exposes only the action for the current canonical encounter, merges the accepted mechanic result back into that full snapshot, retains prior information/consequences, and advances to the next encounter from `scenario.encounters`.
+
+At the Bandit Scout, the accepted Phase E exchange either ends immediately if no recovery is required or enters the accepted Phase F recovery step. The resulting `can_act_normally` state drives the canonical bounded completion branch. DODGE `scenario-success` / `scenario-failure` conditions and `missing-courier-success` / `missing-courier-failure` end conditions make the terminal state explicit.
+
+Phase G emits a new `dirps-scenario-progression-result.v1` wrapper and leaves every accepted Phase A-F record identity unchanged. One-record replay is supported; append-only whole-session history is deliberately deferred to Phase H. Evidence: `../../docs/phase-g-scenario-progression-validation.md`.

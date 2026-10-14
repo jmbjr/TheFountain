@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-f-recovery-consciousness",
+  "status": "g6-phase-g-scenario-progression",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 with Phase F post-combat recovery/consciousness semantics over the same neutral combat state. The bounded runtime resolves the next-turn HT consciousness obligation and physical-stun recovery without adding a healing subsystem.",
+    "target": "A G6-targeted Scenario 01 whose accepted Phase A-F mechanics now run through one explicit neutral scenario-progress state from Roadside Tracks to deterministic completion.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase F makes Phase E injury state actionable. It does not implement long-term waking, natural healing, first aid, death checks, or scenario progression/completion."
+    "acceptance_note": "Phase G connects the accepted mechanics into one bounded start-to-finish scenario and adds deterministic success/failure completion. Full append-only session history, long-term unconscious recovery/healing, and G7 remain later work."
   },
   "tutorial": {
     "title": "The Missing Courier",
@@ -300,14 +300,15 @@
     "canonical_here": [
       "scenario fiction and encounter ordering",
       "prototype character build",
-      "which mechanics the tutorial intends to exercise"
+      "which mechanics the tutorial intends to exercise",
+      "Scenario 01 progression order and bounded success/failure completion semantics"
     ],
     "not_canonical_here": [
       "GURPS rule text",
       "dice-resolution semantics",
       "derived-stat formulas",
-      "replay schema",
-      "target presentation"
+      "target presentation",
+      "append-only full-session replay schema"
     ]
   },
   "contextual_checks": {
@@ -343,5 +344,64 @@
         }
       ]
     }
+  },
+  "progression": {
+    "source_ref": "scenario-01-source",
+    "authority": "provisional",
+    "provenance": "prototype_assumption",
+    "runtime_state_ref": "scenario-01-playable-initial",
+    "state_contract": {
+      "refs": {
+        "status": "scenario-progress-status",
+        "current_encounter": "scenario-current-encounter",
+        "step": "scenario-progress-step",
+        "outcome": "scenario-outcome",
+        "information": "scenario-completion-information"
+      },
+      "initial": {
+        "status": "in-progress",
+        "current_encounter": "roadside-tracks",
+        "step": "action",
+        "outcome": "undetermined",
+        "information": "accumulating"
+      }
+    },
+    "completion": {
+      "objective_id": "resolve-courier-mystery",
+      "success": {
+        "trigger": {
+          "encounter_ref": "bandit-scout",
+          "bandit_can_act_normally": false
+        },
+        "state": {
+          "status": "complete",
+          "current_encounter": "complete",
+          "step": "complete",
+          "outcome": "success",
+          "information": "courier-fate-established"
+        },
+        "conclusion_text": "With the bandit scout no longer able to continue the fight, Rook can safely confirm the courier was waylaid here and return with an answer."
+      },
+      "failure": {
+        "trigger": {
+          "encounter_ref": "bandit-scout",
+          "bandit_can_act_normally": true
+        },
+        "state": {
+          "status": "complete",
+          "current_encounter": "complete",
+          "step": "complete",
+          "outcome": "failure",
+          "information": "courier-fate-unresolved"
+        },
+        "conclusion_text": "The bandit scout remains able to continue the fight, so the bounded tutorial ends with Rook withdrawing without enough information to establish the courier's fate."
+      }
+    },
+    "unsupported": [
+      "skipping or reordering encounters outside the canonical encounter_order",
+      "repeating an already-resolved encounter",
+      "continuing after a terminal scenario outcome",
+      "long-term recovery after the bandit scout becomes unconscious"
+    ]
   }
 }

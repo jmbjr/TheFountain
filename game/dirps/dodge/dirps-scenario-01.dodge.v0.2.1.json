@@ -398,6 +398,77 @@
         "assumptions": [
           "Materializes the GURPS Lite beginning-of-turn consciousness-check obligation after HP reaches 0 or less; Phase F consumes the obligation while the actor remains conscious."
         ]
+      },
+      "scenario-progress-status": {
+        "name": "Scenario progress status",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "in-progress",
+        "enum_values": [
+          "in-progress",
+          "complete"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "scenario-current-encounter": {
+        "name": "Current scenario encounter",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "roadside-tracks",
+        "enum_values": [
+          "roadside-tracks",
+          "frightened-witness",
+          "washed-out-path",
+          "bandit-scout",
+          "complete"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "scenario-progress-step": {
+        "name": "Scenario progress step",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "action",
+        "enum_values": [
+          "action",
+          "recovery",
+          "complete"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "scenario-outcome": {
+        "name": "Scenario outcome",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "undetermined",
+        "enum_values": [
+          "undetermined",
+          "success",
+          "failure"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "scenario-completion-information": {
+        "name": "Scenario completion information",
+        "type": "enum",
+        "owner_scope": "scenario",
+        "persistence_scope": "scenario",
+        "default": "accumulating",
+        "enum_values": [
+          "accumulating",
+          "courier-fate-established",
+          "courier-fate-unresolved"
+        ],
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
       }
     },
     "conditions": {
@@ -412,6 +483,30 @@
         "right": false,
         "source_ref": "gurps-lite",
         "authority": "authoritative"
+      },
+      "scenario-success": {
+        "op": "eq",
+        "left": {
+          "ref": "scenario-outcome",
+          "subject": {
+            "relative": "scenario"
+          }
+        },
+        "right": "success",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "scenario-failure": {
+        "op": "eq",
+        "left": {
+          "ref": "scenario-outcome",
+          "subject": {
+            "relative": "scenario"
+          }
+        },
+        "right": "failure",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
       }
     },
     "effects": {
@@ -664,6 +759,116 @@
         "value": false,
         "source_ref": "gurps-lite",
         "authority": "authoritative"
+      },
+      "phase-g-current-frightened-witness": {
+        "op": "set",
+        "target_ref": "scenario-current-encounter",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "frightened-witness",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-current-washed-out-path": {
+        "op": "set",
+        "target_ref": "scenario-current-encounter",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "washed-out-path",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-current-bandit-scout": {
+        "op": "set",
+        "target_ref": "scenario-current-encounter",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "bandit-scout",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-current-complete": {
+        "op": "set",
+        "target_ref": "scenario-current-encounter",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "complete",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-step-recovery": {
+        "op": "set",
+        "target_ref": "scenario-progress-step",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "recovery",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-step-complete": {
+        "op": "set",
+        "target_ref": "scenario-progress-step",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "complete",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-status-complete": {
+        "op": "set",
+        "target_ref": "scenario-progress-status",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "complete",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-outcome-success": {
+        "op": "set",
+        "target_ref": "scenario-outcome",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "success",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-outcome-failure": {
+        "op": "set",
+        "target_ref": "scenario-outcome",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "failure",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-information-success": {
+        "op": "set",
+        "target_ref": "scenario-completion-information",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "courier-fate-established",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
+      },
+      "phase-g-information-failure": {
+        "op": "set",
+        "target_ref": "scenario-completion-information",
+        "subject": {
+          "relative": "scenario"
+        },
+        "value": "courier-fate-unresolved",
+        "source_ref": "scenario-01-source",
+        "authority": "provisional"
       }
     },
     "actions": {
@@ -854,9 +1059,7 @@
         {
           "id": "resolve-courier-mystery",
           "name": "Determine what happened to the missing courier",
-          "completion": {
-            "prose": "The player has obtained enough scenario information to identify the courier's fate."
-          }
+          "completion": "scenario-success"
         }
       ],
       "target_duration_minutes": {
@@ -866,7 +1069,8 @@
       "source_ref": "scenario-01-source",
       "authority": "provisional",
       "assumptions": [
-        "The prose objective preserves intended tutorial completion semantics, but no executable scenario end condition is declared at G6; deterministic completion semantics remain a later executable-design task."
+        "Canonical Scenario 01 owns encounter order and the bounded success/failure interpretation; DODGE normalizes only the explicit progress state and terminal conditions.",
+        "The accepted Phase B scenario.initial_state remains the bounded Roadside state for compatibility. Full Phase G play begins from runtime_states.scenario-01-playable-initial."
       ],
       "initial_state": [
         {
@@ -892,6 +1096,20 @@
           },
           "value": "undiscovered",
           "authority": "provisional"
+        }
+      ],
+      "end_conditions": [
+        {
+          "id": "missing-courier-success",
+          "outcome": "win",
+          "condition": "scenario-success",
+          "priority": 1
+        },
+        {
+          "id": "missing-courier-failure",
+          "outcome": "loss",
+          "condition": "scenario-failure",
+          "priority": 2
         }
       ]
     }
@@ -1055,6 +1273,157 @@
             "instance_ref": "bandit-scout"
           },
           "value": false,
+          "authority": "provisional"
+        }
+      ],
+      "events": [],
+      "revision": "0"
+    },
+    "scenario-01-playable-initial": {
+      "scenario_ref": "scenario-01",
+      "bindings": [
+        {
+          "ref": "roadside-tracks-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "ready",
+          "authority": "provisional"
+        },
+        {
+          "ref": "roadside-tracks-outcome",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unresolved",
+          "authority": "provisional"
+        },
+        {
+          "ref": "roadside-tracks-information",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "undiscovered",
+          "authority": "provisional"
+        },
+        {
+          "ref": "frightened-witness-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "ready",
+          "authority": "provisional"
+        },
+        {
+          "ref": "frightened-witness-reaction",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unresolved",
+          "authority": "provisional"
+        },
+        {
+          "ref": "frightened-witness-information",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unknown",
+          "authority": "provisional"
+        },
+        {
+          "ref": "washed-out-path-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "ready",
+          "authority": "provisional"
+        },
+        {
+          "ref": "washed-out-path-outcome",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "unresolved",
+          "authority": "provisional"
+        },
+        {
+          "ref": "washed-out-path-progress",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "not-crossed",
+          "authority": "provisional"
+        },
+        {
+          "ref": "hit-points",
+          "subject": {
+            "instance_ref": "bandit-scout"
+          },
+          "value": 10,
+          "authority": "provisional"
+        },
+        {
+          "ref": "stunned",
+          "subject": {
+            "instance_ref": "bandit-scout"
+          },
+          "value": false,
+          "authority": "provisional"
+        },
+        {
+          "ref": "unconscious",
+          "subject": {
+            "instance_ref": "bandit-scout"
+          },
+          "value": false,
+          "authority": "provisional"
+        },
+        {
+          "ref": "consciousness-check-required",
+          "subject": {
+            "instance_ref": "bandit-scout"
+          },
+          "value": false,
+          "authority": "provisional"
+        },
+        {
+          "ref": "scenario-progress-status",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "in-progress",
+          "authority": "provisional"
+        },
+        {
+          "ref": "scenario-current-encounter",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "roadside-tracks",
+          "authority": "provisional"
+        },
+        {
+          "ref": "scenario-progress-step",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "action",
+          "authority": "provisional"
+        },
+        {
+          "ref": "scenario-outcome",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "undetermined",
+          "authority": "provisional"
+        },
+        {
+          "ref": "scenario-completion-information",
+          "subject": {
+            "relative": "scenario"
+          },
+          "value": "accumulating",
           "authority": "provisional"
         }
       ],

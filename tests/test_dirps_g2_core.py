@@ -292,8 +292,24 @@ def validate_dirps_core(doc):
 
     if phases:
         failures.append("15.3.10 audit assumption changed: phases are now present")
-    if any(scenario.get("end_conditions") for scenario in scenarios.values()):
-        failures.append("15.3.10 executable end conditions are present and require deterministic validation")
+
+    def executable_end_condition(condition):
+        if isinstance(condition, str):
+            condition = conditions.get(condition)
+        return isinstance(condition, dict) and bool(condition.get("op"))
+
+    for scenario_id, scenario in scenarios.items():
+        end_conditions = scenario.get("end_conditions", [])
+        ids = [row.get("id") for row in end_conditions]
+        if duplicate_values(ids):
+            failures.append(
+                f"15.3.10 scenario {scenario_id} end-condition ids must be unique"
+            )
+        for index, row in enumerate(end_conditions):
+            if not executable_end_condition(row.get("condition")):
+                failures.append(
+                    f"15.3.10 scenario {scenario_id} end_conditions[{index}] must resolve an executable condition"
+                )
 
     if ai_profiles:
         failures.append("15.3.11 audit assumption changed: AI profiles are now present")

@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A-E are accepted; Phase F now makes the Bandit Scout's combat consequences actionable through bounded next-turn recovery/consciousness checks.
+The `game/dirps/` namespace is **G6 — Targeted** and is advancing through the gameplay roadmap in issue **#178**. Phases A-F are accepted; Phase G now composes those mechanics into one neutral Scenario 01 progression/completion path.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -175,7 +175,7 @@ Use DIRPS to identify:
 
 Reusable contract improvements belong in DODGE rather than private DIRPS or Wretched dialects.
 
-G2/G3/G4/G5/G6 and Phase A-E evidence remains in the existing validation documents. Gameplay Phase F consumes the same neutral combat snapshot for the required beginning-of-turn HT stay-conscious and physical-stun recovery checks, preserves deterministic evidence/replay, and adds a thin state-continuation target mode; evidence lives in `game/dirps/docs/phase-f-recovery-consciousness-validation.md`. Phase G — scenario progression and completion — is next after Phase F acceptance. G7 has not started.
+G2/G3/G4/G5/G6 and Phase A-F evidence remains in the existing validation documents. Gameplay Phase G adds a composed neutral runtime snapshot, canonical encounter advancement, retained encounter information/consequences, and explicit DODGE objective/end-condition semantics while preserving every accepted mechanic record. Evidence lives in `game/dirps/docs/phase-g-scenario-progression-validation.md`. Phase H — full session history / replay — remains next; G7 has not started.
 
 Current DIRPS maturity:
 
@@ -184,7 +184,7 @@ Current DIRPS maturity:
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
-- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, and Phase E `damage_injury` remain **exercised** / `not-yet-candidate`; Phase F adds no new promotion, and `replay_session_history` / `visibility_and_secret_state` remain **suspected**;
+- `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, and Phase E `damage_injury` remain **exercised** / `not-yet-candidate`; Phases F-G add no new promotion, and `replay_session_history` / `visibility_and_secret_state` remain **suspected**;
 - one registered debug CLI target now consumes the accepted resolved/runtime path and exposes execution/provenance evidence without owning gameplay semantics;
 - gameplay convergence is tracked in issue **#178** and maturity/conformance in **#163**; G7 requires a separate whole-system reference-quality review after the playable roadmap is complete enough to support it.
 
