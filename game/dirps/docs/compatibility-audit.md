@@ -154,3 +154,16 @@ Each history step preserves declared action/actor identity, exact Phase G random
 Complete deterministic success and failure runs are reproduced from step zero. Negative evidence corrupts random evidence, state hashes, source identity, and resolved binding semantics, and verifies visible failure at the earliest applicable boundary.
 
 This is sufficient concrete DIRPS execution evidence to move `replay_session_history` to **exercised / not-yet-candidate**. It remains below candidate because one game is not enough evidence for an upstream generic DODGE contract.
+
+
+## Phase I player-facing Web target result
+
+Gameplay roadmap Phase I adds presentation without changing the game model or proto maturity.
+
+The browser target is intentionally **not** a JavaScript port of DIRPS mechanics. `src/renderers/dirps-web.js` boots a pinned Pyodide runtime, mounts the registered DIRPS authored data plus the existing Python semantic validator/resolver/runtime, and imports `tools/dirps_web_target.py`.
+
+The Python Web adapter consumes Phase H session history as its state/evidence boundary. It obtains current actions from `describe_scenario()`, passes the selected `action_id` / `actor_ref` plus one generic deterministic `random_seed` to `append_scenario_session_step()`, and presents the resulting unchanged Phase G transition record. Encounter-specific dice shapes, target resolution, social tables, defense/damage, recovery, progression, completion, and replay remain runtime-owned.
+
+Source-level regressions prohibit Scenario 01 encounter/action gameplay literals and mechanic-specific random-input keys in the JavaScript renderer. End-to-end evidence drives the complete scenario using only runtime-described actions.
+
+Phase I therefore exercises a second real target over the accepted resolver/runtime/replay boundary without adding a private target rules engine. No DODGE or proto promotion is required.
