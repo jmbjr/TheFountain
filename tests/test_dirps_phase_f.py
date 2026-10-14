@@ -538,9 +538,14 @@ class DirpsPhaseFRecoveryTests(unittest.TestCase):
                 "derived_values",
                 "expressions",
                 "damage_injury",
+                "replay_session_history",
             },
         )
-        self.assertEqual(specs["replay_session_history"]["status"], "suspected")
+        self.assertEqual(specs["replay_session_history"]["status"], "exercised")
+        self.assertEqual(
+            specs["replay_session_history"]["candidate_for_dodge"],
+            "not-yet-candidate",
+        )
         self.assertEqual(specs["visibility_and_secret_state"]["status"], "suspected")
 
 
