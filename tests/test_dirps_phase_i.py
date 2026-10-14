@@ -90,7 +90,9 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             {"random_seed": seed},
         )
         self.assertEqual(
-            view["latest_execution"]["mechanic_result"]["random_evidence"]["algorithm"],
+            view["latest_execution"]["mechanic_result"]["skill_resolution"][
+                "random_evidence"
+            ]["algorithm"],
             "sha256-rejection-v1",
         )
 
