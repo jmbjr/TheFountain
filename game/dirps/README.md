@@ -29,7 +29,8 @@ game/dirps/
 │   ├── phase-e-bounded-combat-validation.md
 │   ├── phase-f-recovery-consciousness-validation.md
 │   ├── phase-g-scenario-progression-validation.md
-│   └── phase-h-session-history-validation.md
+│   ├── phase-h-session-history-validation.md
+│   └── phase-i-web-target-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -40,11 +41,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase H — full session history / replay**.
+DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase I — player-facing Web target**.
 
-The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` still produces `dirps-resolved-game.v1`; accepted Phase G supplies the composed `scenario-01-playable-initial` runtime snapshot and `dirps-scenario-progression-result.v1` transitions. Phase H adds `dirps-session-history.v1`, a target-neutral copy-on-append sequence that preserves declared actions, deterministic random inputs, state hashes, traces, and exact Phase G transition records, then replays them from the accepted initial state. `docs/phase-h-session-history-validation.md` records the current evidence. Phase I Web presentation and G7 remain unimplemented.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` still produces `dirps-resolved-game.v1`; accepted Phase G supplies the composed `scenario-01-playable-initial` runtime snapshot and `dirps-scenario-progression-result.v1` transitions. Phase H adds `dirps-session-history.v1`, a target-neutral copy-on-append sequence that preserves declared actions, deterministic random inputs, state hashes, traces, and exact Phase G transition records, then replays them from the accepted initial state. Phase I adds a browser target at `/dirps/` that boots the same Python resolver/runtime through pinned Pyodide rather than duplicating gameplay semantics in JavaScript. `docs/phase-i-web-target-validation.md` records the current target evidence. G7 remains unimplemented.
 
-The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain all accepted G5/G6 and Phase A-G evidence and add Phase H full-session, copy-on-append, source-identity, continuity, hash, and first-divergence evidence.
+The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain all accepted G5/G6 and Phase A-H evidence and add Phase I browser-target/runtime-equivalence, end-to-end play, visible-error, and no-shadow-rules evidence.
 
 ## Authority boundary
 
@@ -66,7 +67,7 @@ resolved game
 runtime / replay / targets
 ```
 
-The DODGE document targets DODGE 0.2.1 and remains resolved through the accepted G4 boundary. G5 adds a renderer-independent execution layer that consumes only `dirps-resolved-game.v1`; G6 adds a debug CLI that consumes the runtime rather than rereading or reinterpreting authored source. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
+The DODGE document targets DODGE 0.2.1 and remains resolved through the accepted G4 boundary. G5 adds a renderer-independent execution layer that consumes only `dirps-resolved-game.v1`; G6 first added a debug CLI that consumes the runtime rather than rereading or reinterpreting authored source. Phase I retains that CLI and adds a second target: the browser loads the registered DIRPS source/resolver/runtime into Pyodide and runs those same Python semantics directly. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
 The proto sidecar records execution evidence without speculative promotion. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, and `lookup_tables` remain `exercised` / `not-yet-candidate`. Phase E genuinely exercises `reaction_timing`, `derived_values`, `expressions`, and the bounded `damage_injury` gap; all remain `not-yet-candidate`. Phases F and G add no proto promotion. Phase H now exercises `replay_session_history` through a complete target-neutral Scenario 01 history/replay contract, but keeps it `not-yet-candidate`. `visibility_and_secret_state` remains `suspected`.
 
@@ -77,4 +78,4 @@ The proto sidecar records execution evidence without speculative promotion. `dic
 Scenario fiction and character values are DIRPS prototype assumptions. GURPS mechanics remain external authoritative rules and are not reproduced verbatim here.
 
 
-Phase G evidence is in `docs/phase-g-scenario-progression-validation.md`: the accepted encounters share one neutral full-scenario snapshot, preserve information/consequences as they advance in canonical order, and terminate through explicit DODGE win/loss conditions. Phase H evidence is in `docs/phase-h-session-history-validation.md`: full sessions are now recorded copy-on-append and replayed transition-by-transition with source identity, state hashes, random inputs, traces, and first-divergence detection. Phase I Web presentation and G7 remain later work.
+Phase G evidence is in `docs/phase-g-scenario-progression-validation.md`: the accepted encounters share one neutral full-scenario snapshot, preserve information/consequences as they advance in canonical order, and terminate through explicit DODGE win/loss conditions. Phase H evidence is in `docs/phase-h-session-history-validation.md`: full sessions are recorded copy-on-append and replayed transition-by-transition with source identity, state hashes, random inputs, traces, and first-divergence detection. Phase I evidence is in `docs/phase-i-web-target-validation.md`: `/dirps/` presents character/scenario state, runtime-described actions, recorded random/result/provenance evidence, and session history while executing the same Python resolver/runtime in-browser. G7 remains later work.
