@@ -54,6 +54,14 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install "jsonschema>=4.23,<5" reportlab pillow pypdf
+      - name: Install Phase I browser smoke dependencies
+        working-directory: the-fountain
+        run: |
+          npm install --no-save --no-package-lock playwright@1.64.1
+          npx playwright install --with-deps chromium
+      - name: Run DIRPS browser/Pyodide smoke
+        working-directory: the-fountain
+        run: npm run test:dirps-web-smoke
       - name: Discover and validate registered DODGE games
         working-directory: the-fountain
         run: |
