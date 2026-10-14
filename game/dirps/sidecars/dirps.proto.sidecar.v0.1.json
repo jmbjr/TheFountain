@@ -926,7 +926,7 @@
     "scenario-01": {
       "scenario_ref": "scenario-01",
       "runtime_state_ref": "scenario-01-playable-initial",
-      "encounter_order_source": "scenario.progression.encounter_order",
+      "encounter_order_source": "scenario.encounters",
       "progress_refs": {
         "status": "scenario-progress-status",
         "current_encounter": "scenario-current-encounter",
