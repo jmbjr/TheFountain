@@ -56,6 +56,8 @@ The final bounded Bandit Scout result determines the tutorial end state:
 
 These are Scenario 01 prototype semantics, not GURPS rules.
 
+The executable runtime validates that resolved authority before it uses the bounded terminal interpreter. The success trigger must remain exactly `bandit-scout + can_act_normally=false`; the failure trigger must remain exactly `bandit-scout + can_act_normally=true`. Each canonical terminal state must also remain aligned with the sidecar-declared terminal effect refs, the DODGE outcome condition, and the corresponding scenario end condition. Resolved-model drift fails before gameplay continues instead of leaving a second hard-coded terminal authority path.
+
 ## Runtime and record compatibility
 
 Phase G adds new scenario-level APIs:
@@ -82,6 +84,8 @@ One-record Phase G replay re-executes the selected mechanic and progression tran
 - one Phase G record replays identically and tampering diverges;
 - swapping the middle encounters in the canonical source changes the next runtime encounter after Roadside, proving the runtime follows canonical order rather than a copied target/runtime order;
 - DODGE objective/end-state drift and sidecar bridge drift fail semantic resolution;
+- post-resolution mutation of a canonical completion trigger fails visibly before runtime execution;
+- post-resolution terminal effect or terminal condition drift fails visibly before runtime execution;
 - `replay_session_history` remains `suspected` / `not-yet-candidate`;
 - accepted nested Phase E/F record identities remain unchanged.
 
