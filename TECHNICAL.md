@@ -661,7 +661,7 @@ Phase E combat state
 → thin debug continuation target
 ```
 
-The external GURPS Lite source owns the HT check rules. Canonical Scenario 01 owns only the bounded action/timing/order and the provisional Strong/Weak Will modifier assumption. DODGE owns `hit-points`, `stunned`, `unconscious`, the provisional `consciousness-check-required` bookkeeping value, and structured effects. `phase_f_recovery_bindings` owns only orchestration/source locators/result identities.
+The external GURPS Lite source owns the HT check rules. Canonical Scenario 01 owns only the bounded action/timing/order and the provisional Strong/Weak Will modifier assumption. DODGE owns `hit-points`, `stunned`, `unconscious`, the provisional `consciousness-check-required` bookkeeping value, and structured effects. `phase_f_recovery_bindings` owns orchestration/source locators/result identities **and explicitly pins every reused accepted success-roll dependency**: `dice_resolution_ref`, the Phase A `critical_resolution_ref`, and the Phase A `random_evidence_ref`. Runtime binding validation checks those refs before any recovery roll; each HT-check trace preserves all three for auditability.
 
 Recovery does not fabricate a new runtime state. It requires a Phase E state revision >= 1 and validates consistency between HP, unconsciousness, and the stay-conscious obligation. Consciousness is resolved before stun recovery. A failed stay-conscious check sets unconsciousness and clears the provisional obligation; a successful check leaves the obligation active while HP remains <= 0. Stun recovery runs only if the actor remains conscious.
 
