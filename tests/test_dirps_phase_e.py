@@ -381,7 +381,7 @@ class DirpsPhaseEBoundedCombatTests(unittest.TestCase):
                 "not-yet-candidate",
             )
         self.assertEqual(specs["lookup_tables"]["status"], "exercised")
-        self.assertEqual(specs["replay_session_history"]["status"], "suspected")
+        self.assertEqual(specs["replay_session_history"]["status"], "exercised")
         self.assertEqual(specs["visibility_and_secret_state"]["status"], "suspected")
 
     def test_generic_target_dispatches_combat(self):
