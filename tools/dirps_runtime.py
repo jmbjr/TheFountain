@@ -2129,6 +2129,30 @@ def _phase_d_attribute_resolution(
         raise ExecutionError("Phase D effective target is below the supported minimum")
 
     phase_a = _execution_binding(resolved)
+    if binding["dice_resolution_ref"] != phase_a.get("dice_resolution_ref"):
+        raise ExecutionError(
+            "Phase F roll dice_resolution_ref disagrees with the accepted Phase A binding"
+        )
+    if binding["critical_resolution_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.critical_resolution"
+    ):
+        raise ExecutionError(
+            "Phase F roll critical_resolution_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("critical_resolution"),
+        "Phase F roll referenced Phase A critical_resolution",
+    )
+    if binding["random_evidence_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.random_evidence"
+    ):
+        raise ExecutionError(
+            "Phase F roll random_evidence_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("random_evidence"),
+        "Phase F roll referenced Phase A random_evidence",
+    )
     dice = _dice_contract(resolved, phase_a)
     terms, evidence_kind = _random_terms(
         dice_terms=dice_terms,
@@ -3334,6 +3358,8 @@ def _phase_f_binding(resolved, encounter_ref):
         "timing": "next-turn-start",
         "minimum_state_revision": 1,
         "ht_source": "encounter.opponent.attributes.ht",
+        "dice_resolution_ref": "dice_resolution",
+        "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution",
         "random_evidence_ref": "phase_a_execution_bindings.attempt-skill.random_evidence",
         "long_term_unconscious_recovery": "unsupported",
         "check_result_format": PHASE_F_CHECK_FORMAT,
@@ -3371,6 +3397,32 @@ def _phase_f_binding(resolved, encounter_ref):
         "rule_locator": "p. 27, Stunning; p. 26, Knockdown and Stunning",
     }:
         raise ExecutionError("Phase F stun-recovery binding is unsupported or malformed")
+
+    phase_a = _execution_binding(resolved)
+    if binding["dice_resolution_ref"] != phase_a.get("dice_resolution_ref"):
+        raise ExecutionError(
+            "Phase F dice_resolution_ref disagrees with the accepted Phase A binding"
+        )
+    if binding["critical_resolution_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.critical_resolution"
+    ):
+        raise ExecutionError(
+            "Phase F critical_resolution_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("critical_resolution"),
+        "Phase F referenced Phase A critical_resolution",
+    )
+    if binding["random_evidence_ref"] != (
+        "phase_a_execution_bindings.attempt-skill.random_evidence"
+    ):
+        raise ExecutionError(
+            "Phase F random_evidence_ref is unsupported or malformed"
+        )
+    _require_mapping(
+        phase_a.get("random_evidence"),
+        "Phase F referenced Phase A random_evidence",
+    )
     return binding
 
 
@@ -3539,6 +3591,8 @@ def _phase_f_roll(
             "rule_source_ref": rule["rule_source_ref"],
             "rule_authority": "authoritative",
             "rule_locator": rule["rule_locator"],
+            "dice_resolution_ref": binding["dice_resolution_ref"],
+            "critical_resolution_ref": binding["critical_resolution_ref"],
             "random_evidence_ref": binding["random_evidence_ref"],
         },
     }
