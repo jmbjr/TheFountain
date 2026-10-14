@@ -668,3 +668,30 @@ Recovery does not fabricate a new runtime state. It requires a Phase E state rev
 The target requires explicit post-combat state (including through CLI `--state-json`) and passes it to the runtime. It does not know the bandit id, state refs, check order, HT target, or effects.
 
 No proto maturity changes in Phase F. Long-term unconscious recovery/healing and scenario progression remain later work.
+
+
+### DIRPS gameplay Phase G — scenario progression and completion
+
+Phase G composes the accepted Phase A-F mechanic runtimes without turning the new orchestration layer into a second gameplay authority:
+
+```text
+canonical scenario progression/order/completion
+→ DODGE scenario-owned progress values + conditions + effects + end conditions
+→ dirps@0.1.0 source validation
+→ dirps-resolved-game.v1
+→ Phase G scenario runtime
+→ accepted Phase B/C/D/E/F mechanic runtime
+→ dirps-scenario-progression-result.v1
+```
+
+Canonical `scenario.json` owns encounter ordering and the bounded interpretation of the Missing Courier success/failure branches. Standard DODGE 0.2.1 owns the normalized progress-state vocabulary, objective condition reference, terminal predicates, set effects, and scenario end conditions. The sidecar's `phase_g_progression_bindings` contains only the orchestration bridge from a completed heterogeneous mechanic result to those normalized effects.
+
+The accepted phase-specific runtime states remain unchanged. `scenario-01-playable-initial` is an additive full-scenario snapshot composed from those states plus five scenario-owned progress bindings. The Phase G runtime projects only the accepted state subset needed by the current mechanic, runs that mechanic against its existing local revision contract, then merges only its state values back into the full scenario snapshot. The full scenario revision advances once per declared scenario action. This preserves earlier mechanic/result identities rather than redefining them in place.
+
+`describe_scenario()` exposes only the current canonical encounter action and returns retained information/consequence state. `execute_scenario_action()` rejects out-of-order, repeated, post-terminal, and unsupported-input branches visibly. Progression reads `scenario.progression.encounter_order` from the resolved canonical source; perturbing the canonical middle-encounter order changes runtime advancement without target or sidecar reorder literals.
+
+At Bandit Scout, Phase G executes the accepted Phase E exchange and enters Phase F recovery only when the neutral injury state requires it. The resulting ability-to-act state selects the canonical terminal branch. DODGE `scenario-success` and `scenario-failure` conditions are then evaluated against neutral state and mapped to the declared `missing-courier-success` / `missing-courier-failure` end conditions.
+
+`dirps-scenario-progression-result.v1` is a new wrapper contract. It nests the accepted mechanic result unchanged, records full before/after state plus progression deltas, and traces canonical order and terminal-condition refs. `replay_scenario_progression()` deterministically replays one wrapper record and detects divergence. It does not create an append-only multi-step session log, so `replay_session_history` remains a suspected Phase H gap.
+
+No target change is required for Phase G semantics. Existing targets remain downstream consumers; player-facing scenario presentation is still a later roadmap tranche.
