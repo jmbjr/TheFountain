@@ -255,7 +255,7 @@ class DirpsPhaseBRoadsideInvestigationTests(unittest.TestCase):
 
     def test_phase_b_standard_state_gaps_remain_unpromoted(self):
         specs = self.resolved["proto_sidecar"]["proto_specs"]
-        self.assertEqual(specs["replay_session_history"]["status"], "suspected")
+        self.assertEqual(specs["replay_session_history"]["status"], "exercised")\n        self.assertEqual(specs["replay_session_history"]["candidate_for_dodge"], "not-yet-candidate")
         self.assertEqual(specs["visibility_and_secret_state"]["status"], "suspected")
 
     def test_target_inspects_and_executes_same_runtime_state(self):
