@@ -27,7 +27,8 @@ game/dirps/
 │   ├── phase-c-frightened-witness-validation.md
 │   ├── phase-d-washed-out-path-validation.md
 │   ├── phase-e-bounded-combat-validation.md
-│   └── phase-f-recovery-consciousness-validation.md
+│   ├── phase-f-recovery-consciousness-validation.md
+│   └── phase-g-scenario-progression-validation.md
 └── scenarios/
     └── scenario-01/
         ├── README.md
@@ -38,11 +39,11 @@ game/dirps/
 
 ## Maturity
 
-DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase F — recovery / consciousness**.
+DIRPS Scenario 01 remains **G6 — Targeted** and is now advancing through gameplay roadmap **Phase G — scenario progression / completion**.
 
-The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` produces `dirps-resolved-game.v1` and preserves standard DODGE runtime-state snapshots; `tools/dirps_runtime.py` preserves the accepted Phase A-E contracts and now consumes the exact Phase E post-combat state for next-turn HT consciousness/stun-recovery checks; and `tools/dirps_debug_target.py` adds a thin continuation mode over the same runtime state. `docs/phase-f-recovery-consciousness-validation.md` records the current gameplay evidence. Scenario progression/completion and later mechanics remain unimplemented; G7 is not claimed.
+The authored DODGE document remains schema/core-valid and retains `dirps@0.1.0` at both `source` and `resolved-game`. `tools/resolve_dirps_dodge.py` still produces `dirps-resolved-game.v1`; Phase G adds standard DODGE progress values, objective/end conditions, and a composed `scenario-01-playable-initial` runtime snapshot while preserving the accepted phase-specific states. `tools/dirps_runtime.py` layers a new `dirps-scenario-progression-result.v1` over the unchanged Phase A-F mechanic records and follows canonical encounter order to deterministic success/failure. `docs/phase-g-scenario-progression-validation.md` records the gameplay evidence. Full session history and G7 remain unimplemented.
 
-The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain the named G5/G6 and Phase A-E evidence and add named Phase F recovery/runtime-target PASS lines.
+The generic TheFountain conformance runner must retain the DIRPS DODGE schema/source/resolver/resolved PASS lines. Discovered Python tests retain all accepted G5/G6 and Phase A-F evidence and add Phase G progression/completion, perturbation, negative-path, and one-record replay evidence.
 
 ## Authority boundary
 
@@ -66,7 +67,7 @@ runtime / replay / targets
 
 The DODGE document targets DODGE 0.2.1 and remains resolved through the accepted G4 boundary. G5 adds a renderer-independent execution layer that consumes only `dirps-resolved-game.v1`; G6 adds a debug CLI that consumes the runtime rather than rereading or reinterpreting authored source. Its actor values explicitly declare actor ownership and Scenario 01 persistence; persistence beyond this bounded scenario remains intentionally unresolved for a later semantic gate. Anything that does not fit cleanly is declared in the DIRPS proto sidecar rather than smuggled into a renderer or runtime special case.
 
-The proto sidecar records execution evidence without speculative promotion. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, and `lookup_tables` remain `exercised` / `not-yet-candidate`. Phase E genuinely exercises `reaction_timing`, `derived_values`, `expressions`, and the bounded `damage_injury` gap; all remain `not-yet-candidate`. Phase F adds no new proto promotion: the two HT checks reuse existing procedure/result/evidence machinery and standard DODGE actor state/effects. `replay_session_history` and `visibility_and_secret_state` remain `suspected`.
+The proto sidecar records execution evidence without speculative promotion. `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, and `lookup_tables` remain `exercised` / `not-yet-candidate`. Phase E genuinely exercises `reaction_timing`, `derived_values`, `expressions`, and the bounded `damage_injury` gap; all remain `not-yet-candidate`. Phases F and G add no new proto promotion: recovery reuses existing procedure/result/evidence machinery, while Phase G uses standard DODGE state/condition/effect/objective/end-condition semantics plus one bounded sidecar orchestration bridge. `replay_session_history` and `visibility_and_secret_state` remain `suspected`.
 
 ## Scenario 01
 
@@ -75,4 +76,4 @@ The proto sidecar records execution evidence without speculative promotion. `dic
 Scenario fiction and character values are DIRPS prototype assumptions. GURPS mechanics remain external authoritative rules and are not reproduced verbatim here.
 
 
-Phase F evidence: `docs/phase-f-recovery-consciousness-validation.md`. The post-combat path consumes the same Phase E actor-state snapshot, executes the bounded next-turn HT consciousness/stun checks with deterministic evidence, and preserves long-term unconscious recovery as an explicit unsupported boundary. Phase G progression/completion and G7 remain later work.
+Phase F evidence remains in `docs/phase-f-recovery-consciousness-validation.md`. Phase G evidence is in `docs/phase-g-scenario-progression-validation.md`: the accepted encounters now share one neutral full-scenario snapshot, preserve information/consequences as they advance in canonical order, and terminate through explicit DODGE win/loss conditions. Full append-only session history and G7 remain later work.
