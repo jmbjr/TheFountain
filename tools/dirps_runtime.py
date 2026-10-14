@@ -4009,6 +4009,148 @@ def _phase_g_binding(resolved):
     return binding
 
 
+def _phase_g_validate_completion_contract(resolved, binding, completion):
+    refs = binding["progress_refs"]
+    expected = {
+        "success": {
+            "trigger": {
+                "encounter_ref": "bandit-scout",
+                "bandit_can_act_normally": False,
+            },
+            "state": {
+                "status": "complete",
+                "current_encounter": "complete",
+                "step": "complete",
+                "outcome": "success",
+                "information": "courier-fate-established",
+            },
+            "condition_ref": binding["completion_condition_ref"],
+            "end_condition": {
+                "id": "missing-courier-success",
+                "outcome": "win",
+                "condition": binding["completion_condition_ref"],
+                "priority": 1,
+            },
+        },
+        "failure": {
+            "trigger": {
+                "encounter_ref": "bandit-scout",
+                "bandit_can_act_normally": True,
+            },
+            "state": {
+                "status": "complete",
+                "current_encounter": "complete",
+                "step": "complete",
+                "outcome": "failure",
+                "information": "courier-fate-unresolved",
+            },
+            "condition_ref": binding["failure_condition_ref"],
+            "end_condition": {
+                "id": "missing-courier-failure",
+                "outcome": "loss",
+                "condition": binding["failure_condition_ref"],
+                "priority": 2,
+            },
+        },
+    }
+    effects = _require_mapping(
+        (resolved.get("rules") or {}).get("effects"), "resolved effects"
+    )
+    conditions = _require_mapping(
+        (resolved.get("rules") or {}).get("conditions"), "resolved conditions"
+    )
+    scenario = _require_mapping(resolved.get("scenario"), "resolved scenario")
+    end_conditions = scenario.get("end_conditions")
+    if not isinstance(end_conditions, list):
+        raise ExecutionError("Phase G scenario end_conditions must be a list")
+
+    for branch, expected_branch in expected.items():
+        row = _require_mapping(
+            completion.get(branch), f"Phase G canonical {branch} completion branch"
+        )
+        if row.get("trigger") != expected_branch["trigger"]:
+            raise ExecutionError(
+                f"Phase G canonical {branch} completion trigger is unsupported or drifted"
+            )
+        state = _require_mapping(
+            row.get("state"), f"Phase G canonical {branch} terminal state"
+        )
+        if state != expected_branch["state"]:
+            raise ExecutionError(
+                f"Phase G canonical {branch} terminal state is unsupported or drifted"
+            )
+        if not isinstance(row.get("conclusion_text"), str) or not row.get(
+            "conclusion_text"
+        ):
+            raise ExecutionError(
+                f"Phase G canonical {branch} completion conclusion is missing"
+            )
+
+        expected_by_ref = {
+            refs[role]: state[role]
+            for role in ("status", "current_encounter", "step", "outcome", "information")
+        }
+        effect_refs = binding["terminal_effect_refs"].get(branch)
+        if not isinstance(effect_refs, list):
+            raise ExecutionError(
+                f"Phase G {branch} terminal-effect bridge is malformed"
+            )
+        seen_targets = set()
+        for effect_ref in effect_refs:
+            effect = _require_mapping(
+                effects.get(effect_ref), f"Phase G {branch} terminal effect {effect_ref}"
+            )
+            target_ref = effect.get("target_ref")
+            if (
+                effect.get("op") != "set"
+                or effect.get("subject") != {"relative": "scenario"}
+                or effect.get("source_ref") != binding["scenario_source_ref"]
+                or effect.get("authority") != "provisional"
+                or target_ref not in expected_by_ref
+                or effect.get("value") != expected_by_ref.get(target_ref)
+            ):
+                raise ExecutionError(
+                    f"Phase G {branch} terminal state/effect alignment drifted"
+                )
+            if target_ref in seen_targets:
+                raise ExecutionError(
+                    f"Phase G {branch} terminal effects duplicate state target {target_ref}"
+                )
+            seen_targets.add(target_ref)
+        if seen_targets != set(expected_by_ref):
+            raise ExecutionError(
+                f"Phase G {branch} terminal effects do not cover canonical terminal state"
+            )
+
+        condition_ref = expected_branch["condition_ref"]
+        condition = _require_mapping(
+            conditions.get(condition_ref),
+            f"Phase G {branch} terminal condition {condition_ref}",
+        )
+        if (
+            condition.get("op") != "eq"
+            or condition.get("left")
+            != {"ref": refs["outcome"], "subject": {"relative": "scenario"}}
+            or condition.get("right") != state["outcome"]
+            or condition.get("source_ref") != binding["scenario_source_ref"]
+            or condition.get("authority") != "provisional"
+        ):
+            raise ExecutionError(
+                f"Phase G {branch} terminal state/condition alignment drifted"
+            )
+
+        matches = [
+            end_condition
+            for end_condition in end_conditions
+            if isinstance(end_condition, dict)
+            and end_condition.get("condition") == condition_ref
+        ]
+        if matches != [expected_branch["end_condition"]]:
+            raise ExecutionError(
+                f"Phase G {branch} end-condition bridge is unsupported or drifted"
+            )
+
+
 def _phase_g_progression(resolved, binding):
     scenario = _require_mapping(resolved.get("scenario"), "resolved scenario")
     progression = _require_mapping(
@@ -4043,7 +4185,31 @@ def _phase_g_progression(resolved, binding):
     )
     if completion.get("objective_id") != "resolve-courier-mystery":
         raise ExecutionError("Phase G objective identity is unsupported")
+    _phase_g_validate_completion_contract(resolved, binding, completion)
     return progression, order, completion
+
+
+def _phase_g_terminal_branch(completion, *, encounter_ref, can_act_normally):
+    if not isinstance(can_act_normally, bool):
+        raise ExecutionError("Phase G terminal actor capability must be boolean")
+    matches = []
+    for branch in ("success", "failure"):
+        row = _require_mapping(
+            completion.get(branch), f"Phase G canonical {branch} completion branch"
+        )
+        trigger = _require_mapping(
+            row.get("trigger"), f"Phase G canonical {branch} completion trigger"
+        )
+        if (
+            trigger.get("encounter_ref") == encounter_ref
+            and trigger.get("bandit_can_act_normally") is can_act_normally
+        ):
+            matches.append(branch)
+    if len(matches) != 1:
+        raise ExecutionError(
+            "Phase G canonical completion trigger does not select exactly one terminal branch"
+        )
+    return matches[0]
 
 
 def _phase_g_binding_key(row):
@@ -4503,14 +4669,23 @@ def execute_scenario_action(
                 )
             )
         else:
-            terminal_branch = "success" if (unconscious or stunned) else "failure"
-    else:
-        can_act_normally = bool(
-            _require_mapping(mechanic.get("outcome"), "Phase G recovery outcome").get(
-                "can_act_normally"
+            terminal_branch = _phase_g_terminal_branch(
+                completion,
+                encounter_ref=current,
+                can_act_normally=(
+                    not unconscious and not stunned and not consciousness_required
+                ),
             )
+    else:
+        recovery_outcome = _require_mapping(
+            mechanic.get("outcome"), "Phase G recovery outcome"
         )
-        terminal_branch = "failure" if can_act_normally else "success"
+        can_act_normally = recovery_outcome.get("can_act_normally")
+        terminal_branch = _phase_g_terminal_branch(
+            completion,
+            encounter_ref=current,
+            can_act_normally=can_act_normally,
+        )
 
     if terminal_branch is not None:
         for effect_ref in binding["terminal_effect_refs"][terminal_branch]:
