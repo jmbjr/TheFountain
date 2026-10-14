@@ -30,7 +30,7 @@
     "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window.",
     "phase_d_note": "Phase D reuses the accepted success-roll/dice/procedure-context machinery for a canonical DX-based environmental check and standard DODGE runtime state/effects for consequences. No new proto concept is promoted.",
     "phase_e_note": "Phase E executes one bounded attack -> active defense -> damage -> injury sequence. reaction_timing, derived_values, expressions, and damage_injury are exercised from target-neutral sidecar contracts. lookup_tables remains exercised via a bounded ST10 swing-damage lookup. Unsupported combat options fail visibly.",
-    "phase_f_note": "Phase F resolves the next-turn HT consciousness obligation and physical-stun recovery over the exact Phase E combat runtime state. GURPS Lite owns the HT checks and state consequences; Scenario 01 owns the bounded actor/action/timing/order plus a prototype 0 Strong/Weak Will modifier assumption; DODGE set effects own normalized state mutation; the sidecar only orchestrates the two checks. Long-term recovery from unconsciousness and healing remain unsupported."
+    "phase_f_note": "Phase F resolves the next-turn HT consciousness obligation and physical-stun recovery over the exact Phase E combat runtime state. GURPS Lite owns the HT checks and state consequences; Scenario 01 owns the bounded actor/action/timing/order plus a prototype 0 Strong/Weak Will modifier assumption; DODGE set effects own normalized state mutation; the sidecar only orchestrates the two checks. Long-term recovery from unconsciousness and healing remain unsupported. Phase F explicitly pins the accepted reusable success-roll dependencies: dice_resolution, Phase A critical_resolution, and Phase A random_evidence; HT-check traces preserve all three refs for executable auditability."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -917,7 +917,9 @@
       "check_result_format": "dirps-ht-check-result.v1",
       "result_format": "dirps-recovery-result.v1",
       "binding_source_ref": "dirps-proto",
-      "scenario_source_ref": "scenario-01-source"
+      "scenario_source_ref": "scenario-01-source",
+      "dice_resolution_ref": "dice_resolution",
+      "critical_resolution_ref": "phase_a_execution_bindings.attempt-skill.critical_resolution"
     }
   }
 }
