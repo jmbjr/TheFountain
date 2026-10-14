@@ -719,3 +719,18 @@ Negative tests reject out-of-order actions, unsupported inputs, repeated/post-te
 No target becomes a rules engine, no new proto concept is promoted, and G7 is not claimed.
 
 Independent Phase G review found one remaining executable-authority gap: the canonical success/failure trigger objects were source-validated but not revalidated at the resolved runtime boundary, so the runtime's bounded terminal interpreter could continue unchanged if resolved completion semantics drifted after resolution. The corrected runtime now validates the exact canonical Bandit Scout triggers, verifies canonical terminal state against the declared DODGE effects/conditions/end conditions, and selects the terminal branch by matching the validated canonical `bandit_can_act_normally` trigger. New resolved-model drift tests corrupt the trigger, terminal effect, and terminal condition independently and require visible failure before gameplay proceeds.
+
+
+## DIRPS gameplay Phase H adds complete session replay
+
+**October 14, 2026.**
+
+After accepted/merged Phase G PR #185, DIRPS started Phase H from fresh post-merge `main` at `41689202b7224c5c548121f978c241908896225f`. Phase H closes the roadmap gap between one-transition re-evaluation and a reproducible/auditable complete Scenario 01 run while formal maturity remains G6.
+
+The new `dirps-session-history.v1` record is deliberately additive. It does not rewrite Phase G or any earlier result identity. A history begins with the accepted `scenario-01-playable-initial` snapshot and a canonical JSON SHA-256 identity over the declared resolved semantic inputs. Each appended step preserves the declared action/actor, exact Phase G random inputs, before/after state hashes, the Phase G resolution trace, and the complete `dirps-scenario-progression-result.v1` transition.
+
+Append is copy-on-append: the runtime validates/replays the prior history, rejects divergent or terminal histories, executes one new accepted Phase G transition, and returns a deep-copied history with that evidence appended. Full replay re-executes every transition from the initial state and stops at the first inconsistent step.
+
+Because DODGE 0.2.1 does not provide this immutable session-history structure, the implementation uses the already-declared `replay_session_history` proto gap. Phase H supplies the first concrete target-neutral complete-session execution evidence and therefore moves that proto concept from `suspected` to **`exercised`**, while keeping `candidate_for_dodge = not-yet-candidate`. No upstream DODGE change is proposed yet.
+
+Tests cover complete deterministic success and failure sessions, immutability/copy-on-append, preserved action/random/hash/trace evidence, resolved semantic source drift, prior-history tampering, terminal append rejection, partial-vs-complete replay, binding drift, and exact first-step divergence reporting. Phase I Web presentation and G7 remain separate later work.
