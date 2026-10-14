@@ -4,10 +4,12 @@ import json
 import sys
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT = Path(__file__).parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 
+import dirps_runtime
 from dirps_runtime import (
     ExecutionError,
     append_scenario_session_step,
@@ -198,14 +200,40 @@ class DirpsPhaseHSessionHistoryTests(unittest.TestCase):
                 self.resolved, tampered, require_complete=True
             )
 
-    def test_source_identity_drift_fails_before_step_replay(self):
+    def assert_source_identity_rejects_before_step_replay(self, resolved, history):
+        with patch.object(
+            dirps_runtime,
+            "execute_scenario_action",
+            side_effect=AssertionError("step replay must not execute after source drift"),
+        ) as execute:
+            with self.assertRaisesRegex(ExecutionError, "source identity mismatch"):
+                replay_scenario_session_history(
+                    resolved, history, require_complete=True
+                )
+            execute.assert_not_called()
+
+    def test_scenario_source_identity_drift_fails_before_step_replay(self):
         history = self.complete_success()
         resolved = copy.deepcopy(self.resolved)
         resolved["scenario"]["name"] = "Drifted Missing Courier"
-        with self.assertRaisesRegex(ExecutionError, "source identity mismatch"):
-            replay_scenario_session_history(
-                resolved, history, require_complete=True
-            )
+        self.assert_source_identity_rejects_before_step_replay(resolved, history)
+
+    def test_scene_source_identity_drift_fails_before_step_replay(self):
+        history = self.complete_success()
+        resolved = copy.deepcopy(self.resolved)
+        pc = next(
+            row for row in resolved["scene"]["instances"] if row["id"] == "pc"
+        )
+        pc["state"]["dx"] += 1
+        self.assert_source_identity_rejects_before_step_replay(resolved, history)
+
+    def test_proto_source_identity_drift_fails_before_step_replay(self):
+        history = self.complete_success()
+        resolved = copy.deepcopy(self.resolved)
+        resolved["proto_sidecar"]["phase_a_execution_bindings"]["attempt-skill"][
+            "result_scope"
+        ] = "drifted-result-scope"
+        self.assert_source_identity_rejects_before_step_replay(resolved, history)
 
     def test_append_rejects_tampered_prior_history_without_mutation(self):
         history = create_scenario_session_history(self.resolved)
@@ -264,6 +292,21 @@ class DirpsPhaseHSessionHistoryTests(unittest.TestCase):
         self.assertEqual(
             self.sidecar["phase_h_session_history_binding"]["session_format"],
             "dirps-session-history.v1",
+        )
+        self.assertEqual(
+            self.sidecar["phase_h_session_history_binding"]["source_identity_fields"],
+            [
+                "dodge_version",
+                "document_id",
+                "game_id",
+                "scenario_id",
+                "sources",
+                "rules",
+                "scenario",
+                "scene",
+                "runtime_states",
+                "proto_sidecar",
+            ],
         )
 
     def test_phase_h_binding_drift_fails_semantic_resolution(self):
