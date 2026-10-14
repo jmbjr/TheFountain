@@ -274,9 +274,6 @@ class DirpsPhaseGProgressionTests(unittest.TestCase):
             canonical["encounters"][2],
             canonical["encounters"][1],
         )
-        canonical["progression"]["encounter_order"] = [
-            row["id"] for row in canonical["encounters"]
-        ]
         resolved = resolve_documents(self.dodge, canonical, self.sidecar, self.cfg)
         state = create_scenario_runtime_state(resolved)
         record = self.execute(
