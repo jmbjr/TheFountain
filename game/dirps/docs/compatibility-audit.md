@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded compatibility audit for DIRPS Scenario 01. The candidate has reached **G6 — Targeted** with one debug CLI consuming the accepted ordinary success-roll runtime against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`, G3 source semantics in `g3-semantic-validation.md`, G4 neutral resolution in `g4-resolved-validation.md`, G5 runtime evidence in `g5-executable-validation.md`, and G6 target evidence in `g6-target-validation.md`.
+This is the bounded compatibility audit for DIRPS Scenario 01. The candidate remains **G6 — Targeted** and has now reached gameplay Phase G, with the accepted mechanics composed into one neutral start-to-finish scenario runtime against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`, G3 source semantics in `g3-semantic-validation.md`, G4 neutral resolution in `g4-resolved-validation.md`, G5 runtime evidence in `g5-executable-validation.md`, and G6 target evidence in `g6-target-validation.md`.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -21,6 +21,7 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 | Rules-resolution evidence | Gap | accepted G5 `dirps-execution-result.v1` plus contextual Phase A `dirps-execution-result.v2` traces | **Exercised**; not candidate |
 | Damage / injury composition | Gap | Phase E bounded ST/weapon → DR → cutting injury → actor state | **Exercised**; not candidate |
 | Immutable replay/session history | Gap | Proto sidecar: `replay_session_history` | Suspected; exercise first |
+| Scenario progression / objective / terminal state | Mostly expressible | Standard DODGE values, conditions, effects, objective completion, end conditions, and runtime state; bounded sidecar bridge dispatches completed heterogeneous mechanics | No new proto promotion |
 
 ## G3 semantic-validation result
 
@@ -129,3 +130,14 @@ A proto concept should become a DODGE candidate only after DIRPS can show:
 5. a plausible use outside GURPS-specific terminology.
 
 Until then it stays in the sidecar.
+
+
+## Phase G scenario-progression result
+
+Gameplay roadmap Phase G uses standard DODGE 0.2.1 semantics wherever the format already has them. Scenario progress is represented by typed scenario-owned values, terminal predicates by DODGE conditions, mutations by DODGE set effects, objective completion by a condition ref, and win/loss by scenario end conditions. A new full-scenario runtime snapshot composes the already-accepted phase-specific state without changing those earlier runtime-state definitions.
+
+Canonical `scenario.json` remains the only owner of encounter order and the tutorial's bounded interpretation of success/failure. The resolved model preserves `scenario.progression` plus DODGE `end_conditions`; the runtime reads that resolved order and never copies it into target code. A perturbation test swaps the middle canonical encounters and proves runtime progression follows the changed source.
+
+The sidecar's `phase_g_progression_bindings` is deliberately narrow: it maps a completed accepted mechanic result to normalized DODGE progress effects and terminal-condition refs. It does not define a second progress model and does not promote a new proto concept.
+
+`dirps-scenario-progression-result.v1` wraps the unchanged accepted Phase A-F mechanic record, exact full state before/after, progress effects, canonical-order trace, and terminal-condition refs. Its one-record replay detects divergence. This remains distinct from `replay_session_history`: Phase G does not create an immutable append-only multi-step session log, so that proto concept remains **suspected / not-yet-candidate**.
