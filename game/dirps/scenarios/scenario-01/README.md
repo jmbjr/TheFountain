@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase G gameplay candidate.** Accepted Phases A-F remain intact. Scenario 01 now composes their neutral state into one ordered runtime from Roadside Tracks through Bandit Scout completion, with explicit success/failure end states. `../../docs/phase-g-scenario-progression-validation.md` records the authority/state/perturbation/replay evidence.
+**G6 — Targeted, Phase H gameplay candidate.** Accepted Phases A-G remain intact. Scenario 01 now has a complete target-neutral session-history layer over the accepted ordered runtime, preserving step evidence and deterministically replaying a full run. `../../docs/phase-h-session-history-validation.md` records the history/replay evidence.
 
 ## Goal
 
@@ -33,7 +33,7 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B/C/D/E/F are accepted gameplay slices. Phase G composes them into one bounded tutorial state. Encounter failures before the Bandit Scout are retained as consequences but are nonterminal; the final bounded combat/recovery result determines whether Rook can establish the courier's fate. Long-term waking/healing and immutable multi-step session history remain later roadmap work.
+Phases B/C/D/E/F/G are accepted gameplay slices. Phase G composes them into one bounded tutorial state. Phase H records that runtime as an immutable copy-on-append multi-step evidence sequence and can reproduce a complete success or failure run. Long-term waking/healing and player-facing Web presentation remain later roadmap work.
 
 
 ## Phase D — Washed-Out Path
@@ -57,4 +57,13 @@ Full play begins from the neutral `scenario-01-playable-initial` runtime snapsho
 
 At the Bandit Scout, the accepted Phase E exchange either ends immediately if no recovery is required or enters the accepted Phase F recovery step. The resulting `can_act_normally` state drives the canonical bounded completion branch. DODGE `scenario-success` / `scenario-failure` conditions and `missing-courier-success` / `missing-courier-failure` end conditions make the terminal state explicit.
 
-Phase G emits a new `dirps-scenario-progression-result.v1` wrapper and leaves every accepted Phase A-F record identity unchanged. One-record replay is supported; append-only whole-session history is deliberately deferred to Phase H. Evidence: `../../docs/phase-g-scenario-progression-validation.md`.
+Phase G emits `dirps-scenario-progression-result.v1` and leaves every accepted Phase A-F record identity unchanged. One-record replay remains supported and is the transition primitive consumed by Phase H. Evidence: `../../docs/phase-g-scenario-progression-validation.md`.
+
+
+## Phase H — Full session history / replay
+
+Phase H adds `dirps-session-history.v1` without changing gameplay semantics. A session begins from `scenario-01-playable-initial` and appends only complete accepted Phase G transition records.
+
+Each step preserves declared action identity, exact deterministic random inputs, canonical JSON SHA-256 before/after state identities, the Phase G resolution trace, and the full transition record. The append API validates and replays the existing history before adding a new step and returns a deep-copied history rather than mutating prior evidence.
+
+Full-session replay re-executes each action from the accepted initial state and fails at the first inconsistent step. The resulting execution evidence moves `replay_session_history` from `suspected` to `exercised`, while keeping it `not-yet-candidate`. Evidence: `../../docs/phase-h-session-history-validation.md`.

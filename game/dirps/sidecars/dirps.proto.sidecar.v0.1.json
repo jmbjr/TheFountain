@@ -30,7 +30,8 @@
     "phase_c_note": "Phase C executes one GURPS Lite reaction roll for a request for information. It uses a declarative lookup table plus deterministic 3d6 evidence and canonical scenario-owned approach/consequence facts. lookup_tables becomes exercised/not-yet-candidate. reaction_timing remains suspected because an NPC reaction roll is not an interrupt/reaction window.",
     "phase_d_note": "Phase D reuses the accepted success-roll/dice/procedure-context machinery for a canonical DX-based environmental check and standard DODGE runtime state/effects for consequences. No new proto concept is promoted.",
     "phase_e_note": "Phase E executes one bounded attack -> active defense -> damage -> injury sequence. reaction_timing, derived_values, expressions, and damage_injury are exercised from target-neutral sidecar contracts. lookup_tables remains exercised via a bounded ST10 swing-damage lookup. Unsupported combat options fail visibly.",
-    "phase_f_note": "Phase F resolves the next-turn HT consciousness obligation and physical-stun recovery over the exact Phase E combat runtime state. GURPS Lite owns the HT checks and state consequences; Scenario 01 owns the bounded actor/action/timing/order plus a prototype 0 Strong/Weak Will modifier assumption; DODGE set effects own normalized state mutation; the sidecar only orchestrates the two checks. Long-term recovery from unconsciousness and healing remain unsupported. Phase F explicitly pins the accepted reusable success-roll dependencies: dice_resolution, Phase A critical_resolution, and Phase A random_evidence; HT-check traces preserve all three refs for executable auditability."
+    "phase_f_note": "Phase F resolves the next-turn HT consciousness obligation and physical-stun recovery over the exact Phase E combat runtime state. GURPS Lite owns the HT checks and state consequences; Scenario 01 owns the bounded actor/action/timing/order plus a prototype 0 Strong/Weak Will modifier assumption; DODGE set effects own normalized state mutation; the sidecar only orchestrates the two checks. Long-term recovery from unconsciousness and healing remain unsupported. Phase F explicitly pins the accepted reusable success-roll dependencies: dice_resolution, Phase A critical_resolution, and Phase A random_evidence; HT-check traces preserve all three refs for executable auditability.",
+    "phase_h_note": "Phase H aggregates the accepted Phase G scenario-transition records into an immutable copy-on-append session history. Each step preserves the declared action, deterministic random inputs, exact Phase G transition record and resolution trace, plus canonical-JSON SHA-256 before/after state identities. Replay starts from the accepted full-scenario initial state, re-executes every transition through the Phase G runtime, and fails at the first inconsistent step. The session source identity conservatively hashes the resolved scene and the entire resolved proto sidecar in addition to DODGE rules/scenario/runtime semantics, so any executable Phase A-H semantic drift is rejected before step replay. This is concrete target-neutral execution evidence for replay_session_history, which advances to exercised while remaining not-yet-candidate pending broader cross-game evidence."
   },
   "proto_specs": {
     "dice_resolution": {
@@ -278,30 +279,45 @@
       "phase_f_evidence": "Phase F preserves each executed HT roll, target/modifier provenance, skipped-check reason, normalized DODGE effect refs, and exact before/after combat state."
     },
     "replay_session_history": {
-      "status": "suspected",
+      "status": "exercised",
       "dodge_gap": "DODGE 0.2.1 has no first-class immutable session/replay sequence comparable to the Wretched replay contract.",
       "proposed_shape": {
-        "format": "dodge-replay-proto",
-        "source_identity": "rules + scenario + runtime revision",
-        "initial_state_hash": "hash",
+        "format": "dirps-session-history.v1",
+        "source_identity": {
+          "algorithm": "sha256-canonical-json-v1",
+          "scope": "declared resolved semantic fields"
+        },
+        "initial_state": "neutral scenario runtime snapshot",
+        "initial_state_hash": "sha256-canonical-json-v1",
         "steps": [
           {
             "sequence": 1,
-            "declared_action": {},
-            "resolution_trace": {},
-            "state_before_hash": "hash",
-            "state_after_hash": "hash"
+            "declared_action": {
+              "action_id": "semantic action id",
+              "actor_ref": "resolved actor id"
+            },
+            "random_evidence": "exact Phase G random_inputs",
+            "state_before_hash": "sha256-canonical-json-v1",
+            "state_after_hash": "sha256-canonical-json-v1",
+            "resolution_trace": "exact Phase G transition trace",
+            "transition_record": "dirps-scenario-progression-result.v1"
           }
-        ]
+        ],
+        "append_policy": "copy-on-append",
+        "replay_policy": "reexecute-from-initial-state",
+        "divergence_policy": "fail-first-inconsistent-step"
       },
       "dirps_evidence": [
-        "Chat/GM continuity",
-        "deterministic reproduction",
-        "state-divergence detection"
+        "complete Scenario 01 action sequence",
+        "deterministic random-input preservation",
+        "before/after state identity",
+        "per-step resolution trace",
+        "first-divergence detection"
       ],
       "candidate_for_dodge": "not-yet-candidate",
       "phase_b_evidence": "Reassessed but not promoted: Phase B deterministically re-evaluates one stateful encounter record. It still does not define an immutable append-only multi-step session history.",
-      "phase_f_evidence": "Reassessed but not promoted: deterministic replay covers one recovery-turn record over a Phase E combat snapshot, not an append-only multi-step session."
+      "phase_f_evidence": "Reassessed but not promoted: deterministic replay covers one recovery-turn record over a Phase E combat snapshot, not an append-only multi-step session.",
+      "phase_h_evidence": "Phase H executes a complete Scenario 01 session as an immutable copy-on-append sequence of Phase G transition records. Replay hashes the resolved scene and complete resolved proto sidecar together with DODGE rules/scenario/runtime semantics before step execution, then re-executes each declared action from the accepted initial state and verifies exact random inputs/trace/state hashes/transition records. This is enough DIRPS execution evidence to mark the concept exercised, but not enough cross-game evidence to make it a DODGE candidate."
     },
     "damage_injury": {
       "status": "exercised",
@@ -968,5 +984,36 @@
       "binding_source_ref": "dirps-proto",
       "scenario_source_ref": "scenario-01-source"
     }
+  },
+  "phase_h_session_history_binding": {
+    "scenario_ref": "scenario-01",
+    "runtime_state_ref": "scenario-01-playable-initial",
+    "transition_result_format": "dirps-scenario-progression-result.v1",
+    "session_format": "dirps-session-history.v1",
+    "hash_algorithm": "sha256-canonical-json-v1",
+    "source_identity_fields": [
+      "dodge_version",
+      "document_id",
+      "game_id",
+      "scenario_id",
+      "sources",
+      "rules",
+      "scenario",
+      "scene",
+      "runtime_states",
+      "proto_sidecar"
+    ],
+    "step_evidence": [
+      "declared_action",
+      "random_evidence",
+      "state_before_hash",
+      "state_after_hash",
+      "resolution_trace",
+      "transition_record"
+    ],
+    "append_policy": "copy-on-append",
+    "replay_policy": "reexecute-from-initial-state",
+    "divergence_policy": "fail-first-inconsistent-step",
+    "binding_source_ref": "dirps-proto"
   }
 }

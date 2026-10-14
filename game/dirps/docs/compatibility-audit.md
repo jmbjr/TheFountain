@@ -117,7 +117,7 @@ The sidecar uses the onboarding progression:
 suspected → exercised → candidate
 ```
 
-The five G5 concepts plus `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, and `damage_injury` are currently **exercised**. All remain `not-yet-candidate`. `visibility_and_secret_state` and `replay_session_history` remain **suspected**; none is a DODGE candidate.
+The five G5 concepts plus `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, `damage_injury`, and now `replay_session_history` are **exercised**. All remain `not-yet-candidate`. `visibility_and_secret_state` remains **suspected**; none is a DODGE candidate.
 
 ## Promotion test
 
@@ -140,4 +140,17 @@ Canonical `scenario.json` remains the only owner of encounter order and the tuto
 
 The sidecar's `phase_g_progression_bindings` is deliberately narrow: it maps a completed accepted mechanic result to normalized DODGE progress effects and terminal-condition refs. It does not define a second progress model and does not promote a new proto concept.
 
-`dirps-scenario-progression-result.v1` wraps the unchanged accepted Phase A-F mechanic record, exact full state before/after, progress effects, canonical-order trace, and terminal-condition refs. Its one-record replay detects divergence. This remains distinct from `replay_session_history`: Phase G does not create an immutable append-only multi-step session log, so that proto concept remains **suspected / not-yet-candidate**.
+`dirps-scenario-progression-result.v1` wraps the unchanged accepted Phase A-F mechanic record, exact full state before/after, progress effects, canonical-order trace, and terminal-condition refs. Its one-record replay remains the transition primitive for the Phase H session layer.
+
+
+## Phase H full-session replay result
+
+Gameplay roadmap Phase H exercises the previously suspected `replay_session_history` gap without inventing new gameplay semantics or changing DODGE 0.2.1.
+
+The sidecar declares one bounded `phase_h_session_history_binding`: accepted Scenario 01 initial state, accepted Phase G transition record identity, `dirps-session-history.v1`, canonical JSON SHA-256 identity, copy-on-append behavior, re-execution from the initial state, and first-divergence failure. Runtime code validates that declaration before recording or replaying.
+
+Each history step preserves declared action/actor identity, exact Phase G random inputs, before/after state hashes, exact Phase G trace, and the complete unchanged transition record. Replay also hashes a declared slice of the resolved semantic model so a session cannot silently replay against materially different rules/scenario/runtime semantics.
+
+Complete deterministic success and failure runs are reproduced from step zero. Negative evidence corrupts random evidence, state hashes, source identity, and resolved binding semantics, and verifies visible failure at the earliest applicable boundary.
+
+This is sufficient concrete DIRPS execution evidence to move `replay_session_history` to **exercised / not-yet-candidate**. It remains below candidate because one game is not enough evidence for an upstream generic DODGE contract.

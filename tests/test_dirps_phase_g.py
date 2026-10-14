@@ -340,10 +340,10 @@ class DirpsPhaseGProgressionTests(unittest.TestCase):
         with self.assertRaisesRegex(ResolutionError, "Phase G progression binding"):
             resolve_documents(self.dodge, self.canonical, sidecar, self.cfg)
 
-    def test_phase_g_does_not_promote_session_history_or_rewrite_old_records(self):
+    def test_phase_g_records_remain_compatible_after_phase_h_replay_promotion(self):
         self.assertEqual(
             self.sidecar["proto_specs"]["replay_session_history"]["status"],
-            "suspected",
+            "exercised",
         )
         self.assertEqual(
             self.sidecar["proto_specs"]["replay_session_history"]["candidate_for_dodge"],

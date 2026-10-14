@@ -179,6 +179,7 @@ class DirpsResolutionTests(unittest.TestCase):
                 "derived_values",
                 "expressions",
                 "damage_injury",
+                "replay_session_history",
             },
         )
         self.assertTrue(

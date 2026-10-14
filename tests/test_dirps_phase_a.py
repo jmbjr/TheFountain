@@ -315,7 +315,8 @@ class DirpsPhaseAContextualSkillTests(unittest.TestCase):
                 specs[proto_id]["candidate_for_dodge"],
                 "not-yet-candidate",
             )
-        self.assertEqual(specs["replay_session_history"]["status"], "suspected")
+        self.assertEqual(specs["replay_session_history"]["status"], "exercised")
+        self.assertEqual(specs["replay_session_history"]["candidate_for_dodge"], "not-yet-candidate")
 
 
 if __name__ == "__main__":

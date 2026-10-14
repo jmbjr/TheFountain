@@ -695,3 +695,27 @@ At Bandit Scout, Phase G executes the accepted Phase E exchange and enters Phase
 `dirps-scenario-progression-result.v1` is a new wrapper contract. It nests the accepted mechanic result unchanged, records full before/after state plus progression deltas, and traces canonical order and terminal-condition refs. `replay_scenario_progression()` deterministically replays one wrapper record and detects divergence. It does not create an append-only multi-step session log, so `replay_session_history` remains a suspected Phase H gap.
 
 No target change is required for Phase G semantics. Existing targets remain downstream consumers; player-facing scenario presentation is still a later roadmap tranche.
+
+
+### DIRPS gameplay Phase H — full session history and replay
+
+Phase H is an evidence layer over the accepted Phase G runtime, not a new gameplay engine:
+
+```text
+dirps-resolved-game.v1
+→ accepted Phase G execute_scenario_action()
+→ dirps-scenario-progression-result.v1
+→ Phase H copy-on-append step evidence
+→ dirps-session-history.v1
+→ replay each transition through Phase G runtime
+```
+
+DODGE 0.2.1 does not define the immutable multi-step session/replay sequence DIRPS needs, so the contract remains in the declared `replay_session_history` proto gap. `phase_h_session_history_binding` pins the accepted Scenario 01 initial runtime state, accepted Phase G transition record identity, record/hash policies, source-identity scope, and first-divergence behavior. Runtime validation rejects binding drift before recording or replay.
+
+`create_scenario_session_history()` captures the accepted full-scenario initial state and a SHA-256 identity over the declared resolved semantic fields. That identity includes the resolved `scene` and the complete resolved `proto_sidecar` in addition to DODGE rules/scenario/runtime state, so actor/skill/equipment semantics and every Phase A-H executable sidecar dependency are covered before replay begins. `append_scenario_session_step()` first replays the complete prior history, executes one new action through `execute_scenario_action()`, then returns a deep copy with one evidence step appended. The caller's prior history is not mutated.
+
+Every step records the declared action/actor, exact Phase G random inputs, canonical JSON SHA-256 before/after state hashes, exact Phase G resolution trace, and the complete unchanged `dirps-scenario-progression-result.v1`. No target-specific semantics are involved.
+
+`replay_scenario_session_history()` starts from the recorded accepted initial state and re-executes the sequence in order. It verifies the complete replay source identity before step 1, then contiguous sequence, state continuity, hashes, declared action/random evidence, trace, and exact transition equality. Any inconsistency fails at the first affected step. Complete replay can additionally require a terminal Scenario 01 state.
+
+This real end-to-end evidence moves `replay_session_history` from **suspected** to **exercised**, while it remains **not-yet-candidate**. Phase H changes no DODGE document fields and no accepted Phase A-G record identity. Formal DIRPS maturity remains G6; Phase I Web presentation and G7 are separate later work.

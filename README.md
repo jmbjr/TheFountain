@@ -54,6 +54,6 @@ Current namespaces:
 
 - `game/the-fountain/` — original Fountain prototype;
 - `game/wretched-demesne/` — Wretched Demesne, with preserved Scenario 01 and a reserved Scenario 02 sibling;
-- `game/dirps/` — G6 targeted implementation of the GURPS-inspired DIRPS RPG/DODGE experiment; accepted Phases A-F now feed a Phase G full-scenario runtime that preserves neutral encounter state, follows canonical order, and terminates through explicit DODGE success/failure conditions. Full session history and G7 remain pending.
+- `game/dirps/` — G6 targeted implementation of the GURPS-inspired DIRPS RPG/DODGE experiment; accepted Phases A-G now feed a Phase H full-session evidence layer that records copy-on-append action/random/state/trace evidence and deterministically replays complete Scenario 01 runs. Player-facing Web work and G7 remain pending.
 
 Wretched Scenario 01 remains the current DODGE 0.2.1 reference implementation. Generated historical Beta trees under `wretched-demesne/beta/web/<sha>/` remain immutable deployment evidence and are intentionally not reorganized with authored source.

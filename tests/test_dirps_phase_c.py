@@ -320,7 +320,8 @@ class DirpsPhaseCFrightenedWitnessTests(unittest.TestCase):
             specs["reaction_timing"]["candidate_for_dodge"],
             "not-yet-candidate",
         )
-        self.assertEqual(specs["replay_session_history"]["status"], "suspected")
+        self.assertEqual(specs["replay_session_history"]["status"], "exercised")
+        self.assertEqual(specs["replay_session_history"]["candidate_for_dodge"], "not-yet-candidate")
 
     def test_social_target_inspects_executes_and_refreshes_post_state(self):
         view = inspect_social_target(
