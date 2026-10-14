@@ -745,8 +745,10 @@ The browser mounts the exact registered Scenario 01 DODGE document, canonical so
 
 `tools/dirps_web_target.py` is intentionally thinner than the existing debug CLI. Phase H session history is its state/evidence boundary. Inspection replays the session, calls `describe_scenario()`, and returns character/presentation data. Execution passes only `action_id`, `actor_ref`, and one generic `random_seed` to `append_scenario_session_step()`; the runtime owns all encounter-specific random terms and mechanics.
 
-`src/renderers/dirps-web.js` owns DOM rendering and browser input only. It renders runtime-described actions, character/scenario state, result/random evidence, provenance/trace information, and replay hashes. Source tests prohibit Scenario 01 encounter/action gameplay literals and mechanic-specific random-input keys in the renderer.
+`src/renderers/dirps-web.js` owns DOM rendering and browser input only. It renders runtime-described actions, the exact resolved character state (including HP/fatigue/status flags), scenario state, result/random evidence, provenance/trace information, and replay hashes. Source tests prohibit Scenario 01 encounter/action gameplay literals and mechanic-specific random-input keys in the renderer.
 
 Pyodide is pinned to a versioned CDN URL. The external WebAssembly/Python runtime is execution infrastructure, not a source of gameplay semantics.
+
+The Phase I acceptance boundary includes the transport itself. CI serves the exact checkout over HTTP and runs a headless Chromium smoke through the real `/dirps/` page. The smoke waits for Pyodide/Python bootstrap, verifies resolved character-state DOM values and a runtime-described action, clicks that action, and requires Phase H history/random-result evidence with no fatal panel or browser transport error. This prevents a source-level analogue from standing in for the actual loader/runtime mechanism.
 
 The debug CLI remains registered and unchanged as the low-level target. Formal DIRPS maturity remains G6; Phase I adds target breadth/evidence but does not itself claim G7.
