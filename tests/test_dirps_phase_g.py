@@ -289,6 +289,43 @@ class DirpsPhaseGProgressionTests(unittest.TestCase):
         self.assertEqual(view["progress"]["current_encounter"], "washed-out-path")
         self.assertEqual(view["available_actions"][0]["id"], "cross-washed-out-path")
 
+    def test_resolved_completion_trigger_drift_fails_before_runtime(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["scenario"]["progression"]["completion"]["success"]["trigger"][
+            "bandit_can_act_normally"
+        ] = True
+        state = copy.deepcopy(
+            resolved["runtime_states"]["scenario-01-playable-initial"]
+        )
+        with self.assertRaisesRegex(
+            ExecutionError, "canonical success completion trigger"
+        ):
+            describe_scenario(resolved, state)
+
+    def test_resolved_terminal_effect_drift_fails_before_runtime(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["rules"]["effects"]["phase-g-information-success"]["value"] = (
+            "courier-fate-unresolved"
+        )
+        state = copy.deepcopy(
+            resolved["runtime_states"]["scenario-01-playable-initial"]
+        )
+        with self.assertRaisesRegex(
+            ExecutionError, "success terminal state/effect alignment"
+        ):
+            describe_scenario(resolved, state)
+
+    def test_resolved_terminal_condition_drift_fails_before_runtime(self):
+        resolved = copy.deepcopy(self.resolved)
+        resolved["rules"]["conditions"]["scenario-success"]["right"] = "failure"
+        state = copy.deepcopy(
+            resolved["runtime_states"]["scenario-01-playable-initial"]
+        )
+        with self.assertRaisesRegex(
+            ExecutionError, "success terminal state/condition alignment"
+        ):
+            describe_scenario(resolved, state)
+
     def test_dodge_completion_drift_fails_semantic_resolution(self):
         dodge = copy.deepcopy(self.dodge)
         dodge["scenarios"]["scenario-01"]["objectives"][0]["completion"] = "scenario-failure"
