@@ -4824,9 +4824,9 @@ def _phase_h_binding(resolved):
             "sources",
             "rules",
             "scenario",
+            "scene",
             "runtime_states",
-            "proto_sidecar.phase_g_progression_bindings",
-            "proto_sidecar.phase_h_session_history_binding",
+            "proto_sidecar",
         ],
         "step_evidence": [
             "declared_action",
