@@ -154,6 +154,22 @@ class DirpsPhaseFRecoveryTests(unittest.TestCase):
         self.assertEqual(record["consciousness_check"]["format"], "dirps-ht-check-result.v1")
         self.assertTrue(record["consciousness_check"]["outcome"]["success"])
         self.assertTrue(record["stun_recovery_check"]["outcome"]["success"])
+        for check in (
+            record["consciousness_check"],
+            record["stun_recovery_check"],
+        ):
+            self.assertEqual(
+                check["trace"]["dice_resolution_ref"],
+                "dice_resolution",
+            )
+            self.assertEqual(
+                check["trace"]["critical_resolution_ref"],
+                "phase_a_execution_bindings.attempt-skill.critical_resolution",
+            )
+            self.assertEqual(
+                check["trace"]["random_evidence_ref"],
+                "phase_a_execution_bindings.attempt-skill.random_evidence",
+            )
         self.assertEqual(
             self.state_values(record["state_after"]),
             {
@@ -372,6 +388,26 @@ class DirpsPhaseFRecoveryTests(unittest.TestCase):
             "stun-recovery",
             "consciousness",
         ]
+        with self.assertRaisesRegex(
+            ResolutionError, "Phase F bandit-scout recovery binding"
+        ):
+            resolve_documents(self.dodge, self.canonical, sidecar, self.cfg)
+
+    def test_phase_f_dice_resolution_reuse_ref_drift_fails_before_resolution(self):
+        sidecar = copy.deepcopy(self.sidecar)
+        sidecar["phase_f_recovery_bindings"]["bandit-scout"][
+            "dice_resolution_ref"
+        ] = "not-the-accepted-dice-contract"
+        with self.assertRaisesRegex(
+            ResolutionError, "Phase F bandit-scout recovery binding"
+        ):
+            resolve_documents(self.dodge, self.canonical, sidecar, self.cfg)
+
+    def test_phase_f_critical_resolution_reuse_ref_drift_fails_before_resolution(self):
+        sidecar = copy.deepcopy(self.sidecar)
+        sidecar["phase_f_recovery_bindings"]["bandit-scout"][
+            "critical_resolution_ref"
+        ] = "not-the-accepted-critical-contract"
         with self.assertRaisesRegex(
             ResolutionError, "Phase F bandit-scout recovery binding"
         ):
