@@ -3931,7 +3931,7 @@ def _phase_g_binding(resolved):
         raise ExecutionError("Phase G scenario_ref is unsupported")
     if binding.get("runtime_state_ref") != "scenario-01-playable-initial":
         raise ExecutionError("Phase G playable runtime_state_ref is unsupported")
-    if binding.get("encounter_order_source") != "scenario.progression.encounter_order":
+    if binding.get("encounter_order_source") != "scenario.encounters":
         raise ExecutionError("Phase G encounter-order source binding is malformed")
     if binding.get("progress_refs") != {
         "status": "scenario-progress-status",
@@ -4021,16 +4021,13 @@ def _phase_g_progression(resolved, binding):
         or progression.get("runtime_state_ref") != binding["runtime_state_ref"]
     ):
         raise ExecutionError("Phase G canonical progression authority is malformed")
-    order = progression.get("encounter_order")
-    resolved_order = [
+    order = [
         row.get("id")
         for row in scenario.get("encounters", [])
         if isinstance(row, dict) and row.get("id")
     ]
     if (
-        not isinstance(order, list)
-        or order != resolved_order
-        or len(order) != len(set(order))
+        len(order) != len(set(order))
         or not order
         or order[0] != "roadside-tracks"
         or order[-1] != "bandit-scout"
