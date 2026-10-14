@@ -51,6 +51,24 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         self.assertEqual(view["history"], history)
         self.assertEqual(view["history_summary"]["steps"], 0)
         self.assertEqual(view["characters"][0]["name"], "Rook")
+        resolved_pc = next(
+            row for row in self.resolved["scene"]["instances"] if row["id"] == "pc"
+        )
+        self.assertEqual(view["characters"][0]["state"], resolved_pc["state"])
+        self.assertEqual(
+            view["characters"][0]["state"],
+            {
+                "st": 10,
+                "dx": 11,
+                "iq": 11,
+                "ht": 10,
+                "hit-points": 10,
+                "fatigue": 10,
+                "stunned": False,
+                "unconscious": False,
+                "consciousness-check-required": False,
+            },
+        )
         self.assertEqual(
             view["scenario"]["available_actions"],
             expected["available_actions"],
@@ -189,6 +207,8 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             self.assertNotIn(literal, self.web_js)
 
         self.assertIn('{"random_seed": random_seed}', inspect.getsource(dirps_web_target))
+        self.assertIn("character.state || {}", self.web_js)
+        self.assertIn("stateRow.dataset.stateKey = key", self.web_js)
         self.assertNotIn("Math.random", self.web_js)
 
     def test_static_page_exposes_player_and_debug_views(self):
