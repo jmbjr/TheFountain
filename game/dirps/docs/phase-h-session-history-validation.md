@@ -48,7 +48,7 @@ Each step preserves:
 - exact Phase G `resolution_trace`;
 - the complete unchanged `dirps-scenario-progression-result.v1` transition record.
 
-The source identity hashes the declared resolved semantic fields needed to reproduce the session: game/scenario/document identity, source declarations, rules, scenario, runtime states, the Phase G progression binding, and the Phase H history binding. A replay against materially different resolved semantics fails before step execution.
+The source identity hashes the declared resolved semantic fields needed to reproduce the session: game/scenario/document identity, source declarations, DODGE rules/scenario/runtime states, the resolved `scene`, and the entire resolved `proto_sidecar`. Hashing the whole sidecar is intentionally conservative: it covers every executable Phase A-H binding/proto dependency without relying on a fragile hand-maintained subset. A replay against materially different resolved semantics fails before step execution.
 
 ## Append-only behavior
 
@@ -95,7 +95,9 @@ A caller may replay a partial history for inspection. `require_complete=True` ad
 - final replay state/hash equals the terminal transition evidence;
 - tampered random evidence reports the first inconsistent step;
 - tampered state hashes report the exact inconsistent step;
-- resolved semantic source drift is rejected before replay;
+- resolved scenario drift is rejected before replay;
+- post-resolution `scene` drift is rejected with `Phase H source identity mismatch` before step 1 executes;
+- post-resolution executable `proto_sidecar` drift is rejected with `Phase H source identity mismatch` before step 1 executes;
 - a tampered prior history cannot be appended to;
 - terminal histories reject further append;
 - partial histories are distinguishable from complete histories;
@@ -134,5 +136,7 @@ Phase H does not implement:
 - broader combat;
 - Phase I Web presentation;
 - G7 reference promotion.
+
+Independent review found that the first candidate hashed the Phase G/H bindings but omitted the resolved `scene` and earlier executable sidecar contracts that replay actually consumes. The corrected identity scope now includes both `scene` and the complete resolved `proto_sidecar`, with focused tests proving those drifts fail before any Phase G step is re-executed.
 
 Exact-head CI identity is recorded in the Phase H pull request and trackers after the final literal PR head passes. It is intentionally not embedded here because changing this document would create a new head and stale that evidence.
