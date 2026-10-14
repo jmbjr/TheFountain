@@ -811,6 +811,81 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
                             f"Phase F recovery effect_ref does not resolve: {effect_ref}"
                         )
 
+    expected_phase_g_binding = {
+        "scenario_ref": "scenario-01",
+        "runtime_state_ref": "scenario-01-playable-initial",
+        "encounter_order_source": "scenario.progression.encounter_order",
+        "progress_refs": {
+            "status": "scenario-progress-status",
+            "current_encounter": "scenario-current-encounter",
+            "step": "scenario-progress-step",
+            "outcome": "scenario-outcome",
+            "information": "scenario-completion-information",
+        },
+        "phase_runtime_state_refs": {
+            "roadside-tracks": "scenario-01-initial",
+            "frightened-witness": "scenario-01-frightened-witness-initial",
+            "washed-out-path": "scenario-01-washed-out-path-initial",
+            "bandit-scout": "scenario-01-bandit-scout-initial",
+        },
+        "advance_effect_refs": {
+            "frightened-witness": "phase-g-current-frightened-witness",
+            "washed-out-path": "phase-g-current-washed-out-path",
+            "bandit-scout": "phase-g-current-bandit-scout",
+        },
+        "recovery_effect_ref": "phase-g-step-recovery",
+        "terminal_effect_refs": {
+            "success": [
+                "phase-g-status-complete",
+                "phase-g-current-complete",
+                "phase-g-step-complete",
+                "phase-g-outcome-success",
+                "phase-g-information-success",
+            ],
+            "failure": [
+                "phase-g-status-complete",
+                "phase-g-current-complete",
+                "phase-g-step-complete",
+                "phase-g-outcome-failure",
+                "phase-g-information-failure",
+            ],
+        },
+        "completion_condition_ref": "scenario-success",
+        "failure_condition_ref": "scenario-failure",
+        "result_format": "dirps-scenario-progression-result.v1",
+        "binding_source_ref": PROTO_SOURCE,
+        "scenario_source_ref": SCENARIO_SOURCE,
+    }
+    phase_g_bindings = sidecar.get("phase_g_progression_bindings")
+    if (
+        not isinstance(phase_g_bindings, dict)
+        or phase_g_bindings.get("scenario-01") != expected_phase_g_binding
+    ):
+        errors.append("Phase G progression binding must match the bounded orchestration contract")
+    elif dodge:
+        binding = phase_g_bindings["scenario-01"]
+        runtime_states = dodge.get("runtime_states") or {}
+        if binding["runtime_state_ref"] not in runtime_states:
+            errors.append("Phase G playable runtime_state_ref must resolve in DODGE runtime_states")
+        for state_ref in binding["phase_runtime_state_refs"].values():
+            if state_ref not in runtime_states:
+                errors.append(f"Phase G phase runtime state does not resolve: {state_ref}")
+        effects = (dodge.get("rules") or {}).get("effects") or {}
+        effect_refs = list(binding["advance_effect_refs"].values())
+        effect_refs.append(binding["recovery_effect_ref"])
+        for branch in binding["terminal_effect_refs"].values():
+            effect_refs.extend(branch)
+        for effect_ref in effect_refs:
+            if effect_ref not in effects:
+                errors.append(f"Phase G progression effect_ref does not resolve: {effect_ref}")
+        conditions = (dodge.get("rules") or {}).get("conditions") or {}
+        for condition_ref in (
+            binding["completion_condition_ref"],
+            binding["failure_condition_ref"],
+        ):
+            if condition_ref not in conditions:
+                errors.append(f"Phase G terminal condition_ref does not resolve: {condition_ref}")
+
     for proto_id in ("derived_values", "expressions", "damage_injury"):
         spec = specs.get(proto_id) or {}
         if spec.get("status") != "exercised":
@@ -2015,6 +2090,229 @@ def _validate_phase_f_recovery_contract(dodge, canonical, errors):
             )
 
 
+
+def _validate_phase_g_progression_contract(dodge, canonical, errors):
+    progression = canonical.get("progression")
+    if not isinstance(progression, dict):
+        errors.append("Phase G requires canonical progression")
+        return
+    if progression.get("source_ref") != SCENARIO_SOURCE:
+        errors.append("Phase G progression source_ref must be scenario-01-source")
+    if progression.get("authority") != "provisional":
+        errors.append("Phase G progression authority must remain provisional")
+    if progression.get("provenance") != PC_PROVENANCE:
+        errors.append("Phase G progression provenance must be prototype_assumption")
+    if progression.get("runtime_state_ref") != "scenario-01-playable-initial":
+        errors.append("Phase G progression must use scenario-01-playable-initial")
+
+    encounter_ids = [
+        row.get("id")
+        for row in canonical.get("encounters", [])
+        if isinstance(row, dict) and row.get("id")
+    ]
+    order = progression.get("encounter_order")
+    if order != encounter_ids:
+        errors.append("Phase G encounter_order must exactly follow canonical encounter order")
+        return
+    if len(order) != len(set(order)) or set(order) != {
+        "roadside-tracks",
+        "frightened-witness",
+        "washed-out-path",
+        "bandit-scout",
+    }:
+        errors.append("Phase G bounded encounter_order must contain each accepted encounter exactly once")
+        return
+
+    contract = progression.get("state_contract")
+    if not isinstance(contract, dict):
+        errors.append("Phase G progression requires state_contract")
+        return
+    refs = contract.get("refs")
+    initial = contract.get("initial")
+    expected_refs = {
+        "status": "scenario-progress-status",
+        "current_encounter": "scenario-current-encounter",
+        "step": "scenario-progress-step",
+        "outcome": "scenario-outcome",
+        "information": "scenario-completion-information",
+    }
+    if refs != expected_refs:
+        errors.append("Phase G progress refs must match the declared neutral DODGE state")
+        return
+    expected_initial = {
+        "status": "in-progress",
+        "current_encounter": order[0],
+        "step": "action",
+        "outcome": "undetermined",
+        "information": "accumulating",
+    }
+    if initial != expected_initial:
+        errors.append("Phase G initial progress state must start at the first canonical encounter")
+
+    completion = progression.get("completion")
+    if not isinstance(completion, dict) or completion.get("objective_id") != "resolve-courier-mystery":
+        errors.append("Phase G completion must bind resolve-courier-mystery")
+        return
+    branches = {
+        "success": {
+            "trigger": {"encounter_ref": "bandit-scout", "bandit_can_act_normally": False},
+            "state": {
+                "status": "complete",
+                "current_encounter": "complete",
+                "step": "complete",
+                "outcome": "success",
+                "information": "courier-fate-established",
+            },
+        },
+        "failure": {
+            "trigger": {"encounter_ref": "bandit-scout", "bandit_can_act_normally": True},
+            "state": {
+                "status": "complete",
+                "current_encounter": "complete",
+                "step": "complete",
+                "outcome": "failure",
+                "information": "courier-fate-unresolved",
+            },
+        },
+    }
+    for branch, expected in branches.items():
+        row = completion.get(branch)
+        if not isinstance(row, dict):
+            errors.append(f"Phase G completion branch {branch} is required")
+            continue
+        if row.get("trigger") != expected["trigger"] or row.get("state") != expected["state"]:
+            errors.append(f"Phase G completion branch {branch} is malformed")
+        if not isinstance(row.get("conclusion_text"), str) or not row.get("conclusion_text"):
+            errors.append(f"Phase G completion branch {branch} requires conclusion_text")
+
+    unsupported = progression.get("unsupported")
+    if not isinstance(unsupported, list) or not unsupported:
+        errors.append("Phase G must declare unsupported progression branches explicitly")
+
+    values = (dodge.get("rules") or {}).get("values") or {}
+    value_expectations = {
+        refs["status"]: ("in-progress", ["in-progress", "complete"]),
+        refs["current_encounter"]: (
+            order[0],
+            ["roadside-tracks", "frightened-witness", "washed-out-path", "bandit-scout", "complete"],
+        ),
+        refs["step"]: ("action", ["action", "recovery", "complete"]),
+        refs["outcome"]: ("undetermined", ["undetermined", "success", "failure"]),
+        refs["information"]: (
+            "accumulating",
+            ["accumulating", "courier-fate-established", "courier-fate-unresolved"],
+        ),
+    }
+    for ref, (default, enum_values) in value_expectations.items():
+        definition = values.get(ref)
+        if not isinstance(definition, dict):
+            errors.append(f"Phase G DODGE value is missing: {ref}")
+            continue
+        if (
+            definition.get("type") != "enum"
+            or definition.get("owner_scope") != "scenario"
+            or definition.get("persistence_scope") != "scenario"
+            or definition.get("default") != default
+            or set(definition.get("enum_values") or []) != set(enum_values)
+            or definition.get("source_ref") != SCENARIO_SOURCE
+            or definition.get("authority") != "provisional"
+        ):
+            errors.append(f"Phase G DODGE value {ref} must normalize canonical progress state")
+
+    conditions = (dodge.get("rules") or {}).get("conditions") or {}
+    expected_conditions = {
+        "scenario-success": {
+            "op": "eq",
+            "left": {"ref": refs["outcome"], "subject": {"relative": "scenario"}},
+            "right": "success",
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        },
+        "scenario-failure": {
+            "op": "eq",
+            "left": {"ref": refs["outcome"], "subject": {"relative": "scenario"}},
+            "right": "failure",
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        },
+    }
+    for condition_id, expected in expected_conditions.items():
+        if conditions.get(condition_id) != expected:
+            errors.append(f"Phase G DODGE condition {condition_id} must match the terminal state")
+
+    scenario = (dodge.get("scenarios") or {}).get("scenario-01") or {}
+    expected_objective = {
+        "id": "resolve-courier-mystery",
+        "name": "Determine what happened to the missing courier",
+        "completion": "scenario-success",
+    }
+    if scenario.get("objectives") != [expected_objective]:
+        errors.append("Phase G objective completion must reference scenario-success")
+    expected_end_conditions = [
+        {"id": "missing-courier-success", "outcome": "win", "condition": "scenario-success", "priority": 1},
+        {"id": "missing-courier-failure", "outcome": "loss", "condition": "scenario-failure", "priority": 2},
+    ]
+    if scenario.get("end_conditions") != expected_end_conditions:
+        errors.append("Phase G DODGE end_conditions must define deterministic win/loss semantics")
+
+    runtime_states = dodge.get("runtime_states") or {}
+    expected_bindings = []
+    for state_ref in (
+        "scenario-01-initial",
+        "scenario-01-frightened-witness-initial",
+        "scenario-01-washed-out-path-initial",
+        "scenario-01-bandit-scout-initial",
+    ):
+        state = runtime_states.get(state_ref)
+        if not isinstance(state, dict):
+            errors.append(f"Phase G requires accepted runtime state {state_ref}")
+            continue
+        expected_bindings.extend(copy.deepcopy(state.get("bindings", [])))
+    for role in ("status", "current_encounter", "step", "outcome", "information"):
+        expected_bindings.append(
+            {
+                "ref": refs[role],
+                "subject": {"relative": "scenario"},
+                "value": initial[role],
+                "authority": "provisional",
+            }
+        )
+    expected_runtime = {
+        "scenario_ref": "scenario-01",
+        "bindings": expected_bindings,
+        "events": [],
+        "revision": "0",
+    }
+    if runtime_states.get(progression.get("runtime_state_ref")) != expected_runtime:
+        errors.append("Phase G playable runtime state must compose accepted encounter state plus progress state")
+
+    effects = (dodge.get("rules") or {}).get("effects") or {}
+    effect_expectations = {
+        "phase-g-current-frightened-witness": (refs["current_encounter"], "frightened-witness"),
+        "phase-g-current-washed-out-path": (refs["current_encounter"], "washed-out-path"),
+        "phase-g-current-bandit-scout": (refs["current_encounter"], "bandit-scout"),
+        "phase-g-current-complete": (refs["current_encounter"], "complete"),
+        "phase-g-step-recovery": (refs["step"], "recovery"),
+        "phase-g-step-complete": (refs["step"], "complete"),
+        "phase-g-status-complete": (refs["status"], "complete"),
+        "phase-g-outcome-success": (refs["outcome"], completion["success"]["state"]["outcome"]),
+        "phase-g-outcome-failure": (refs["outcome"], completion["failure"]["state"]["outcome"]),
+        "phase-g-information-success": (refs["information"], completion["success"]["state"]["information"]),
+        "phase-g-information-failure": (refs["information"], completion["failure"]["state"]["information"]),
+    }
+    for effect_id, (target_ref, value) in effect_expectations.items():
+        expected = {
+            "op": "set",
+            "target_ref": target_ref,
+            "subject": {"relative": "scenario"},
+            "value": value,
+            "source_ref": SCENARIO_SOURCE,
+            "authority": "provisional",
+        }
+        if effects.get(effect_id) != expected:
+            errors.append(f"Phase G DODGE effect {effect_id} must normalize canonical progression")
+
+
 def validate_source_semantics(dodge, canonical, config=None):
     """Return bounded DIRPS G3 source-stage semantic-profile violations."""
     errors = []
@@ -2032,6 +2330,7 @@ def validate_source_semantics(dodge, canonical, config=None):
     _validate_phase_d_environment_contract(dodge, canonical, errors)
     _validate_phase_e_combat_contract(dodge, canonical, errors)
     _validate_phase_f_recovery_contract(dodge, canonical, errors)
+    _validate_phase_g_progression_contract(dodge, canonical, errors)
     return errors
 
 
@@ -2152,8 +2451,10 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
         "action_refs": dodge_scenario.get("action_refs", []),
         "turn_procedure_ref": dodge_scenario.get("turn_procedure_ref"),
         "objectives": dodge_scenario.get("objectives", []),
+        "end_conditions": dodge_scenario.get("end_conditions", []),
         "initial_state": dodge_scenario.get("initial_state", []),
         "encounters": canonical.get("encounters", []),
+        "progression": canonical.get("progression", {}),
         "contextual_checks": canonical.get("contextual_checks", {}),
     }
     if resolved.get("scenario") != expected_scenario:
