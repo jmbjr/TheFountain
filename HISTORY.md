@@ -702,3 +702,18 @@ The implementation keeps the Phase E combat snapshot as the single state authori
 No proto concept changes maturity. Long-term recovery from unconsciousness, healing, death checks, scenario progression/completion, full session history, Web presentation, and G7 remain later work.
 
 Independent Phase F review caught one executable-auditability gap: the runtime reused Phase A dice and critical-classification machinery while the Phase F bridge declared only random-evidence reuse. The corrected contract explicitly pins `dice_resolution_ref`, `critical_resolution_ref`, and `random_evidence_ref`, validates them before execution, records them in each HT-check trace, and adds pre-resolution drift regressions.
+
+
+## DIRPS gameplay Phase G — Scenario progression / completion
+
+Phase G connects the previously accepted DIRPS gameplay slices into one bounded start-to-finish run of **Scenario 01: The Missing Courier** while formal maturity remains **G6 — Targeted**.
+
+The canonical scenario now owns explicit progression facts: encounter order, full-scenario progress-state roles, and the tutorial's bounded success/failure interpretation. DODGE 0.2.1 normalizes those facts with standard scenario-owned values, conditions, set effects, an executable objective completion ref, win/loss end conditions, and a new composed `scenario-01-playable-initial` runtime snapshot.
+
+The accepted Phase B-F runtime states and result identities were not rewritten. `tools/dirps_runtime.py` adds a new scenario layer that projects the current accepted mechanic state, executes that unchanged mechanic, merges its state values back into the full snapshot, and advances only through normalized DODGE effects. The new wrapper record is `dirps-scenario-progression-result.v1`.
+
+The full scenario now retains Roadside investigation information, witness reaction/information, Washed-Out Path consequences, and Bandit Scout injury/recovery state across progression. A bounded terminal success records that Rook can establish the courier's fate after the scout can no longer act normally; a bounded failure records withdrawal without enough information when the scout remains able to continue.
+
+Negative tests reject out-of-order actions, unsupported inputs, repeated/post-terminal play, DODGE completion drift, and sidecar bridge drift without mutating caller state. Perturbation evidence swaps the canonical middle encounters and proves runtime order follows the source. One-record Phase G replay detects divergence but deliberately does not promote `replay_session_history`; full immutable multi-step history remains Phase H.
+
+No target becomes a rules engine, no new proto concept is promoted, and G7 is not claimed.
