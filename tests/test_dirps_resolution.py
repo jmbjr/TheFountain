@@ -61,7 +61,12 @@ class DirpsResolutionTests(unittest.TestCase):
 
     def test_encounter_order_perturbation_flows_into_resolved_model(self):
         canonical = copy.deepcopy(self.canonical)
-        canonical["encounters"] = list(reversed(canonical["encounters"]))
+        # Phase G gives the first and final encounters semantic roles, so preserve
+        # those endpoints while perturbing the still-authoritative middle order.
+        canonical["encounters"][1], canonical["encounters"][2] = (
+            canonical["encounters"][2],
+            canonical["encounters"][1],
+        )
         resolved = resolve_documents(self.dodge, canonical, self.sidecar)
         self.assertEqual(
             [row["id"] for row in resolved["scenario"]["encounters"]],
