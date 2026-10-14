@@ -78,6 +78,19 @@ function renderCharacter() {
   }
   host.append(attrs);
 
+  const stateTitle = document.createElement("h3");
+  stateTitle.textContent = "Resolved runtime state";
+  host.append(stateTitle);
+  const state = document.createElement("div");
+  state.className = "dirps-stat-grid dirps-character-state";
+  for (const [key, value] of Object.entries(character.state || {})) {
+    const stateRow = row(key.replaceAll("-", " "), value);
+    stateRow.dataset.stateKey = key;
+    stateRow.dataset.stateValue = String(value);
+    state.append(stateRow);
+  }
+  host.append(state);
+
   const skillsTitle = document.createElement("h3");
   skillsTitle.textContent = "Skills";
   host.append(skillsTitle);
