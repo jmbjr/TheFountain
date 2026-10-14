@@ -25,7 +25,7 @@ The audit distinguishes **PASS** from **N/A**. N/A means the normalized feature 
 | 15.3.7 topology edges reference existing nodes | N/A | audit asserts no topology edges | DIRPS G2 declares no topology. |
 | 15.3.8 rule refs target correct definition kinds | PASS | positive audit + wrong-kind action/procedure fixture + wrong-kind operand fixture | Type-aware checking covers condition, effect, action, procedure, phase, AI, value/resource operand, scenario, and choice-step references that are present. A reference resolving to an existing ID in the wrong definition family is rejected separately from an unresolved reference. |
 | 15.3.9 defaults satisfy types and bounds | PASS | positive audit + negative boolean-default fixture | Explicit defaults are the boolean `stunned=false` and `unconscious=false`. |
-| 15.3.10 phase transitions and scenario end-condition evaluation deterministic | N/A | audit asserts no phases and no executable `end_conditions`; negative prose-end fixture | The former prose-only end condition was removed because prose cannot count as deterministic executable evaluation. Completion intent remains preserved in the prose objective and scenario source for a later executable gate. |
+| 15.3.10 phase transitions and scenario end-condition evaluation deterministic | PASS | positive executable-condition audit + negative prose-end fixture + Phase G terminal runtime evidence | DIRPS still declares no DODGE phases. Phase G now declares ordered/priority scenario end conditions whose condition refs resolve to executable `eq` predicates over one enum outcome; success and failure are mutually exclusive state values and are exercised deterministically by the Phase G runtime tests. |
 | 15.3.11 AI priorities executable or prose-only | N/A | audit asserts no AI profiles | No normalized AI profile is present at G2. |
 | 15.3.12 target contract supports all required normalized features | N/A | audit inspects DIRPS registry and asserts no target/export contract | Targets begin at G6; no target contract is registered for DIRPS G2. |
 
@@ -43,7 +43,7 @@ The audit distinguishes **PASS** from **N/A**. N/A means the normalized feature 
 Two actual core-validation gaps were found in the G1 document:
 
 1. `tutorial-turn` used unnamed legacy `choice.options`. It now uses named `choice_options` with stable IDs, labels, and action steps.
-2. Scenario 01 declared a prose-only `end_condition`. Because §15.3 requires deterministic end-condition evaluation, the executable end-condition declaration was removed at G2 rather than inventing completion state. The prose objective and scenario source preserve the intended completion semantics for later formalization.
+2. Scenario 01 declared a prose-only `end_condition`. Because §15.3 requires deterministic end-condition evaluation, the executable end-condition declaration was removed at G2 rather than inventing completion state. Phase G later restores end conditions only after adding explicit neutral outcome state plus executable `scenario-success` / `scenario-failure` predicates and runtime evidence.
 
 These are neutral DODGE-core corrections. They do not add DIRPS domain semantic validation, a resolver, runtime dice, replay, or a target.
 
@@ -68,4 +68,4 @@ These are neutral DODGE-core corrections. They do not add DIRPS domain semantic 
 
 G2 evidence proves only DODGE 0.2.1 generic core validity for the bounded candidate.
 
-It does **not** prove the DIRPS/GURPS-specific implications described by the scenario. Those belong to **G3 — Semantic-valid** and remain intentionally unimplemented.
+It does **not** by itself prove the DIRPS/GURPS-specific implications described by the scenario. Those belong to the separate G3+ semantic/runtime evidence; this document only records the generic DODGE-core obligations, including the Phase G update that made §15.3.10 applicable.
