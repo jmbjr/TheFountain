@@ -887,17 +887,105 @@ def _validate_g5_proto_semantics(sidecar, errors, dodge=None, canonical=None):
             if condition_ref not in conditions:
                 errors.append(f"Phase G terminal condition_ref does not resolve: {condition_ref}")
 
+    expected_phase_h_binding = {
+        "scenario_ref": "scenario-01",
+        "runtime_state_ref": "scenario-01-playable-initial",
+        "transition_result_format": "dirps-scenario-progression-result.v1",
+        "session_format": "dirps-session-history.v1",
+        "hash_algorithm": "sha256-canonical-json-v1",
+        "source_identity_fields": [
+            "dodge_version",
+            "document_id",
+            "game_id",
+            "scenario_id",
+            "sources",
+            "rules",
+            "scenario",
+            "runtime_states",
+            "proto_sidecar.phase_g_progression_bindings",
+            "proto_sidecar.phase_h_session_history_binding",
+        ],
+        "step_evidence": [
+            "declared_action",
+            "random_evidence",
+            "state_before_hash",
+            "state_after_hash",
+            "resolution_trace",
+            "transition_record",
+        ],
+        "append_policy": "copy-on-append",
+        "replay_policy": "reexecute-from-initial-state",
+        "divergence_policy": "fail-first-inconsistent-step",
+        "binding_source_ref": PROTO_SOURCE,
+    }
+    phase_h_binding = sidecar.get("phase_h_session_history_binding")
+    if phase_h_binding != expected_phase_h_binding:
+        errors.append(
+            "Phase H session-history binding must match the bounded replay contract"
+        )
+    elif dodge:
+        if phase_h_binding["runtime_state_ref"] not in (dodge.get("runtime_states") or {}):
+            errors.append(
+                "Phase H runtime_state_ref must resolve in DODGE runtime_states"
+            )
+        if (
+            not isinstance(phase_g_bindings, dict)
+            or phase_g_bindings.get("scenario-01", {}).get("result_format")
+            != phase_h_binding["transition_result_format"]
+        ):
+            errors.append(
+                "Phase H transition_result_format must preserve the accepted Phase G record identity"
+            )
+
+    replay_spec = specs.get("replay_session_history") or {}
+    if replay_spec.get("status") != "exercised":
+        errors.append("Phase H must mark replay_session_history exercised")
+    if replay_spec.get("candidate_for_dodge") != "not-yet-candidate":
+        errors.append(
+            "Phase H replay_session_history must remain not-yet-candidate"
+        )
+    replay_shape = replay_spec.get("proposed_shape") or {}
+    expected_replay_shape = {
+        "format": "dirps-session-history.v1",
+        "source_identity": {
+            "algorithm": "sha256-canonical-json-v1",
+            "scope": "declared resolved semantic fields",
+        },
+        "initial_state": "neutral scenario runtime snapshot",
+        "initial_state_hash": "sha256-canonical-json-v1",
+        "steps": [
+            {
+                "sequence": 1,
+                "declared_action": {
+                    "action_id": "semantic action id",
+                    "actor_ref": "resolved actor id",
+                },
+                "random_evidence": "exact Phase G random_inputs",
+                "state_before_hash": "sha256-canonical-json-v1",
+                "state_after_hash": "sha256-canonical-json-v1",
+                "resolution_trace": "exact Phase G transition trace",
+                "transition_record": "dirps-scenario-progression-result.v1",
+            }
+        ],
+        "append_policy": "copy-on-append",
+        "replay_policy": "reexecute-from-initial-state",
+        "divergence_policy": "fail-first-inconsistent-step",
+    }
+    if replay_shape != expected_replay_shape:
+        errors.append(
+            "Phase H replay_session_history proposed shape must match the exercised session contract"
+        )
+    if not isinstance(replay_spec.get("phase_h_evidence"), str) or not replay_spec.get(
+        "phase_h_evidence"
+    ):
+        errors.append("Phase H replay_session_history requires execution evidence")
+
     for proto_id in ("derived_values", "expressions", "damage_injury"):
         spec = specs.get(proto_id) or {}
         if spec.get("status") != "exercised":
             errors.append(f"Phase E must mark {proto_id} exercised")
         if spec.get("candidate_for_dodge") != "not-yet-candidate":
             errors.append(f"Phase E {proto_id} must remain not-yet-candidate")
-
-    if (specs.get("replay_session_history") or {}).get("status") != "suspected":
-        errors.append(
-            "Phase F single-turn recovery replay must not promote replay_session_history"
-        )
 
 
 def _validate_source_roles(dodge, errors):
