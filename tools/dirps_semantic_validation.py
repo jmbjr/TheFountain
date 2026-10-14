@@ -2123,6 +2123,9 @@ def _validate_phase_g_progression_contract(dodge, canonical, errors):
     }:
         errors.append("Phase G bounded encounter_order must contain each accepted encounter exactly once")
         return
+    if order[0] != "roadside-tracks" or order[-1] != "bandit-scout":
+        errors.append("Phase G bounded completion requires Roadside first and Bandit Scout last")
+        return
 
     contract = progression.get("state_contract")
     if not isinstance(contract, dict):
