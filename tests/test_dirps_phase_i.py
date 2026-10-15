@@ -160,6 +160,157 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             "sha256-rejection-v1",
         )
 
+    def test_px_c_resolution_explanations_copy_runtime_values_without_recalculation(self):
+        def facts(section):
+            return {row["label"]: row["value"] for row in section["facts"]}
+
+        history = create_scenario_session_history(self.resolved)
+
+        history = append_scenario_session_step(
+            self.resolved,
+            history,
+            action_id="investigate-tracks",
+            actor_ref="pc",
+            random_inputs={"dice_terms": [3, 3, 4]},
+        )
+        view = inspect_web_target(self.resolved, history)
+        mechanic = view["latest_execution"]["mechanic_result"]
+        skill = mechanic["skill_resolution"]
+        explanation = view["resolution_explanation"]
+        check = facts(explanation["sections"][0])
+        self.assertEqual(explanation["title"], "Skill check")
+        self.assertEqual(check["Skill"], skill["target"]["skill_ref"])
+        self.assertEqual(check["Base"], skill["target"]["base_target"])
+        self.assertEqual(check["Modifier"], skill["target"]["modifier_total"])
+        self.assertEqual(check["Effective target"], skill["target"]["effective_target"])
+        self.assertEqual(check["Roll"], skill["random_evidence"]["total"])
+        self.assertEqual(check["Result"], skill["outcome"]["classification"])
+        self.assertEqual(check["Success"], skill["outcome"]["success"])
+        self.assertEqual(check["Margin"], skill["outcome"]["margin"])
+        self.assertEqual(
+            explanation["consequence"],
+            mechanic["consequence"]["information_text"],
+        )
+
+        history = append_scenario_session_step(
+            self.resolved,
+            history,
+            action_id="reassure-and-question",
+            actor_ref="pc",
+            random_inputs={"dice_terms": [4, 4, 4]},
+        )
+        view = inspect_web_target(self.resolved, history)
+        mechanic = view["latest_execution"]["mechanic_result"]
+        reaction = mechanic["reaction_resolution"]
+        reaction_facts = facts(view["resolution_explanation"]["sections"][0])
+        self.assertEqual(reaction_facts["Roll"], reaction["random_evidence"]["raw_total"])
+        self.assertEqual(reaction_facts["Modifier"], reaction["modifier_total"])
+        self.assertEqual(reaction_facts["Modified total"], reaction["modified_total"])
+        self.assertEqual(reaction_facts["Reaction"], mechanic["reaction"])
+        self.assertEqual(
+            view["resolution_explanation"]["consequence"],
+            mechanic["consequence"]["information_text"],
+        )
+
+        history = append_scenario_session_step(
+            self.resolved,
+            history,
+            action_id="cross-washed-out-path",
+            actor_ref="pc",
+            random_inputs={"dice_terms": [3, 3, 4]},
+        )
+        view = inspect_web_target(self.resolved, history)
+        mechanic = view["latest_execution"]["mechanic_result"]
+        attribute = mechanic["attribute_resolution"]
+        attribute_facts = facts(view["resolution_explanation"]["sections"][0])
+        self.assertEqual(attribute_facts["Attribute"], attribute["target"]["attribute_ref"])
+        self.assertEqual(attribute_facts["Base"], attribute["target"]["base_target"])
+        self.assertEqual(attribute_facts["Modifier"], attribute["target"]["modifier_total"])
+        self.assertEqual(
+            attribute_facts["Effective target"],
+            attribute["target"]["effective_target"],
+        )
+        self.assertEqual(attribute_facts["Roll"], attribute["random_evidence"]["total"])
+        self.assertEqual(attribute_facts["Margin"], attribute["outcome"]["margin"])
+        self.assertEqual(
+            view["resolution_explanation"]["consequence"],
+            mechanic["consequence"]["consequence_text"],
+        )
+
+        before_combat = history
+        hit_history = append_scenario_session_step(
+            self.resolved,
+            before_combat,
+            action_id="strike-bandit-scout",
+            actor_ref="pc",
+            random_inputs={
+                "attack_terms": [4, 4, 4],
+                "defense_terms": [3, 3, 3],
+                "damage_terms": [1],
+            },
+        )
+        hit_view = inspect_web_target(self.resolved, hit_history)
+        combat = hit_view["latest_execution"]["mechanic_result"]
+        sections = {section["title"]: facts(section) for section in hit_view["resolution_explanation"]["sections"]}
+        self.assertEqual(sections["Rook attacks"]["Target"], combat["attack_resolution"]["target"])
+        self.assertEqual(sections["Rook attacks"]["Roll"], combat["attack_resolution"]["random_evidence"]["total"])
+        self.assertEqual(sections["Bandit defends"]["Target"], combat["defense_resolution"]["target"])
+        self.assertEqual(sections["Bandit defends"]["Roll"], combat["defense_resolution"]["random_evidence"]["total"])
+        self.assertEqual(sections["Damage and injury"]["Basic damage"], combat["damage_resolution"]["basic_damage"])
+        self.assertEqual(sections["Damage and injury"]["Armor DR"], combat["damage_resolution"]["armor_dr"])
+        self.assertEqual(sections["Damage and injury"]["Penetrating damage"], combat["damage_resolution"]["penetrating_damage"])
+        self.assertEqual(sections["Damage and injury"]["Injury"], combat["damage_resolution"]["injury"])
+        self.assertEqual(sections["Bandit condition"]["HP remaining"], combat["injury_effects"]["remaining_hp"])
+        self.assertEqual(sections["Bandit condition"]["Stunned"], combat["injury_effects"]["stunned"])
+
+        recovery_history = append_scenario_session_step(
+            self.resolved,
+            before_combat,
+            action_id="strike-bandit-scout",
+            actor_ref="pc",
+            random_inputs={"attack_terms": [1, 1, 1]},
+        )
+        recovery_history = append_scenario_session_step(
+            self.resolved,
+            recovery_history,
+            action_id="resolve-bandit-next-turn",
+            actor_ref="bandit-scout",
+            random_inputs={"consciousness_terms": [6, 6, 6]},
+        )
+        recovery_view = inspect_web_target(self.resolved, recovery_history)
+        recovery = recovery_view["latest_execution"]["mechanic_result"]
+        recovery_sections = {
+            section["title"]: facts(section)
+            for section in recovery_view["resolution_explanation"]["sections"]
+        }
+        self.assertEqual(
+            recovery_sections["Consciousness"]["Target"],
+            recovery["consciousness_check"]["target"],
+        )
+        self.assertEqual(
+            recovery_sections["Consciousness"]["Roll"],
+            recovery["consciousness_check"]["random_evidence"]["total"],
+        )
+        self.assertEqual(
+            recovery_sections["Consciousness"]["Result"],
+            recovery["consciousness_check"]["outcome"]["classification"],
+        )
+        self.assertEqual(
+            recovery_sections["Resulting condition"]["Can act normally"],
+            recovery["outcome"]["can_act_normally"],
+        )
+
+    def test_px_c_javascript_has_no_mechanic_calculation(self):
+        for calculation in (
+            "effective_target",
+            "modifier_total",
+            "basic_damage",
+            "penetrating_damage",
+            "remaining_hp",
+            "consciousness_check_required",
+        ):
+            self.assertNotIn(calculation, self.web_js)
+
     def test_web_target_can_drive_complete_scenario_without_owning_choices(self):
         view = inspect_web_target(self.resolved)
         for index in range(1, 8):
