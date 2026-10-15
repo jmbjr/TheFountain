@@ -2593,9 +2593,10 @@ def validate_resolved_semantics(resolved, dodge, canonical, sidecar):
     if resolved.get("proto_sidecar") != sidecar:
         errors.append("resolved game: DIRPS proto sidecar semantics were dropped or changed")
 
-    # G5 and later gameplay tranches make these proto contracts executable;
-    # resolved validation must continue to guard their exact authority/status boundary.
-    if (canonical.get("status") or "").startswith(("g5-", "g6-")):
+    # G5 and later maturity states make these proto contracts executable;
+    # resolved validation must continue to guard their exact authority/status boundary
+    # through G7 rather than dropping checks when the canonical status advances.
+    if (canonical.get("status") or "").startswith(("g5-", "g6-", "g7-")):
         _validate_g5_proto_semantics(sidecar, errors, dodge, canonical)
 
     expected_unresolved = _resolved_unresolved_index(sidecar)
