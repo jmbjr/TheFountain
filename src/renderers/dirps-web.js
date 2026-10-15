@@ -179,24 +179,53 @@ function renderScenario() {
   renderActions();
 }
 
-function resolutionHighlights(record) {
-  if (!record) return [];
-  const mechanic = record.mechanic_result || {};
-  const highlights = [
-    ["action", record.action_id],
-    ["encounter", record.encounter_ref],
-    ["mechanic", mechanic.format],
-    ["advanced to", record.progression?.advanced_to],
-    ["outcome", record.progression?.outcome],
-  ];
-  return highlights.filter(([, value]) => value !== undefined && value !== null);
+function readableValue(value) {
+  if (value === true) return "Yes";
+  if (value === false) return "No";
+  if (value === null || value === undefined) return "—";
+  return String(value).replaceAll("-", " ");
+}
+
+function renderResolutionSection(section) {
+  const wrapper = document.createElement("section");
+  wrapper.className = "dirps-resolution-section";
+
+  const heading = document.createElement("h3");
+  heading.textContent = section.title || "Result";
+  wrapper.append(heading);
+
+  const grid = document.createElement("div");
+  grid.className = "dirps-stat-grid";
+  for (const fact of section.facts || []) {
+    if (fact.value !== null && fact.value !== undefined) {
+      grid.append(row(fact.label, readableValue(fact.value)));
+    }
+  }
+  wrapper.append(grid);
+
+  if ((section.modifiers || []).length) {
+    const list = document.createElement("ul");
+    list.className = "dirps-modifier-list";
+    for (const modifier of section.modifiers) {
+      const item = document.createElement("li");
+      const amount = readableValue(modifier.amount);
+      item.textContent = modifier.reason
+        ? `${amount} · ${modifier.reason}`
+        : amount;
+      list.append(item);
+    }
+    wrapper.append(list);
+  }
+
+  return wrapper;
 }
 
 function renderLatest() {
   const host = $("lastResolution");
   clear(host);
   const record = model.latest_execution;
-  if (!record) {
+  const explanation = model.resolution_explanation;
+  if (!record || !explanation) {
     const quiet = document.createElement("p");
     quiet.className = "dirps-quiet";
     quiet.textContent = "No action resolved yet.";
@@ -205,12 +234,35 @@ function renderLatest() {
     return;
   }
 
-  const grid = document.createElement("div");
-  grid.className = "dirps-stat-grid";
-  for (const [label, value] of resolutionHighlights(record)) {
-    grid.append(row(label, value));
+  const heading = document.createElement("h2");
+  heading.className = "dirps-resolution-title";
+  heading.textContent = explanation.title || "Resolution";
+  host.append(heading);
+
+  for (const section of explanation.sections || []) {
+    host.append(renderResolutionSection(section));
   }
-  host.append(grid);
+
+  if (explanation.consequence) {
+    const consequence = document.createElement("p");
+    consequence.className = "dirps-consequence";
+    consequence.textContent = explanation.consequence;
+    host.append(consequence);
+  }
+
+  if ((explanation.skipped_checks || []).length) {
+    const skipped = document.createElement("div");
+    skipped.className = "dirps-skipped";
+    const title = document.createElement("h3");
+    title.textContent = "Checks not needed";
+    skipped.append(title);
+    for (const check of explanation.skipped_checks) {
+      const line = document.createElement("p");
+      line.textContent = `${readableValue(check.check)}: ${readableValue(check.reason)}`;
+      skipped.append(line);
+    }
+    host.append(skipped);
+  }
 
   const randomTitle = document.createElement("h3");
   randomTitle.textContent = "Recorded random evidence";

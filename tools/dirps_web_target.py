@@ -112,6 +112,238 @@ def _presentation_view(scenario, characters, contract):
     }
 
 
+
+def _fact(label, value):
+    return {"label": label, "value": copy.deepcopy(value)}
+
+
+def _roll_section(title, roll, *, target_label):
+    target = roll.get("target") or {}
+    evidence = roll.get("random_evidence") or {}
+    outcome = roll.get("outcome") or {}
+    target_ref = target.get("skill_ref") or target.get("attribute_ref")
+    facts = []
+    if target_ref is not None:
+        facts.append(_fact(target_label, target_ref))
+    if target.get("base_target") is not None:
+        facts.append(_fact("Base", target.get("base_target")))
+    if target.get("modifier_total") is not None:
+        facts.append(_fact("Modifier", target.get("modifier_total")))
+    effective = target.get("effective_target")
+    if effective is not None:
+        facts.append(_fact("Effective target", effective))
+    elif roll.get("target") is not None and not isinstance(roll.get("target"), dict):
+        facts.append(_fact("Target", roll.get("target")))
+    if evidence.get("total") is not None:
+        facts.append(_fact("Roll", evidence.get("total")))
+    facts.extend(
+        [
+            _fact("Result", outcome.get("classification")),
+            _fact("Success", outcome.get("success")),
+            _fact("Margin", outcome.get("margin")),
+        ]
+    )
+    modifiers = [
+        {
+            "amount": copy.deepcopy(row.get("amount")),
+            "reason": row.get("reason"),
+        }
+        for row in target.get("modifiers", [])
+        if isinstance(row, dict)
+    ]
+    return {
+        "title": title,
+        "facts": facts,
+        "modifiers": modifiers,
+    }
+
+
+def _simple_roll_section(title, roll, *, subject_label=None, subject=None):
+    evidence = roll.get("random_evidence") or {}
+    outcome = roll.get("outcome") or {}
+    facts = []
+    if subject_label and subject is not None:
+        facts.append(_fact(subject_label, subject))
+    if roll.get("base_ht") is not None:
+        facts.append(_fact("Base HT", roll.get("base_ht")))
+    if roll.get("modifier") is not None:
+        facts.append(_fact("Modifier", roll.get("modifier")))
+    if roll.get("target") is not None:
+        facts.append(_fact("Target", roll.get("target")))
+    if evidence.get("total") is not None:
+        facts.append(_fact("Roll", evidence.get("total")))
+    facts.extend(
+        [
+            _fact("Result", outcome.get("classification")),
+            _fact("Success", outcome.get("success")),
+            _fact("Margin", outcome.get("margin")),
+        ]
+    )
+    return {"title": title, "facts": facts, "modifiers": []}
+
+
+def _resolution_explanation(record):
+    if not isinstance(record, dict):
+        return None
+    mechanic = record.get("mechanic_result")
+    if not isinstance(mechanic, dict):
+        return None
+
+    result_format = mechanic.get("format")
+    explanation = {
+        "format": result_format,
+        "sections": [],
+        "consequence": None,
+        "state_change": copy.deepcopy(mechanic.get("state_delta") or []),
+    }
+
+    if result_format == "dirps-encounter-result.v1":
+        roll = mechanic.get("skill_resolution") or {}
+        explanation["title"] = "Skill check"
+        explanation["sections"].append(
+            _roll_section("Check", roll, target_label="Skill")
+        )
+        explanation["consequence"] = (mechanic.get("consequence") or {}).get(
+            "information_text"
+        )
+
+    elif result_format == "dirps-social-encounter-result.v1":
+        reaction = mechanic.get("reaction_resolution") or {}
+        evidence = reaction.get("random_evidence") or {}
+        explanation["title"] = "Reaction roll"
+        explanation["sections"].append(
+            {
+                "title": "Reaction",
+                "facts": [
+                    _fact("Roll", evidence.get("raw_total")),
+                    _fact("Modifier", reaction.get("modifier_total")),
+                    _fact("Modified total", reaction.get("modified_total")),
+                    _fact("Reaction", mechanic.get("reaction")),
+                ],
+                "modifiers": [],
+            }
+        )
+        explanation["consequence"] = (mechanic.get("consequence") or {}).get(
+            "information_text"
+        )
+
+    elif result_format == "dirps-environment-encounter-result.v1":
+        roll = mechanic.get("attribute_resolution") or {}
+        explanation["title"] = "Attribute check"
+        explanation["sections"].append(
+            _roll_section("Check", roll, target_label="Attribute")
+        )
+        explanation["consequence"] = (mechanic.get("consequence") or {}).get(
+            "consequence_text"
+        )
+
+    elif result_format == "dirps-combat-exchange-result.v1":
+        explanation["title"] = "Combat exchange"
+        attack = mechanic.get("attack_resolution") or {}
+        explanation["sections"].append(
+            _simple_roll_section(
+                "Rook attacks",
+                attack,
+                subject_label="Skill",
+                subject=attack.get("skill_ref"),
+            )
+        )
+
+        defense = mechanic.get("defense_resolution")
+        if isinstance(defense, dict):
+            explanation["sections"].append(
+                _simple_roll_section(
+                    "Bandit defends",
+                    defense,
+                    subject_label="Defense",
+                    subject=defense.get("kind"),
+                )
+            )
+
+        damage = mechanic.get("damage_resolution")
+        if isinstance(damage, dict):
+            damage_facts = [
+                _fact("Basic damage", damage.get("basic_damage")),
+                _fact("Armor DR", damage.get("armor_dr")),
+                _fact("Penetrating damage", damage.get("penetrating_damage")),
+                _fact("Injury", damage.get("injury")),
+            ]
+            explanation["sections"].append(
+                {"title": "Damage and injury", "facts": damage_facts, "modifiers": []}
+            )
+
+        injury = mechanic.get("injury_effects") or {}
+        explanation["sections"].append(
+            {
+                "title": "Bandit condition",
+                "facts": [
+                    _fact("HP remaining", injury.get("remaining_hp")),
+                    _fact("Major wound", injury.get("major_wound")),
+                    _fact("Stunned", injury.get("stunned")),
+                    _fact("Unconscious", injury.get("unconscious")),
+                    _fact(
+                        "Consciousness check required",
+                        injury.get("consciousness_check_required"),
+                    ),
+                ],
+                "modifiers": [],
+            }
+        )
+        branch_text = {
+            "attack-missed": "Rook's attack missed; no defense or damage roll followed.",
+            "defended": "The bandit successfully defended; no damage was applied.",
+            "hit": "Rook's attack got through and the recorded injury was applied.",
+        }
+        explanation["consequence"] = branch_text.get(mechanic.get("outcome_branch"))
+
+    elif result_format == "dirps-recovery-result.v1":
+        explanation["title"] = "Recovery checks"
+        consciousness = mechanic.get("consciousness_check")
+        if isinstance(consciousness, dict):
+            explanation["sections"].append(
+                _simple_roll_section("Consciousness", consciousness)
+            )
+        stun = mechanic.get("stun_recovery_check")
+        if isinstance(stun, dict):
+            explanation["sections"].append(
+                _simple_roll_section("Stun recovery", stun)
+            )
+        outcome = mechanic.get("outcome") or {}
+        explanation["sections"].append(
+            {
+                "title": "Resulting condition",
+                "facts": [
+                    _fact("Can act normally", outcome.get("can_act_normally")),
+                    _fact(
+                        "Consciousness check still required",
+                        outcome.get("consciousness_check_required"),
+                    ),
+                ],
+                "modifiers": [],
+            }
+        )
+        explanation["skipped_checks"] = copy.deepcopy(
+            mechanic.get("skipped_checks") or []
+        )
+
+    else:
+        explanation["title"] = "Resolved action"
+        explanation["sections"].append(
+            {
+                "title": "Runtime result",
+                "facts": [_fact("Result format", result_format)],
+                "modifiers": [],
+            }
+        )
+
+    progression = record.get("progression") or {}
+    explanation["progression"] = {
+        "advanced_to": copy.deepcopy(progression.get("advanced_to")),
+        "terminal": copy.deepcopy(progression.get("terminal")),
+        "outcome": copy.deepcopy(progression.get("outcome")),
+    }
+    return explanation
+
 def inspect_web_target(
     resolved,
     history=None,
@@ -137,6 +369,7 @@ def inspect_web_target(
         else copy.deepcopy(presentation_contract)
     )
     presentation = _presentation_view(scenario, characters, contract)
+    resolution_explanation = _resolution_explanation(latest)
     return {
         "target": {
             "id": TARGET_ID,
@@ -155,6 +388,7 @@ def inspect_web_target(
             "final_state_hash": replay.get("final_state_hash"),
         },
         "latest_execution": latest,
+        "resolution_explanation": resolution_explanation,
     }
 
 

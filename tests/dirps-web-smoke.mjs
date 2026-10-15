@@ -113,6 +113,26 @@ try {
   assert.equal(await page.locator("#fatal").isHidden(), true, "fatal panel appeared after action");
   assert.match(
     await page.locator("#lastResolution").innerText(),
+    /Skill check/i,
+    "PX-C human-readable skill explanation did not render",
+  );
+  assert.match(
+    await page.locator("#lastResolution").innerText(),
+    /Effective target/i,
+    "PX-C effective target was not explained",
+  );
+  assert.match(
+    await page.locator("#lastResolution").innerText(),
+    /Margin/i,
+    "PX-C roll margin was not explained",
+  );
+  assert.match(
+    await page.locator("#lastResolution").innerText(),
+    /Rook (identifies|cannot establish)/i,
+    "PX-C runtime consequence was not surfaced in player language",
+  );
+  assert.match(
+    await page.locator("#lastResolution").innerText(),
     /Recorded random evidence/i,
     "runtime result/random-evidence surface did not render",
   );

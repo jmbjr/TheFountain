@@ -49,6 +49,12 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .dirps-muted{color:#7f9ca7;font-size:.75rem}
 .dirps-quiet{color:#6f8a94;font-style:italic}
 .dirps-code{max-height:420px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:10px;border:1px solid #1e3b46;background:#050c10;color:#abd0dc;font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace}
+.dirps-resolution-title{margin:0 0 12px;font-size:1.35rem}
+.dirps-resolution-section{margin:14px 0}
+.dirps-resolution-section h3{margin:0 0 8px}
+.dirps-modifier-list{margin:8px 0 0;padding-left:20px;color:#9fb8c2;font-size:.8rem;line-height:1.45}
+.dirps-consequence{margin:16px 0 4px;padding:12px 14px;border-left:3px solid #5c9bb1;background:#0c1c24;color:#d8edf4;font:1rem/1.55 Georgia,serif}
+.dirps-skipped p{margin:5px 0;color:#9fb8c2}
 .dirps-resolution details,.dirps-panel details{margin-top:10px}
 .dirps-panel summary{cursor:pointer;color:#9cc5d3;font-weight:700}
 .dirps-history{display:grid;gap:7px;max-height:360px;overflow:auto}
