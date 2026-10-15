@@ -776,10 +776,12 @@ external GURPS rule authority
 
 `game/dirps/docs/g7-reference-validation.md` is the durable audit record. It maps every bounded Scenario 01 mechanic claim to source ownership, normalized/bridge semantics, runtime records, and tests; inventories deterministic/negative/perturbation evidence; audits replay source identity and target boundaries; and records unsupported semantics.
 
-`tests/test_dirps_g7.py` adds convergence guards rather than new mechanic tests. It requires the registry to declare the G7/reference candidate, executes one complete accepted success history across all four canonical encounters plus the required recovery step, verifies the mechanic record identities and Phase G source traces, requires successful full-session replay, pins explicit unsupported scope, audits proto maturity, and requires the complete reference evidence document set.
+`tests/test_dirps_g7.py` adds convergence guards rather than new mechanic tests. It requires the registry to declare the accepted G7/reference state, executes one complete accepted success history across all four canonical encounters plus the required recovery step, verifies the mechanic record identities and Phase G source traces, requires successful full-session replay, pins explicit unsupported scope, audits proto maturity, and requires the complete reference evidence document set.
 
 A G7 reference claim does **not** convert DIRPS proto concepts into DODGE proposals. All exercised proto concepts remain `not-yet-candidate`; `visibility_and_secret_state` remains `suspected`. Cross-game evidence is still required before proposing a reusable neutral contract upstream.
 
 The debug CLI and browser remain projections of the same runtime. No Phase J target or runtime fork exists.
+
+PR #188 was independently accepted and merged at head `a0e39d13ade9c26457dbb2d36dfe527eeb57ce98` / merge `ac532a9afc4985ee8def8574cd133f1cd7ab7cd5`. DIRPS Scenario 01 is therefore **G7 — Reference**. This is a bounded Scenario 01 reference architecture, not a claim of full GURPS support. Accepted unsupported scope remains unsupported, and no DIRPS proto concept was promoted upstream merely to obtain G7.
 
 The first G7 candidate run also exposed a semantic-validation lifecycle invariant: advancing canonical maturity must not disable executable sidecar validation. `validate_resolved_semantics()` previously re-ran `_validate_g5_proto_semantics()` only for canonical statuses beginning `g5-` or `g6-`; the G7 status therefore bypassed checks that existing Phase C/F/G/H drift tests expected. The guard now includes `g7-`. This is a validation-boundary correction only; runtime and sidecar semantics are unchanged.

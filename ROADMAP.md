@@ -162,7 +162,7 @@ Scenario 01 should remain reproducible while Scenario 02 evolves.
 
 ### 3. DIRPS — GURPS-inspired DODGE experiment
 
-The `game/dirps/` namespace is a **G7 — Reference candidate** under Phase J in issue **#178**. Phases A-I are accepted/merged; Phase J audits the complete bounded implementation rather than adding mechanics.
+The `game/dirps/` namespace is **G7 — Reference** for bounded Scenario 01. Phases A-J are accepted/merged; PR #188 completed the whole-system reference audit without adding mechanics.
 
 The purpose is not merely to implement GURPS mechanics. DIRPS is a second independent stress test of DODGE so that abstractions proven only by Wretched do not become accidental specification assumptions. GURPS Lite remains the external rules reference; DIRPS is the implementation identity.
 
@@ -179,14 +179,14 @@ G2/G3/G4/G5/G6 and Phase A-G evidence remains in the existing validation documen
 
 Current DIRPS maturity:
 
-- **G7 — Reference candidate (bounded Scenario 01), pending independent review**;
+- **G7 — Reference (bounded Scenario 01), independently accepted/merged in PR #188**;
 - the DIRPS DODGE document validates against the exact DODGE 0.2.1 schema pinned by TheFountain CI;
 - G2 generic core validity remains supported by the complete §15.3 evidence matrix and candidate-level negative fixtures;
 - the declared `dirps@0.1.0` profile now validates both source and the exact resolved-game model;
 - one neutral resolver preserves canonical PC build, concrete scene actors, normalized rules/actions/procedures, target duration, source/provenance, encounter order, and unresolved proto material;
 - `dice_resolution`, `procedure_context`, `actor_character_model`, `skill_model`, `resolution_trace`, `lookup_tables`, `reaction_timing`, `derived_values`, `expressions`, Phase E `damage_injury`, and Phase H `replay_session_history` remain **exercised** / `not-yet-candidate`; `visibility_and_secret_state` remains **suspected**;
 - the registered debug CLI remains the low-level reference target, and Phase I adds a player-facing Web target that consumes the same resolver/runtime/replay path in-browser without owning gameplay semantics;
-- gameplay convergence is tracked in issue **#178** and maturity/conformance in **#163**; Phase J is that separate whole-system reference-quality review.
+- gameplay roadmap **#178** and convergence tracker **#163** are complete at the accepted G7 gate. No further gameplay phase is required merely to satisfy the Scenario 01 reference gate.
 
 ## DODGE 0.2.1 / reference-release direction
 
@@ -257,4 +257,4 @@ tune the source
 The roadmap should change whenever playtesting, a second game, or better implementation evidence shows that it should.
 
 
-DIRPS gameplay roadmap #178: Phases A-I are accepted/merged. Phase J/G7 whole-system reference audit is the current candidate; no further gameplay phase is required merely to satisfy the reference gate.
+DIRPS gameplay roadmap #178: Phases A-J are complete. PR #188 was independently accepted and merged at G7 — Reference; no further gameplay phase is required for the Scenario 01 reference gate.

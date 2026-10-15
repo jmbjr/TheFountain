@@ -1115,11 +1115,11 @@
     }
   },
   "metadata": {
-    "status": "reference-g7-candidate",
+    "status": "reference-g7",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "G7 — Reference candidate: accepted Phases A-I provide exact-schema/core/game validation, one neutral resolved model, bounded executable investigation/social/environment/combat/recovery mechanics, deterministic scenario completion, full-session replay/divergence evidence, and debug/Web targets over the same runtime. Phase J audits the whole system. Long-term unconscious recovery/healing and hidden/GM state remain explicitly unsupported; no DIRPS proto gap is promoted upstream."
+    "conformance_claim": "G7 — Reference: accepted/merged PR #188 establishes a bounded Scenario 01 reference implementation with exact-schema/core/game validation, one neutral resolved model, bounded executable investigation/social/environment/combat/recovery mechanics, deterministic scenario completion, full-session replay/divergence evidence, and debug/Web targets over the same runtime. This does not imply full GURPS support. Long-term unconscious recovery/healing, hidden/GM state, and other declared unsupported scope remain unsupported; no DIRPS proto gap was promoted upstream merely to obtain G7."
   },
   "extensions": {
     "org.dirps.proto": {
