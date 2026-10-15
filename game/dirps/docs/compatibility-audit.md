@@ -167,3 +167,22 @@ The Python Web adapter consumes Phase H session history as its state/evidence bo
 Source-level regressions prohibit Scenario 01 encounter/action gameplay literals and mechanic-specific random-input keys in the JavaScript renderer. End-to-end evidence drives the complete scenario using only runtime-described actions.
 
 Phase I therefore exercises a second real target over the accepted resolver/runtime/replay boundary without adding a private target rules engine. No DODGE or proto promotion is required.
+
+
+## Phase J G7 convergence result
+
+Phase J does not normalize new gameplay semantics. It audits whether the bounded compatibility decisions made from G0 through Phase I still form one coherent reference implementation.
+
+The result is a **G7 reference candidate**:
+
+- every Scenario 01 encounter/mechanic claim is executable and covered by accepted runtime evidence;
+- canonical facts, external GURPS mechanics, DODGE-normalized semantics, proto bridges, runtime algorithms, and target presentation remain separate authority classes;
+- negative and perturbation tests cover canonical character values, encounter order, modifiers, combat skill, bridge bindings, completion triggers/effects/conditions, and replay source identity;
+- Phase H provides deterministic complete-session replay/divergence evidence;
+- Phase I provides a second target and real browser/Pyodide transport evidence without a JavaScript gameplay engine;
+- unsupported long-term recovery, broader combat, skill defaults, campaign persistence, and hidden/GM state remain explicit;
+- every exercised proto concept remains `not-yet-candidate`; `visibility_and_secret_state` remains `suspected`.
+
+No new DODGE gap is proposed in Phase J. Cross-game reuse evidence is still required before choosing a DIRPS-private proto shape as an upstream neutral contract.
+
+The full matrix is in `g7-reference-validation.md`.
