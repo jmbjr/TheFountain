@@ -31,6 +31,9 @@ button,input{font:inherit}
 .dirps-framing>h2{font-size:1.9rem;margin:.2em 0 .1em}
 .dirps-framing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
 .dirps-scope{margin:16px 0 0;padding-top:14px;border-top:1px solid #203d49;color:#8fb0bd;font:italic .9rem/1.5 Georgia,serif}
+.dirps-transition{margin:16px 0;padding:12px 14px;border-left:3px solid #4f8497;background:#0a1a22}
+.dirps-transition-outcome{margin:0 0 8px;color:#d8edf4;font:italic .95rem/1.5 Georgia,serif}
+.dirps-transition-bridge{margin:0;color:#a9c3cd;line-height:1.5}
 .dirps-actions{display:grid;gap:9px;margin:16px 0}
 .dirps-action{display:flex;justify-content:space-between;gap:18px;align-items:center;text-align:left;padding:13px 15px;border:1px solid #4b7d8e;background:#102630;color:#e7f6fa;cursor:pointer}
 .dirps-action:hover{background:#173845}
