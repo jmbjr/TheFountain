@@ -136,6 +136,26 @@ try {
     /Recorded random evidence/i,
     "runtime result/random-evidence surface did not render",
   );
+  assert.equal(
+    (await page.locator("#encounterTitle").textContent())?.trim(),
+    "Frightened Witness",
+    "PX-B did not present the runtime-selected next encounter",
+  );
+  assert.match(
+    await page.locator("#transitionOutcome").innerText(),
+    /Rook (identifies|cannot establish)/i,
+    "PX-B did not carry the accepted runtime consequence into the transition",
+  );
+  assert.match(
+    await page.locator("#transitionBridge").innerText(),
+    /frightened witness/i,
+    "PX-B connective fiction did not render",
+  );
+  assert.match(
+    await page.locator("#encounterPurpose").innerText(),
+    /shaken witness/i,
+    "PX-B next-encounter opening fiction did not render",
+  );
   assert.match(
     await page.locator("#lastResolution").innerText(),
     /phase-i-browser-smoke/,
