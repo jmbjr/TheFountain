@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>DIRPS — The Missing Courier</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="dirps-body">
+  <nav class="dirps-back"><a href="../">← Return to the Archive</a></nav>
+  <main class="dirps-game">
+    <header>
+      <p class="dirps-eyebrow">SCENARIO 01 · THE MISSING COURIER</p>
+      <h1>DIRPS</h1>
+      <p class="dirps-tag">A small RPG tutorial running the same Python resolver and runtime used by DIRPS conformance.</p>
+      <p id="runtimeStatus" class="dirps-runtime-status">Loading shared Python runtime…</p>
+    </header>
+
+    <section id="fatal" class="dirps-panel dirps-error" hidden></section>
+
+    <section id="play" hidden>
+      <div id="scenarioBanner" class="dirps-banner"></div>
+
+      <section class="dirps-grid">
+        <div>
+          <section class="dirps-panel">
+            <div class="dirps-title-row">
+              <div>
+                <p class="dirps-eyebrow">CURRENT ENCOUNTER</p>
+                <h2 id="encounterTitle">—</h2>
+              </div>
+              <span id="progressMeta"></span>
+            </div>
+            <p id="encounterPurpose" class="dirps-copy"></p>
+            <div id="availableActions" class="dirps-actions"></div>
+            <label class="dirps-seed">
+              <span>Deterministic seed</span>
+              <input id="seedInput" type="text" autocomplete="off" placeholder="blank = generate a fresh seed">
+            </label>
+          </section>
+
+          <section class="dirps-panel">
+            <p class="dirps-eyebrow">LAST RESOLUTION</p>
+            <div id="lastResolution" class="dirps-resolution">
+              <p class="dirps-quiet">No action resolved yet.</p>
+            </div>
+          </section>
+
+          <section class="dirps-panel">
+            <p class="dirps-eyebrow">RULE / SOURCE TRACE</p>
+            <pre id="provenance" class="dirps-code">No execution trace yet.</pre>
+          </section>
+        </div>
+
+        <aside>
+          <section class="dirps-panel">
+            <p class="dirps-eyebrow">CHARACTER</p>
+            <div id="character"></div>
+          </section>
+
+          <section class="dirps-panel">
+            <p class="dirps-eyebrow">SCENARIO STATE</p>
+            <div id="scenarioState"></div>
+          </section>
+
+          <section class="dirps-panel">
+            <div class="dirps-title-row">
+              <div>
+                <p class="dirps-eyebrow">SESSION EVIDENCE</p>
+                <h2>Replay log</h2>
+              </div>
+              <span id="historyCount"></span>
+            </div>
+            <div id="history" class="dirps-history"></div>
+          </section>
+        </aside>
+      </section>
+
+      <section class="dirps-panel">
+        <details>
+          <summary>Runtime debug view</summary>
+          <pre id="debugView" class="dirps-code"></pre>
+        </details>
+      </section>
+
+      <div class="dirps-turnbar">
+        <button id="restart" class="dirps-ghost">Restart scenario</button>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="../src/renderers/dirps-web.js"></script>
+</body>
+</html>

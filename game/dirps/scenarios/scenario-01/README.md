@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase H gameplay candidate.** Accepted Phases A-G remain intact. Scenario 01 now has a complete target-neutral session-history layer over the accepted ordered runtime, preserving step evidence and deterministically replaying a full run. `../../docs/phase-h-session-history-validation.md` records the history/replay evidence.
+**G6 — Targeted, Phase I Web candidate.** Accepted Phases A-H remain intact. Scenario 01 now has a player-facing browser target that executes the same Python resolver/runtime through Pyodide and presents runtime-described actions, state, result/provenance evidence, and the Phase H replay log. `../../docs/phase-i-web-target-validation.md` records the target evidence.
 
 ## Goal
 
@@ -33,7 +33,7 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B/C/D/E/F/G are accepted gameplay slices. Phase G composes them into one bounded tutorial state. Phase H records that runtime as an immutable copy-on-append multi-step evidence sequence and can reproduce a complete success or failure run. Long-term waking/healing and player-facing Web presentation remain later roadmap work.
+Phases B/C/D/E/F/G/H are accepted gameplay slices/evidence. Phase G composes the tutorial state and Phase H records/replays it. Phase I adds presentation only: the browser consumes those same semantics without introducing a JavaScript rules engine. Long-term waking/healing remains later roadmap work.
 
 
 ## Phase D — Washed-Out Path
@@ -67,3 +67,12 @@ Phase H adds `dirps-session-history.v1` without changing gameplay semantics. A s
 Each step preserves declared action identity, exact deterministic random inputs, canonical JSON SHA-256 before/after state identities, the Phase G resolution trace, and the full transition record. The append API validates and replays the existing history before adding a new step and returns a deep-copied history rather than mutating prior evidence.
 
 Full-session replay re-executes each action from the accepted initial state and fails at the first inconsistent step. The resulting execution evidence moves `replay_session_history` from `suspected` to `exercised`, while keeping it `not-yet-candidate`. Evidence: `../../docs/phase-h-session-history-validation.md`.
+
+
+## Phase I — Player-facing Web target
+
+The static `/dirps/` route loads pinned Pyodide and mounts the repository's DIRPS game descriptor, DODGE document, canonical Scenario 01 source, proto sidecar, semantic validator, resolver, runtime, and thin Web adapter. The browser therefore resolves and plays Scenario 01 with the same Python implementation used by conformance.
+
+The JavaScript renderer displays the resolved character, current scenario/encounter state, only the runtime-described available actions, deterministic seed input, recorded random/result evidence, authority/source traces, and the Phase H append-only session log. It does not contain encounter/action identifiers or mechanic-specific random-input shapes.
+
+The debug CLI remains available as the low-level reference target. Evidence: `../../docs/phase-i-web-target-validation.md`.

@@ -734,3 +734,20 @@ Append is copy-on-append: the runtime validates/replays the prior history, rejec
 Because DODGE 0.2.1 does not provide this immutable session-history structure, the implementation uses the already-declared `replay_session_history` proto gap. Phase H supplies the first concrete target-neutral complete-session execution evidence and therefore moves that proto concept from `suspected` to **`exercised`**, while keeping `candidate_for_dodge = not-yet-candidate`. No upstream DODGE change is proposed yet.
 
 Tests cover complete deterministic success and failure sessions, immutability/copy-on-append, preserved action/random/hash/trace evidence, resolved semantic source drift, prior-history tampering, terminal append rejection, partial-vs-complete replay, binding drift, and exact first-step divergence reporting. Independent Phase H review then found that the first source digest omitted the resolved `scene` and executable Phase A-F sidecar/proto contracts used by the replayed mechanics. The corrected digest conservatively includes the entire resolved `scene` and `proto_sidecar`; focused regressions mutate each after history creation and prove replay fails with a source-identity mismatch before step 1 is re-executed. Phase I Web presentation and G7 remain separate later work.
+
+
+## DIRPS gameplay Phase I adds a shared-runtime browser target
+
+**October 14, 2026.**
+
+After Phase H PR #186 was accepted and merged, DIRPS began Phase I from current post-merge `main` at `3db047d5d423195a30a3be8aaffb50fac50b3852`. The goal is the product checkpoint in #178: make The Missing Courier usable from a normal browser without allowing the UI to become another rules engine.
+
+The key architecture decision is to run the existing Python implementation in the browser rather than port it to JavaScript. The new `/dirps/` page loads pinned Pyodide, mounts the registered DIRPS DODGE/canonical/sidecar inputs plus `game_registry.py`, semantic validation, resolver, runtime, and a thin Web target adapter, then resolves Scenario 01 normally inside the browser.
+
+`tools/dirps_web_target.py` uses Phase H session history as its state/evidence boundary. It asks `describe_scenario()` which actions are available and passes the selected action/actor plus one generic deterministic seed to `append_scenario_session_step()`. The accepted runtime still owns dice generation, target resolution, reaction lookup, combat, recovery, progression, completion, and replay.
+
+The JavaScript renderer owns presentation only: character state, encounter/scenario state, action buttons supplied by the runtime, recorded random/result evidence, source/authority traces, session hashes, restart, and a raw debug view. Regression tests deliberately reject gameplay encounter/action literals or mechanic-specific random-input shapes in the renderer.
+
+The original debug CLI remains available. Phase I adds no DODGE/proto promotion and formal maturity remains **G6 — Targeted** pending independent review and the later G7 reference audit.
+
+Independent Phase I review found two product-evidence gaps in the first candidate. The adapter already carried Rook's resolved runtime state, but the renderer displayed only attributes/skills/equipment; the corrected character panel now renders the exact resolved state, including HP, fatigue, stunned, unconscious, and consciousness-check-required. The review also found that CI never exercised the browser/Pyodide loader boundary. The corrected workflow installs pinned Playwright/Chromium, serves the exact checkout, boots `/dirps/`, waits for the shared Python runtime, verifies runtime-described state/actions, clicks one action, and requires Phase H history plus random-result evidence while failing on browser/bootstrap errors.

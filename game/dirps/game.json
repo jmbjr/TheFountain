@@ -18,7 +18,8 @@
         "resolver": "tools/resolve_dirps_dodge.py"
       },
       "generated_targets": {
-        "debug-cli": "../../tools/dirps_debug_target.py"
+        "debug-cli": "../../tools/dirps_debug_target.py",
+        "web": "../../dirps/index.html"
       }
     }
   }

@@ -24,10 +24,14 @@ class GameRegistryTests(unittest.TestCase):
         self.assertTrue(cfg["conformance"]["resolver"].is_file())
         self.assertEqual(
             cfg["generated_targets"],
-            {"debug-cli": "../../tools/dirps_debug_target.py"},
+            {
+                "debug-cli": "../../tools/dirps_debug_target.py",
+                "web": "../../dirps/index.html",
+            },
         )
-        target = (cfg["game_root"] / cfg["generated_targets"]["debug-cli"]).resolve()
-        self.assertTrue(target.is_file())
+        for target_ref in cfg["generated_targets"].values():
+            target = (cfg["game_root"] / target_ref).resolve()
+            self.assertTrue(target.is_file())
 
     def test_wretched_scenario_01_paths_exist(self):
         cfg=scenario_config("wretched-demesne","scenario-01")

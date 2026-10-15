@@ -105,8 +105,11 @@ The root `index.html` is the **Forbidden Places** game hub. It links to:
 
 - `/the-fountain/`
 - `/wretched-demesne/`
+- `/dirps/`
 
 The Fountain is currently playable. Its page loads `src/renderers/web.js`, which loads neutral `game/the-fountain/source/game.json` and drives `src/engine.js`.
+
+DIRPS Phase I adds a static `/dirps/` route. Its JavaScript renderer does not port the rules: it boots pinned Pyodide, mounts the registered DIRPS source plus the existing Python semantic validator/resolver/runtime, and executes those modules directly in-browser. The target is therefore a presentation consumer of the same accepted Python semantics used by conformance.
 
 Wretched Demesne has a playable Pages route plus generated Beta PnP/TTS review artifacts. A single Beta release workflow now builds all three deploy targets from the same triggering source revision. The remaining DODGE work is deeper semantic convergence: make the Web runtime and both exporters consume the same DODGE 0.2.1 resolved model/inventory rather than merely sharing the same checkout and canonical sources.
 
@@ -719,3 +722,33 @@ Every step records the declared action/actor, exact Phase G random inputs, canon
 `replay_scenario_session_history()` starts from the recorded accepted initial state and re-executes the sequence in order. It verifies the complete replay source identity before step 1, then contiguous sequence, state continuity, hashes, declared action/random evidence, trace, and exact transition equality. Any inconsistency fails at the first affected step. Complete replay can additionally require a terminal Scenario 01 state.
 
 This real end-to-end evidence moves `replay_session_history` from **suspected** to **exercised**, while it remains **not-yet-candidate**. Phase H changes no DODGE document fields and no accepted Phase A-G record identity. Formal DIRPS maturity remains G6; Phase I Web presentation and G7 are separate later work.
+
+
+### DIRPS gameplay Phase I — player-facing Web target
+
+Phase I adds a second DIRPS target without creating a second gameplay implementation:
+
+```text
+GitHub Pages /dirps/
+→ src/renderers/dirps-web.js
+→ pinned Pyodide
+→ game/dirps authored data
+→ tools/dirps_semantic_validation.py
+→ tools/resolve_dirps_dodge.py
+→ dirps-resolved-game.v1
+→ tools/dirps_runtime.py
+→ tools/dirps_web_target.py
+→ DOM presentation
+```
+
+The browser mounts the exact registered Scenario 01 DODGE document, canonical source, proto sidecar, and game descriptor plus the normal Python validator/resolver/runtime modules. `game_registry.py` therefore discovers the same DIRPS namespace inside the Pyodide filesystem, and `resolve_dirps_dodge.py` constructs the normal resolved model in-browser.
+
+`tools/dirps_web_target.py` is intentionally thinner than the existing debug CLI. Phase H session history is its state/evidence boundary. Inspection replays the session, calls `describe_scenario()`, and returns character/presentation data. Execution passes only `action_id`, `actor_ref`, and one generic `random_seed` to `append_scenario_session_step()`; the runtime owns all encounter-specific random terms and mechanics.
+
+`src/renderers/dirps-web.js` owns DOM rendering and browser input only. It renders runtime-described actions, the exact resolved character state (including HP/fatigue/status flags), scenario state, result/random evidence, provenance/trace information, and replay hashes. Source tests prohibit Scenario 01 encounter/action gameplay literals and mechanic-specific random-input keys in the renderer.
+
+Pyodide is pinned to a versioned CDN URL. The external WebAssembly/Python runtime is execution infrastructure, not a source of gameplay semantics.
+
+The Phase I acceptance boundary includes the transport itself. CI serves the exact checkout over HTTP and runs a headless Chromium smoke through the real `/dirps/` page. The smoke waits for Pyodide/Python bootstrap, verifies resolved character-state DOM values and a runtime-described action, clicks that action, and requires Phase H history/random-result evidence with no fatal panel or browser transport error. This prevents a source-level analogue from standing in for the actual loader/runtime mechanism.
+
+The debug CLI remains registered and unchanged as the low-level target. Formal DIRPS maturity remains G6; Phase I adds target breadth/evidence but does not itself claim G7.

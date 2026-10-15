@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/*-runtime.test.mjs"
+    "test": "node --test tests/*-runtime.test.mjs",
+    "test:dirps-web-smoke": "node tests/dirps-web-smoke.mjs"
   }
 }
