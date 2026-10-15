@@ -120,6 +120,21 @@ Important authority paths:
 
 No target is an independent gameplay authority.
 
+## Audit finding — executable proto validation must survive maturity advancement
+
+The first Phase J exact-head run exposed a real reference-gate defect: resolved semantic validation re-ran the executable proto contract checks only when the canonical status started with `g5-` or `g6-`. Advancing the same scenario metadata to `g7-reference-candidate` therefore caused existing Phase C/F/G/H sidecar-drift regressions to stop failing during resolution.
+
+The fix is intentionally narrow:
+
+```text
+g5-* / g6-* / g7-*
+→ same _validate_g5_proto_semantics() executable-sidecar guard
+```
+
+No proto shape, runtime behavior, or gameplay fact changed. The existing negative tests become the G7 regression: if a future maturity label accidentally bypasses those executable authority checks again, Phase C/F/G/H drift tests fail.
+
+This is exactly the kind of whole-system convergence defect Phase J is intended to find.
+
 ## Validation/conformance evidence
 
 ### G1 — exact schema
