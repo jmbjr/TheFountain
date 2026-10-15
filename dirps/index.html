@@ -41,6 +41,10 @@
       <section class="dirps-grid">
         <div>
           <section class="dirps-panel">
+            <div id="encounterTransition" class="dirps-transition" hidden>
+              <p id="transitionOutcome" class="dirps-transition-outcome"></p>
+              <p id="transitionBridge" class="dirps-transition-bridge"></p>
+            </div>
             <div class="dirps-title-row">
               <div>
                 <p class="dirps-eyebrow">CURRENT ENCOUNTER</p>
@@ -49,10 +53,6 @@
               <span id="progressMeta"></span>
             </div>
             <p id="encounterPurpose" class="dirps-copy"></p>
-            <div id="encounterTransition" class="dirps-transition" hidden>
-              <p id="transitionOutcome" class="dirps-transition-outcome"></p>
-              <p id="transitionBridge" class="dirps-transition-bridge"></p>
-            </div>
             <div id="availableActions" class="dirps-actions"></div>
             <label class="dirps-seed">
               <span>Deterministic seed</span>
