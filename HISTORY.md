@@ -771,3 +771,24 @@ The first Phase J CI run immediately found one whole-system defect: resolved exe
 
 
 Independent G7 review then found one documentation-only blocker in the aggregate DIRPS compatibility audit: its opening current-state paragraph still called the candidate G6 / Phase G, even though the Phase J metadata, audit, and later sections described the G7 candidate. The opening statement now distinguishes the PR #188 G7 candidate from currently merged G6 `main`, and a new G7 regression prevents that obsolete current-state wording from returning. The aggregate replay row was also brought forward to Phase H's accepted `exercised / not-yet-candidate` status. Historical phase validation documents remain unchanged.
+
+
+## DIRPS Scenario 01 reaches G7 — Reference
+
+**October 14, 2026.**
+
+Phase J PR #188 was independently accepted and merged, completing the DIRPS Scenario 01 G0→G7 convergence path.
+
+Accepted identities:
+
+- accepted G7 PR head: `a0e39d13ade9c26457dbb2d36dfe527eeb57ce98`;
+- merge SHA: `ac532a9afc4985ee8def8574cd133f1cd7ab7cd5`;
+- accepted exact-head CI: **38665170384** (run #321);
+- post-merge `main` observed for closeout: `93091f48da681e495ac2382febdd13db4c4fc86f`;
+- pinned DODGE revision: `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
+
+DIRPS Scenario 01 is now **G7 — Reference**. The reference claim is deliberately bounded to *The Missing Courier*: it does not imply full GURPS support. Long-term unconscious recovery/healing, broader combat, skill defaults, campaign persistence, hidden/GM-only state, and other declared unsupported behavior remain outside the accepted scope.
+
+Phase J promoted no DIRPS proto concept upstream merely to obtain G7. Exercised proto concepts remain `not-yet-candidate`, and `visibility_and_secret_state` remains `suspected`. Any future DODGE proposal still requires independent reusable/cross-game evidence.
+
+Gameplay roadmap #178 and convergence tracker #163 are complete at this milestone. No Phase K is created and no further gameplay phase is required for the Scenario 01 reference gate.
