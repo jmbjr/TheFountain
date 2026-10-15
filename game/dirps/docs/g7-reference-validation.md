@@ -295,6 +295,20 @@ Phase J updates:
 
 `PROCESSES.md` does not change because Phase J applies the existing onboarding/review process rather than discovering a new reusable workflow.
 
+## Independent review correction — aggregate compatibility state
+
+Independent review of the first green G7 candidate found one documentation blocker: the top-level `compatibility-audit.md` still described the **current** candidate as G6 / Phase G even though its historical sections and newly appended Phase J section already contained later evidence.
+
+The aggregate audit now explicitly distinguishes:
+
+- **PR #188:** G7 — Reference candidate / Phase J;
+- **currently merged `main`:** G6 — Targeted until #188 is independently accepted and merged;
+- historical G2-G6 / Phase A-I sections: preserved as evidence for their original maturity boundaries.
+
+The aggregate table was also reconciled so `replay_session_history` reflects accepted Phase H evidence as **exercised / not-yet-candidate** rather than the pre-Phase-H suspected state.
+
+`tests/test_dirps_g7.py` now guards the current-state paragraph so the aggregate compatibility audit cannot silently revert to advertising the obsolete G6 / Phase G state. Historical phase documents are intentionally unchanged.
+
 ## G7 candidate conclusion
 
 The accumulated implementation now satisfies the repository/DODGE meaning of a bounded reference candidate:
