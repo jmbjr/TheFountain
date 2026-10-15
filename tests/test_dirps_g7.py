@@ -2,7 +2,7 @@
 """Whole-system DIRPS G7 convergence evidence.
 
 This suite does not add gameplay. It audits the accepted Phase A-I system as one
-reference candidate and guards the scope/maturity claims that make G7 meaningful.
+accepted reference and guards the scope/maturity claims that make G7 meaningful.
 """
 from __future__ import annotations
 
@@ -54,7 +54,7 @@ class DirpsG7ReferenceAuditTests(unittest.TestCase):
             )
         return history
 
-    def test_registry_declares_reference_candidate(self):
+    def test_registry_declares_reference(self):
         self.assertEqual(self.game["status"], "active")
         self.assertEqual(self.cfg["status"], "reference")
         self.assertEqual(self.cfg["conformance"]["maturity"], "G7")
@@ -184,20 +184,19 @@ class DirpsG7ReferenceAuditTests(unittest.TestCase):
             )
         )
 
-    def test_aggregate_compatibility_audit_describes_current_g7_candidate(self):
+    def test_aggregate_compatibility_audit_describes_accepted_g7_reference(self):
         audit = (
             ROOT / "game/dirps/docs/compatibility-audit.md"
         ).read_text()
         current_state = audit.split("| Requirement |", 1)[0]
-        self.assertIn("G7 — Reference candidate under Phase J", current_state)
-        self.assertIn(
-            "currently merged `main` remains **G6 — Targeted** until #188",
-            current_state,
-        )
+        self.assertIn("DIRPS Scenario 01 is now **G7 — Reference**", current_state)
+        self.assertIn("PR #188 was independently accepted and merged", current_state)
         self.assertNotIn(
             "The candidate remains **G6 — Targeted** and has now reached gameplay Phase G",
             current_state,
         )
+        self.assertNotIn("Reference candidate under Phase J", current_state)
+        self.assertNotIn("currently merged `main` remains **G6 — Targeted**", current_state)
 
     def test_reference_evidence_set_is_complete(self):
         required_docs = {
