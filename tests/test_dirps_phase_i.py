@@ -300,6 +300,49 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             recovery["outcome"]["can_act_normally"],
         )
 
+    def test_px_c_projection_does_not_recompute_recorded_numbers(self):
+        record = {
+            "mechanic_result": {
+                "format": "dirps-encounter-result.v1",
+                "skill_resolution": {
+                    "target": {
+                        "skill_ref": "tracking",
+                        "base_target": 91,
+                        "modifier_total": -37,
+                        "effective_target": 12,
+                        "modifiers": [
+                            {"amount": -37, "reason": "deliberately inconsistent fixture"}
+                        ],
+                    },
+                    "random_evidence": {"total": 17},
+                    "outcome": {
+                        "classification": "fixture-result",
+                        "success": False,
+                        "margin": -123,
+                    },
+                },
+                "consequence": {"information_text": "Recorded consequence."},
+                "state_delta": [],
+            },
+            "progression": {
+                "advanced_to": "fixture-next",
+                "terminal": False,
+                "outcome": None,
+            },
+        }
+        explanation = dirps_web_target._resolution_explanation(record)
+        values = {
+            row["label"]: row["value"]
+            for row in explanation["sections"][0]["facts"]
+        }
+        self.assertEqual(values["Base"], 91)
+        self.assertEqual(values["Modifier"], -37)
+        self.assertEqual(values["Effective target"], 12)
+        self.assertEqual(values["Roll"], 17)
+        self.assertEqual(values["Margin"], -123)
+        self.assertEqual(values["Result"], "fixture-result")
+        self.assertEqual(explanation["consequence"], "Recorded consequence.")
+
     def test_px_c_javascript_has_no_mechanic_calculation(self):
         for calculation in (
             "effective_target",
