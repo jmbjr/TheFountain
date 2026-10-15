@@ -184,6 +184,21 @@ class DirpsG7ReferenceAuditTests(unittest.TestCase):
             )
         )
 
+    def test_aggregate_compatibility_audit_describes_current_g7_candidate(self):
+        audit = (
+            ROOT / "game/dirps/docs/compatibility-audit.md"
+        ).read_text()
+        current_state = audit.split("| Requirement |", 1)[0]
+        self.assertIn("G7 — Reference candidate under Phase J", current_state)
+        self.assertIn(
+            "currently merged `main` remains **G6 — Targeted** until #188",
+            current_state,
+        )
+        self.assertNotIn(
+            "The candidate remains **G6 — Targeted** and has now reached gameplay Phase G",
+            current_state,
+        )
+
     def test_reference_evidence_set_is_complete(self):
         required_docs = {
             "compatibility-audit.md",
