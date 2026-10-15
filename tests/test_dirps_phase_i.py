@@ -255,6 +255,55 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             view["latest_execution"]["progression"]["conclusion_text"],
         )
 
+    def test_px_b_direct_combat_failure_has_terminal_transition(self):
+        history = create_scenario_session_history(self.resolved)
+        for action_id, actor_ref, random_inputs in (
+            ("investigate-tracks", "pc", {"dice_terms": [3, 3, 4]}),
+            ("reassure-and-question", "pc", {"dice_terms": [4, 4, 4]}),
+            ("cross-washed-out-path", "pc", {"dice_terms": [3, 3, 4]}),
+        ):
+            history = append_scenario_session_step(
+                self.resolved,
+                history,
+                action_id=action_id,
+                actor_ref=actor_ref,
+                random_inputs=random_inputs,
+            )
+
+        history = append_scenario_session_step(
+            self.resolved,
+            history,
+            action_id="strike-bandit-scout",
+            actor_ref="pc",
+            random_inputs={"attack_terms": [6, 6, 6]},
+        )
+        view = inspect_web_target(self.resolved, history)
+        latest = view["latest_execution"]
+        self.assertTrue(latest["progression"]["terminal"])
+        self.assertEqual(latest["progression"]["advanced_to"], "complete")
+        self.assertEqual(
+            view["transition"]["key"],
+            "bandit-scout:action->complete:complete",
+        )
+        self.assertEqual(view["transition"]["to_encounter"], "complete")
+        self.assertEqual(
+            view["transition"]["outcome_text"],
+            latest["progression"]["conclusion_text"],
+        )
+        self.assertEqual(
+            view["transition"]["bridge_text"],
+            "The confrontation ends here.",
+        )
+
+    def test_px_b_transition_dom_precedes_next_encounter_fiction(self):
+        transition_index = self.web_html.index('id="encounterTransition"')
+        title_index = self.web_html.index('id="encounterTitle"')
+        purpose_index = self.web_html.index('id="encounterPurpose"')
+        actions_index = self.web_html.index('id="availableActions"')
+        self.assertLess(transition_index, title_index)
+        self.assertLess(title_index, purpose_index)
+        self.assertLess(purpose_index, actions_index)
+
     def test_px_b_transition_projection_cannot_choose_progression(self):
         record = {
             "encounter_ref": "from",
