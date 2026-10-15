@@ -1,0 +1,42 @@
+{
+  "format": "dirps-web-presentation.v1",
+  "scenario": {
+    "title": "The Missing Courier",
+    "player_role": "You are Rook, an investigator following the route of a missing courier.",
+    "premise": "The courier should have reached Greyhaven yesterday. Something happened along the isolated road.",
+    "objective": "Follow the courier's route, discover what happened, and return with an answer.",
+    "scope_note": "This is a short, bounded investigation. Each scene introduces one part of the RPG rules."
+  },
+  "encounters": {
+    "roadside-tracks": {
+      "title": "Roadside Tracks",
+      "opening_fiction": "At a bend in the old road, Rook finds churned mud, a broken strap, and tracks leading away from the road."
+    },
+    "frightened-witness": {
+      "title": "Frightened Witness"
+    },
+    "washed-out-path": {
+      "title": "Washed-Out Path"
+    },
+    "bandit-scout": {
+      "title": "Bandit Scout"
+    }
+  },
+  "actions": {
+    "investigate-tracks": {
+      "label": "Examine the tracks"
+    },
+    "reassure-and-question": {
+      "label": "Reassure the witness"
+    },
+    "cross-washed-out-path": {
+      "label": "Cross the washed-out path"
+    },
+    "strike-bandit-scout": {
+      "label": "Attack the bandit scout"
+    },
+    "resolve-bandit-next-turn": {
+      "label": "See if the bandit can recover"
+    }
+  }
+}

@@ -10,6 +10,7 @@ from __future__ import annotations
 import copy
 import json
 
+from game_registry import ROOT
 from dirps_runtime import (
     ExecutionError,
     append_scenario_session_step,
@@ -23,7 +24,18 @@ from resolve_dirps_dodge import resolve
 TARGET_ID = "dirps-web"
 TARGET_FORMAT = "dirps-web-target.v1"
 TARGET_KIND = "web"
+PRESENTATION_FORMAT = "dirps-web-presentation.v1"
+PRESENTATION_PATH = (
+    ROOT
+    / "game"
+    / "dirps"
+    / "scenarios"
+    / "scenario-01"
+    / "export-contracts"
+    / "web-presentation.json"
+)
 _RESOLVED = None
+_PRESENTATION = None
 
 
 def _character_view(resolved):
@@ -49,10 +61,62 @@ def _character_view(resolved):
     return characters
 
 
+def _presentation_contract():
+    global _PRESENTATION
+    if _PRESENTATION is None:
+        contract = json.loads(PRESENTATION_PATH.read_text())
+        if contract.get("format") != PRESENTATION_FORMAT:
+            raise ValueError(
+                f"DIRPS Web presentation contract must use {PRESENTATION_FORMAT}"
+            )
+        _PRESENTATION = contract
+    return copy.deepcopy(_PRESENTATION)
+
+
+def _presentation_view(scenario, characters, contract):
+    scenario_copy = contract.get("scenario") or {}
+    encounter_copy = {}
+    current_ref = (scenario.get("progress") or {}).get("current_encounter")
+    if current_ref and current_ref != "complete":
+        encounter_copy = copy.deepcopy(
+            (contract.get("encounters") or {}).get(current_ref, {})
+        )
+
+    action_copy = []
+    action_presentation = contract.get("actions") or {}
+    for action in scenario.get("available_actions", []):
+        phrasing = action_presentation.get(action.get("id"), {})
+        action_copy.append(
+            {
+                "id": action.get("id"),
+                "actor_ref": action.get("actor_ref"),
+                "label": phrasing.get("label")
+                or action.get("label")
+                or action.get("name")
+                or action.get("id"),
+            }
+        )
+
+    character = characters[0] if characters else {}
+    return {
+        "scenario": {
+            "title": scenario_copy.get("title") or scenario.get("title"),
+            "player_name": character.get("name"),
+            "player_role": scenario_copy.get("player_role"),
+            "premise": scenario_copy.get("premise") or scenario.get("premise"),
+            "objective": scenario_copy.get("objective"),
+            "scope_note": scenario_copy.get("scope_note"),
+        },
+        "encounter": encounter_copy,
+        "available_actions": action_copy,
+    }
+
+
 def inspect_web_target(
     resolved,
     history=None,
     *,
+    presentation_contract=None,
     runtime_create=create_scenario_session_history,
     runtime_replay=replay_scenario_session_history,
     runtime_describe=describe_scenario,
@@ -66,6 +130,13 @@ def inspect_web_target(
         if session.get("steps")
         else None
     )
+    characters = _character_view(resolved)
+    contract = (
+        _presentation_contract()
+        if presentation_contract is None
+        else copy.deepcopy(presentation_contract)
+    )
+    presentation = _presentation_view(scenario, characters, contract)
     return {
         "target": {
             "id": TARGET_ID,
@@ -74,7 +145,8 @@ def inspect_web_target(
         },
         "status": "complete" if replay["complete"] else "ready",
         "scenario": scenario,
-        "characters": _character_view(resolved),
+        "presentation": presentation,
+        "characters": characters,
         "history": session,
         "history_summary": {
             "format": session.get("format"),

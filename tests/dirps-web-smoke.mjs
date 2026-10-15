@@ -65,6 +65,26 @@ try {
     (await page.locator(".dirps-action").count()) >= 1,
     "no runtime-described action button rendered",
   );
+  assert.equal(
+    (await page.locator("#playerIdentity").textContent())?.trim(),
+    "Rook",
+    "PX-A player identity did not render",
+  );
+  assert.match(
+    await page.locator("#scenarioObjective").innerText(),
+    /discover what happened/i,
+    "PX-A scenario objective did not render",
+  );
+  assert.equal(
+    (await page.locator("#encounterTitle").textContent())?.trim(),
+    "Roadside Tracks",
+    "PX-A player-facing encounter title did not render",
+  );
+  assert.equal(
+    (await page.locator(".dirps-action").first().innerText()).trim(),
+    "Examine the tracks",
+    "PX-A player-facing action phrasing did not render",
+  );
 
   const exactCharacterState = {
     "hit-points": "10",
