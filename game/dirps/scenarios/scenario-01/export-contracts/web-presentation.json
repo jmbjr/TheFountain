@@ -13,13 +13,16 @@
       "opening_fiction": "At a bend in the old road, Rook finds churned mud, a broken strap, and tracks leading away from the road."
     },
     "frightened-witness": {
-      "title": "Frightened Witness"
+      "title": "Frightened Witness",
+      "opening_fiction": "Farther along the road, Rook finds a shaken witness who may have seen the courier leave the route."
     },
     "washed-out-path": {
-      "title": "Washed-Out Path"
+      "title": "Washed-Out Path",
+      "opening_fiction": "The search reaches a washed-out stretch where unstable ground blocks the easiest way forward."
     },
     "bandit-scout": {
-      "title": "Bandit Scout"
+      "title": "Bandit Scout",
+      "opening_fiction": "Beyond the damaged path, Rook spots a bandit scout near the courier's trail."
     }
   },
   "actions": {
@@ -37,6 +40,23 @@
     },
     "resolve-bandit-next-turn": {
       "label": "See if the bandit can recover"
+    }
+  },
+  "transitions": {
+    "roadside-tracks:action->frightened-witness:action": {
+      "bridge_text": "Rook presses on and soon finds a frightened witness who may know more about the courier's route."
+    },
+    "frightened-witness:action->washed-out-path:action": {
+      "bridge_text": "Rook continues along the route until a washed-out stretch of road blocks the way ahead."
+    },
+    "washed-out-path:action->bandit-scout:action": {
+      "bridge_text": "Past the damaged ground, the trail brings Rook face to face with a bandit scout."
+    },
+    "bandit-scout:action->bandit-scout:recovery": {
+      "bridge_text": "The exchange ends with the bandit injured. The next moment will determine whether the scout can keep fighting."
+    },
+    "bandit-scout:recovery->complete:complete": {
+      "bridge_text": "The immediate confrontation is resolved."
     }
   }
 }
