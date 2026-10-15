@@ -208,7 +208,7 @@ function renderResolutionSection(section) {
     list.className = "dirps-modifier-list";
     for (const modifier of section.modifiers) {
       const item = document.createElement("li");
-      const amount = modifier.amount >= 0 ? `+${modifier.amount}` : String(modifier.amount);
+      const amount = readableValue(modifier.amount);
       item.textContent = modifier.reason
         ? `${amount} · ${modifier.reason}`
         : amount;
