@@ -752,3 +752,34 @@ Pyodide is pinned to a versioned CDN URL. The external WebAssembly/Python runtim
 The Phase I acceptance boundary includes the transport itself. CI serves the exact checkout over HTTP and runs a headless Chromium smoke through the real `/dirps/` page. The smoke waits for Pyodide/Python bootstrap, verifies resolved character-state DOM values and a runtime-described action, clicks that action, and requires Phase H history/random-result evidence with no fatal panel or browser transport error. This prevents a source-level analogue from standing in for the actual loader/runtime mechanism.
 
 The debug CLI remains registered and unchanged as the low-level target. Formal DIRPS maturity remains G6; Phase I adds target breadth/evidence but does not itself claim G7.
+
+
+### DIRPS Phase J — G7 whole-system reference audit
+
+Phase J changes the maturity/evidence boundary, not the gameplay engine.
+
+The accepted architecture remains:
+
+```text
+external GURPS rule authority
++ canonical Scenario 01 provisional facts
++ DODGE 0.2.1 normalized semantics
++ validated DIRPS proto bridges
+→ source semantic validation
+→ one neutral resolver
+→ dirps-resolved-game.v1
+→ resolved semantic validation
+→ target-neutral runtime
+→ Phase H replay/evidence
+→ debug CLI / Web target
+```
+
+`game/dirps/docs/g7-reference-validation.md` is the durable audit record. It maps every bounded Scenario 01 mechanic claim to source ownership, normalized/bridge semantics, runtime records, and tests; inventories deterministic/negative/perturbation evidence; audits replay source identity and target boundaries; and records unsupported semantics.
+
+`tests/test_dirps_g7.py` adds convergence guards rather than new mechanic tests. It requires the registry to declare the G7/reference candidate, executes one complete accepted success history across all four canonical encounters plus the required recovery step, verifies the mechanic record identities and Phase G source traces, requires successful full-session replay, pins explicit unsupported scope, audits proto maturity, and requires the complete reference evidence document set.
+
+A G7 reference claim does **not** convert DIRPS proto concepts into DODGE proposals. All exercised proto concepts remain `not-yet-candidate`; `visibility_and_secret_state` remains `suspected`. Cross-game evidence is still required before proposing a reusable neutral contract upstream.
+
+The debug CLI and browser remain projections of the same runtime. No Phase J target or runtime fork exists.
+
+The first G7 candidate run also exposed a semantic-validation lifecycle invariant: advancing canonical maturity must not disable executable sidecar validation. `validate_resolved_semantics()` previously re-ran `_validate_g5_proto_semantics()` only for canonical statuses beginning `g5-` or `g6-`; the G7 status therefore bypassed checks that existing Phase C/F/G/H drift tests expected. The guard now includes `g7-`. This is a validation-boundary correction only; runtime and sidecar semantics are unchanged.

@@ -751,3 +751,23 @@ The JavaScript renderer owns presentation only: character state, encounter/scena
 The original debug CLI remains available. Phase I adds no DODGE/proto promotion and formal maturity remains **G6 — Targeted** pending independent review and the later G7 reference audit.
 
 Independent Phase I review found two product-evidence gaps in the first candidate. The adapter already carried Rook's resolved runtime state, but the renderer displayed only attributes/skills/equipment; the corrected character panel now renders the exact resolved state, including HP, fatigue, stunned, unconscious, and consciousness-check-required. The review also found that CI never exercised the browser/Pyodide loader boundary. The corrected workflow installs pinned Playwright/Chromium, serves the exact checkout, boots `/dirps/`, waits for the shared Python runtime, verifies runtime-described state/actions, clicks one action, and requires Phase H history plus random-result evidence while failing on browser/bootstrap errors.
+
+
+## DIRPS Phase J begins the G7 reference audit
+
+**October 14, 2026.**
+
+After Phase I PR #187 was independently accepted and merged at final head `bdb396932ddfbb5e6ea92f13a452dcfde72cbc47` (merge SHA `fbc2a560cfb2b55a24dfa3627e81a20cde0df3fb`), DIRPS started Phase J from post-merge `main` at `00c43f749e301e3993a6725dc61c3b58d049d36e`.
+
+Phase J deliberately adds no new RPG mechanic. It applies the DODGE implementation guide's final convergence step to the accumulated G1-G6 + Phase A-I implementation.
+
+The new `game/dirps/docs/g7-reference-validation.md` provides a whole-system executable-claims matrix, authority-path audit, deterministic/negative/perturbation inventory, replay/evidence audit, target audit, unsupported-scope audit, and proto-maturity decision. `tests/test_dirps_g7.py` then guards the reference claim by executing one complete accepted success path across all canonical encounters plus recovery, replaying it to completion, checking source traces, requiring explicit unsupported scope, and verifying that no proto concept is promoted prematurely.
+
+The registry/DODGE/scenario metadata now mark DIRPS Scenario 01 as a bounded G7 reference candidate pending independent review. This does not mean full GURPS support. Long-term unconscious recovery/healing, broader combat, skill defaults, campaign persistence, and hidden/GM state remain outside the reference scope.
+
+Phase J makes one intentionally conservative upstream decision: **no DIRPS proto gap is promoted to DODGE**. The exercised shapes have strong evidence from this game, but selecting a reusable neutral contract still requires independent cross-game evidence. Reference maturity is not permission to overfit the specification to DIRPS.
+
+The first Phase J CI run immediately found one whole-system defect: resolved executable-proto validation was conditioned on canonical status prefixes `g5-` / `g6-`. Merely advancing Scenario 01 to the G7 candidate status disabled those checks, so seven existing Phase C/F/G/H negative drift tests no longer raised during resolution. The validator now carries the same executable-proto guard through `g7-`. No gameplay or proto semantics changed; the older negative tests now protect the G7 lifecycle boundary as intended.
+
+
+Independent G7 review then found one documentation-only blocker in the aggregate DIRPS compatibility audit: its opening current-state paragraph still called the candidate G6 / Phase G, even though the Phase J metadata, audit, and later sections described the G7 candidate. The opening statement now distinguishes the PR #188 G7 candidate from currently merged G6 `main`, and a new G7 regression prevents that obsolete current-state wording from returning. The aggregate replay row was also brought forward to Phase H's accepted `exercised / not-yet-candidate` status. Historical phase validation documents remain unchanged.

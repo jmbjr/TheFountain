@@ -288,13 +288,11 @@ The untouched concepts remain `suspected`:
 
 The proto sidecar itself is unchanged by G6.
 
-## Why G7 is not claimed
+## Historical G6 boundary
 
-G6 proves one target consumes the accepted resolved/runtime semantics.
+This document records the original G6 gate and must be read as historical evidence for the debug-CLI target that existed at that time. The later gameplay phases A-I subsequently added the contextual, encounter, combat/recovery, full-scenario, replay, and Web behavior that G6 intentionally did not claim.
 
-G7 still requires a whole-system reference-quality assessment. Scenario 01 still has intentionally unimplemented mechanics and does not yet execute all of its broader tutorial claims.
-
-No G7 work is included in this tranche.
+Phase J performs the separate whole-system G7 audit in `g7-reference-validation.md`; it does not rewrite this accepted historical G6 contract.
 
 ## Post-G6 gameplay note
 

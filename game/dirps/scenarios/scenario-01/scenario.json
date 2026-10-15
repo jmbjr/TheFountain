@@ -2,14 +2,14 @@
   "schema_version": "0.1.0",
   "game_id": "dirps",
   "dataset_id": "scenario-01-the-missing-courier",
-  "status": "g6-phase-g-scenario-progression",
+  "status": "g7-reference-candidate",
   "authority": {
     "rules": "GURPS Lite, June 2003 (Third Edition-era introductory rules)",
     "dodge": "game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
     "proto_sidecar": "game/dirps/sidecars/dirps.proto.sidecar.v0.1.json"
   },
   "artifact_note": {
-    "target": "A G6-targeted Scenario 01 whose accepted Phase A-F mechanics now run through one explicit neutral scenario-progress state from Roadside Tracks to deterministic completion.",
+    "target": "A G7 reference candidate whose accepted Phase A-I mechanics, replay evidence, and browser target are audited as one bounded Scenario 01 implementation.",
     "assumptions": "Scenario fiction, character values, encounter composition, and tutorial pacing are DIRPS prototype assumptions. GURPS mechanics remain sourced from GURPS Lite and must not be silently invented.",
     "acceptance": [
       "A fresh runtime can load one DODGE 0.2.1 document plus the DIRPS proto sidecar and this scenario.",
@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phase G connects the accepted mechanics into one bounded start-to-finish scenario and adds deterministic success/failure completion. Full append-only session history, long-term unconscious recovery/healing, and G7 remain later work."
+    "acceptance_note": "Phases A-I are accepted and merged: the bounded scenario executes end-to-end, records append-only deterministic replay evidence, and is playable through a real browser target over the same Python resolver/runtime. Phase J performs the whole-system G7 reference audit. Long-term unconscious recovery/healing remains explicitly unsupported."
   },
   "tutorial": {
     "title": "The Missing Courier",

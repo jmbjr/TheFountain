@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G6 — Targeted, Phase I Web candidate.** Accepted Phases A-H remain intact. Scenario 01 now has a player-facing browser target that executes the same Python resolver/runtime through Pyodide and presents runtime-described actions, state, result/provenance evidence, and the Phase H replay log. `../../docs/phase-i-web-target-validation.md` records the target evidence.
+**G7 — Reference candidate, Phase J audit.** Accepted Phases A-I remain intact. Scenario 01 is now audited as one bounded reference implementation with exact validation, one neutral resolver, executable encounter claims, deterministic replay/divergence evidence, and two targets over the same runtime. `../../docs/g7-reference-validation.md` records the reference audit.
 
 ## Goal
 
@@ -33,7 +33,7 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B/C/D/E/F/G/H are accepted gameplay slices/evidence. Phase G composes the tutorial state and Phase H records/replays it. Phase I adds presentation only: the browser consumes those same semantics without introducing a JavaScript rules engine. Long-term waking/healing remains later roadmap work.
+Phases B/C/D/E/F/G/H/I are accepted gameplay/evidence/target slices. Phase J adds no mechanic; it verifies that the bounded claims, authority paths, perturbation evidence, replay behavior, targets, unsupported scope, and proto maturity converge cleanly enough for G7. Long-term waking/healing remains explicitly unsupported rather than a hidden future dependency.
 
 
 ## Phase D — Washed-Out Path
@@ -76,3 +76,21 @@ The static `/dirps/` route loads pinned Pyodide and mounts the repository's DIRP
 The JavaScript renderer displays the resolved character, current scenario/encounter state, only the runtime-described available actions, deterministic seed input, recorded random/result evidence, authority/source traces, and the Phase H append-only session log. It does not contain encounter/action identifiers or mechanic-specific random-input shapes.
 
 The debug CLI remains available as the low-level reference target. Evidence: `../../docs/phase-i-web-target-validation.md`.
+
+
+## Phase J — G7 reference audit
+
+Phase J treats Scenario 01 as a complete bounded implementation rather than adding another gameplay layer.
+
+The audit confirms:
+
+- every mechanic named by the canonical Scenario 01 acceptance/encounter purposes executes through the accepted runtime;
+- encounter order, provisional scenario facts, external GURPS rule references, DODGE-normalized semantics, and DIRPS sidecar bridges have explicit ownership;
+- perturbation/drift evidence guards those authority paths;
+- deterministic random/result evidence and full-session replay remain inspectable;
+- the debug CLI and browser consume the same target-neutral runtime;
+- unsupported behavior fails visibly;
+- all exercised DIRPS proto concepts remain `not-yet-candidate`, and hidden/secret state remains only `suspected`;
+- no upstream DODGE proposal is created merely to obtain G7 status.
+
+Evidence: `../../docs/g7-reference-validation.md`.

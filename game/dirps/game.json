@@ -2,19 +2,19 @@
   "registry_version": "1",
   "id": "dirps",
   "title": "DIRPS",
-  "status": "incubating",
-  "description": "DODGE-backed RPG implementation experiment using GURPS Lite 3E as the first ruleset stress test.",
+  "status": "active",
+  "description": "DODGE reference implementation for an RPG-shaped rules/runtime stress test using GURPS Lite 3E as the first external rules source.",
   "scenarios": {
     "scenario-01": {
       "title": "Scenario 01: The Missing Courier",
-      "status": "incubating",
+      "status": "reference",
       "dodge": "dodge/dirps-scenario-01.dodge.v0.2.1.json",
       "source": "scenarios/scenario-01/scenario.json",
       "sidecars": [
         "sidecars/dirps.proto.sidecar.v0.1.json"
       ],
       "conformance": {
-        "maturity": "G6",
+        "maturity": "G7",
         "resolver": "tools/resolve_dirps_dodge.py"
       },
       "generated_targets": {
