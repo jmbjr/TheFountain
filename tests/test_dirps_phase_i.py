@@ -51,6 +51,25 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         self.assertEqual(view["history"], history)
         self.assertEqual(view["history_summary"]["steps"], 0)
         self.assertEqual(view["characters"][0]["name"], "Rook")
+        self.assertEqual(view["presentation"]["scenario"]["player_name"], "Rook")
+        self.assertEqual(
+            view["presentation"]["scenario"]["objective"],
+            "Follow the courier's route, discover what happened, and return with an answer.",
+        )
+        self.assertEqual(
+            view["presentation"]["encounter"]["title"],
+            "Roadside Tracks",
+        )
+        self.assertEqual(
+            view["presentation"]["available_actions"],
+            [
+                {
+                    "id": expected["available_actions"][0]["id"],
+                    "actor_ref": expected["available_actions"][0]["actor_ref"],
+                    "label": "Examine the tracks",
+                }
+            ],
+        )
         resolved_pc = next(
             row for row in self.resolved["scene"]["instances"] if row["id"] == "pc"
         )
@@ -72,6 +91,33 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         self.assertEqual(
             view["scenario"]["available_actions"],
             expected["available_actions"],
+        )
+
+    def test_px_a_presentation_cannot_add_runtime_actions(self):
+        view = inspect_web_target(
+            self.resolved,
+            presentation_contract={
+                "format": "dirps-web-presentation.v1",
+                "scenario": {"title": "Presentation only"},
+                "encounters": {
+                    "roadside-tracks": {"title": "Readable scene"}
+                },
+                "actions": {
+                    "investigate-tracks": {"label": "Readable action"},
+                    "invented-action": {"label": "This must never appear"},
+                },
+            },
+        )
+
+        runtime_actions = view["scenario"]["available_actions"]
+        presented_actions = view["presentation"]["available_actions"]
+        self.assertEqual(
+            [action["id"] for action in presented_actions],
+            [action["id"] for action in runtime_actions],
+        )
+        self.assertNotIn(
+            "invented-action",
+            [action["id"] for action in presented_actions],
         )
 
     def test_web_execution_is_phase_h_append_result_with_seed_evidence(self):
@@ -184,6 +230,7 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             "../game/dirps/game.json",
             "../game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
             "../game/dirps/scenarios/scenario-01/scenario.json",
+            "../game/dirps/scenarios/scenario-01/export-contracts/web-presentation.json",
             "../game/dirps/sidecars/dirps.proto.sidecar.v0.1.json",
         ):
             self.assertIn(path, self.web_js)
@@ -214,6 +261,11 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
     def test_static_page_exposes_player_and_debug_views(self):
         for element_id in (
             'id="runtimeStatus"',
+            'id="playerIdentity"',
+            'id="playerRole"',
+            'id="scenarioPremise"',
+            'id="scenarioObjective"',
+            'id="scenarioScope"',
             'id="encounterTitle"',
             'id="availableActions"',
             'id="character"',
