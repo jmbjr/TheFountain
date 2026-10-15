@@ -344,6 +344,43 @@ def _resolution_explanation(record):
     }
     return explanation
 
+def _transition_view(scenario, latest, contract, resolution_explanation):
+    if not isinstance(latest, dict):
+        return None
+    progression = latest.get("progression") or {}
+    from_encounter = latest.get("encounter_ref")
+    from_step = latest.get("step")
+    to_encounter = progression.get("advanced_to")
+    to_step = (scenario.get("progress") or {}).get("step")
+    if not all(isinstance(value, str) and value for value in (
+        from_encounter, from_step, to_encounter, to_step
+    )):
+        return None
+
+    key = f"{from_encounter}:{from_step}->{to_encounter}:{to_step}"
+    copy_row = (contract.get("transitions") or {}).get(key)
+    if not isinstance(copy_row, dict):
+        return None
+
+    if progression.get("terminal"):
+        outcome_text = progression.get("conclusion_text")
+    else:
+        outcome_text = (
+            (resolution_explanation or {}).get("consequence")
+            if isinstance(resolution_explanation, dict)
+            else None
+        )
+    return {
+        "key": key,
+        "from_encounter": from_encounter,
+        "from_step": from_step,
+        "to_encounter": to_encounter,
+        "to_step": to_step,
+        "outcome_text": copy.deepcopy(outcome_text),
+        "bridge_text": copy_row.get("bridge_text"),
+    }
+
+
 def inspect_web_target(
     resolved,
     history=None,
@@ -370,6 +407,9 @@ def inspect_web_target(
     )
     presentation = _presentation_view(scenario, characters, contract)
     resolution_explanation = _resolution_explanation(latest)
+    transition = _transition_view(
+        scenario, latest, contract, resolution_explanation
+    )
     return {
         "target": {
             "id": TARGET_ID,
@@ -389,6 +429,7 @@ def inspect_web_target(
         },
         "latest_execution": latest,
         "resolution_explanation": resolution_explanation,
+        "transition": transition,
     }
 
 
