@@ -10,6 +10,7 @@ const PYTHON_FILES = [
   "../game/dirps/game.json",
   "../game/dirps/dodge/dirps-scenario-01.dodge.v0.2.1.json",
   "../game/dirps/scenarios/scenario-01/scenario.json",
+  "../game/dirps/scenarios/scenario-01/export-contracts/web-presentation.json",
   "../game/dirps/sidecars/dirps.proto.sidecar.v0.1.json",
 ];
 
@@ -115,7 +116,7 @@ function renderCharacter() {
 function renderActions() {
   const host = $("availableActions");
   clear(host);
-  const actions = model.scenario?.available_actions || [];
+  const actions = model.presentation?.available_actions || [];
 
   if (!actions.length) {
     const done = document.createElement("p");
@@ -133,9 +134,7 @@ function renderActions() {
     button.className = "dirps-action";
     const label = document.createElement("strong");
     label.textContent = action.label || action.name || action.id;
-    const meta = document.createElement("span");
-    meta.textContent = `${action.id} · actor ${action.actor_ref}`;
-    button.append(label, meta);
+    button.append(label);
     button.addEventListener("click", () => executeAction(action, button));
     host.append(button);
   }
@@ -144,20 +143,14 @@ function renderActions() {
 function renderScenario() {
   const scenario = model.scenario || {};
   const progress = scenario.progress || {};
-  const capability = scenario.current_capability || {};
-  const encounter = capability.encounter || {};
+  const presentation = model.presentation || {};
+  const encounter = presentation.encounter || {};
 
-  text(
-    "encounterTitle",
-    encounter.name || encounter.title || encounter.id || progress.current_encounter || "Complete"
-  );
-  text(
-    "encounterPurpose",
-    encounter.purpose || encounter.description || capability.purpose || ""
-  );
+  text("encounterTitle", encounter.title || "Scenario complete");
+  text("encounterPurpose", encounter.opening_fiction || "");
   text(
     "progressMeta",
-    `${progress.current_encounter || "complete"} · ${progress.step || "complete"}`
+    progress.status === "complete" ? "Complete" : "Investigation in progress"
   );
 
   const banner = $("scenarioBanner");
@@ -166,7 +159,7 @@ function renderScenario() {
     banner.classList.add(progress.outcome === "success" ? "success" : "failure");
     banner.textContent = `SCENARIO COMPLETE · ${String(progress.outcome || "complete").toUpperCase()}`;
   } else {
-    banner.textContent = `${model.scenario.title || "The Missing Courier"} · revision ${model.scenario.runtime_state_revision}`;
+    banner.textContent = presentation.scenario?.title || model.scenario.title || "The Missing Courier";
   }
 
   const state = $("scenarioState");
@@ -274,10 +267,21 @@ function renderHistory() {
   }
 }
 
+function renderFraming() {
+  const framing = model.presentation?.scenario || {};
+  text("playerIdentity", framing.player_name || "Rook");
+  text("playerRole", framing.player_role || "");
+  text("scenarioPremise", framing.premise || model.scenario?.premise || "");
+  text("scenarioObjective", framing.objective || "");
+  text("scenarioScope", framing.scope_note || "");
+}
+
+
 function render() {
   $("play").hidden = false;
   $("fatal").hidden = true;
   text("runtimeStatus", "Shared Python resolver/runtime active in this browser.");
+  renderFraming();
   renderCharacter();
   renderScenario();
   renderLatest();
