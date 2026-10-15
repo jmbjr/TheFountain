@@ -57,6 +57,9 @@
     },
     "bandit-scout:recovery->complete:complete": {
       "bridge_text": "The immediate confrontation is resolved."
+    },
+    "bandit-scout:action->complete:complete": {
+      "bridge_text": "The confrontation ends here."
     }
   }
 }
