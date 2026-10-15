@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded compatibility audit for DIRPS Scenario 01. The candidate remains **G6 — Targeted** and has now reached gameplay Phase G, with the accepted mechanics composed into one neutral start-to-finish scenario runtime against TheFountain CI's pinned DODGE 0.2.1 contract. G2 core evidence remains in `g2-core-validation.md`, G3 source semantics in `g3-semantic-validation.md`, G4 neutral resolution in `g4-resolved-validation.md`, G5 runtime evidence in `g5-executable-validation.md`, and G6 target evidence in `g6-target-validation.md`.
+This is the bounded aggregate compatibility audit for DIRPS Scenario 01. **PR #188 is the G7 — Reference candidate under Phase J**: accepted Phases A-I now provide the complete bounded scenario runtime, deterministic full-session replay/divergence evidence, and debug/Web targets over the same neutral resolver/runtime against TheFountain CI's pinned DODGE 0.2.1 contract. The currently merged `main` remains **G6 — Targeted** until #188 is independently accepted and merged. Historical G2-G6 and Phase A-I sections below remain evidence for the maturity boundary reached at each accepted tranche; the current whole-system G7 audit is recorded in `g7-reference-validation.md`.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -20,7 +20,7 @@ The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched
 | Skills/defaults/governing attributes | Gap | G5 executes one explicit resolved skill level only; defaults/governing-attribute derivation remain absent | **Exercised** narrowly; not candidate |
 | Rules-resolution evidence | Gap | accepted G5 `dirps-execution-result.v1` plus contextual Phase A `dirps-execution-result.v2` traces | **Exercised**; not candidate |
 | Damage / injury composition | Gap | Phase E bounded ST/weapon → DR → cutting injury → actor state | **Exercised**; not candidate |
-| Immutable replay/session history | Gap | Proto sidecar: `replay_session_history` | Suspected; exercise first |
+| Immutable replay/session history | Gap | Phase H `dirps-session-history.v1` records copy-on-append actions/random evidence/state hashes/traces and re-executes complete sessions | **Exercised**; not candidate |
 | Scenario progression / objective / terminal state | Mostly expressible | Standard DODGE values, conditions, effects, objective completion, end conditions, and runtime state; bounded sidecar bridge dispatches completed heterogeneous mechanics | No new proto promotion |
 
 ## G3 semantic-validation result
