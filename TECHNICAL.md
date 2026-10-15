@@ -781,3 +781,5 @@ external GURPS rule authority
 A G7 reference claim does **not** convert DIRPS proto concepts into DODGE proposals. All exercised proto concepts remain `not-yet-candidate`; `visibility_and_secret_state` remains `suspected`. Cross-game evidence is still required before proposing a reusable neutral contract upstream.
 
 The debug CLI and browser remain projections of the same runtime. No Phase J target or runtime fork exists.
+
+The first G7 candidate run also exposed a semantic-validation lifecycle invariant: advancing canonical maturity must not disable executable sidecar validation. `validate_resolved_semantics()` previously re-ran `_validate_g5_proto_semantics()` only for canonical statuses beginning `g5-` or `g6-`; the G7 status therefore bypassed checks that existing Phase C/F/G/H drift tests expected. The guard now includes `g7-`. This is a validation-boundary correction only; runtime and sidecar semantics are unchanged.
