@@ -1115,11 +1115,11 @@
     }
   },
   "metadata": {
-    "status": "targeted-g6-phase-f-recovery-consciousness",
+    "status": "reference-g7-candidate",
     "implementation_identity": "DIRPS",
     "rules_reference": "GURPS Lite 3E",
     "upstream_goal": "Exercise suspected RPG-shaped gaps before proposing any future DODGE promotion.",
-    "conformance_claim": "G6 — Targeted, Phase F gameplay candidate: Phase E combat consequences persist into bounded next-turn HT consciousness/stun-recovery resolution over the same neutral combat state. Phase G progression, long-term healing, session history, Web presentation, and G7 are not claimed."
+    "conformance_claim": "G7 — Reference candidate: accepted Phases A-I provide exact-schema/core/game validation, one neutral resolved model, bounded executable investigation/social/environment/combat/recovery mechanics, deterministic scenario completion, full-session replay/divergence evidence, and debug/Web targets over the same runtime. Phase J audits the whole system. Long-term unconscious recovery/healing and hidden/GM state remain explicitly unsupported; no DIRPS proto gap is promoted upstream."
   },
   "extensions": {
     "org.dirps.proto": {
