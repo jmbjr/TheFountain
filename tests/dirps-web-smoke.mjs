@@ -55,9 +55,7 @@ try {
   await page.goto(`${BASE}/dirps/`, { waitUntil: "domcontentloaded" });
 
   await page.waitForFunction(() =>
-    document.querySelector("#runtimeStatus")?.textContent?.includes(
-      "Shared Python resolver/runtime active in this browser.",
-    ),
+    document.querySelector("#runtimeStatus")?.textContent?.trim() === "Game ready.",
   );
 
   assert.equal(await page.locator("#fatal").isHidden(), true, "fatal runtime panel is visible");
@@ -86,6 +84,27 @@ try {
     "PX-A player-facing action phrasing did not render",
   );
 
+  assert.equal(
+    await page.locator("#advancedEvidence").getAttribute("open"),
+    null,
+    "PX-D advanced evidence should be closed by default",
+  );
+  assert.equal(
+    await page.locator("#seedInput").isVisible(),
+    false,
+    "PX-D deterministic seed control should not dominate the player view",
+  );
+  assert.match(
+    await page.locator("#characterCondition").innerText(),
+    /HP[\s\S]*10/i,
+    "PX-D player condition summary did not render",
+  );
+  assert.match(
+    await page.locator("#playerProgress").innerText(),
+    /Actions resolved[\s\S]*0/i,
+    "PX-D player progress summary did not render",
+  );
+
   const exactCharacterState = {
     "hit-points": "10",
     fatigue: "10",
@@ -103,7 +122,9 @@ try {
     );
   }
 
-  await page.locator("#seedInput").fill("phase-i-browser-smoke");
+  await page.evaluate(() => {
+    document.querySelector("#seedInput").value = "phase-i-browser-smoke";
+  });
   await page.locator(".dirps-action").first().click();
 
   await page.waitForFunction(() =>
@@ -133,8 +154,18 @@ try {
   );
   assert.match(
     await page.locator("#lastResolution").innerText(),
+    /Technical resolution evidence/i,
+    "PX-D technical resolution disclosure did not render",
+  );
+  assert.doesNotMatch(
+    await page.locator("#lastResolution").innerText(),
     /Recorded random evidence/i,
-    "runtime result/random-evidence surface did not render",
+    "PX-D random evidence should remain collapsed during normal play",
+  );
+  assert.equal(
+    await page.locator("#advancedEvidence").getAttribute("open"),
+    null,
+    "PX-D advanced evidence opened during normal play",
   );
   assert.equal(
     (await page.locator("#encounterTitle").textContent())?.trim(),
@@ -170,14 +201,53 @@ try {
     "PX-B transition must appear before the next encounter opening fiction",
   );
   assert.match(
+    await page.locator("#playerProgress").innerText(),
+    /Actions resolved[\s\S]*1/i,
+    "PX-D player progress did not update after the action",
+  );
+
+  await page.locator(".dirps-resolution-evidence > summary").click();
+  assert.match(
+    await page.locator("#lastResolution").innerText(),
+    /Recorded random evidence/i,
+    "PX-D technical resolution evidence could not be disclosed",
+  );
+  assert.match(
     await page.locator("#lastResolution").innerText(),
     /phase-i-browser-smoke/,
-    "browser-selected deterministic seed was not preserved in runtime evidence",
+    "browser-selected deterministic seed was not preserved in resolution evidence",
+  );
+
+  await page.locator("#advancedEvidence > summary").click();
+  assert.equal(
+    await page.locator("#seedInput").isVisible(),
+    true,
+    "PX-D deterministic controls were not recoverable through disclosure",
   );
   assert.match(
     await page.locator("#history").innerText(),
     /#1/,
     "Phase H history did not advance after browser action",
+  );
+  assert.match(
+    await page.locator("#history").innerText(),
+    /phase-i-browser-smoke/,
+    "PX-D replay evidence lost the deterministic seed",
+  );
+  assert.match(
+    await page.locator("#history").innerText(),
+    /→/,
+    "PX-D replay hashes were not retained",
+  );
+  assert.match(
+    await page.locator("#provenance").innerText(),
+    /scenario_trace/i,
+    "PX-D rule/source trace was not retained",
+  );
+  assert.match(
+    await page.locator("#debugView").innerText(),
+    /dirps-web-target\.v1/i,
+    "PX-D runtime debug view was not retained",
   );
   assert.equal(
     browserErrors.length,
