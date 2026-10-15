@@ -527,6 +527,50 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         ):
             self.assertNotIn(calculation, self.web_js)
 
+    def test_px_d_default_hierarchy_demotes_technical_evidence(self):
+        framing_index = self.web_html.index('class="dirps-panel dirps-framing"')
+        encounter_index = self.web_html.index('id="encounterTitle"')
+        actions_index = self.web_html.index('id="availableActions"')
+        resolution_index = self.web_html.index('id="lastResolution"')
+        condition_index = self.web_html.index('id="characterCondition"')
+        progress_index = self.web_html.index('id="playerProgress"')
+        advanced_index = self.web_html.index('id="advancedEvidence"')
+
+        self.assertLess(framing_index, encounter_index)
+        self.assertLess(encounter_index, actions_index)
+        self.assertLess(actions_index, resolution_index)
+        self.assertLess(resolution_index, condition_index)
+        self.assertLess(condition_index, progress_index)
+        self.assertLess(progress_index, advanced_index)
+
+        advanced_open = self.web_html[
+            self.web_html.index("<details id=\"advancedEvidence\""):
+            self.web_html.index("<summary>Advanced evidence and debug tools</summary>")
+        ]
+        self.assertNotIn(" open", advanced_open)
+
+        advanced_end = self.web_html.index("</details>", advanced_index)
+        advanced_block = self.web_html[advanced_index:advanced_end]
+        for element_id in (
+            'id="seedInput"',
+            'id="character"',
+            'id="scenarioState"',
+            'id="history"',
+            'id="provenance"',
+            'id="debugView"',
+        ):
+            self.assertIn(element_id, advanced_block)
+
+    def test_px_d_renderer_keeps_resolution_evidence_collapsible(self):
+        self.assertIn('technicalSummary.textContent = "Technical resolution evidence"', self.web_js)
+        self.assertIn('randomTitle.textContent = "Recorded random evidence"', self.web_js)
+        self.assertIn('mechanicTitle.textContent = "Mechanic result"', self.web_js)
+        self.assertIn('text("runtimeStatus", "Game ready.")', self.web_js)
+        self.assertIn(
+            'text("runtimeTechnicalStatus", "Shared Python resolver/runtime active in this browser.")',
+            self.web_js,
+        )
+
     def test_web_target_can_drive_complete_scenario_without_owning_choices(self):
         view = inspect_web_target(self.resolved)
         for index in range(1, 8):
@@ -638,6 +682,10 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             'id="transitionOutcome"',
             'id="transitionBridge"',
             'id="availableActions"',
+            'id="characterCondition"',
+            'id="playerProgress"',
+            'id="advancedEvidence"',
+            'id="runtimeTechnicalStatus"',
             'id="character"',
             'id="scenarioState"',
             'id="lastResolution"',
