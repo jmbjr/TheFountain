@@ -13,9 +13,11 @@ It adds no gameplay mechanic and does not change the accepted runtime contracts.
 - Phase J branch baseline: post-merge `main` at `00c43f749e301e3993a6725dc61c3b58d049d36e`.
 - DODGE 0.2.1 remains pinned by TheFountain CI to `978700d8c2887f65a60930f9e0f2ac8f8963d2f9`.
 - Normative schema: `draft/v0.2.1/schemas/dodge.schema.v0.2.1.json`.
-- Formal status in this branch is a **G7 — Reference candidate** pending independent review.
-
-Exact-head Phase J CI identity is recorded in PR #188 / #178 / #163 after the final literal candidate passes. This file intentionally does not embed a self-invalidating candidate SHA.
+- Final status is **G7 — Reference**. PR #188 was independently accepted and merged.
+- Accepted G7 PR head: `a0e39d13ade9c26457dbb2d36dfe527eeb57ce98`.
+- Merge SHA: `ac532a9afc4985ee8def8574cd133f1cd7ab7cd5`.
+- Accepted exact-head CI: **38665170384** (run #321).
+- Post-merge `main` observed for closeout: `93091f48da681e495ac2382febdd13db4c4fc86f`.
 
 ## G7 meaning
 
@@ -36,7 +38,7 @@ The reference claim is bounded to this explicit Scenario 01 scope.
 |---|---|---|
 | Scenario 01 executes every mechanic it still claims | PASS | executable-claims matrix below; `tests/test_dirps_g7.py`; accepted Phase A-G tests |
 | Source authority paths are singular and auditable | PASS | authority matrix below; G3/G4 validation; Phase A-G perturbation/drift tests |
-| Schema/core/source/resolved validation remains green | PASS candidate | G1/G2/G3/G4 docs + generic registered-game conformance on final head |
+| Schema/core/source/resolved validation remains green | PASS | G1/G2/G3/G4 docs + generic registered-game conformance on final head |
 | Runtime semantics are target-neutral | PASS | `tools/dirps_runtime.py`; debug CLI + Web both consume the same resolved/runtime path |
 | Perturbation tests cover canonical facts and important rules bindings | PASS | G4/G6 + Phase A-G/H drift/perturbation inventory below |
 | Random/result evidence is deterministic/inspectable | PASS | Phase A seeded/supplied terms, Phase E seeded combat, Phase H step evidence |
@@ -45,8 +47,8 @@ The reference claim is bounded to this explicit Scenario 01 scope.
 | Unsupported semantics fail visibly | PASS | Phase B-G negative tests, Phase H source/divergence failures, browser fatal/error surface |
 | Proto concepts have evidence-backed maturity states | PASS | proto audit below |
 | Candidate DODGE proposals are limited to genuinely reusable concepts | PASS | **no DIRPS proto is promoted**; all remain `not-yet-candidate` |
-| Wretched remains green | PASS candidate | final exact-head conformance must retain Wretched schema/source/resolver/manifests/PnP/TTS |
-| Whole-system documentation accurately reflects implemented vs unsupported behavior | PASS candidate | this audit + README/ROADMAP/TECHNICAL/HISTORY/scenario metadata updates |
+| Wretched remains green | PASS | final exact-head conformance must retain Wretched schema/source/resolver/manifests/PnP/TTS |
+| Whole-system documentation accurately reflects implemented vs unsupported behavior | PASS | this audit + README/ROADMAP/TECHNICAL/HISTORY/scenario metadata updates |
 
 ## Executable-claims matrix
 
@@ -279,7 +281,7 @@ Future upstream proposals should compare this DIRPS evidence with Wretched or a 
 
 Phase J updates:
 
-- `game/dirps/game.json` — G7/reference candidate registry state;
+- `game/dirps/game.json` — accepted G7/reference registry state;
 - canonical Scenario 01 metadata — accepted A-I scope + explicit unsupported remainder;
 - DODGE metadata — current conformance claim;
 - this G7 validation record;
@@ -301,20 +303,20 @@ Independent review of the first green G7 candidate found one documentation block
 
 The aggregate audit now explicitly distinguishes:
 
-- **PR #188:** G7 — Reference candidate / Phase J;
-- **currently merged `main`:** G6 — Targeted until #188 is independently accepted and merged;
+- **PR #188 candidate at review time:** G7 — Reference candidate / Phase J;
+- **historical pre-merge `main`:** G6 — Targeted until #188 was independently accepted and merged;
 - historical G2-G6 / Phase A-I sections: preserved as evidence for their original maturity boundaries.
 
 The aggregate table was also reconciled so `replay_session_history` reflects accepted Phase H evidence as **exercised / not-yet-candidate** rather than the pre-Phase-H suspected state.
 
 `tests/test_dirps_g7.py` now guards the current-state paragraph so the aggregate compatibility audit cannot silently revert to advertising the obsolete G6 / Phase G state. Historical phase documents are intentionally unchanged.
 
-## G7 candidate conclusion
+## Accepted G7 conclusion
 
-The accumulated implementation now satisfies the repository/DODGE meaning of a bounded reference candidate:
+The accumulated implementation satisfies the repository/DODGE meaning of a bounded **G7 — Reference** implementation:
 
 - exact selected DODGE version and schema;
-- complete candidate-level core evidence;
+- complete candidate-level core evidence accepted at the G7 gate;
 - source + resolved semantic validation;
 - one neutral resolver;
 - all bounded Scenario 01 mechanic claims executed;
@@ -326,4 +328,4 @@ The accumulated implementation now satisfies the repository/DODGE meaning of a b
 - conservative proto maturity with zero premature upstream promotions;
 - retained Wretched regression evidence.
 
-Independent review still decides whether this candidate is **accepted G7 — Reference**.
+Independent review accepted PR #188 at head `a0e39d13ade9c26457dbb2d36dfe527eeb57ce98`; the PR merged as `ac532a9afc4985ee8def8574cd133f1cd7ab7cd5`. DIRPS Scenario 01 is therefore **G7 — Reference**. The claim remains bounded to Scenario 01 and does not imply full GURPS support.
