@@ -54,6 +54,6 @@ Current namespaces:
 
 - `game/the-fountain/` — original Fountain prototype;
 - `game/wretched-demesne/` — Wretched Demesne, with preserved Scenario 01 and a reserved Scenario 02 sibling;
-- `game/dirps/` — G7 reference candidate for the GURPS-inspired DIRPS RPG/DODGE experiment; accepted Phases A-I provide executable investigation/social/environment/combat/recovery, deterministic full-session replay, and debug/Web targets over the same Python resolver/runtime. Phase J audits the bounded reference claim; unsupported rules remain explicit and no proto concept is promoted without cross-game evidence.
+- `game/dirps/` — **G7 — Reference** implementation for bounded DIRPS Scenario 01. Accepted Phases A-J provide executable investigation/social/environment/combat/recovery, deterministic full-session replay, and debug/Web targets over the same Python resolver/runtime. This is a bounded Scenario 01 reference, not full GURPS support; unsupported rules remain explicit and no proto concept was promoted upstream merely to obtain G7.
 
-Wretched Scenario 01 remains the established DODGE 0.2.1 reference implementation; DIRPS Scenario 01 is the second independent reference candidate under Phase J review. Generated historical Beta trees under `wretched-demesne/beta/web/<sha>/` remain immutable deployment evidence and are intentionally not reorganized with authored source.
+Wretched Scenario 01 remains the established DODGE 0.2.1 reference implementation; DIRPS Scenario 01 is now the second independently accepted bounded G7 reference implementation. Generated historical Beta trees under `wretched-demesne/beta/web/<sha>/` remain immutable deployment evidence and are intentionally not reorganized with authored source.
