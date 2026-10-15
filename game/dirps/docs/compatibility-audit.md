@@ -1,6 +1,6 @@
 # DIRPS → DODGE 0.2.1 compatibility audit
 
-This is the bounded aggregate compatibility audit for DIRPS Scenario 01. **PR #188 is the G7 — Reference candidate under Phase J**: accepted Phases A-I now provide the complete bounded scenario runtime, deterministic full-session replay/divergence evidence, and debug/Web targets over the same neutral resolver/runtime against TheFountain CI's pinned DODGE 0.2.1 contract. The currently merged `main` remains **G6 — Targeted** until #188 is independently accepted and merged. Historical G2-G6 and Phase A-I sections below remain evidence for the maturity boundary reached at each accepted tranche; the current whole-system G7 audit is recorded in `g7-reference-validation.md`.
+This is the bounded aggregate compatibility audit for DIRPS Scenario 01. DIRPS Scenario 01 is now **G7 — Reference**: PR #188 was independently accepted and merged, completing Phases A-J and the whole-system reference audit against TheFountain CI's pinned DODGE 0.2.1 contract. The reference claim is deliberately bounded to Scenario 01 and does not imply full GURPS support. Historical G2-G6 and Phase A-I sections below remain evidence for the maturity boundary reached at each accepted tranche; final G7 evidence is recorded in `g7-reference-validation.md`. No DIRPS proto concept was promoted upstream merely to obtain G7.
 
 The baseline is DODGE 0.2.1. The governing rule is the same one used by Wretched Demesne: model existing neutral semantics in DODGE first; keep canonical scenario facts in scenario data; put genuine format gaps into an explicit sidecar; do not hide unsupported semantics inside a target or renderer.
 
@@ -173,7 +173,7 @@ Phase I therefore exercises a second real target over the accepted resolver/runt
 
 Phase J does not normalize new gameplay semantics. It audits whether the bounded compatibility decisions made from G0 through Phase I still form one coherent reference implementation.
 
-The result is a **G7 reference candidate**:
+The result is an accepted **G7 — Reference** implementation:
 
 - every Scenario 01 encounter/mechanic claim is executable and covered by accepted runtime evidence;
 - canonical facts, external GURPS mechanics, DODGE-normalized semantics, proto bridges, runtime algorithms, and target presentation remain separate authority classes;
