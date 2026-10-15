@@ -160,6 +160,130 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             "sha256-rejection-v1",
         )
 
+    def test_px_b_encounter_fiction_and_transitions_follow_runtime_progression(self):
+        view = inspect_web_target(self.resolved)
+        self.assertEqual(
+            view["presentation"]["encounter"]["opening_fiction"],
+            "At a bend in the old road, Rook finds churned mud, a broken strap, and tracks leading away from the road.",
+        )
+        self.assertIsNone(view["transition"])
+
+        history = create_scenario_session_history(self.resolved)
+        steps = (
+            (
+                "investigate-tracks",
+                "pc",
+                {"dice_terms": [3, 3, 4]},
+                "frightened-witness",
+                "Farther along the road",
+            ),
+            (
+                "reassure-and-question",
+                "pc",
+                {"dice_terms": [4, 4, 4]},
+                "washed-out-path",
+                "washed-out stretch",
+            ),
+            (
+                "cross-washed-out-path",
+                "pc",
+                {"dice_terms": [3, 3, 4]},
+                "bandit-scout",
+                "bandit scout",
+            ),
+        )
+        for action_id, actor_ref, random_inputs, next_ref, opening_fragment in steps:
+            history = append_scenario_session_step(
+                self.resolved,
+                history,
+                action_id=action_id,
+                actor_ref=actor_ref,
+                random_inputs=random_inputs,
+            )
+            view = inspect_web_target(self.resolved, history)
+            latest = view["latest_execution"]
+            self.assertEqual(view["transition"]["to_encounter"], next_ref)
+            self.assertEqual(
+                view["transition"]["outcome_text"],
+                view["resolution_explanation"]["consequence"],
+            )
+            self.assertIn(
+                opening_fragment,
+                view["presentation"]["encounter"]["opening_fiction"],
+            )
+            self.assertEqual(
+                [row["id"] for row in view["scenario"]["available_actions"]],
+                [row["id"] for row in view["presentation"]["available_actions"]],
+            )
+            self.assertEqual(
+                view["transition"]["to_encounter"],
+                latest["progression"]["advanced_to"],
+            )
+
+        history = append_scenario_session_step(
+            self.resolved,
+            history,
+            action_id="strike-bandit-scout",
+            actor_ref="pc",
+            random_inputs={"attack_terms": [1, 1, 1]},
+        )
+        view = inspect_web_target(self.resolved, history)
+        self.assertEqual(
+            view["transition"]["key"],
+            "bandit-scout:action->bandit-scout:recovery",
+        )
+        self.assertEqual(
+            view["scenario"]["progress"]["step"],
+            "recovery",
+        )
+        self.assertIn("determine whether", view["transition"]["bridge_text"])
+
+        history = append_scenario_session_step(
+            self.resolved,
+            history,
+            action_id="resolve-bandit-next-turn",
+            actor_ref="bandit-scout",
+            random_inputs={"consciousness_terms": [6, 6, 6]},
+        )
+        view = inspect_web_target(self.resolved, history)
+        self.assertEqual(
+            view["transition"]["key"],
+            "bandit-scout:recovery->complete:complete",
+        )
+        self.assertEqual(
+            view["transition"]["outcome_text"],
+            view["latest_execution"]["progression"]["conclusion_text"],
+        )
+
+    def test_px_b_transition_projection_cannot_choose_progression(self):
+        record = {
+            "encounter_ref": "from",
+            "step": "action",
+            "progression": {
+                "advanced_to": "runtime-next",
+                "terminal": False,
+            },
+        }
+        scenario = {"progress": {"step": "action"}}
+        contract = {
+            "transitions": {
+                "from:action->presentation-next:action": {
+                    "bridge_text": "Wrong destination."
+                },
+                "from:action->runtime-next:action": {
+                    "bridge_text": "Runtime destination."
+                },
+            }
+        }
+        transition = dirps_web_target._transition_view(
+            scenario,
+            record,
+            contract,
+            {"consequence": "Recorded result."},
+        )
+        self.assertEqual(transition["to_encounter"], "runtime-next")
+        self.assertEqual(transition["bridge_text"], "Runtime destination.")
+
     def test_px_c_resolution_explanations_copy_runtime_values_without_recalculation(self):
         def facts(section):
             return {row["label"]: row["value"] for row in section["facts"]}
@@ -461,6 +585,9 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             'id="scenarioObjective"',
             'id="scenarioScope"',
             'id="encounterTitle"',
+            'id="encounterTransition"',
+            'id="transitionOutcome"',
+            'id="transitionBridge"',
             'id="availableActions"',
             'id="character"',
             'id="scenarioState"',
