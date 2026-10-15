@@ -4,7 +4,7 @@ Scenario 01 is the specification for DIRPS's first planned executable vertical s
 
 ## Current maturity
 
-**G7 — Reference candidate, Phase J audit.** Accepted Phases A-I remain intact. Scenario 01 is now audited as one bounded reference implementation with exact validation, one neutral resolver, executable encounter claims, deterministic replay/divergence evidence, and two targets over the same runtime. `../../docs/g7-reference-validation.md` records the reference audit.
+**G7 — Reference.** Accepted Phases A-J are complete. Scenario 01 is an independently accepted bounded reference implementation with exact validation, one neutral resolver, executable encounter claims, deterministic replay/divergence evidence, and two targets over the same runtime. This does not imply full GURPS support. `../../docs/g7-reference-validation.md` records the accepted reference audit.
 
 ## Goal
 
@@ -33,7 +33,7 @@ The scenario premise, character values, encounter composition, and pacing are im
 
 ## Future acceptance
 
-Phases B/C/D/E/F/G/H/I are accepted gameplay/evidence/target slices. Phase J adds no mechanic; it verifies that the bounded claims, authority paths, perturbation evidence, replay behavior, targets, unsupported scope, and proto maturity converge cleanly enough for G7. Long-term waking/healing remains explicitly unsupported rather than a hidden future dependency.
+Phases B/C/D/E/F/G/H/I are accepted gameplay/evidence/target slices, and Phase J is the accepted whole-system G7 audit. No further gameplay phase is required for the Scenario 01 reference gate. Long-term waking/healing remains explicitly unsupported rather than a hidden future dependency.
 
 
 ## Phase D — Washed-Out Path
