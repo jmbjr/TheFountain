@@ -156,6 +156,19 @@ try {
     /shaken witness/i,
     "PX-B next-encounter opening fiction did not render",
   );
+  assert.equal(
+    await page.evaluate(() => {
+      const transition = document.querySelector("#encounterTransition");
+      const opening = document.querySelector("#encounterPurpose");
+      return Boolean(
+        transition &&
+        opening &&
+        (transition.compareDocumentPosition(opening) & Node.DOCUMENT_POSITION_FOLLOWING)
+      );
+    }),
+    true,
+    "PX-B transition must appear before the next encounter opening fiction",
+  );
   assert.match(
     await page.locator("#lastResolution").innerText(),
     /phase-i-browser-smoke/,
