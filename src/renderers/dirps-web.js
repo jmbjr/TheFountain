@@ -153,6 +153,18 @@ function renderScenario() {
     progress.status === "complete" ? "Complete" : "Investigation in progress"
   );
 
+  const transition = model.transition;
+  const transitionHost = $("encounterTransition");
+  if (transition) {
+    transitionHost.hidden = false;
+    text("transitionOutcome", transition.outcome_text || "");
+    text("transitionBridge", transition.bridge_text || "");
+  } else {
+    transitionHost.hidden = true;
+    text("transitionOutcome", "");
+    text("transitionBridge", "");
+  }
+
   const banner = $("scenarioBanner");
   banner.className = "dirps-banner";
   if (progress.status === "complete") {
