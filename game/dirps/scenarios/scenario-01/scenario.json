@@ -18,7 +18,7 @@
       "Every mechanical resolution can identify the rule/procedure used and its source locator.",
       "Unsupported or uncertain rules fail visibly rather than being guessed."
     ],
-    "acceptance_note": "Phases A-J are accepted and merged. Scenario 01 executes end-to-end, records append-only deterministic replay evidence, is playable through a real browser target over the same Python resolver/runtime, and has passed the whole-system G7 reference audit. Long-term unconscious recovery/healing remains explicitly unsupported; G7 does not imply full GURPS support."
+    "acceptance_note": "Phases A-J are accepted and merged. Scenario 01 executes end-to-end, records append-only deterministic replay evidence, is playable through a real browser target over the same Python resolver/runtime, and has passed the whole-system G7 reference audit. Long-term unconscious recovery/healing remains explicitly unsupported. G7 does not imply full GURPS support."
   },
   "tutorial": {
     "title": "The Missing Courier",
