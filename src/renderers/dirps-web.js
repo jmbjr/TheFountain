@@ -113,6 +113,42 @@ function renderCharacter() {
   host.append(equipment);
 }
 
+function renderCharacterCondition() {
+  const host = $("characterCondition");
+  clear(host);
+  const character = model.characters?.[0];
+  if (!character) {
+    host.append(document.createTextNode("No character condition available."));
+    return;
+  }
+
+  const state = character.state || {};
+  const grid = document.createElement("div");
+  grid.className = "dirps-stat-grid";
+  for (const [label, key] of [
+    ["HP", "hit-points"],
+    ["Fatigue", "fatigue"],
+    ["Stunned", "stunned"],
+    ["Unconscious", "unconscious"],
+  ]) {
+    if (state[key] !== undefined) {
+      grid.append(row(label, readableValue(state[key])));
+    }
+  }
+  host.append(grid);
+}
+
+function renderPlayerProgress() {
+  const host = $("playerProgress");
+  clear(host);
+  const progress = model.scenario?.progress || {};
+  const grid = document.createElement("div");
+  grid.className = "dirps-stat-grid";
+  grid.append(row("Status", readableValue(progress.status)));
+  grid.append(row("Actions resolved", model.history?.steps?.length || 0));
+  host.append(grid);
+}
+
 function renderActions() {
   const host = $("availableActions");
   clear(host);
@@ -276,21 +312,31 @@ function renderLatest() {
     host.append(skipped);
   }
 
+  const technical = document.createElement("details");
+  technical.className = "dirps-resolution-evidence";
+  const technicalSummary = document.createElement("summary");
+  technicalSummary.textContent = "Technical resolution evidence";
+
   const randomTitle = document.createElement("h3");
   randomTitle.textContent = "Recorded random evidence";
   const random = document.createElement("pre");
   random.className = "dirps-code";
   random.textContent = pretty(record.random_inputs || {});
-  host.append(randomTitle, random);
 
-  const mechanic = document.createElement("details");
-  const mechanicSummary = document.createElement("summary");
-  mechanicSummary.textContent = "Mechanic result";
+  const mechanicTitle = document.createElement("h3");
+  mechanicTitle.textContent = "Mechanic result";
   const mechanicJson = document.createElement("pre");
   mechanicJson.className = "dirps-code";
   mechanicJson.textContent = pretty(record.mechanic_result || {});
-  mechanic.append(mechanicSummary, mechanicJson);
-  host.append(mechanic);
+
+  technical.append(
+    technicalSummary,
+    randomTitle,
+    random,
+    mechanicTitle,
+    mechanicJson
+  );
+  host.append(technical);
 
   text(
     "provenance",
@@ -344,11 +390,14 @@ function renderFraming() {
 function render() {
   $("play").hidden = false;
   $("fatal").hidden = true;
-  text("runtimeStatus", "Shared Python resolver/runtime active in this browser.");
+  text("runtimeStatus", "Game ready.");
+  text("runtimeTechnicalStatus", "Shared Python resolver/runtime active in this browser.");
   renderFraming();
   renderCharacter();
+  renderCharacterCondition();
   renderScenario();
   renderLatest();
+  renderPlayerProgress();
   renderHistory();
   text("debugView", pretty(model));
 }
@@ -364,7 +413,7 @@ async function executeAction(action, button) {
   const seedInput = $("seedInput");
   const seed = seedInput.value.trim() || `web-${crypto.randomUUID()}`;
   seedInput.value = seed;
-  setBusy(true, `Resolving ${action.label || action.id} through the shared runtime…`);
+  setBusy(true, `Resolving ${action.label || action.id}…`);
   button.disabled = true;
 
   try {
@@ -418,9 +467,9 @@ async function mountRepositoryFiles() {
 }
 
 async function startRuntime() {
-  text("runtimeStatus", "Loading pinned Pyodide runtime…");
+  text("runtimeStatus", "Loading game…");
   pyodide = await loadPyodide({ indexURL: PYODIDE_INDEX });
-  text("runtimeStatus", "Mounting authoritative DIRPS source and runtime modules…");
+  text("runtimeStatus", "Preparing scenario…");
   await mountRepositoryFiles();
   await pyodide.runPythonAsync(`
 import os
@@ -430,7 +479,7 @@ if "/home/pyodide/tools" not in sys.path:
     sys.path.insert(0, "/home/pyodide/tools")
 import dirps_web_target
 `);
-  text("runtimeStatus", "Resolving Scenario 01 through the shared Python resolver…");
+  text("runtimeStatus", "Preparing the investigation…");
   const raw = await pyodide.runPythonAsync("dirps_web_target.web_bootstrap_json()");
   model = JSON.parse(raw);
   render();
@@ -445,7 +494,7 @@ function showFatal(error) {
 }
 
 $("restart").addEventListener("click", async () => {
-  setBusy(true, "Restarting from the accepted Scenario 01 initial state…");
+  setBusy(true, "Restarting scenario…");
   try {
     const raw = await pyodide.runPythonAsync("dirps_web_target.web_bootstrap_json()");
     model = JSON.parse(raw);

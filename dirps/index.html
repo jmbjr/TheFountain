@@ -12,8 +12,8 @@
     <header>
       <p class="dirps-eyebrow">SCENARIO 01 · THE MISSING COURIER</p>
       <h1>DIRPS</h1>
-      <p class="dirps-tag">A small RPG tutorial running the same Python resolver and runtime used by DIRPS conformance.</p>
-      <p id="runtimeStatus" class="dirps-runtime-status">Loading shared Python runtime…</p>
+      <p class="dirps-tag">A short RPG tutorial about a missing courier.</p>
+      <p id="runtimeStatus" class="dirps-runtime-status">Loading game…</p>
     </header>
 
     <section id="fatal" class="dirps-panel dirps-error" hidden></section>
@@ -54,10 +54,6 @@
             </div>
             <p id="encounterPurpose" class="dirps-copy"></p>
             <div id="availableActions" class="dirps-actions"></div>
-            <label class="dirps-seed">
-              <span>Deterministic seed</span>
-              <input id="seedInput" type="text" autocomplete="off" placeholder="blank = generate a fresh seed">
-            </label>
           </section>
 
           <section class="dirps-panel">
@@ -66,41 +62,67 @@
               <p class="dirps-quiet">No action resolved yet.</p>
             </div>
           </section>
-
-          <section class="dirps-panel">
-            <p class="dirps-eyebrow">RULE / SOURCE TRACE</p>
-            <pre id="provenance" class="dirps-code">No execution trace yet.</pre>
-          </section>
         </div>
 
         <aside>
           <section class="dirps-panel">
-            <p class="dirps-eyebrow">CHARACTER</p>
-            <div id="character"></div>
+            <p class="dirps-eyebrow">ROOK'S CONDITION</p>
+            <div id="characterCondition"></div>
           </section>
 
           <section class="dirps-panel">
-            <p class="dirps-eyebrow">SCENARIO STATE</p>
-            <div id="scenarioState"></div>
-          </section>
-
-          <section class="dirps-panel">
-            <div class="dirps-title-row">
-              <div>
-                <p class="dirps-eyebrow">SESSION EVIDENCE</p>
-                <h2>Replay log</h2>
-              </div>
-              <span id="historyCount"></span>
-            </div>
-            <div id="history" class="dirps-history"></div>
+            <p class="dirps-eyebrow">INVESTIGATION PROGRESS</p>
+            <div id="playerProgress"></div>
           </section>
         </aside>
       </section>
 
-      <section class="dirps-panel">
-        <details>
-          <summary>Runtime debug view</summary>
-          <pre id="debugView" class="dirps-code"></pre>
+      <section class="dirps-panel dirps-advanced">
+        <details id="advancedEvidence">
+          <summary>Advanced evidence and debug tools</summary>
+          <p class="dirps-muted">Deterministic controls, source traces, raw state, replay evidence, and the complete runtime view remain available here.</p>
+          <p id="runtimeTechnicalStatus" class="dirps-muted">Runtime evidence unavailable until the game finishes loading.</p>
+
+          <div class="dirps-evidence-grid">
+            <section>
+              <p class="dirps-eyebrow">DETERMINISTIC CONTROL</p>
+              <label class="dirps-seed">
+                <span>Seed</span>
+                <input id="seedInput" type="text" autocomplete="off" placeholder="blank = generate a fresh seed">
+              </label>
+            </section>
+
+            <section>
+              <p class="dirps-eyebrow">CHARACTER EVIDENCE</p>
+              <div id="character"></div>
+            </section>
+
+            <section>
+              <p class="dirps-eyebrow">RAW SCENARIO STATE</p>
+              <div id="scenarioState"></div>
+            </section>
+
+            <section>
+              <div class="dirps-title-row">
+                <div>
+                  <p class="dirps-eyebrow">SESSION EVIDENCE</p>
+                  <h2>Replay log</h2>
+                </div>
+                <span id="historyCount"></span>
+              </div>
+              <div id="history" class="dirps-history"></div>
+            </section>
+
+            <section>
+              <p class="dirps-eyebrow">RULE / SOURCE TRACE</p>
+              <pre id="provenance" class="dirps-code">No execution trace yet.</pre>
+            </section>
+
+            <section>
+              <p class="dirps-eyebrow">RUNTIME DEBUG VIEW</p>
+              <pre id="debugView" class="dirps-code"></pre>
+            </section>
+          </div>
         </details>
       </section>
 
