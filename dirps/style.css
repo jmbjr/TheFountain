@@ -79,6 +79,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .dirps-history-step span{font:11px ui-monospace,monospace;color:#9db9c3}
 .dirps-history-step small{font:10px ui-monospace,monospace;color:#64828e}
 .dirps-turnbar{display:flex;justify-content:center;margin:20px}
+.dirps-turnbar[hidden]{display:none}
 .dirps-ghost{padding:11px 16px;border:1px solid #3e7183;background:transparent;color:#b9dce7;cursor:pointer}
 .dirps-ghost:hover{background:#10242d}
 .dirps-error{border-color:#864d4d;background:#2b1517;color:#ffd3cf}
