@@ -381,7 +381,7 @@ def _transition_view(scenario, latest, contract, resolution_explanation):
     }
 
 
-def _ending_view(scenario, latest, history, resolution_explanation):
+def _ending_view(scenario, latest, history):
     if not isinstance(latest, dict):
         return None
     progression = latest.get("progression") or {}
@@ -429,9 +429,7 @@ def inspect_web_target(
     transition = _transition_view(
         scenario, latest, contract, resolution_explanation
     )
-    ending = _ending_view(
-        scenario, latest, session, resolution_explanation
-    )
+    ending = _ending_view(scenario, latest, session)
     return {
         "target": {
             "id": TARGET_ID,
