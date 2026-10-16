@@ -392,20 +392,11 @@ def _ending_view(scenario, latest, history, resolution_explanation):
     ):
         return None
 
-    final_reason = None
-    if isinstance(resolution_explanation, dict):
-        final_reason = resolution_explanation.get("consequence")
-
     return {
         "outcome": copy.deepcopy(progression.get("outcome")),
         "objective_complete": copy.deepcopy(progression.get("objective_complete")),
         "conclusion_text": progression.get("conclusion_text"),
-        "final_reason": copy.deepcopy(final_reason),
-        "summary": {
-            "actions_resolved": len(history.get("steps", [])),
-            "information": copy.deepcopy(progression.get("information")),
-            "end_condition_id": copy.deepcopy(progression.get("end_condition_id")),
-        },
+        "actions_resolved": len(history.get("steps", [])),
     }
 
 
