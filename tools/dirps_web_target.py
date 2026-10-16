@@ -381,6 +381,34 @@ def _transition_view(scenario, latest, contract, resolution_explanation):
     }
 
 
+def _ending_view(scenario, latest, history, resolution_explanation):
+    if not isinstance(latest, dict):
+        return None
+    progression = latest.get("progression") or {}
+    scenario_progress = scenario.get("progress") or {}
+    if (
+        progression.get("terminal") is not True
+        or scenario_progress.get("status") != "complete"
+    ):
+        return None
+
+    final_reason = None
+    if isinstance(resolution_explanation, dict):
+        final_reason = resolution_explanation.get("consequence")
+
+    return {
+        "outcome": copy.deepcopy(progression.get("outcome")),
+        "objective_complete": copy.deepcopy(progression.get("objective_complete")),
+        "conclusion_text": progression.get("conclusion_text"),
+        "final_reason": copy.deepcopy(final_reason),
+        "summary": {
+            "actions_resolved": len(history.get("steps", [])),
+            "information": copy.deepcopy(progression.get("information")),
+            "end_condition_id": copy.deepcopy(progression.get("end_condition_id")),
+        },
+    }
+
+
 def inspect_web_target(
     resolved,
     history=None,
@@ -410,6 +438,9 @@ def inspect_web_target(
     transition = _transition_view(
         scenario, latest, contract, resolution_explanation
     )
+    ending = _ending_view(
+        scenario, latest, session, resolution_explanation
+    )
     return {
         "target": {
             "id": TARGET_ID,
@@ -430,6 +461,7 @@ def inspect_web_target(
         "latest_execution": latest,
         "resolution_explanation": resolution_explanation,
         "transition": transition,
+        "ending": ending,
     }
 
 
