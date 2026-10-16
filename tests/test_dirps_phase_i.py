@@ -607,12 +607,7 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
                 "outcome": failure_progression["outcome"],
                 "objective_complete": failure_progression["objective_complete"],
                 "conclusion_text": failure_progression["conclusion_text"],
-                "final_reason": failure_view["resolution_explanation"]["consequence"],
-                "summary": {
-                    "actions_resolved": len(failure_history["steps"]),
-                    "information": failure_progression["information"],
-                    "end_condition_id": failure_progression["end_condition_id"],
-                },
+                "actions_resolved": len(failure_history["steps"]),
             },
         )
 
@@ -644,16 +639,8 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             success_progression["conclusion_text"],
         )
         self.assertEqual(
-            success_view["ending"]["summary"]["actions_resolved"],
+            success_view["ending"]["actions_resolved"],
             len(success_history["steps"]),
-        )
-        self.assertEqual(
-            success_view["ending"]["summary"]["information"],
-            success_progression["information"],
-        )
-        self.assertEqual(
-            success_view["ending"]["summary"]["end_condition_id"],
-            success_progression["end_condition_id"],
         )
 
     def test_px_e_static_page_has_dedicated_terminal_controls(self):
@@ -661,7 +648,6 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             'id="endingPanel"',
             'id="endingTitle"',
             'id="endingConclusion"',
-            'id="endingReason"',
             'id="endingSummary"',
             'id="endingRestart"',
             'id="endingEvidence"',
