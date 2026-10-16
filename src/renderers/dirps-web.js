@@ -377,6 +377,41 @@ function renderHistory() {
   }
 }
 
+function renderEnding() {
+  const ending = model.ending;
+  const panel = $("endingPanel");
+  const active = $("activeScenario");
+  const restartBar = $("restartBar");
+
+  if (!ending) {
+    panel.hidden = true;
+    panel.className = "dirps-panel dirps-ending";
+    active.hidden = false;
+    restartBar.hidden = false;
+    return;
+  }
+
+  panel.hidden = false;
+  panel.className = `dirps-panel dirps-ending ${ending.outcome || ""}`;
+  active.hidden = true;
+  restartBar.hidden = true;
+
+  text(
+    "endingTitle",
+    ending.outcome === "success" ? "Success" :
+      ending.outcome === "failure" ? "Failure" :
+        "Scenario complete"
+  );
+  text("endingConclusion", ending.conclusion_text || "");
+
+  const summary = $("endingSummary");
+  clear(summary);
+  summary.append(row("Result", readableValue(ending.outcome)));
+  summary.append(row("Objective complete", readableValue(ending.objective_complete)));
+  summary.append(row("Actions resolved", ending.actions_resolved ?? 0));
+}
+
+
 function renderFraming() {
   const framing = model.presentation?.scenario || {};
   text("playerIdentity", framing.player_name || "Rook");
@@ -399,11 +434,12 @@ function render() {
   renderLatest();
   renderPlayerProgress();
   renderHistory();
+  renderEnding();
   text("debugView", pretty(model));
 }
 
 function setBusy(isBusy, message) {
-  document.querySelectorAll(".dirps-action, #restart").forEach((button) => {
+  document.querySelectorAll(".dirps-action, #restart, #endingRestart").forEach((button) => {
     button.disabled = isBusy;
   });
   if (message) text("runtimeStatus", message);
@@ -493,18 +529,25 @@ function showFatal(error) {
   text("runtimeStatus", "Runtime unavailable.");
 }
 
-$("restart").addEventListener("click", async () => {
+async function restartScenario() {
   setBusy(true, "Restarting scenario…");
   try {
     const raw = await pyodide.runPythonAsync("dirps_web_target.web_bootstrap_json()");
     model = JSON.parse(raw);
     $("seedInput").value = "";
+    $("advancedEvidence").open = false;
     render();
   } catch (error) {
     showFatal(error);
   } finally {
     setBusy(false);
   }
+}
+
+$("restart").addEventListener("click", restartScenario);
+$("endingRestart").addEventListener("click", restartScenario);
+$("endingEvidence").addEventListener("click", () => {
+  $("advancedEvidence").open = true;
 });
 
 startRuntime().catch(showFatal);

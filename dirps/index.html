@@ -21,6 +21,18 @@
     <section id="play" hidden>
       <div id="scenarioBanner" class="dirps-banner"></div>
 
+      <section id="endingPanel" class="dirps-panel dirps-ending" hidden>
+        <p class="dirps-eyebrow">SCENARIO COMPLETE</p>
+        <h2 id="endingTitle">—</h2>
+        <p id="endingConclusion" class="dirps-ending-conclusion"></p>
+        <div id="endingSummary" class="dirps-stat-grid"></div>
+        <div class="dirps-ending-actions">
+          <button id="endingRestart" class="dirps-action-button">Play again</button>
+          <button id="endingEvidence" class="dirps-ghost">Review technical evidence</button>
+        </div>
+      </section>
+
+      <div id="activeScenario">
       <section class="dirps-panel dirps-framing">
         <p class="dirps-eyebrow">YOUR ROLE</p>
         <h2 id="playerIdentity">—</h2>
@@ -76,6 +88,7 @@
           </section>
         </aside>
       </section>
+      </div>
 
       <section class="dirps-panel dirps-advanced">
         <details id="advancedEvidence">
@@ -126,7 +139,7 @@
         </details>
       </section>
 
-      <div class="dirps-turnbar">
+      <div id="restartBar" class="dirps-turnbar">
         <button id="restart" class="dirps-ghost">Restart scenario</button>
       </div>
     </section>
