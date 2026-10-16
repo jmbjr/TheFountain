@@ -404,20 +404,11 @@ function renderEnding() {
   );
   text("endingConclusion", ending.conclusion_text || "");
 
-  const reason = $("endingReason");
-  if (ending.final_reason) {
-    reason.hidden = false;
-    reason.textContent = ending.final_reason;
-  } else {
-    reason.hidden = true;
-    reason.textContent = "";
-  }
-
   const summary = $("endingSummary");
   clear(summary);
   summary.append(row("Result", readableValue(ending.outcome)));
   summary.append(row("Objective complete", readableValue(ending.objective_complete)));
-  summary.append(row("Actions resolved", ending.summary?.actions_resolved ?? 0));
+  summary.append(row("Actions resolved", ending.actions_resolved ?? 0));
 }
 
 
