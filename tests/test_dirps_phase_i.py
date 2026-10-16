@@ -643,6 +643,11 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             len(success_history["steps"]),
         )
 
+    def test_px_e_hidden_restart_bar_overrides_turnbar_display(self):
+        css = (ROOT / "dirps/style.css").read_text()
+        self.assertIn(".dirps-turnbar{display:flex", css)
+        self.assertIn(".dirps-turnbar[hidden]{display:none}", css)
+
     def test_px_e_static_page_has_dedicated_terminal_controls(self):
         for element_id in (
             'id="endingPanel"',
