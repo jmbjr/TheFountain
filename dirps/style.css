@@ -27,6 +27,14 @@ button,input{font:inherit}
 .dirps-banner{padding:10px 14px;border:1px solid #326173;background:#0b202b;text-align:center;font:800 .72rem system-ui;letter-spacing:.12em;color:#bfe8f5}
 .dirps-banner.success{border-color:#437d64;background:#102a20;color:#c4efd3}
 .dirps-banner.failure{border-color:#81514d;background:#2b1718;color:#f2c4bf}
+.dirps-ending{margin-top:16px;text-align:center;padding:26px}
+.dirps-ending.success{border-color:#437d64;background:#0d211a}
+.dirps-ending.failure{border-color:#81514d;background:#241416}
+.dirps-ending>h2{font-size:2.2rem;margin:.25em 0}
+.dirps-ending-conclusion{max-width:760px;margin:14px auto;color:#dceff5;font:1.08rem/1.6 Georgia,serif}
+.dirps-ending #endingSummary{max-width:620px;margin:20px auto 0}
+.dirps-ending-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:22px}
+.dirps-action-button{padding:11px 16px;border:1px solid #4b7d8e;background:#173845;color:#e7f6fa;cursor:pointer}
 .dirps-framing{margin-top:16px}
 .dirps-framing>h2{font-size:1.9rem;margin:.2em 0 .1em}
 .dirps-framing-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px}
@@ -71,6 +79,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .dirps-history-step span{font:11px ui-monospace,monospace;color:#9db9c3}
 .dirps-history-step small{font:10px ui-monospace,monospace;color:#64828e}
 .dirps-turnbar{display:flex;justify-content:center;margin:20px}
+.dirps-turnbar[hidden]{display:none}
 .dirps-ghost{padding:11px 16px;border:1px solid #3e7183;background:transparent;color:#b9dce7;cursor:pointer}
 .dirps-ghost:hover{background:#10242d}
 .dirps-error{border-color:#864d4d;background:#2b1517;color:#ffd3cf}

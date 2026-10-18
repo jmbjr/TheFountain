@@ -90,6 +90,11 @@ try {
     "PX-D advanced evidence should be closed by default",
   );
   assert.equal(
+    await page.locator("#endingPanel").isHidden(),
+    true,
+    "PX-E ending must stay hidden before the runtime reaches a terminal state",
+  );
+  assert.equal(
     await page.locator("#seedInput").isVisible(),
     false,
     "PX-D deterministic seed control should not dominate the player view",
@@ -249,6 +254,110 @@ try {
     /dirps-web-target\.v1/i,
     "PX-D runtime debug view was not retained",
   );
+
+  await page.locator("#advancedEvidence > summary").click();
+  assert.equal(
+    await page.locator("#advancedEvidence").getAttribute("open"),
+    null,
+    "advanced evidence did not close before continuing normal play",
+  );
+
+  for (let expectedSteps = 2; expectedSteps <= 6; expectedSteps += 1) {
+    if (!(await page.locator("#endingPanel").isHidden())) break;
+
+    await page.evaluate((seed) => {
+      document.querySelector("#seedInput").value = seed;
+    }, `phase-i-browser-ending-${expectedSteps}`);
+
+    const action = page.locator(".dirps-action").first();
+    assert.equal(
+      await action.count(),
+      1,
+      "runtime did not expose the next bounded Scenario 01 action",
+    );
+    await action.click();
+
+    await page.waitForFunction((steps) => {
+      const value = document.querySelector("#historyCount")?.textContent?.trim();
+      return value === `${steps} step` || value === `${steps} steps`;
+    }, expectedSteps);
+  }
+
+  assert.equal(
+    await page.locator("#endingPanel").isHidden(),
+    false,
+    "PX-E dedicated ending did not appear at the accepted terminal state",
+  );
+  assert.match(
+    (await page.locator("#endingTitle").innerText()).trim(),
+    /^(Success|Failure)$/,
+    "PX-E ending did not state the accepted terminal outcome",
+  );
+  assert.match(
+    await page.locator("#endingConclusion").innerText(),
+    /courier/i,
+    "PX-E ending did not surface the accepted runtime conclusion",
+  );
+  assert.match(
+    await page.locator("#endingConclusion").innerText(),
+    /(return with an answer|withdrawing without enough information)/i,
+    "PX-E ending conclusion drifted from accepted terminal wording",
+  );
+  assert.match(
+    await page.locator("#endingSummary").innerText(),
+    /Result[\s\S]*(success|failure)/i,
+    "PX-E run summary omitted the terminal result",
+  );
+  assert.match(
+    await page.locator("#endingSummary").innerText(),
+    /Objective complete[\s\S]*(Yes|No)/i,
+    "PX-E run summary omitted objective completion",
+  );
+  assert.match(
+    await page.locator("#endingSummary").innerText(),
+    /Actions resolved[\s\S]*[45]/i,
+    "PX-E run summary omitted the bounded action count",
+  );
+  assert.equal(
+    await page.locator("#activeScenario").isHidden(),
+    true,
+    "PX-E active encounter UI remained visible after completion",
+  );
+  assert.equal(
+    await page.locator("#restartBar").isHidden(),
+    true,
+    "PX-E duplicate normal restart control remained visible after completion",
+  );
+
+  await page.locator("#endingEvidence").click();
+  assert.equal(
+    await page.locator("#advancedEvidence").getAttribute("open"),
+    "",
+    "PX-E technical-evidence action did not open preserved audit evidence",
+  );
+  assert.match(
+    await page.locator("#history").innerText(),
+    /#/,
+    "PX-E technical evidence did not retain the replay history",
+  );
+
+  await page.locator("#endingRestart").click();
+  await page.waitForFunction(() =>
+    document.querySelector("#endingPanel")?.hidden === true &&
+    document.querySelector("#historyCount")?.textContent?.trim() === "0 steps" &&
+    document.querySelector("#encounterTitle")?.textContent?.trim() === "Roadside Tracks",
+  );
+  assert.equal(
+    await page.locator("#advancedEvidence").getAttribute("open"),
+    null,
+    "PX-E restart should restore the closed advanced-evidence state",
+  );
+  assert.equal(
+    (await page.locator(".dirps-action").first().innerText()).trim(),
+    "Examine the tracks",
+    "PX-E restart did not return to the accepted initial action",
+  );
+
   assert.equal(
     browserErrors.length,
     0,

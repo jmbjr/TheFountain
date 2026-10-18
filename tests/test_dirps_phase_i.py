@@ -571,6 +571,105 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             self.web_js,
         )
 
+    def test_px_e_ending_copies_both_accepted_terminal_routes(self):
+        self.assertIsNone(inspect_web_target(self.resolved)["ending"])
+
+        def advance_to_bandit():
+            history = create_scenario_session_history(self.resolved)
+            for action_id, actor_ref, random_inputs in (
+                ("investigate-tracks", "pc", {"dice_terms": [3, 3, 3]}),
+                ("reassure-and-question", "pc", {"dice_terms": [3, 3, 3]}),
+                ("cross-washed-out-path", "pc", {"dice_terms": [3, 3, 3]}),
+            ):
+                history = append_scenario_session_step(
+                    self.resolved,
+                    history,
+                    action_id=action_id,
+                    actor_ref=actor_ref,
+                    random_inputs=random_inputs,
+                )
+            return history
+
+        failure_history = append_scenario_session_step(
+            self.resolved,
+            advance_to_bandit(),
+            action_id="strike-bandit-scout",
+            actor_ref="pc",
+            random_inputs={"attack_terms": [6, 6, 6]},
+        )
+        failure_view = inspect_web_target(self.resolved, failure_history)
+        failure_progression = failure_view["latest_execution"]["progression"]
+        self.assertTrue(failure_progression["terminal"])
+        self.assertEqual(failure_progression["outcome"], "failure")
+        self.assertEqual(
+            failure_view["ending"],
+            {
+                "outcome": failure_progression["outcome"],
+                "objective_complete": failure_progression["objective_complete"],
+                "conclusion_text": failure_progression["conclusion_text"],
+                "actions_resolved": len(failure_history["steps"]),
+            },
+        )
+
+        success_history = append_scenario_session_step(
+            self.resolved,
+            advance_to_bandit(),
+            action_id="strike-bandit-scout",
+            actor_ref="pc",
+            random_inputs={"attack_terms": [1, 1, 1]},
+        )
+        success_history = append_scenario_session_step(
+            self.resolved,
+            success_history,
+            action_id="resolve-bandit-next-turn",
+            actor_ref="bandit-scout",
+            random_inputs={"consciousness_terms": [6, 6, 6]},
+        )
+        success_view = inspect_web_target(self.resolved, success_history)
+        success_progression = success_view["latest_execution"]["progression"]
+        self.assertTrue(success_progression["terminal"])
+        self.assertEqual(success_progression["outcome"], "success")
+        self.assertEqual(success_view["ending"]["outcome"], success_progression["outcome"])
+        self.assertEqual(
+            success_view["ending"]["objective_complete"],
+            success_progression["objective_complete"],
+        )
+        self.assertEqual(
+            success_view["ending"]["conclusion_text"],
+            success_progression["conclusion_text"],
+        )
+        self.assertEqual(
+            success_view["ending"]["actions_resolved"],
+            len(success_history["steps"]),
+        )
+
+    def test_px_e_hidden_restart_bar_overrides_turnbar_display(self):
+        css = (ROOT / "dirps/style.css").read_text()
+        self.assertIn(".dirps-turnbar{display:flex", css)
+        self.assertIn(".dirps-turnbar[hidden]{display:none}", css)
+
+    def test_px_e_static_page_has_dedicated_terminal_controls(self):
+        for element_id in (
+            'id="endingPanel"',
+            'id="endingTitle"',
+            'id="endingConclusion"',
+            'id="endingSummary"',
+            'id="endingRestart"',
+            'id="endingEvidence"',
+            'id="activeScenario"',
+            'id="restartBar"',
+        ):
+            self.assertIn(element_id, self.web_html)
+        self.assertIn(
+            '$("endingRestart").addEventListener("click", restartScenario)',
+            self.web_js,
+        )
+        self.assertIn(
+            '$("endingEvidence").addEventListener("click", () => {',
+            self.web_js,
+        )
+        self.assertIn('$("advancedEvidence").open = true', self.web_js)
+
     def test_web_target_can_drive_complete_scenario_without_owning_choices(self):
         view = inspect_web_target(self.resolved)
         for index in range(1, 8):
@@ -685,6 +784,12 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             'id="characterCondition"',
             'id="playerProgress"',
             'id="advancedEvidence"',
+            'id="endingPanel"',
+            'id="endingTitle"',
+            'id="endingConclusion"',
+            'id="endingSummary"',
+            'id="endingRestart"',
+            'id="endingEvidence"',
             'id="runtimeTechnicalStatus"',
             'id="character"',
             'id="scenarioState"',
