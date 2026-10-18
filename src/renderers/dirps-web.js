@@ -560,9 +560,8 @@ async function restartScenario() {
 $("restart").addEventListener("click", restartScenario);
 $("endingRestart").addEventListener("click", restartScenario);
 $("endingEvidence").addEventListener("click", () => {
-  const evidence = $("advancedEvidence");
-  evidence.open = true;
-  evidence.querySelector("summary")?.focus();
+  $("advancedEvidence").open = true;
+  $("advancedEvidence").querySelector("summary")?.focus();
 });
 
 startRuntime().catch(showFatal);
