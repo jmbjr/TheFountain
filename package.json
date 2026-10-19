@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "test": "node --test tests/*-runtime.test.mjs",
-    "test:dirps-web-smoke": "node tests/dirps-web-smoke.mjs"
+    "test:dirps-web-smoke": "node tests/dirps-web-smoke.mjs",
+    "test:dirps-player-acceptance": "node tests/dirps-player-acceptance.mjs"
   }
 }

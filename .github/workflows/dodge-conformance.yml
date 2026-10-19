@@ -62,6 +62,9 @@ jobs:
       - name: Run DIRPS browser/Pyodide smoke
         working-directory: the-fountain
         run: npm run test:dirps-web-smoke
+      - name: Run DIRPS PX-G default-player acceptance
+        working-directory: the-fountain
+        run: npm run test:dirps-player-acceptance
       - name: Discover and validate registered DODGE games
         working-directory: the-fountain
         run: |
