@@ -124,7 +124,7 @@ function renderCharacterCondition() {
 
   const state = character.state || {};
   const grid = document.createElement("div");
-  grid.className = "dirps-stat-grid";
+  grid.className = "dirps-stat-grid dirps-condition-grid";
   for (const [label, key] of [
     ["HP", "hit-points"],
     ["Fatigue", "fatigue"],
@@ -168,6 +168,7 @@ function renderActions() {
   for (const action of actions) {
     const button = document.createElement("button");
     button.className = "dirps-action";
+    button.type = "button";
     const label = document.createElement("strong");
     label.textContent = action.label || action.name || action.id;
     button.append(label);
@@ -438,6 +439,16 @@ function render() {
   text("debugView", pretty(model));
 }
 
+function focusAfterAction() {
+  const target = model.ending ? $("endingPanel") : $("lastResolutionPanel");
+  target.focus();
+}
+
+function focusCurrentAction() {
+  const action = document.querySelector(".dirps-action");
+  if (action) action.focus();
+}
+
 function setBusy(isBusy, message) {
   document.querySelectorAll(".dirps-action, #restart, #endingRestart").forEach((button) => {
     button.disabled = isBusy;
@@ -462,6 +473,7 @@ async function executeAction(action, button) {
     );
     model = JSON.parse(raw);
     render();
+    focusAfterAction();
   } catch (error) {
     showFatal(error);
   } finally {
@@ -537,6 +549,7 @@ async function restartScenario() {
     $("seedInput").value = "";
     $("advancedEvidence").open = false;
     render();
+    focusCurrentAction();
   } catch (error) {
     showFatal(error);
   } finally {
@@ -548,6 +561,7 @@ $("restart").addEventListener("click", restartScenario);
 $("endingRestart").addEventListener("click", restartScenario);
 $("endingEvidence").addEventListener("click", () => {
   $("advancedEvidence").open = true;
+  $("advancedEvidence").querySelector("summary")?.focus();
 });
 
 startRuntime().catch(showFatal);

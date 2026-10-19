@@ -670,6 +670,39 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         )
         self.assertIn('$("advancedEvidence").open = true', self.web_js)
 
+    def test_px_f_mobile_accessibility_contract_is_explicit(self):
+        css = (ROOT / "dirps/style.css").read_text()
+
+        self.assertIn('content="width=device-width, initial-scale=1"', self.web_html)
+        self.assertIn(
+            'id="runtimeStatus" class="dirps-runtime-status" role="status" aria-live="polite"',
+            self.web_html,
+        )
+        self.assertIn('id="fatal" class="dirps-panel dirps-error" role="alert"', self.web_html)
+        self.assertIn(
+            'id="lastResolutionPanel" class="dirps-panel" tabindex="-1"',
+            self.web_html,
+        )
+        self.assertIn(
+            'id="endingPanel" class="dirps-panel dirps-ending" tabindex="-1"',
+            self.web_html,
+        )
+
+        for rule in (
+            "min-height:48px",
+            "min-height:44px",
+            "button:focus-visible",
+            '@media(max-width:520px)',
+            ".dirps-condition-grid{grid-template-columns:repeat(2,minmax(0,1fr))}",
+        ):
+            self.assertIn(rule, css)
+
+        self.assertIn('button.type = "button"', self.web_js)
+        self.assertIn('function focusAfterAction()', self.web_js)
+        self.assertIn('target.focus()', self.web_js)
+        self.assertIn('function focusCurrentAction()', self.web_js)
+        self.assertIn('if (action) action.focus()', self.web_js)
+
     def test_web_target_can_drive_complete_scenario_without_owning_choices(self):
         view = inspect_web_target(self.resolved)
         for index in range(1, 8):
@@ -793,6 +826,7 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
             'id="runtimeTechnicalStatus"',
             'id="character"',
             'id="scenarioState"',
+            'id="lastResolutionPanel"',
             'id="lastResolution"',
             'id="provenance"',
             'id="history"',

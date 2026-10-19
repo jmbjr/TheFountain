@@ -357,6 +357,68 @@ try {
     "Examine the tracks",
     "PX-E restart did not return to the accepted initial action",
   );
+  assert.equal(
+    await page.evaluate(() => document.activeElement?.classList.contains("dirps-action")),
+    true,
+    "PX-F restart did not return keyboard focus to the current action",
+  );
+
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  assert.equal(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    true,
+    "PX-F phone layout has horizontal overflow",
+  );
+
+  const mobileActionBox = await page.locator(".dirps-action").first().boundingBox();
+  assert.ok(mobileActionBox, "PX-F current action is not laid out on phone viewport");
+  assert.ok(
+    mobileActionBox.height >= 48,
+    `PX-F current action touch target is too short: ${mobileActionBox.height}px`,
+  );
+  assert.ok(
+    mobileActionBox.width >= 340,
+    `PX-F current action is not easy to locate/use on phone: ${mobileActionBox.width}px`,
+  );
+
+  assert.equal(
+    await page.evaluate(() => {
+      const grid = document.querySelector(".dirps-condition-grid");
+      return grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0;
+    }),
+    2,
+    "PX-F phone condition summary should remain a compact two-column grid",
+  );
+
+  assert.equal(
+    await page.evaluate(() => {
+      const resolution = document.querySelector("#lastResolutionPanel");
+      const advanced = document.querySelector(".dirps-advanced");
+      if (!resolution || !advanced) return false;
+      return resolution.getBoundingClientRect().top < advanced.getBoundingClientRect().top;
+    }),
+    true,
+    "PX-F technical evidence moved ahead of the primary phone play loop",
+  );
+
+  await page.evaluate(() => {
+    document.querySelector("#seedInput").value = "phase-f-mobile-focus";
+  });
+  await page.locator(".dirps-action").first().click();
+  await page.waitForFunction(() =>
+    document.querySelector("#historyCount")?.textContent?.trim() === "1 step",
+  );
+  assert.equal(
+    await page.evaluate(() => document.activeElement?.id),
+    "lastResolutionPanel",
+    "PX-F resolved action did not move focus to the new player-facing result",
+  );
+  assert.equal(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+    true,
+    "PX-F resolved result introduced horizontal overflow on phone",
+  );
 
   assert.equal(
     browserErrors.length,
