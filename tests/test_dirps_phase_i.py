@@ -29,6 +29,7 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         cls.web_js = (ROOT / "src/renderers/dirps-web.js").read_text()
         cls.web_html = (ROOT / "dirps/index.html").read_text()
         cls.root_html = (ROOT / "index.html").read_text()
+        cls.player_acceptance_js = (ROOT / "tests/dirps-player-acceptance.mjs").read_text()
 
     def test_initial_web_view_is_runtime_described(self):
         view = inspect_web_target(self.resolved)
@@ -702,6 +703,40 @@ class DirpsPhaseIWebTargetTests(unittest.TestCase):
         self.assertIn('target.focus()', self.web_js)
         self.assertIn('function focusCurrentAction()', self.web_js)
         self.assertIn('if (action) action.focus()', self.web_js)
+
+    def test_px_g_default_player_acceptance_never_opens_debug_evidence(self):
+        self.assertIn("assertDefaultEvidenceClosed", self.player_acceptance_js)
+        self.assertIn(
+            'await assertDefaultEvidenceClosed(page, "terminal")',
+            self.player_acceptance_js,
+        )
+        for forbidden in (
+            '#advancedEvidence > summary").click',
+            '#endingEvidence").click',
+            '.dirps-resolution-evidence > summary").click',
+        ):
+            self.assertNotIn(forbidden, self.player_acceptance_js)
+
+        for question_evidence in (
+            "Who am I?",
+            "What am I trying to accomplish?",
+            "What is happening right now?",
+            "What can I do?",
+            "what changed",
+            "why the next encounter",
+            "Did I win or lose?",
+        ):
+            self.assertIn(question_evidence, self.player_acceptance_js)
+
+    def test_px_g_acceptance_is_wired_into_exact_head_ci(self):
+        package = json.loads((ROOT / "package.json").read_text())
+        self.assertEqual(
+            package["scripts"]["test:dirps-player-acceptance"],
+            "node tests/dirps-player-acceptance.mjs",
+        )
+        workflow = (ROOT / ".github/workflows/dodge-conformance.yml").read_text()
+        self.assertIn("Run DIRPS PX-G default-player acceptance", workflow)
+        self.assertIn("npm run test:dirps-player-acceptance", workflow)
 
     def test_web_target_can_drive_complete_scenario_without_owning_choices(self):
         view = inspect_web_target(self.resolved)
