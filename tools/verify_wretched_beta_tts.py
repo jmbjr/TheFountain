@@ -10,6 +10,10 @@ ROOT=Path(__file__).parents[1]
 from game_registry import scenario_config
 SCENARIO=scenario_config("wretched-demesne","scenario-01")["source"]
 
+# Object names intentionally emitted by this exporter. DeckCustom/CardCustom are the
+# already-accepted custom-card save forms; Bag and Chip_10 are valid built-in names.
+SUPPORTED_OBJECT_NAMES={"Bag","CardCustom","Chip_10","DeckCustom"}
+
 def fail(msg): raise SystemExit(f"TTS verification failed: {msg}")
 
 def included(x): return x.get("inclusion")!="excluded-override" and x.get("resolved_quantity",0)>0
@@ -18,6 +22,13 @@ def walk(objects):
     for obj in objects or []:
         yield obj
         yield from walk(obj.get("ContainedObjects",[]))
+
+def validate_supported_object_names(objects):
+    for obj in walk(objects):
+        name=obj.get("Name")
+        if name not in SUPPORTED_OBJECT_NAMES:
+            label=obj.get("Nickname") or obj.get("GUID") or "<unnamed>"
+            fail(f"{label}: unsupported TTS object Name {name!r}")
 
 def main():
     p=argparse.ArgumentParser()
@@ -44,6 +55,11 @@ def main():
     if len(names)!=len(set(names)): fail("duplicate top-level object nicknames")
 
     all_objs=list(walk(objs))
+    validate_supported_object_names(objs)
+    for supply_bag in [o for o in objs if o.get("Name")=="Bag"]:
+        bad=[x.get("Name") for x in supply_bag.get("ContainedObjects",[]) if x.get("Name")!="Chip_10"]
+        if bad:
+            fail(f"{supply_bag.get('Nickname')}: unsupported contained token object names {bad}")
     guids=[o.get("GUID") for o in all_objs if o.get("GUID")]
     if len(guids)!=len(set(guids)): fail("duplicate object GUIDs")
 
